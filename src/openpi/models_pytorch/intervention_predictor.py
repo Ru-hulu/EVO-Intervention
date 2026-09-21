@@ -31,11 +31,10 @@ class _QueryPool(nn.Module):
 class InterventionPredictorConfig:
     hidden_dim: int
     image_input_dim: int
-    state_input_dim: int
-    language_input_dim: int
+    prompt_input_dim: int
     num_layers: int
     num_image_queries: int = 8
-    num_state_queries: int = 2
+    num_prompt_queries: int = 8
     num_layer_queries: int = 16
     temporal_layers: int = 3
     temporal_heads: int = 8
@@ -47,12 +46,12 @@ class InterventionPredictor(nn.Module):
     """Predict intervention probability from a temporal window of Pi05 features.
 
     Expected inputs:
-      language_tokens: [B, language_token_count, language_input_dim]
       image_tokens: [B, N, L, K, image_input_dim]
-      state_tokens: [B, N, L, H, state_input_dim]
+      prompt_tokens: [B, N, L, S, prompt_input_dim]
 
-    ``L`` is the number of selected VLM layers. The model returns a dictionary
-    containing both the training logit and its sigmoid probability.
+    ``L`` is the number of selected VLM layers. Image and prompt tokens are
+    pooled independently at each layer, then fused across layers. The model
+    returns both the training logit and its sigmoid probability.
     """
 
     def __init__(self, config: InterventionPredictorConfig) -> None:
@@ -66,14 +65,15 @@ class InterventionPredictor(nn.Module):
         self.image_pool = _QueryPool(
             config.image_input_dim, config.hidden_dim, config.num_image_queries, config.temporal_heads
         )
-        self.state_pool = _QueryPool(
-            config.state_input_dim, config.hidden_dim, config.num_state_queries, config.temporal_heads
+        self.prompt_pool = _QueryPool(
+            config.prompt_input_dim, config.hidden_dim, config.num_prompt_queries, config.temporal_heads
         )
         self.layer_pool = _QueryPool(
-            config.hidden_dim, config.hidden_dim, config.num_layer_queries, config.temporal_heads
+            config.hidden_dim,
+            config.hidden_dim,
+            config.num_layer_queries,
+            config.temporal_heads,
         )
-        self.language_proj = nn.Linear(config.language_input_dim, config.hidden_dim)
-        self.language_norm = nn.LayerNorm(config.hidden_dim)
 
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=config.hidden_dim,
@@ -98,41 +98,37 @@ class InterventionPredictor(nn.Module):
 
     def forward(
         self,
-        language_tokens: Tensor,
         image_tokens: Tensor,
-        state_tokens: Tensor,
+        prompt_tokens: Tensor,
     ) -> dict[str, Tensor]:
-        if image_tokens.ndim != 5 or state_tokens.ndim != 5 or language_tokens.ndim != 3:
-            raise ValueError("Expected language [B,S,D], image [B,N,L,K,D], and state [B,N,L,H,D]")
+        if image_tokens.ndim != 5 or prompt_tokens.ndim != 5:
+            raise ValueError("Expected image [B,N,L,K,D] and prompt [B,N,L,S,D]")
         batch, frames, layers, _, _ = image_tokens.shape
-        if state_tokens.shape[:3] != (batch, frames, layers):
-            raise ValueError("image_tokens and state_tokens must agree on batch, frames, and layers")
+        if prompt_tokens.shape[:3] != (batch, frames, layers):
+            raise ValueError("image_tokens and prompt_tokens must agree on batch, frames, and layers")
         if layers != self.config.num_layers:
             raise ValueError(f"Expected {self.config.num_layers} selected layers, got {layers}")
         if frames == 0 or layers == 0:
             raise ValueError("The temporal window and selected layer list cannot be empty")
 
-        image = image_tokens.reshape(batch * frames * layers, *image_tokens.shape[3:]) # 每张图像的TOKEN数量减少到num_image_queries
-        state = state_tokens.reshape(batch * frames * layers, *state_tokens.shape[3:])
+        image = image_tokens.reshape(batch * frames * layers, *image_tokens.shape[3:])
         image = self.image_pool(image)
-        state = self.state_pool(state)
-        per_layer = torch.cat((image, state), dim=1) # 这里进行了跨层拼接
-        # image 的形状是 (batch * frames * layers, num_image_queries, hidden_dim)
-        # state 的形状是 (batch * frames * layers, num_state_queries, hidden_dim)。
-        # 拼接后 per_layer 的形状是 (batch * frames * layers, num_image_queries + num_state_queries, hidden_dim)。
+
+        prompt = prompt_tokens.reshape(batch * frames * layers, *prompt_tokens.shape[3:])
+        prompt = self.prompt_pool(prompt)
+
+        # Image and prompt tokens are independently compressed at each layer.
+        # The resulting tokens are then fused across the selected VLM layers.
+        per_layer = torch.cat((image, prompt), dim=1)
         per_frame = self.layer_pool(per_layer.reshape(batch * frames, layers * per_layer.shape[1], -1))
-        # (batch * frames, layers * Q, hidden_dim) - > (batch * frames, num_layer_queries, hidden_dim)
-        # 这里做了layer级别的池化
-        language = self.language_proj(language_tokens).mean(dim=1)
-        language = self.language_norm(language)
+
         temporal = per_frame.reshape(batch, frames * self.config.num_layer_queries, -1)
-        temporal = temporal + language[:, None, :] # (batch, num_layer_queries * frames, hidden_dim) 广播加法
         if temporal.shape[1] > self.temporal_pos.shape[1]:
             raise ValueError("The frame window is too large for the temporal positional embedding")
-        temporal = temporal + self.temporal_pos[:, : temporal.shape[1]] # (batch, num_layer_queries * frames, hidden_dim)
+        temporal = temporal + self.temporal_pos[:, : temporal.shape[1]]
 
         # Explicitly expose short-term change information to the temporal encoder.
-        temporal = temporal.reshape(batch, frames, self.config.num_layer_queries, -1) # (batch, num_layer_queries * frames, hidden_dim)
+        temporal = temporal.reshape(batch, frames, self.config.num_layer_queries, -1)
         delta = torch.zeros_like(temporal)
         if frames > 1:
             delta[:, 1:] = temporal[:, 1:] - temporal[:, :-1]
