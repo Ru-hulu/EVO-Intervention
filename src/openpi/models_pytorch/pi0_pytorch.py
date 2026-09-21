@@ -85,7 +85,8 @@ class PI0Pytorch(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
-        self.pi05 = config.pi05
+        if not config.pi05:
+            raise ValueError("Only pi05 is retained in this repository")
 
         paligemma_config = _gemma.get_config(config.paligemma_variant)
         action_expert_config = _gemma.get_config(config.action_expert_variant)
@@ -93,20 +94,15 @@ class PI0Pytorch(nn.Module):
         self.paligemma_with_expert = PaliGemmaWithExpertModel(
             paligemma_config,
             action_expert_config,
-            use_adarms=[False, True] if self.pi05 else [False, False],
+            use_adarms=[False, True],
             precision=config.dtype,
         )
 
         self.action_in_proj = nn.Linear(config.action_dim, action_expert_config.width)
         self.action_out_proj = nn.Linear(action_expert_config.width, config.action_dim)
 
-        if self.pi05:
-            self.time_mlp_in = nn.Linear(action_expert_config.width, action_expert_config.width)
-            self.time_mlp_out = nn.Linear(action_expert_config.width, action_expert_config.width)
-        else:
-            self.state_proj = nn.Linear(config.action_dim, action_expert_config.width)
-            self.action_time_mlp_in = nn.Linear(2 * action_expert_config.width, action_expert_config.width)
-            self.action_time_mlp_out = nn.Linear(action_expert_config.width, action_expert_config.width)
+        self.time_mlp_in = nn.Linear(action_expert_config.width, action_expert_config.width)
+        self.time_mlp_out = nn.Linear(action_expert_config.width, action_expert_config.width)
 
         torch.set_float32_matmul_precision("high")
         if config.pytorch_compile_mode is not None:
@@ -241,26 +237,6 @@ class PI0Pytorch(nn.Module):
         pad_masks = []
         att_masks = []
 
-        if not self.pi05:
-            if self.state_proj.weight.dtype == torch.float32:
-                state = state.to(torch.float32)
-
-            # Embed state
-            def state_proj_func(state):
-                return self.state_proj(state)
-
-            state_emb = self._apply_checkpoint(state_proj_func, state)
-
-            embs.append(state_emb[:, None, :])
-            bsize = state_emb.shape[0]
-            device = state_emb.device
-
-            state_mask = torch.ones(bsize, 1, dtype=torch.bool, device=device)
-            pad_masks.append(state_mask)
-
-            # Set attention masks so that image and language inputs do not attend to state or actions
-            att_masks += [1]
-
         # Embed timestep using sine-cosine positional encoding with sensitivity in the range [0, 1]
         time_emb = create_sinusoidal_pos_embedding(
             timestep, self.action_in_proj.out_features, min_period=4e-3, max_period=4.0, device=timestep.device
@@ -273,29 +249,16 @@ class PI0Pytorch(nn.Module):
 
         action_emb = self._apply_checkpoint(action_proj_func, noisy_actions)
 
-        if not self.pi05:
-            time_emb = time_emb[:, None, :].expand_as(action_emb)
-            action_time_emb = torch.cat([action_emb, time_emb], dim=2)
+        # Time MLP for adaRMS conditioning.
+        def time_mlp_func(time_emb):
+            x = self.time_mlp_in(time_emb)
+            x = F.silu(x)
+            x = self.time_mlp_out(x)
+            return F.silu(x)
 
-            # Apply MLP layers
-            def mlp_func(action_time_emb):
-                x = self.action_time_mlp_in(action_time_emb)
-                x = F.silu(x)  # swish == silu
-                return self.action_time_mlp_out(x)
-
-            action_time_emb = self._apply_checkpoint(mlp_func, action_time_emb)
-            adarms_cond = None
-        else:
-            # time MLP (for adaRMS)
-            def time_mlp_func(time_emb):
-                x = self.time_mlp_in(time_emb)
-                x = F.silu(x)  # swish == silu
-                x = self.time_mlp_out(x)
-                return F.silu(x)
-
-            time_emb = self._apply_checkpoint(time_mlp_func, time_emb)
-            action_time_emb = action_emb
-            adarms_cond = time_emb
+        time_emb = self._apply_checkpoint(time_mlp_func, time_emb)
+        action_time_emb = action_emb
+        adarms_cond = time_emb
 
         # Add to input tokens
         embs.append(action_time_emb)

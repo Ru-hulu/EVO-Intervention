@@ -253,11 +253,9 @@ class TokenizePrompt(DataTransformFn):
         if (prompt := data.pop("prompt", None)) is None:
             raise ValueError("Prompt is required")
 
-        if self.discrete_state_input:
-            if (state := data.get("state", None)) is None:
-                raise ValueError("State is required.")
-        else:
-            state = None
+        state = data.get("state") if self.discrete_state_input else None
+        if self.discrete_state_input and state is None:
+            raise ValueError("State is required.")
 
         if not isinstance(prompt, str):
             prompt = prompt.item()
@@ -267,45 +265,6 @@ class TokenizePrompt(DataTransformFn):
 
 
 @dataclasses.dataclass(frozen=True)
-class TokenizeFASTInputs(DataTransformFn):
-    tokenizer: _tokenizer.FASTTokenizer
-
-    def __call__(self, data: DataDict) -> DataDict:
-        if (prompt := data.pop("prompt", None)) is None:
-            raise ValueError("Prompt is required")
-
-        if not isinstance(prompt, str):
-            prompt = prompt.item()
-
-        state, actions = data["state"], data.get("actions")
-        tokens, token_mask, ar_mask, loss_mask = self.tokenizer.tokenize(prompt, state, actions)
-        return {
-            **data,
-            "tokenized_prompt": tokens,
-            "tokenized_prompt_mask": token_mask,
-            "token_ar_mask": ar_mask,
-            "token_loss_mask": loss_mask,
-        }
-
-
-@dataclasses.dataclass(frozen=True)
-class ExtractFASTActions(DataTransformFn):
-    tokenizer: _tokenizer.FASTTokenizer
-    action_horizon: int
-    action_dim: int
-
-    def __call__(self, data: DataDict) -> DataDict:
-        if "actions" not in data:
-            return data
-        # Model outputs are saved in "actions", but for FAST models they represent tokens.
-        tokens = data.pop("actions")
-        actions = self.tokenizer.extract_actions(tokens.astype(np.int32), self.action_horizon, self.action_dim)
-        return {
-            **data,
-            "actions": actions,
-        }
-
-
 @dataclasses.dataclass(frozen=True)
 class PromptFromLeRobotTask(DataTransformFn):
     """Extracts a prompt from the current LeRobot dataset task."""

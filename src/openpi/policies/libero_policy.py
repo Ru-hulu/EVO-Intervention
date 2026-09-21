@@ -35,9 +35,7 @@ class LiberoInputs(transforms.DataTransformFn):
     the correct elements of your dataset into the model.
     """
 
-    # Determines which model will be used.
-    # Do not change this for your own dataset.
-    model_type: _model.ModelType
+    model_type: _model.ModelType = _model.ModelType.PI05
 
     def __call__(self, data: dict) -> dict:
         # Possibly need to parse images to uint8 (H,W,C) since LeRobot automatically
@@ -64,8 +62,7 @@ class LiberoInputs(transforms.DataTransformFn):
             "image_mask": {
                 "base_0_rgb": np.True_,
                 "left_wrist_0_rgb": np.True_,
-                # We only mask padding images for pi0 model, not pi0-FAST. Do not change this for your own dataset.
-                "right_wrist_0_rgb": np.True_ if self.model_type == _model.ModelType.PI0_FAST else np.False_,
+                "right_wrist_0_rgb": np.False_,
             },
         }
 

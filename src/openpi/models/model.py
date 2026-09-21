@@ -30,8 +30,6 @@ ArrayT = TypeVar("ArrayT", bound=jax.Array | torch.Tensor | np.ndarray)
 class ModelType(enum.Enum):
     """Supported model types."""
 
-    PI0 = "pi0"
-    PI0_FAST = "pi0_fast"
     PI05 = "pi05"
 
 
@@ -47,7 +45,7 @@ IMAGE_KEYS = (
 IMAGE_RESOLUTION = (224, 224)
 
 
-# Data format
+# pi05 data format
 #
 # Data transforms produce the model input as a nested dictionary which is later converted
 # into `Obesrvation` and `Actions` objects. See below.
@@ -66,8 +64,6 @@ IMAGE_RESOLUTION = (224, 224)
 #     "state": float32[*b, s],  # Low-dimensional robot state
 #     "tokenized_prompt": int32[*b, l],  # Optional, tokenized language prompt
 #     "tokenized_prompt_mask": bool[*b, l],  # Optional, mask for tokenized prompt
-#     "token_ar_mask": int32[*b, l],  # Optional, autoregressive mask for FAST model
-#     "token_loss_mask": bool[*b, l],  # Optional, loss mask for FAST model
 #
 #      # Actions data.
 #      "actions": float32[*b ah ad]
@@ -99,13 +95,6 @@ class Observation(Generic[ArrayT]):
     # Tokenized prompt mask.
     tokenized_prompt_mask: at.Bool[ArrayT, "*b l"] | None = None
 
-    # pi0-fast model specific fields.
-
-    # Token auto-regressive mask (for FAST autoregressive model).
-    token_ar_mask: at.Int[ArrayT, "*b l"] | None = None
-    # Token loss mask (for FAST autoregressive model).
-    token_loss_mask: at.Bool[ArrayT, "*b l"] | None = None
-
     @classmethod
     def from_dict(cls, data: at.PyTree[ArrayT]) -> "Observation[ArrayT]":
         """This method defines the mapping between unstructured data (i.e., nested dict) to the structured Observation format."""
@@ -124,8 +113,6 @@ class Observation(Generic[ArrayT]):
             state=data["state"],
             tokenized_prompt=data.get("tokenized_prompt"),
             tokenized_prompt_mask=data.get("tokenized_prompt_mask"),
-            token_ar_mask=data.get("token_ar_mask"),
-            token_loss_mask=data.get("token_loss_mask"),
         )
 
     def to_dict(self) -> at.PyTree[ArrayT]:
@@ -203,8 +190,6 @@ def preprocess_observation(
         state=observation.state,
         tokenized_prompt=observation.tokenized_prompt,
         tokenized_prompt_mask=observation.tokenized_prompt_mask,
-        token_ar_mask=observation.token_ar_mask,
-        token_loss_mask=observation.token_loss_mask,
     )
 
 

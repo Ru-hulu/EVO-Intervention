@@ -8,13 +8,13 @@ Usage
 Single GPU:
   python scripts/train_pytorch.py <config_name> --exp_name <run_name> --save_interval <interval>
   Example:
-  python scripts/train_pytorch.py debug --exp_name pytorch_ddp_test
-  python scripts/train_pytorch.py debug --exp_name pytorch_ddp_test --resume  # Resume from latest checkpoint
+  python scripts/train_pytorch.py debug_pi05 --exp_name pytorch_ddp_test
+  python scripts/train_pytorch.py debug_pi05 --exp_name pytorch_ddp_test --resume  # Resume from latest checkpoint
 Multi-GPU (single node):
   torchrun --standalone --nnodes=1 --nproc_per_node=<num_gpus> scripts/train_pytorch.py <config_name> --exp_name <run_name>
   Example:
-  torchrun --standalone --nnodes=1 --nproc_per_node=2 scripts/train_pytorch.py pi0_aloha_sim --exp_name pytorch_ddp_test
-  torchrun --standalone --nnodes=1 --nproc_per_node=2 scripts/train_pytorch.py pi0_aloha_sim --exp_name pytorch_ddp_test --resume
+  torchrun --standalone --nnodes=1 --nproc_per_node=2 scripts/train_pytorch.py pi05_droid --exp_name pytorch_ddp_test
+  torchrun --standalone --nnodes=1 --nproc_per_node=2 scripts/train_pytorch.py pi05_droid --exp_name pytorch_ddp_test --resume
 Multi-Node Training:
 	torchrun \
     --nnodes=<num_nodes> --nproc_per_node=<gpus_per_node> --node_rank=<rank_of_node> \

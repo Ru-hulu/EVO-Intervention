@@ -28,7 +28,7 @@ class Pi0Config(_model.BaseModelConfig):
     # Pi05 has two differences from Pi0:
     # - the state input is part of the discrete language tokens rather than a continuous input that is part of the suffix
     # - the action expert uses adaRMSNorm to inject the flow matching timestep
-    pi05: bool = False
+    pi05: bool = True
     # This config option is not used directly by the model, but it is read by the ModelTransformFactory.
     discrete_state_input: bool = None  # type: ignore
 
@@ -36,9 +36,9 @@ class Pi0Config(_model.BaseModelConfig):
 
     def __post_init__(self):
         if self.max_token_len is None:
-            object.__setattr__(self, "max_token_len", 200 if self.pi05 else 48)
+            object.__setattr__(self, "max_token_len", 200)
         if self.discrete_state_input is None:
-            object.__setattr__(self, "discrete_state_input", self.pi05)
+            object.__setattr__(self, "discrete_state_input", True)
         if self.pytorch_compile_mode is not None:
             assert self.pytorch_compile_mode in [
                 "default",
@@ -50,9 +50,9 @@ class Pi0Config(_model.BaseModelConfig):
     @property
     @override
     def model_type(self) -> _model.ModelType:
-        if self.pi05:
-            return _model.ModelType.PI05
-        return _model.ModelType.PI0
+        if not self.pi05:
+            raise ValueError("Only pi05 is retained in this repository")
+        return _model.ModelType.PI05
 
     @override
     def create(self, rng: at.KeyArrayLike) -> "Pi0":
