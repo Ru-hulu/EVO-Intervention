@@ -4,26 +4,20 @@ Load a JAX model and print all parameter keys, with optional conversion to PyTor
 
 This script loads a JAX model checkpoint using orbax and can either:
 1. Print out all the parameter keys in a hierarchical structure for inspection
-2. Convert the JAX model to PyTorch format using our PI0Pytorch model
+2. Convert the JAX model to PyTorch format using our PI05Pytorch model
 
 Usage:
     # Just inspect keys:
-    python examples/convert_jax_model_to_pytorch.py --checkpoint_dir /path/to/checkpoint --inspect_only
-    python examples/convert_jax_model_to_pytorch.py --checkpoint_dir /path/to/checkpoint --inspect_only
+    python examples/convert_jax_model_to_pi05_pytorch.py --checkpoint_dir /path/to/checkpoint --inspect_only
+    python examples/convert_jax_model_to_pi05_pytorch.py --checkpoint_dir /path/to/checkpoint --inspect_only
 
     # Convert to PyTorch:
-    python examples/convert_jax_model_to_pytorch.py --checkpoint_dir /path/to/checkpoint --output_path /path/to/output
-    python examples/convert_jax_model_to_pytorch.py --checkpoint_dir /path/to/checkpoint --output_path /path/to/output
+    python examples/convert_jax_model_to_pi05_pytorch.py --checkpoint_dir /path/to/checkpoint --output_path /path/to/output
+    python examples/convert_jax_model_to_pi05_pytorch.py --checkpoint_dir /path/to/checkpoint --output_path /path/to/output
 
 Example:
-    # pi0_droid
-    python examples/convert_jax_model_to_pytorch.py --checkpoint_dir /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi0_droid --output_path /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi0_droid_pytorch
-
-    # pi0_aloha_sim
-    python examples/convert_jax_model_to_pytorch.py --checkpoint_dir /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi0_aloha_sim --output_path /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi0_aloha_sim_pytorch
-
     # pi05_droid
-    python examples/convert_jax_model_to_pytorch.py --checkpoint_dir /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi05_droid --output_path /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi05_droid_pytorch
+    python examples/convert_jax_model_to_pi05_pytorch.py --checkpoint_dir /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi05_droid --output_path /home/$USER/.cache/openpi/openpi-assets/checkpoints/pi05_droid_pytorch
 """
 
 import json
@@ -41,8 +35,8 @@ import tyro
 
 import openpi.models.gemma
 import openpi.models.model
-import openpi.models.pi0_config
-import openpi.models_pytorch.pi0_pytorch
+import openpi.models.pi05_config
+import openpi.models_pytorch.pi05_pytorch
 from openpi.training import utils
 import openpi.training.config as _config
 
@@ -419,11 +413,11 @@ def load_jax_model_and_print_keys(checkpoint_dir: str):
     print(utils.array_tree_to_info(metadata))
 
 
-def convert_pi0_checkpoint(
-    checkpoint_dir: str, precision: str, output_path: str, model_config: openpi.models.pi0_config.Pi0Config
+def convert_pi05_checkpoint(
+    checkpoint_dir: str, precision: str, output_path: str, model_config: openpi.models.pi05_config.Pi05Config
 ):
     """
-    Convert PI0 JAX checkpoint to PyTorch format.
+    Convert PI05 JAX checkpoint to PyTorch format.
 
     Args:
         checkpoint_dir: Path to the JAX checkpoint
@@ -511,18 +505,18 @@ def convert_pi0_checkpoint(
     )
 
     # Instantiate model
-    pi0_model = openpi.models_pytorch.pi0_pytorch.PI0Pytorch(model_config)
+    pi05_model = openpi.models_pytorch.pi05_pytorch.PI05Pytorch(model_config)
 
     # Combine all parameters (no prefix needed for our model structure)
     all_params = {**paligemma_params, **gemma_params, **projection_params}
 
     # Load state dict
-    pi0_model.load_state_dict(all_params, strict=False)
+    pi05_model.load_state_dict(all_params, strict=False)
 
     if precision == "float32":
-        pi0_model = pi0_model.to(torch.float32)
+        pi05_model = pi05_model.to(torch.float32)
     elif precision == "bfloat16":
-        pi0_model = pi0_model.to(torch.bfloat16)
+        pi05_model = pi05_model.to(torch.bfloat16)
     else:
         raise ValueError(f"Invalid precision: {precision}")
 
@@ -530,7 +524,7 @@ def convert_pi0_checkpoint(
     os.makedirs(output_path, exist_ok=True)
 
     # Save model weights as SafeTensors using save_model to handle tied weights
-    safetensors.torch.save_model(pi0_model, os.path.join(output_path, "model.safetensors"))
+    safetensors.torch.save_model(pi05_model, os.path.join(output_path, "model.safetensors"))
 
     # Copy assets folder if it exists
     assets_source = pathlib.Path(checkpoint_dir).parent / "assets"
@@ -572,15 +566,15 @@ def main(
         inspect_only: Only inspect parameter keys, don't convert
     """
     model_config = _config.get_config(config_name).model
-    if not isinstance(model_config, openpi.models.pi0_config.Pi0Config):
-        raise ValueError(f"Config {config_name} is not a Pi0Config")
+    if not isinstance(model_config, openpi.models.pi05_config.Pi05Config):
+        raise ValueError(f"Config {config_name} is not a Pi05Config")
     if inspect_only:
         load_jax_model_and_print_keys(checkpoint_dir)
     else:
         if not output_path:
             print("Error: --output_path is required for conversion. Use --inspect_only to only view keys.")
             return
-        convert_pi0_checkpoint(checkpoint_dir, precision, output_path, model_config)
+        convert_pi05_checkpoint(checkpoint_dir, precision, output_path, model_config)
 
 
 if __name__ == "__main__":

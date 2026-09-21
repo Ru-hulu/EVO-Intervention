@@ -1,7 +1,7 @@
 """
-PyTorch training entrypoint for PI0/PI05 with multi-GPU and multi-node (DDP) support.
+PyTorch training entrypoint for PI05 with multi-GPU and multi-node (DDP) support.
 This script mirrors the behavior of the JAX trainer (`scripts/train.py`) but runs
-entirely in PyTorch using the `PI0Pytorch` model and your existing config/data
+entirely in PyTorch using the `PI05Pytorch` model and your existing config/data
 pipeline from `src/openpi/training/config.py` and `src/openpi/training/data_loader.py`.
 
 Usage
@@ -40,8 +40,8 @@ import torch.nn.parallel
 import tqdm
 import wandb
 
-import openpi.models.pi0_config
-import openpi.models_pytorch.pi0_pytorch
+import openpi.models.pi05_config
+import openpi.models_pytorch.pi05_pytorch
 import openpi.shared.normalize as _normalize
 import openpi.training.config as _config
 import openpi.training.data_loader as _data
@@ -390,23 +390,22 @@ def train_loop(config: _config.TrainConfig):
         logging.info("Cleared sample batch and data loader from memory")
 
     # Build model
-    if not isinstance(config.model, openpi.models.pi0_config.Pi0Config):
-        # Convert dataclass to Pi0Config if needed
-        model_cfg = openpi.models.pi0_config.Pi0Config(
+    if not isinstance(config.model, openpi.models.pi05_config.Pi05Config):
+        # Convert dataclass to Pi05Config if needed
+        model_cfg = openpi.models.pi05_config.Pi05Config(
             dtype=config.pytorch_training_precision,
             action_dim=config.model.action_dim,
             action_horizon=config.model.action_horizon,
             max_token_len=config.model.max_token_len,
             paligemma_variant=getattr(config.model, "paligemma_variant", "gemma_2b"),
             action_expert_variant=getattr(config.model, "action_expert_variant", "gemma_300m"),
-            pi05=getattr(config.model, "pi05", False),
         )
     else:
         model_cfg = config.model
         # Update dtype to match pytorch_training_precision
         object.__setattr__(model_cfg, "dtype", config.pytorch_training_precision)
 
-    model = openpi.models_pytorch.pi0_pytorch.PI0Pytorch(model_cfg).to(device)
+    model = openpi.models_pytorch.pi05_pytorch.PI05Pytorch(model_cfg).to(device)
 
     if hasattr(model, "gradient_checkpointing_enable"):
         enable_gradient_checkpointing = True

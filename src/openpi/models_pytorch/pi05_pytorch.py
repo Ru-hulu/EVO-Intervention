@@ -81,7 +81,7 @@ def make_att_2d_masks(pad_masks, att_masks):
     return att_2d_masks & pad_2d_masks
 
 
-class PI0Pytorch(nn.Module):
+class PI05Pytorch(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.config = config
@@ -127,7 +127,7 @@ class PI0Pytorch(nn.Module):
         self.paligemma_with_expert.paligemma.vision_tower.gradient_checkpointing = True
         self.paligemma_with_expert.gemma_expert.model.gradient_checkpointing = True
 
-        logging.info("Enabled gradient checkpointing for PI0Pytorch model")
+        logging.info("Enabled gradient checkpointing for PI05Pytorch model")
 
     def gradient_checkpointing_disable(self):
         """Disable gradient checkpointing."""
@@ -136,7 +136,7 @@ class PI0Pytorch(nn.Module):
         self.paligemma_with_expert.paligemma.vision_tower.gradient_checkpointing = False
         self.paligemma_with_expert.gemma_expert.model.gradient_checkpointing = False
 
-        logging.info("Disabled gradient checkpointing for PI0Pytorch model")
+        logging.info("Disabled gradient checkpointing for PI05Pytorch model")
 
     def is_gradient_checkpointing_enabled(self):
         """Check if gradient checkpointing is enabled."""

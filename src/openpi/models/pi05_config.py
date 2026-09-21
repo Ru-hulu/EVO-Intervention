@@ -12,11 +12,11 @@ from openpi.shared import array_typing as at
 import openpi.shared.nnx_utils as nnx_utils
 
 if TYPE_CHECKING:
-    from openpi.models.pi0 import Pi0
+    from openpi.models.pi05 import Pi05
 
 
 @dataclasses.dataclass(frozen=True)
-class Pi0Config(_model.BaseModelConfig):
+class Pi05Config(_model.BaseModelConfig):
     dtype: str = "bfloat16"
     paligemma_variant: _gemma.Variant = "gemma_2b"
     action_expert_variant: _gemma.Variant = "gemma_300m"
@@ -55,10 +55,10 @@ class Pi0Config(_model.BaseModelConfig):
         return _model.ModelType.PI05
 
     @override
-    def create(self, rng: at.KeyArrayLike) -> "Pi0":
-        from openpi.models.pi0 import Pi0
+    def create(self, rng: at.KeyArrayLike) -> "Pi05":
+        from openpi.models.pi05 import Pi05
 
-        return Pi0(self, rngs=nnx.Rngs(rng))
+        return Pi05(self, rngs=nnx.Rngs(rng))
 
     @override
     def inputs_spec(self, *, batch_size: int = 1) -> tuple[_model.Observation, _model.Actions]:

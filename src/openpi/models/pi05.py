@@ -8,7 +8,7 @@ import jax.numpy as jnp
 from typing_extensions import override
 
 from openpi.models import model as _model
-from openpi.models import pi0_config
+from openpi.models import pi05_config
 import openpi.models.gemma as _gemma
 import openpi.models.siglip as _siglip
 from openpi.shared import array_typing as at
@@ -63,8 +63,8 @@ def posemb_sincos(
     return jnp.concatenate([jnp.sin(sinusoid_input), jnp.cos(sinusoid_input)], axis=-1)
 
 
-class Pi0(_model.BaseModel):
-    def __init__(self, config: pi0_config.Pi0Config, rngs: nnx.Rngs):
+class Pi05(_model.BaseModel):
+    def __init__(self, config: pi05_config.Pi05Config, rngs: nnx.Rngs):
         super().__init__(config.action_dim, config.action_horizon, config.max_token_len)
         if not config.pi05:
             raise ValueError("Only pi05 is retained in this repository")

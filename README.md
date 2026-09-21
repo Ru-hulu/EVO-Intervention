@@ -7,7 +7,7 @@ This repository retains the pi05 training, evaluation, and dataset-processing pi
 - JAX and PyTorch training: `scripts/train.py` and `scripts/train_pytorch.py`
 - Normalization statistics: `scripts/compute_norm_stats.py`
 - Policy serving: `scripts/serve_policy.py`
-- JAX-to-PyTorch checkpoint conversion: `examples/convert_jax_model_to_pytorch.py`
+- JAX-to-PyTorch checkpoint conversion: `examples/convert_jax_model_to_pi05_pytorch.py`
 - DROID data conversion and evaluation: `examples/droid/`
 - LIBERO data conversion and evaluation: `examples/libero/`
 

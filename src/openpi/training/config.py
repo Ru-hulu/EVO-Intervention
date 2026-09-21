@@ -14,7 +14,7 @@ from typing_extensions import override
 import tyro
 
 import openpi.models.model as _model
-import openpi.models.pi0_config as pi0_config
+import openpi.models.pi05_config as pi05_config
 import openpi.models.tokenizer as _tokenizer
 import openpi.policies.droid_policy as droid_policy
 import openpi.policies.libero_policy as libero_policy
@@ -108,7 +108,7 @@ class ModelTransformFactory(GroupFactory):
 
     def __call__(self, model_config: _model.BaseModelConfig) -> _transforms.Group:
         assert model_config.model_type is _model.ModelType.PI05
-        assert isinstance(model_config, pi0_config.Pi0Config)
+        assert isinstance(model_config, pi05_config.Pi05Config)
         return _transforms.Group(
             inputs=[
                 _transforms.InjectDefaultPrompt(self.default_prompt),
@@ -378,9 +378,9 @@ class TrainConfig:
     exp_name: str = tyro.MISSING
 
     # Defines the model config. Some attributes (action_dim, action_horizon, and max_token_len) are shared by all models
-    # -- see BaseModelConfig. Specific model implementations (e.g., Pi0Config) inherit from BaseModelConfig and may
+    # -- see BaseModelConfig. Specific model implementations (e.g., Pi05Config) inherit from BaseModelConfig and may
     # define additional attributes.
-    model: _model.BaseModelConfig = dataclasses.field(default_factory=pi0_config.Pi0Config)
+    model: _model.BaseModelConfig = dataclasses.field(default_factory=pi05_config.Pi05Config)
 
     # A weight loader can optionally load (possibly partial) weights from disk after the model is initialized.
     weight_loader: weight_loaders.WeightLoader = dataclasses.field(default_factory=weight_loaders.NoOpWeightLoader)
@@ -466,7 +466,7 @@ class TrainConfig:
 _CONFIGS = [
     TrainConfig(
         name="pi05_droid",
-        model=pi0_config.Pi0Config(action_horizon=15, pi05=True),
+        model=pi05_config.Pi05Config(action_horizon=15),
         data=SimpleDataConfig(
             assets=AssetsConfig(asset_id="droid"),
             data_transforms=lambda model: _transforms.Group(
@@ -478,7 +478,7 @@ _CONFIGS = [
     ),
     TrainConfig(
         name="pi05_libero",
-        model=pi0_config.Pi0Config(pi05=True, action_horizon=10, discrete_state_input=False),
+        model=pi05_config.Pi05Config(action_horizon=10, discrete_state_input=False),
         data=LeRobotLiberoDataConfig(
             repo_id="physical-intelligence/libero",
             base_config=DataConfig(prompt_from_task=True),
@@ -496,7 +496,7 @@ _CONFIGS = [
     ),
     TrainConfig(
         name="pi05_full_droid_finetune",
-        model=pi0_config.Pi0Config(pi05=True, action_dim=32, action_horizon=16),
+        model=pi05_config.Pi05Config(action_dim=32, action_horizon=16),
         data=RLDSDroidDataConfig(
             repo_id="droid",
             rlds_data_dir="/mnt/pi-data/kevin",
@@ -516,7 +516,7 @@ _CONFIGS = [
     ),
     TrainConfig(
         name="pi05_droid_finetune",
-        model=pi0_config.Pi0Config(pi05=True, action_dim=32, action_horizon=16),
+        model=pi05_config.Pi05Config(action_dim=32, action_horizon=16),
         data=LeRobotDROIDDataConfig(
             repo_id="your_hf_username/my_droid_dataset",
             base_config=DataConfig(prompt_from_task=True),
@@ -528,7 +528,7 @@ _CONFIGS = [
     ),
     TrainConfig(
         name="debug_pi05",
-        model=pi0_config.Pi0Config(pi05=True, paligemma_variant="dummy", action_expert_variant="dummy"),
+        model=pi05_config.Pi05Config(paligemma_variant="dummy", action_expert_variant="dummy"),
         data=FakeDataConfig(),
         batch_size=2,
         num_train_steps=10,
