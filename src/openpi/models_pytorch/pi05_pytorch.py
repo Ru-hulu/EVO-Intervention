@@ -8,6 +8,7 @@ import torch.nn.functional as F  # noqa: N812
 
 import openpi.models.gemma as _gemma
 from openpi.models_pytorch.gemma_pytorch import PaliGemmaWithExpertModel
+from openpi.models_pytorch.intervention_window import VLMFeatureSlidingWindow
 import openpi.models_pytorch.preprocessing_pytorch as _preprocessing
 
 
@@ -103,6 +104,7 @@ class PI05Pytorch(nn.Module):
 
         self.time_mlp_in = nn.Linear(action_expert_config.width, action_expert_config.width)
         self.time_mlp_out = nn.Linear(action_expert_config.width, action_expert_config.width)
+        self.intervention_window = VLMFeatureSlidingWindow()
 
         torch.set_float32_matmul_precision("high")
         if config.pytorch_compile_mode is not None:
@@ -141,6 +143,14 @@ class PI05Pytorch(nn.Module):
     def is_gradient_checkpointing_enabled(self):
         """Check if gradient checkpointing is enabled."""
         return self.gradient_checkpointing_enabled
+
+    def reset_intervention_window(self) -> None:
+        """Clear cached prefix features at the beginning of a new episode."""
+        self.intervention_window.clear()
+
+    def get_intervention_window(self) -> dict[str, Tensor] | None:
+        """Return the current full intervention window, if it is ready."""
+        return self.intervention_window.get()
 
     def _apply_checkpoint(self, func, *args, **kwargs):
         """Helper method to apply gradient checkpointing if enabled."""
@@ -354,12 +364,19 @@ class PI05Pytorch(nn.Module):
         prefix_att_2d_masks_4d = self._prepare_attention_masks_4d(prefix_att_2d_masks)
         self.paligemma_with_expert.paligemma.language_model.config._attn_implementation = "eager"  # noqa: SLF001
 
-        _, past_key_values = self.paligemma_with_expert.forward(
+        _, past_key_values, prefix_hidden_states = self.paligemma_with_expert.forward(
             attention_mask=prefix_att_2d_masks_4d,
             position_ids=prefix_position_ids,
             past_key_values=None,
             inputs_embeds=[prefix_embs, None],
             use_cache=True,
+            return_prefix_hidden_states=True,
+        )
+
+        self.intervention_window.append_prefix(
+            prefix_hidden_states,
+            image_token_counts=[image.shape[1] for image in images],
+            prompt_mask=lang_masks,
         )
 
         dt = -1.0 / num_steps

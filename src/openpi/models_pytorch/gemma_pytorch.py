@@ -95,6 +95,7 @@ class PaliGemmaWithExpertModel(nn.Module):
         inputs_embeds: list[torch.FloatTensor] | None = None,
         use_cache: bool | None = None,
         adarms_cond: list[torch.Tensor] | None = None,
+        return_prefix_hidden_states: bool = False,
     ):
         if adarms_cond is None:
             adarms_cond = [None, None]
@@ -106,8 +107,10 @@ class PaliGemmaWithExpertModel(nn.Module):
                 past_key_values=past_key_values,
                 use_cache=use_cache,
                 adarms_cond=adarms_cond[0] if adarms_cond is not None else None,
+                output_hidden_states=return_prefix_hidden_states,
             )
             prefix_past_key_values = prefix_output.past_key_values
+            prefix_hidden_states = prefix_output.hidden_states if return_prefix_hidden_states else None
             prefix_output = prefix_output.last_hidden_state
             suffix_output = None
         elif inputs_embeds[0] is None:
@@ -122,6 +125,7 @@ class PaliGemmaWithExpertModel(nn.Module):
             suffix_output = suffix_output.last_hidden_state
             prefix_output = None
             prefix_past_key_values = None
+            prefix_hidden_states = None
         else:
             models = [self.paligemma.language_model, self.gemma_expert.model]
             num_layers = self.paligemma.config.text_config.num_hidden_layers
@@ -276,5 +280,9 @@ class PaliGemmaWithExpertModel(nn.Module):
             prefix_output = outputs_embeds[0]
             suffix_output = outputs_embeds[1]
             prefix_past_key_values = None
+            prefix_hidden_states = None
 
-        return [prefix_output, suffix_output], prefix_past_key_values
+        outputs = ([prefix_output, suffix_output], prefix_past_key_values)
+        if return_prefix_hidden_states:
+            return (*outputs, prefix_hidden_states)
+        return outputs
