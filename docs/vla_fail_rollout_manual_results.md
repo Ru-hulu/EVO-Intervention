@@ -62,6 +62,8 @@ artifacts/rollout_manual/preview_15k/reports/
 
 每个目录包含 `scores.png`、`scores.svg`、`scores.csv`、`summary.json`、`frames.png`。summary 保留实际模型、参考样本数、协方差正则强度、来源数据及查询间隔。
 
+另已为两条轨迹生成 `synchronized.mp4`：1080p、30 FPS、原速连续三相机画面，配合每秒更新的 LLMD/ACC 数值与移动时间线。两条原始视频时长分别为 303.300 秒和 302.433 秒；比最后一个评分时刻多出的不足 1 秒使用最后一次评分值。视频清单保存在同名 `synchronized.json`，制作脚本见上述使用说明。MP4 保存在本地及 A 的对应报告目录。
+
 较大的参考统计 `reference.npz`、原始提取特征 `features/` 和推理日志保留在 B 的 `artifacts/rollout_manual/preview_15k/`。图像、原始数据、特征和模型权重未提交到 Git；本文件与处理代码提交到 `vla-fail-integration`。
 
 ## 在 B 上重新绘图

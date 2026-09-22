@@ -9,6 +9,7 @@
 - `scripts/prepare_lerobot_vla_fail.py`：按照 episode 元数据定位视频文件和时间偏移，对齐三路相机与状态，输出观测 NPZ。
 - `scripts/replay_lerobot_vla_fail.py`：加载本地 LeRobot π0.5 权重和保存的前后处理器，严格检查权重键，提取固定噪声下 `t=1` 的动作专家投影前特征，并重新预测动作块。
 - `python -m vla_fail.visualize`：计算 LLMD、左右臂 ACC，输出 `scores.png`、`scores.svg`、`scores.csv`、`summary.json`。提供观测 bundle 时还会输出 `frames.png`，展示起点、两个指标峰值和终点的三路画面。
+- `scripts/render_vla_fail_video.py`：把已有报告与原始三相机视频同步合成 1080p MP4，显示数值卡片和移动时间线；不需要重新运行模型。
 
 可视化使用可选依赖：
 
@@ -83,3 +84,20 @@ LLMD 阈值来自 `reference.npz`；没有校准时图上明确显示无阈值�
 `summary.json` 记录参考样本数、特征维数及协方差正则化强度。当样本数小于等于特征维数时，未经正则化的协方差必定秩亏，高分大小可能对正则化和样本覆盖很敏感。应先扩大参考统计，再讨论正式阈值。
 
 此回放适配器导出的特征来源标识为 `lerobot.pi05.action_out_proj.input`；它与 OpenPI 适配器的产物分开校验。不同 checkpoint、预处理或运行时的 LLMD 统计量不能混用，也不能直接把本次 LeRobot 统计量放入原 OpenPI 服务。
+
+## 4. 生成数值随视频变化的同步 MP4
+
+在能访问原始视频的 4090A 上运行：
+
+```bash
+cd /home/zhaobo/EVO-Intervention
+.venv-vla-fail/bin/python scripts/render_vla_fail_video.py \
+  --report artifacts/rollout_manual/preview_15k/reports/episode_000001 \
+  --output artifacts/rollout_manual/preview_15k/reports/episode_000001/synchronized.mp4
+```
+
+左侧是环境、左腕、右腕相机；右侧是当前 LLMD、双臂 ACC EMA，以及对应的全程曲线和 XYZ 重叠误差曲线。黄色时间线连续移动。显示的数值来自视频当前时刻及之前最近一次真实评分，两个采样时刻之间保持不变，不插值、不使用未来评分。曲线展示全程数据，便于查看当前在整条轨迹中的位置；它不是在线报警界面。
+
+脚本读取 episode 元数据中的各相机视频偏移。例如本次 episode 1 从共享视频文件的 303.3 秒处开始，不能从该文件的第 0 秒截取。编码后校验帧数和时长，并在同名 JSON 中保存原视频路径、偏移、模型、采样方式及 ffprobe 信息。
+
+需要系统 `ffmpeg`/`ffprobe`（包含 libass、libx264）、PyArrow、Pillow、NumPy、Matplotlib 和中文字体。默认使用 Linux Noto CJK；其他系统可传 `--font 字体文件 --font-family 字体名称`。可以用 `--limit-seconds 12` 输出短片检查排版；正式视频省略该参数。输出已存在时会报错，重做请换一个输出文件名。
