@@ -28,3 +28,7 @@ uv run scripts/train.py debug_pi05
 ## VLA-FAIL intervention monitoring
 
 PyTorch π0.5 now has optional LLMD/ACC monitoring, offline feature extraction, calibration, and replay commands. See [集成与 4090A 测试说明](docs/vla_fail.md). Monitoring is disabled by default; no world model is used.
+
+For real LeRobot episodes, see [LLMD / ACC 单轨迹可视化](docs/vla_fail_visualization.md) for observation export, strict checkpoint replay, per-arm FK/ACC, token heatmaps, and matching camera snapshots.
+
+Two real failure episodes have been processed; see [运行结果与解释边界](docs/vla_fail_rollout_manual_results.md).

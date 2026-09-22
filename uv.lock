@@ -5042,18 +5042,22 @@ test = [
     { name = "httpx" },
     { name = "pytest" },
 ]
+viz = [
+    { name = "matplotlib" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "fastapi", marker = "extra == 'http'", specifier = ">=0.110" },
     { name = "fastapi", marker = "extra == 'test'", specifier = ">=0.110" },
     { name = "httpx", marker = "extra == 'test'", specifier = ">=0.27" },
+    { name = "matplotlib", marker = "extra == 'viz'", specifier = ">=3.8" },
     { name = "numpy", specifier = ">=1.24" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8" },
     { name = "scipy", specifier = ">=1.10" },
     { name = "uvicorn", marker = "extra == 'http'", specifier = ">=0.27" },
 ]
-provides-extras = ["http", "test"]
+provides-extras = ["http", "test", "viz"]
 
 [[package]]
 name = "wadler-lindig"
