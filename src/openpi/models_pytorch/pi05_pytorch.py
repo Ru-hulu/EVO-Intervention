@@ -190,15 +190,14 @@ class PI05Pytorch(nn.Module):
         time = time_beta * 0.999 + 0.001
         return time.to(dtype=torch.float32, device=device)
 
-    def embed_prefix(
-        self, images, img_masks, lang_tokens, lang_masks
-    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def embed_prefix(self, images, img_masks, lang_tokens, lang_masks, *, return_token_counts=False):
         """Embed images with SigLIP and language tokens with embedding layer to prepare
         for PaliGemma transformer processing.
         """
         embs = []
         pad_masks = []
         att_masks = []
+        image_token_counts = []
 
         # Process images
         for img, img_mask in zip(images, img_masks, strict=True):
@@ -209,6 +208,7 @@ class PI05Pytorch(nn.Module):
             img_emb = self._apply_checkpoint(image_embed_func, img)
 
             bsize, num_img_embs = img_emb.shape[:2]
+            image_token_counts.append(num_img_embs)
 
             embs.append(img_emb)
             pad_masks.append(img_mask[:, None].expand(bsize, num_img_embs))
@@ -239,6 +239,8 @@ class PI05Pytorch(nn.Module):
         bsize = pad_masks.shape[0]
         att_masks = att_masks[None, :].expand(bsize, len(att_masks))
 
+        if return_token_counts:
+            return embs, pad_masks, att_masks, image_token_counts
         return embs, pad_masks, att_masks
 
     def embed_suffix(self, state, noisy_actions, timestep):
@@ -349,14 +351,48 @@ class PI05Pytorch(nn.Module):
     @torch.no_grad()
     def sample_actions(self, device, observation, noise=None, num_steps=10) -> Tensor:
         """Do a full inference forward and compute the action (batch_size x num_steps x num_motors)"""
-        bsize = observation.state.shape[0]
-        if noise is None:
-            actions_shape = (bsize, self.config.action_horizon, self.config.action_dim)
-            noise = self.sample_noise(actions_shape, device)
+        actions, _ = self._sample_actions(device, observation, noise, num_steps)
+        return actions
 
+    @torch.no_grad()
+    def sample_actions_with_llmd(self, device, observation, *, fixed_noise, noise=None, num_steps=10):
+        """Sample the original policy and read fixed-prior action-head features.
+
+        Reuses the observation's prefix cache and adds one action-expert pass.
+        The monitoring noise does not replace the policy's action-sampling noise.
+        This diagnostic path is eager even when sample_actions is compiled.
+        """
+        if self.training:
+            raise RuntimeError("LLMD extraction requires model.eval()")
+        fixed_noise = self._llmd_noise(fixed_noise, observation.state.shape[0], device)
+        return self._sample_actions(device, observation, noise, num_steps, llmd_noise=fixed_noise)
+
+    def _llmd_noise(self, noise, batch_size, device):
+        noise = torch.as_tensor(noise, dtype=torch.float32, device=device)
+        expected = (self.config.action_horizon, self.config.action_dim)
+        if tuple(noise.shape) != expected or not torch.isfinite(noise).all():
+            raise ValueError(f"fixed_noise must be finite with shape {expected}")
+        return noise.unsqueeze(0).expand(batch_size, -1, -1)
+
+    @torch.no_grad()
+    def extract_llmd_features(self, device, observation, *, fixed_noise):
+        """Return [B,H,F] action_out_proj inputs at this implementation's t=1.
+
+        Does not generate actions, draw RNG samples, or advance the semantic
+        intervention window. Use the same noise for reference/calibration/test.
+        """
+        if self.training:
+            raise RuntimeError("LLMD extraction requires model.eval()")
+        noise = self._llmd_noise(fixed_noise, observation.state.shape[0], device)
+        state, masks, cache = self._encode_prefix(observation, update_window=False)
+        return self._action_features(state, masks, cache, noise, torch.ones(noise.shape[0], device=device))
+
+    def _encode_prefix(self, observation, *, update_window):
         images, img_masks, lang_tokens, lang_masks, state = self._preprocess_observation(observation, train=False)
 
-        prefix_embs, prefix_pad_masks, prefix_att_masks = self.embed_prefix(images, img_masks, lang_tokens, lang_masks)
+        prefix_embs, prefix_pad_masks, prefix_att_masks, image_token_counts = self.embed_prefix(
+            images, img_masks, lang_tokens, lang_masks, return_token_counts=True
+        )
         prefix_att_2d_masks = make_att_2d_masks(prefix_pad_masks, prefix_att_masks)
         prefix_position_ids = torch.cumsum(prefix_pad_masks, dim=1) - 1
 
@@ -364,20 +400,40 @@ class PI05Pytorch(nn.Module):
         prefix_att_2d_masks_4d = self._prepare_attention_masks_4d(prefix_att_2d_masks)
         self.paligemma_with_expert.paligemma.language_model.config._attn_implementation = "eager"  # noqa: SLF001
 
-        _, past_key_values, prefix_hidden_states = self.paligemma_with_expert.forward(
+        prefix_outputs = self.paligemma_with_expert.forward(
             attention_mask=prefix_att_2d_masks_4d,
             position_ids=prefix_position_ids,
             past_key_values=None,
             inputs_embeds=[prefix_embs, None],
             use_cache=True,
-            return_prefix_hidden_states=True,
+            return_prefix_hidden_states=update_window,
         )
+        _, past_key_values = prefix_outputs[:2]
 
-        self.intervention_window.append_prefix(
-            prefix_hidden_states,
-            image_token_counts=[image.shape[1] for image in images],
-            prompt_mask=lang_masks,
-        )
+        if update_window:
+            self.intervention_window.append_prefix(
+                prefix_outputs[2],
+                image_token_counts=image_token_counts,
+                prompt_mask=lang_masks,
+            )
+        return state, prefix_pad_masks, past_key_values
+
+    def _sample_actions(self, device, observation, noise, num_steps, llmd_noise=None):
+        if not isinstance(num_steps, int) or isinstance(num_steps, bool) or num_steps <= 0:
+            raise ValueError("num_steps must be a positive integer")
+        bsize = observation.state.shape[0]
+        if noise is None:
+            noise = self.sample_noise((bsize, self.config.action_horizon, self.config.action_dim), device)
+        state, prefix_pad_masks, past_key_values = self._encode_prefix(observation, update_window=True)
+        features = None
+        if llmd_noise is not None:
+            features = self._action_features(
+                state,
+                prefix_pad_masks,
+                past_key_values,
+                llmd_noise,
+                torch.ones(bsize, dtype=torch.float32, device=device),
+            )
 
         dt = -1.0 / num_steps
         dt = torch.tensor(dt, dtype=torch.float32, device=device)
@@ -397,7 +453,7 @@ class PI05Pytorch(nn.Module):
             # Euler step - use new tensor assignment instead of in-place operation
             x_t = x_t + dt * v_t
             time += dt
-        return x_t
+        return x_t, features
 
     def denoise_step(
         self,
@@ -408,6 +464,10 @@ class PI05Pytorch(nn.Module):
         timestep,
     ):
         """Apply one denoising step of the noise `x_t` at a given timestep."""
+        return self.action_out_proj(self._action_features(state, prefix_pad_masks, past_key_values, x_t, timestep))
+
+    def _action_features(self, state, prefix_pad_masks, past_key_values, x_t, timestep):
+        """Exactly the float32 tokens consumed by action_out_proj, before projection."""
         suffix_embs, suffix_pad_masks, suffix_att_masks, adarms_cond = self.embed_suffix(state, x_t, timestep)
 
         suffix_len = suffix_pad_masks.shape[1]
@@ -438,5 +498,4 @@ class PI05Pytorch(nn.Module):
 
         suffix_out = outputs_embeds[1]
         suffix_out = suffix_out[:, -self.config.action_horizon :]
-        suffix_out = suffix_out.to(dtype=torch.float32)
-        return self.action_out_proj(suffix_out)
+        return suffix_out.to(dtype=torch.float32)

@@ -24,3 +24,7 @@ Run a basic training smoke test with:
 ```bash
 uv run scripts/train.py debug_pi05
 ```
+
+## VLA-FAIL intervention monitoring
+
+PyTorch π0.5 now has optional LLMD/ACC monitoring, offline feature extraction, calibration, and replay commands. See [集成与 4090A 测试说明](docs/vla_fail.md). Monitoring is disabled by default; no world model is used.

@@ -49,6 +49,10 @@ class Args:
     # Record the policy's behavior for debugging.
     record: bool = False
 
+    # Optional VLA-FAIL artifacts. Omitted means unchanged policy inference.
+    vla_fail_stats: str | None = None
+    vla_fail_acc_config: str | None = None
+
     # Specifies how to load the policy. If not provided, the default policy for the environment will be used.
     policy: Checkpoint | Default = dataclasses.field(default_factory=Default)
 
@@ -88,6 +92,17 @@ def create_policy(args: Args) -> _policy.Policy:
 
 def main(args: Args) -> None:
     policy = create_policy(args)
+    if args.vla_fail_stats is not None or args.vla_fail_acc_config is not None:
+        from vla_fail.runtime import PolicyMonitor
+
+        checkpoint = args.policy if isinstance(args.policy, Checkpoint) else DEFAULT_CHECKPOINT[args.env]
+        policy.attach_vla_fail_monitor(
+            PolicyMonitor.load(
+                stats=args.vla_fail_stats,
+                acc_config=args.vla_fail_acc_config,
+                expected_metadata={"config": checkpoint.config, "checkpoint": checkpoint.dir},
+            )
+        )
     policy_metadata = policy.metadata
 
     # Record the policy's behavior.

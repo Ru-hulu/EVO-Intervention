@@ -54,6 +54,7 @@ class Policy(BasePolicy):
         self._metadata = metadata or {}
         self._is_pytorch_model = is_pytorch
         self._pytorch_device = pytorch_device
+        self._vla_fail_monitor = None
 
         if self._is_pytorch_model:
             self._model = self._model.to(pytorch_device)
@@ -66,8 +67,11 @@ class Policy(BasePolicy):
 
     @override
     def infer(self, obs: dict, *, noise: np.ndarray | None = None) -> dict:  # type: ignore[misc]
+        context = obs.get("vla_fail", {})
+        if self._vla_fail_monitor is not None and self._vla_fail_monitor.begin(context):
+            self._reset_feature_window()
         # Make a copy since transformations may modify the inputs in place.
-        inputs = jax.tree.map(lambda x: x, obs)
+        inputs = jax.tree.map(lambda x: x, {key: value for key, value in obs.items() if key != "vla_fail"})
         inputs = self._input_transform(inputs)
         if not self._is_pytorch_model:
             # Make a batch and convert to jax.Array.
@@ -89,9 +93,19 @@ class Policy(BasePolicy):
 
         observation = _model.Observation.from_dict(inputs)
         start_time = time.monotonic()
+        features = None
+        if self._vla_fail_monitor is not None and self._vla_fail_monitor.fixed_noise is not None:
+            actions, features = self._model.sample_actions_with_llmd(
+                sample_rng_or_pytorch_device,
+                observation,
+                fixed_noise=self._vla_fail_monitor.fixed_noise,
+                **sample_kwargs,
+            )
+        else:
+            actions = self._sample_actions(sample_rng_or_pytorch_device, observation, **sample_kwargs)
         outputs = {
             "state": inputs["state"],
-            "actions": self._sample_actions(sample_rng_or_pytorch_device, observation, **sample_kwargs),
+            "actions": actions,
         }
         model_time = time.monotonic() - start_time
         if self._is_pytorch_model:
@@ -103,7 +117,51 @@ class Policy(BasePolicy):
         outputs["policy_timing"] = {
             "infer_ms": model_time * 1000,
         }
+        if self._vla_fail_monitor is not None:
+            start_time = time.monotonic()
+            features = None if features is None else features[0].detach().float().cpu().numpy()
+            outputs["vla_fail"] = self._vla_fail_monitor.step(
+                features=features,
+                actions=outputs["actions"],
+                context=context,
+            )
+            outputs["policy_timing"]["vla_fail_score_ms"] = (time.monotonic() - start_time) * 1000
         return outputs
+
+    def attach_vla_fail_monitor(self, monitor) -> None:
+        if not self._is_pytorch_model:
+            raise ValueError("VLA-FAIL policy integration currently supports PyTorch pi05 only")
+        if monitor.fixed_noise is not None:
+            expected = (self._model.config.action_horizon, self._model.config.action_dim)
+            if monitor.fixed_noise.shape != expected:
+                raise ValueError(f"LLMD noise shape must match policy {expected}")
+        self._vla_fail_monitor = monitor
+        self.reset()
+
+    def extract_llmd_features(self, obs: dict, *, fixed_noise: np.ndarray) -> np.ndarray:
+        """Offline feature extraction with the exact inference input transforms."""
+        if not self._is_pytorch_model:
+            raise ValueError("LLMD extraction currently supports PyTorch pi05 only")
+        inputs = jax.tree.map(lambda x: x, {key: value for key, value in obs.items() if key != "vla_fail"})
+        inputs = self._input_transform(inputs)
+        inputs = jax.tree.map(lambda x: torch.from_numpy(np.array(x)).to(self._pytorch_device)[None, ...], inputs)
+        features = self._model.extract_llmd_features(
+            self._pytorch_device,
+            _model.Observation.from_dict(inputs),
+            fixed_noise=fixed_noise,
+        )
+        return features[0].detach().float().cpu().numpy()
+
+    def _reset_feature_window(self):
+        window = getattr(self._model, "intervention_window", None)
+        if window is not None:
+            window.clear()
+
+    @override
+    def reset(self) -> None:
+        self._reset_feature_window()
+        if self._vla_fail_monitor is not None:
+            self._vla_fail_monitor.reset()
 
     @property
     def metadata(self) -> dict[str, Any]:
@@ -120,6 +178,10 @@ class PolicyRecorder(_base_policy.BasePolicy):
         self._record_dir = pathlib.Path(record_dir)
         self._record_dir.mkdir(parents=True, exist_ok=True)
         self._record_step = 0
+
+    @override
+    def reset(self) -> None:
+        self._policy.reset()
 
     @override
     def infer(self, obs: dict) -> dict:  # type: ignore[misc]

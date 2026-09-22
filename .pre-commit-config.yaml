@@ -3,7 +3,7 @@ exclude: third_party/
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.5.14
+    rev: 0.12.17
     hooks:
       - id: uv-lock
   - repo: https://github.com/astral-sh/ruff-pre-commit
