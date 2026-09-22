@@ -74,13 +74,6 @@ class VLMFeatureSlidingWindow:
                 )
             selected_hidden_states.append(hidden_states[layer_index])
 
-        sequence_length = selected_hidden_states[0].shape[1]
-        if any(
-            state.ndim != 3 or state.shape[0] != 1 or state.shape[1] != sequence_length
-            for state in selected_hidden_states
-        ):
-            raise ValueError("Each selected hidden state must have shape [1, sequence_length, hidden_dim]")
-
         image_token_count = sum(image_token_counts)
         image = torch.stack([state[:, :image_token_count] for state in selected_hidden_states], dim=1)
         prompt = torch.stack([state[:, image_token_count:] for state in selected_hidden_states], dim=1)
