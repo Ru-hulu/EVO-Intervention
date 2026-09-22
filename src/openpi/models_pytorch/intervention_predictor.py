@@ -20,9 +20,8 @@ class _QueryPool(nn.Module):
         self.norm = nn.LayerNorm(output_dim)
 
     def forward(self, tokens: Tensor) -> Tensor:
-        # tokens: [batch, token_count, input_dim]
-        values = self.input_proj(tokens)
-        queries = self.queries.unsqueeze(0).expand(tokens.shape[0], -1, -1)
+        values = self.input_proj(tokens) # values: [batch, token_count, output_dim]
+        queries = self.queries.unsqueeze(0).expand(tokens.shape[0], -1, -1) # [1->batch, num_queries, output_dim]
         pooled, _ = self.attention(queries, values, values, need_weights=False)
         return self.norm(queries + pooled)
 
@@ -111,28 +110,22 @@ class InterventionPredictor(nn.Module):
         if frames == 0 or layers == 0:
             raise ValueError("The temporal window and selected layer list cannot be empty")
 
-        image = image_tokens.reshape(batch * frames * layers, *image_tokens.shape[3:])
-        image = self.image_pool(image)
+        image = image_tokens.reshape(batch * frames * layers, *image_tokens.shape[3:]) # [batch * frames * layers,num_token, dim]
+        image = self.image_pool(image) # [batch * frames * layers, num_image_queries, outdim]
 
-        prompt = prompt_tokens.reshape(batch * frames * layers, *prompt_tokens.shape[3:])
-        prompt = self.prompt_pool(prompt)
+        prompt = prompt_tokens.reshape(batch * frames * layers, *prompt_tokens.shape[3:]) # [batch * frames * layers,num_token, dim]
+        prompt = self.prompt_pool(prompt) # [batch * frames * layers, num_prompt_queries, outdim]
 
         # Image and prompt tokens are independently compressed at each layer.
         # The resulting tokens are then fused across the selected VLM layers.
-        per_layer = torch.cat((image, prompt), dim=1)
+        per_layer = torch.cat((image, prompt), dim=1)# [batch * frames * layers, num_prompt_queries+num_image_queries, outdim]
         per_frame = self.layer_pool(per_layer.reshape(batch * frames, layers * per_layer.shape[1], -1))
-
+        # [batch * frames, num_layer_queries, outdim]
         temporal = per_frame.reshape(batch, frames * self.config.num_layer_queries, -1)
+        # [batch, num_layer_queries * frames, outdim]
         if temporal.shape[1] > self.temporal_pos.shape[1]:
             raise ValueError("The frame window is too large for the temporal positional embedding")
         temporal = temporal + self.temporal_pos[:, : temporal.shape[1]]
-
-        # Explicitly expose short-term change information to the temporal encoder.
-        temporal = temporal.reshape(batch, frames, self.config.num_layer_queries, -1)
-        delta = torch.zeros_like(temporal)
-        if frames > 1:
-            delta[:, 1:] = temporal[:, 1:] - temporal[:, :-1]
-        temporal = (temporal + delta).reshape(batch, -1, temporal.shape[-1])
         temporal = self.temporal_norm(self.temporal_encoder(temporal))
         temporal = temporal.reshape(batch, frames, self.config.num_layer_queries, -1)
 
@@ -141,3 +134,4 @@ class InterventionPredictor(nn.Module):
         long = temporal.mean(dim=(1, 2))
         logits = self.output_head(torch.cat((latest, short, long), dim=-1)).squeeze(-1)
         return {"logits": logits, "probability": torch.sigmoid(logits)}
+    
