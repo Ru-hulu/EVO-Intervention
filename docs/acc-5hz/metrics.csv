@@ -1,0 +1,5 @@
+episode_id,source,previous_extreme,report,acc_p95,acc_median,acc_max,duration_s,valid_samples
+hf_success/episode_000010,hf_success,lowest,reports/hf_success/episode_000010,0.211395443595045,0.14402776476190987,0.2529940711847995,83.33333333333333,416
+hf_success/episode_000013,hf_success,highest,reports/hf_success/episode_000013,0.24193472267163801,0.15245156221502104,0.3415572673054859,86.73333333333333,433
+local_failure/episode_000002,local_failure,lowest,reports/local_failure/episode_000002,0.3545802649963833,0.2682309108188242,0.4091348082058639,300.6333333333333,1503
+local_failure/episode_000003,local_failure,highest,reports/local_failure/episode_000003,0.47193769447019923,0.2592648614296418,0.9337464222626227,301.6333333333333,1508

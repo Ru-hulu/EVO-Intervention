@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACC 片段查看器</title>
+  <meta name="description" content="选取机器人轨迹片段，同步查看放大的 ACC 曲线。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d766b'/%3E%3Cpath d='M5 19h6l3-10 5 17 3-9h5' fill='none' stroke='white' stroke-width='2.5'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">∿</span><h1>ACC 片段查看器</h1></div>
+  <span class="dataset-note">正在读取轨迹数据</span>
+  <span class="model-note">离线重放</span>
+</header>
+<main>
+  <div class="toolbar">
+    <label class="trajectory-label">选择轨迹或对比<select id="trajectory" aria-label="选择轨迹或对比"></select></label>
+    <div class="range-form">
+      <label>起点 <span>秒</span><input id="start" type="number" min="0" step="0.1" value="0" aria-label="片段起点秒数"></label>
+      <span class="range-dash">—</span>
+      <label>终点 <span>秒</span><input id="end" type="number" min="0" step="0.1" value="20" aria-label="片段终点秒数"></label>
+      <button id="apply" class="secondary">应用区间</button>
+    </div>
+    <div class="range-actions"><button id="zoom-in" title="围绕当前片段中点放大">放大 ×2</button><button id="zoom-out" title="扩大时间范围">缩小</button><button id="full">全程</button></div>
+  </div>
+  <p id="error" role="alert" hidden></p>
+  <section class="overview-panel" aria-label="全程概览与时间选择">
+    <div class="overview-heading"><span>全程概览 <small>拖动选择片段，或拖动两端调整</small></span><strong id="range-caption"></strong></div>
+    <svg id="overview" aria-label="拖动选择播放时间区间" role="img"></svg>
+  </section>
+  <div class="workspace">
+    <section class="video-panel">
+      <div class="panel-heading"><h2>机器人画面</h2><label class="compact-label">视角<select id="camera" aria-label="相机视角"><option value="base">环境相机</option><option value="left">左腕相机</option><option value="right">右腕相机</option><option value="all">三相机</option></select></label></div>
+      <div id="videos" class="videos"></div>
+      <div class="transport">
+        <button id="play" class="primary" aria-label="播放片段">▶ 播放片段</button>
+        <button id="restart" title="从片段起点重新播放">↺ 重播</button>
+        <label class="check-label"><input id="loop" type="checkbox" checked>循环</label>
+        <label class="compact-label rate-label"><select id="rate" aria-label="播放速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+      </div>
+      <div class="seek-heading"><span id="play-status" aria-live="polite">准备播放</span><span id="current-time">00:00.0</span></div>
+      <input id="seek" class="seek" type="range" min="0" max="20" value="0" step="0.01" aria-label="片段播放进度">
+      <div class="seek-footer"><span id="clip-start">00:00.0</span><span id="clip-progress">片段 0.0 / 20.0 秒</span><span id="clip-end">00:20.0</span></div>
+    </section>
+    <section class="charts-panel">
+      <div class="panel-heading"><h2>片段 ACC</h2><select id="metric" aria-label="ACC指标"><option value="ema">平滑 ACC（EMA）</option><option value="raw">原始 ACC</option></select></div>
+      <div class="chart-options"><span class="legend"><i class="left-dot"></i>左臂 <i class="right-dot"></i>右臂</span><label class="check-label"><input id="zero" type="checkbox">纵轴从 0 开始</label><span id="scale-note">片段内自动缩放</span></div>
+      <div id="charts"></div>
+      <p class="chart-hint">点击曲线定位 · 黑色游标为当前播放时刻 · 对比时两条轨迹使用相同纵轴</p>
+    </section>
+  </div>
+  <footer><span id="sampling-note"></span><span id="parameter-note"></span></footer>
+  <details class="method-note"><summary>数据与排名说明</summary><p id="method-explanation"></p></details>
+
+  <details class="method-note downloads" id="downloads">
+    <summary>下载视频、评分数据与脚本</summary>
+    <p>视频保留原始导出的分辨率与 30 FPS。两个上下对比视频跨成功组、失败组使用同一 Y 轴范围。</p>
+    <div class="download-links">
+      <a href="media/success_comparison.mp4" download>成功组上下对比 · 25.6 MB</a>
+      <a href="media/failure_comparison.mp4" download>失败组上下对比 · 84.0 MB</a>
+      <a href="media/success_000010.mp4" download>示范 #000010</a>
+      <a href="media/success_000013.mp4" download>示范 #000013</a>
+      <a href="media/failure_000002.mp4" download>失败 #000002</a>
+      <a href="media/failure_000003.mp4" download>失败 #000003</a>
+      <a href="ACC实验阶段总结.md" download>实验总结与公式说明</a>
+    </div>
+    <p>脚本包附使用说明；视频单独下载。网页可选取片段回看，导出视频保持统一纵轴。ACC 为动作一致性分数，不是失败概率。本轮为 5 Hz 本地适配。</p>
+  </details>
+
+</main>
+</body>
+</html>

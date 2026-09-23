@@ -1,0 +1,69 @@
+{
+  "metric_mode": "acc",
+  "episode_id": "local_failure/episode_000002",
+  "fingerprint": "809aa0ff0c08704fff72c7f647a186d8b380e6091293f9610599790d21b5b9e7",
+  "provenance": {
+    "episode_index": 2,
+    "fps": 30,
+    "source_frames": 9019,
+    "sample_stride": 6,
+    "sample_count": null,
+    "camera_map": {
+      "base": "observation.images.right_environment_1",
+      "left_wrist": "observation.images.left_wrist",
+      "right_wrist": "observation.images.right_wrist"
+    },
+    "label": "failure",
+    "source_outcome_label": "failure",
+    "outcome_note": null,
+    "collector_policy_id": "pi05_piperx_full558_h100_r13_step50000",
+    "termination_reason": "operator_failure",
+    "preprocessing": "LeRobot pi05 resize_with_pad_torch, RGB [0,1], float32, 224x224; lossless packet-remux transport with decoded hash verification",
+    "source_origin": "Local autonomous rollouts, labeled failure",
+    "dataset_version": null
+  },
+  "feature_metadata": {
+    "checkpoint": "pi05_piperx_insert_copper_screw_bs64_15k_oss",
+    "dtype": "float32"
+  },
+  "acc_threshold": null,
+  "ema_alpha": 0.9,
+  "v_min_m": 0.01,
+  "observations": 1504,
+  "duration_s": 300.6333333333333,
+  "model_inference_s": 346.6170850299759,
+  "query_interval_s": 0.2,
+  "action_horizon": 50,
+  "executed_steps": 6,
+  "overlap_steps": 44,
+  "ema_initialization": "zero; first observation has no score",
+  "action_seed_rule": "20260922 + original frame_index",
+  "paper_adaptation": {
+    "source": "https://arxiv.org/html/2606.21386v1",
+    "confirmed_paper_real_world": {
+      "alpha": 0.9,
+      "v_min": 0.01,
+      "pi05_H": 20,
+      "Blocks_R": 10
+    },
+    "user_choice": "5 Hz local adaptation",
+    "native_H": 50,
+    "R": 6,
+    "overlap": 44,
+    "ACC_Hz": 5,
+    "video_FPS": 30,
+    "EMA_initialization": "zero, not specified in paper",
+    "differences": [
+      "Local Piper data and 15k checkpoint, not author checkpoint/tasks",
+      "Offline new action sampling, not logged runtime chunks",
+      "Bimanual extension: per-arm XYZ and max score",
+      "Single reproducible sampling seed; no confidence interval claim",
+      "No calibrated alarm threshold, no LLMD, no benchmark result claim"
+    ]
+  },
+  "evaluation_notes": "Offline counterfactual replay of recorded observations, RTC disabled. Predicted chunks, not logged runtime chunks. ACC is consistency, not task-success probability. Zero-initialized EMA; first observation has no ACC. No calibrated threshold.",
+  "valid_samples": 1503,
+  "acc_p95": 0.3545802649963833,
+  "acc_median": 0.2682309108188242,
+  "acc_max": 0.4091348082058639
+}

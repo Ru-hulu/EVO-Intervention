@@ -1,0 +1,32 @@
+{
+  "success_000010.mp4": {
+    "filename": "成功组示范_000010_ACC.mp4",
+    "size": 10803631,
+    "sha256": "dd8a639e96058dafa95f04b76990fcf1476f8c4865a6d4f43af838e896d434ec"
+  },
+  "success_000013.mp4": {
+    "filename": "成功组示范_000013_ACC.mp4",
+    "size": 11491773,
+    "sha256": "9b706f4facb347e304ad0404c4fa9c06f4ac4ae31b6f36d371b441503d4921d5"
+  },
+  "failure_000002.mp4": {
+    "filename": "失败组_000002_ACC.mp4",
+    "size": 38031991,
+    "sha256": "7a91dc5d5bb5cf6ff5fe6eec3be21348929949cc7e0a7851e099611f36fe4458"
+  },
+  "failure_000003.mp4": {
+    "filename": "失败组_000003_ACC.mp4",
+    "size": 46859354,
+    "sha256": "b55d45a60ce0423f154ee958d7e4f2944a2144a13f287873b5677ca6605e2d37"
+  },
+  "success_comparison.mp4": {
+    "filename": "ACC_成功组_5Hz_上下对比_统一Y轴.mp4",
+    "size": 26825046,
+    "sha256": "c3ed7686963d70c2eabfa1495a88128d0cbda4f2a4aad0b527be77de4fdcabf7"
+  },
+  "failure_comparison.mp4": {
+    "filename": "ACC_失败组_5Hz_上下对比_统一Y轴.mp4",
+    "size": 88129004,
+    "sha256": "a7e831a2369895f3e802a536fb457543b4c6c8c37b17984d1bf9746b3a4c9877"
+  }
+}
