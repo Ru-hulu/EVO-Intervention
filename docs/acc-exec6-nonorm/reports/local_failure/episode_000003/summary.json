@@ -1,0 +1,42 @@
+{
+  "metric": "execution_window_xyz_mae",
+  "unit": "mm",
+  "normalized": false,
+  "action_horizon": 50,
+  "query_stride": 6,
+  "comparison_steps": 6,
+  "previous_slice": [
+    6,
+    12
+  ],
+  "current_slice": [
+    0,
+    6
+  ],
+  "query_hz": 5.0,
+  "video_fps": 30,
+  "ema_alpha": 0.9,
+  "ema_initialization": 0,
+  "first_sample": "missing",
+  "coordinate_type": "absolute end-effector XYZ in meters, converted from model joint predictions by FK",
+  "distance": "mean absolute error over XYZ and time, not Euclidean norm",
+  "reference_prediction_sha256": "a962724d0e6b5a4b12843306b2406e8cf7de4fd03c1142c33d9d554b2a1cd2ab",
+  "reference_prediction_fingerprint": "809aa0ff0c08704fff72c7f647a186d8b380e6091293f9610599790d21b5b9e7",
+  "prediction_reuse": true,
+  "new_model_inference": false,
+  "terminal_window": "fixed predicted window; not an assertion that all future steps were actually executed",
+  "source_outcome_label": "failure",
+  "episode_id": "local_failure/episode_000003",
+  "group": "local_failure",
+  "duration_s": 301.6333333333333,
+  "valid_samples": 1508,
+  "ema_median_mm": 4.448904829592173,
+  "ema_p95_mm": 11.67728409553096,
+  "ema_max_mm": 17.43712139406659,
+  "raw_p95_mm": 15.045414057870692,
+  "raw_max_mm": 58.35975954929987,
+  "ema_peak_time_s": 196.60000610351562,
+  "ema_peak_arm": "left",
+  "full_window_ema_p95_mm": 18.594823140050547,
+  "original_normalized_ema_p95": 0.47193769447019923
+}

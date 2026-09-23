@@ -1,0 +1,72 @@
+{
+  "passed": true,
+  "synthetic_alignment_and_tail_invariance": true,
+  "all_source_scores_reproduced": true,
+  "total_valid_pairs": 3860,
+  "episodes": [
+    {
+      "episode_id": "hf_success/episode_000010",
+      "observations": 417,
+      "valid_pairs": 416,
+      "sha256": "9e227a22394232424e724590c90260c4b43d8004d7db27ae4a1a74fcdfc392f8",
+      "arms": {
+        "left": {
+          "new_formula_max_error_mm": 1.7763568394002505e-15,
+          "old_formula_max_error": 0.0
+        },
+        "right": {
+          "new_formula_max_error_mm": 1.7763568394002505e-15,
+          "old_formula_max_error": 0.0
+        }
+      }
+    },
+    {
+      "episode_id": "hf_success/episode_000013",
+      "observations": 434,
+      "valid_pairs": 433,
+      "sha256": "b6316a3c320ee6efffd539da0027fd5e422827f8bc53b94497a92b8c64c0f585",
+      "arms": {
+        "left": {
+          "new_formula_max_error_mm": 1.7763568394002505e-15,
+          "old_formula_max_error": 0.0
+        },
+        "right": {
+          "new_formula_max_error_mm": 1.7763568394002505e-15,
+          "old_formula_max_error": 0.0
+        }
+      }
+    },
+    {
+      "episode_id": "local_failure/episode_000002",
+      "observations": 1504,
+      "valid_pairs": 1503,
+      "sha256": "88a8ff01c26d55a13c92ccb7b48e15e15cb528bfd0165057b56ebf2aabf7fed7",
+      "arms": {
+        "left": {
+          "new_formula_max_error_mm": 1.7763568394002505e-15,
+          "old_formula_max_error": 0.0
+        },
+        "right": {
+          "new_formula_max_error_mm": 3.552713678800501e-15,
+          "old_formula_max_error": 0.0
+        }
+      }
+    },
+    {
+      "episode_id": "local_failure/episode_000003",
+      "observations": 1509,
+      "valid_pairs": 1508,
+      "sha256": "a962724d0e6b5a4b12843306b2406e8cf7de4fd03c1142c33d9d554b2a1cd2ab",
+      "arms": {
+        "left": {
+          "new_formula_max_error_mm": 7.105427357601002e-15,
+          "old_formula_max_error": 0.0
+        },
+        "right": {
+          "new_formula_max_error_mm": 7.105427357601002e-15,
+          "old_formula_max_error": 0.0
+        }
+      }
+    }
+  ]
+}

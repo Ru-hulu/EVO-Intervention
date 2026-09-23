@@ -1,0 +1,69 @@
+{
+  "method": "execution-window unnormalized ACC adaptation",
+  "units": "mm",
+  "stride": 6,
+  "window": 6,
+  "alpha": 0.9,
+  "episodes": [
+    {
+      "episode_id": "hf_success/episode_000010",
+      "group": "hf_success",
+      "duration_s": 83.33333333333333,
+      "valid_samples": 416,
+      "ema_median_mm": 3.9563864442014793,
+      "ema_p95_mm": 5.567090898849509,
+      "ema_max_mm": 6.463819854547444,
+      "raw_p95_mm": 9.782762680616644,
+      "raw_max_mm": 21.854489627811645,
+      "ema_peak_time_s": 5.0,
+      "ema_peak_arm": "left",
+      "full_window_ema_p95_mm": 6.716908531499613,
+      "original_normalized_ema_p95": 0.211395443595045
+    },
+    {
+      "episode_id": "hf_success/episode_000013",
+      "group": "hf_success",
+      "duration_s": 86.73333333333333,
+      "valid_samples": 433,
+      "ema_median_mm": 4.151424096407448,
+      "ema_p95_mm": 6.217620878338516,
+      "ema_max_mm": 7.459524740005567,
+      "raw_p95_mm": 10.501094328032599,
+      "raw_max_mm": 17.220256229241688,
+      "ema_peak_time_s": 41.79999923706055,
+      "ema_peak_arm": "right",
+      "full_window_ema_p95_mm": 8.268529555368804,
+      "original_normalized_ema_p95": 0.24193472267163801
+    },
+    {
+      "episode_id": "local_failure/episode_000002",
+      "group": "local_failure",
+      "duration_s": 300.6333333333333,
+      "valid_samples": 1503,
+      "ema_median_mm": 3.0298789370200163,
+      "ema_p95_mm": 6.5867385725951255,
+      "ema_max_mm": 10.315832668987678,
+      "raw_p95_mm": 7.585778211553888,
+      "raw_max_mm": 25.55861220591598,
+      "ema_peak_time_s": 4.800000190734863,
+      "ema_peak_arm": "left",
+      "full_window_ema_p95_mm": 9.188273687646547,
+      "original_normalized_ema_p95": 0.3545802649963833
+    },
+    {
+      "episode_id": "local_failure/episode_000003",
+      "group": "local_failure",
+      "duration_s": 301.6333333333333,
+      "valid_samples": 1508,
+      "ema_median_mm": 4.448904829592173,
+      "ema_p95_mm": 11.67728409553096,
+      "ema_max_mm": 17.43712139406659,
+      "raw_p95_mm": 15.045414057870692,
+      "raw_max_mm": 58.35975954929987,
+      "ema_peak_time_s": 196.60000610351562,
+      "ema_peak_arm": "left",
+      "full_window_ema_p95_mm": 18.594823140050547,
+      "original_normalized_ema_p95": 0.47193769447019923
+    }
+  ]
+}

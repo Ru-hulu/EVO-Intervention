@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACC · 执行6步 · 无归一化</title>
+  <meta name="description" content="选取机器人轨迹片段，同步查看放大的 ACC 曲线。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d766b'/%3E%3Cpath d='M5 19h6l3-10 5 17 3-9h5' fill='none' stroke='white' stroke-width='2.5'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">∿</span><h1>ACC · 执行6步</h1></div>
+  <span class="dataset-note">正在读取轨迹数据</span>
+  <span class="model-note">离线重放</span>
+</header>
+<main>
+  <div class="toolbar">
+    <label class="trajectory-label">选择轨迹或对比<select id="trajectory" aria-label="选择轨迹或对比"></select></label>
+    <div class="range-form">
+      <label>起点 <span>秒</span><input id="start" type="number" min="0" step="0.1" value="0" aria-label="片段起点秒数"></label>
+      <span class="range-dash">—</span>
+      <label>终点 <span>秒</span><input id="end" type="number" min="0" step="0.1" value="20" aria-label="片段终点秒数"></label>
+      <button id="apply" class="secondary">应用区间</button>
+    </div>
+    <div class="range-actions"><button id="zoom-in" title="围绕当前片段中点放大">放大 ×2</button><button id="zoom-out" title="扩大时间范围">缩小</button><button id="full">全程</button></div>
+  </div>
+  <p id="error" role="alert" hidden></p>
+  <section class="overview-panel" aria-label="全程概览与时间选择">
+    <div class="overview-heading"><span>全程概览 <small>拖动选择片段，或拖动两端调整</small></span><strong id="range-caption"></strong></div>
+    <svg id="overview" aria-label="拖动选择播放时间区间" role="img"></svg>
+  </section>
+  <div class="workspace">
+    <section class="video-panel">
+      <div class="panel-heading"><h2>机器人画面</h2><label class="compact-label">视角<select id="camera" aria-label="相机视角"><option value="base">环境相机</option><option value="left">左腕相机</option><option value="right">右腕相机</option><option value="all">三相机</option></select></label></div>
+      <div id="videos" class="videos"></div>
+      <div class="transport">
+        <button id="play" class="primary" aria-label="播放片段">▶ 播放片段</button>
+        <button id="restart" title="从片段起点重新播放">↺ 重播</button>
+        <label class="check-label"><input id="loop" type="checkbox" checked>循环</label>
+        <label class="compact-label rate-label"><select id="rate" aria-label="播放速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+      </div>
+      <div class="seek-heading"><span id="play-status" aria-live="polite">准备播放</span><span id="current-time">00:00.0</span></div>
+      <input id="seek" class="seek" type="range" min="0" max="20" value="0" step="0.01" aria-label="片段播放进度">
+      <div class="seek-footer"><span id="clip-start">00:00.0</span><span id="clip-progress">片段 0.0 / 20.0 秒</span><span id="clip-end">00:20.0</span></div>
+    </section>
+    <section class="charts-panel">
+      <div class="panel-heading"><h2>动作差异（mm）</h2><select id="metric" aria-label="ACC指标"><option value="ema">平滑误差 EMA（mm）</option><option value="raw">原始误差（mm）</option></select></div>
+      <div class="chart-options"><span class="legend"><i class="left-dot"></i>左臂 <i class="right-dot"></i>右臂</span><label class="check-label"><input id="zero" type="checkbox" checked>纵轴从 0 开始</label><span id="scale-note">片段内自动缩放</span></div>
+      <div id="charts"></div>
+      <p class="chart-hint">点击曲线定位 · 黑色游标为当前播放时刻 · 同一区间下四条轨迹共用纵轴（mm）</p>
+    </section>
+  </div>
+  <footer><span id="sampling-note"></span><span id="parameter-note"></span></footer>
+  <details class="method-note"><summary>数据与排名说明</summary><p id="method-explanation"></p></details>
+
+  <details class="method-note downloads" open>
+    <summary>本次结果、曲线与计算说明</summary>
+    <p>仅比较 old[6:12] 与 new[0:6]，不除以速度或位置跨度；单位为毫米。相机画面复用原录像，右侧分数为本次重算结果。</p>
+    <div class="download-links"><a href="REPORT.md">公式与结果分析</a><a href="metrics.csv" download>汇总 CSV</a><a href="curves.png">四条完整曲线</a><a href="window_comparison.png">6 步与 44 步对比</a><a href="VERIFICATION.json">计算核验记录</a></div>
+  </details>
+
+</main>
+</body>
+</html>

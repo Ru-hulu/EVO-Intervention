@@ -1,0 +1,42 @@
+{
+  "metric": "execution_window_xyz_mae",
+  "unit": "mm",
+  "normalized": false,
+  "action_horizon": 50,
+  "query_stride": 6,
+  "comparison_steps": 6,
+  "previous_slice": [
+    6,
+    12
+  ],
+  "current_slice": [
+    0,
+    6
+  ],
+  "query_hz": 5.0,
+  "video_fps": 30,
+  "ema_alpha": 0.9,
+  "ema_initialization": 0,
+  "first_sample": "missing",
+  "coordinate_type": "absolute end-effector XYZ in meters, converted from model joint predictions by FK",
+  "distance": "mean absolute error over XYZ and time, not Euclidean norm",
+  "reference_prediction_sha256": "9e227a22394232424e724590c90260c4b43d8004d7db27ae4a1a74fcdfc392f8",
+  "reference_prediction_fingerprint": "809aa0ff0c08704fff72c7f647a186d8b380e6091293f9610599790d21b5b9e7",
+  "prediction_reuse": true,
+  "new_model_inference": false,
+  "terminal_window": "fixed predicted window; not an assertion that all future steps were actually executed",
+  "source_outcome_label": "unknown",
+  "episode_id": "hf_success/episode_000010",
+  "group": "hf_success",
+  "duration_s": 83.33333333333333,
+  "valid_samples": 416,
+  "ema_median_mm": 3.9563864442014793,
+  "ema_p95_mm": 5.567090898849509,
+  "ema_max_mm": 6.463819854547444,
+  "raw_p95_mm": 9.782762680616644,
+  "raw_max_mm": 21.854489627811645,
+  "ema_peak_time_s": 5.0,
+  "ema_peak_arm": "left",
+  "full_window_ema_p95_mm": 6.716908531499613,
+  "original_normalized_ema_p95": 0.211395443595045
+}
