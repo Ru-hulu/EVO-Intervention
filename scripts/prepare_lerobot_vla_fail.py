@@ -55,7 +55,17 @@ def video_frames(path, timestamps, fps):
 
 
 def prepare(
-    root, episode, output, *, stride=10, sample_count=None, base_camera="observation.images.right_environment_1"
+    root,
+    episode,
+    output,
+    *,
+    stride=10,
+    sample_count=None,
+    base_camera="observation.images.right_environment_1",
+    left_wrist_camera="observation.images.left_wrist",
+    right_wrist_camera="observation.images.right_wrist",
+    outcome_label=None,
+    outcome_note=None,
 ):
     root, output = Path(root), Path(output)
     info = json.loads((root / "meta/info.json").read_text())
@@ -84,8 +94,8 @@ def prepare(
     output.mkdir(parents=True, exist_ok=True)
     cameras = {
         "base": base_camera,
-        "left_wrist": "observation.images.left_wrist",
-        "right_wrist": "observation.images.right_wrist",
+        "left_wrist": left_wrist_camera,
+        "right_wrist": right_wrist_camera,
     }
     arrays = {}
     for name, key in cameras.items():
@@ -95,9 +105,15 @@ def prepare(
         )
         arrays[f"images_{name}"] = video_frames(path, times + meta[prefix + "from_timestamp"], info["fps"])
         print(f"episode={episode} camera={name} frames={len(indices)}", flush=True)
-    labels = {}
-    if meta.get("episode_success") in ("success", "failure"):
-        labels["success"] = np.array(meta["episode_success"] == "success")
+    source_label = meta.get("episode_success")
+    if isinstance(source_label, bool):
+        source_label = "success" if source_label else "failure"
+    if source_label not in ("success", "failure"):
+        source_label = "unknown"
+    if outcome_label is not None and (not outcome_note or source_label not in ("unknown", outcome_label)):
+        raise ValueError("An external outcome needs a source note and must not contradict the original label")
+    label = outcome_label or source_label
+    labels = {} if label == "unknown" else {"success": np.array(label == "success")}
     provenance = {
         "dataset_root": str(root),
         "episode_index": episode,
@@ -106,13 +122,16 @@ def prepare(
         "sample_stride": stride if sample_count is None else None,
         "sample_count": sample_count,
         "camera_map": cameras,
-        "label": meta.get("episode_success", "unknown"),
+        "label": label,
+        "source_outcome_label": source_label,
+        "outcome_note": outcome_note,
         "collector_policy_id": meta.get("collector_policy_id"),
         "termination_reason": meta.get("termination_reason"),
         "preprocessing": "LeRobot pi05 resize_with_pad_torch, RGB [0,1], float32, 224x224",
     }
+    temporary = destination.with_name(f".{destination.stem}.partial.npz")
     np.savez_compressed(
-        destination,
+        temporary,
         **arrays,
         state=state,
         frame_indices=frames[indices],
@@ -123,6 +142,7 @@ def prepare(
         provenance=np.array(json.dumps(provenance)),
         **labels,
     )
+    temporary.replace(destination)
     print(f"SAVED {destination}", flush=True)
 
 
@@ -134,6 +154,12 @@ def main():
     parser.add_argument("--stride", type=int, default=10)
     parser.add_argument("--sample-count", type=int)
     parser.add_argument("--base-camera", default="observation.images.right_environment_1")
+    parser.add_argument("--left-wrist-camera", default="observation.images.left_wrist")
+    parser.add_argument("--right-wrist-camera", default="observation.images.right_wrist")
+    parser.add_argument(
+        "--outcome-label", choices=["success", "failure"], help="Explicit reviewed outcome, if absent in source"
+    )
+    parser.add_argument("--outcome-note", help="Evidence/source of the external outcome; retained in provenance")
     args = parser.parse_args()
     torch.set_num_threads(4)
     for episode in args.episodes:
@@ -144,6 +170,10 @@ def main():
             stride=args.stride,
             sample_count=args.sample_count,
             base_camera=args.base_camera,
+            left_wrist_camera=args.left_wrist_camera,
+            right_wrist_camera=args.right_wrist_camera,
+            outcome_label=args.outcome_label,
+            outcome_note=args.outcome_note,
         )
 
 

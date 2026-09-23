@@ -78,7 +78,8 @@ def load_inputs(report, dataset=None):
     return summary, rows, times, fps, count, cameras
 
 
-def background_assets(folder, summary, rows, times, duration, font_path, fps):
+def background_assets(folder, summary, rows, times, duration, font_path, fps, axis_limits=None, title=None):
+    acc_only = summary.get("metric_mode") == "acc"
     background = Image.new("RGB", (WIDTH, HEIGHT), BG)
     draw = ImageDraw.Draw(background)
 
@@ -86,27 +87,39 @@ def background_assets(folder, summary, rows, times, duration, font_path, fps):
         draw.text(xy, text, font=ImageFont.truetype(str(font_path), size), fill=fill)
 
     name = summary["episode_id"].rsplit("/", 1)[-1]
-    label((24, 15), f"{name}  ·  LLMD / ACC 同步回放", 35)
+    metric_title = "ACC" if acc_only else "LLMD / ACC"
+    label((24, 15), f"{title or name}  ·  {metric_title} 同步回放", 35)
     model = Path(summary["feature_metadata"]["checkpoint"]).name
     outcome = summary["provenance"].get("label", "unknown")
-    outcome = {"failure": "失败", "success": "成功"}.get(outcome, "未知")
+    outcome = {"failure": "失败", "success": "成功", "demonstration": "训练示范（无原生结果标签）"}.get(outcome, "未知")
     label((25, 67), f"评估模型：{model}  |  记录结果：{outcome}", 21, MUTED)
     for box in [(24, 134, 984, 674), (24, 720, 494, 990), (514, 720, 984, 990)]:
         draw.rounded_rectangle(box, radius=12, fill=PANEL)
     label((24, 100), "环境相机", 23)
     label((24, 684), "左腕相机", 23)
     label((514, 684), "右腕相机", 23)
-    for x, title, color in zip(
-        [1020, 1314, 1608], ["LLMD 平方距离", "左臂 ACC · EMA", "右臂 ACC · EMA"], COLORS, strict=True
+    for x, card_title, color in zip(
+        [1020, 1314, 1608],
+        ["双臂最大 ACC" if acc_only else "LLMD 平方距离", "左臂 ACC · EMA", "右臂 ACC · EMA"],
+        COLORS,
+        strict=True,
     ):
         draw.rounded_rectangle((x, 119, x + 276, 232), radius=12, fill=PANEL)
-        label((x + 15, 126), title, 23, color)
+        label((x + 15, 126), card_title, 23, color)
     label((24, 1023), f"原始视频 {fps:g} FPS · 分数按采样时刻更新并保持 · 时间线连续移动", 22, MUTED)
     threshold_note = (
-        "阈值未校准" if summary["llmd_threshold"] is None or summary["acc_threshold"] is None else "已有校准阈值"
+        "阈值未校准"
+        if summary["acc_threshold"] is None or (not acc_only and summary["llmd_threshold"] is None)
+        else "已有校准阈值"
     )
     label((1020, 985), f"离线回放 · {threshold_note} · 高分不等于已确认失败", 23, "#f5cf83")
-    label((1020, 1023), f"LLMD 参考：{summary['reference_samples']} 个观测；当前仅作探索性查看", 21, MUTED)
+    scale_note = "对比视频纵轴一致" if axis_limits else "本视频自动纵轴"
+    footer = (
+        f"ACC：α={summary['ema_alpha']:g}，v_min={summary['v_min_m']:g} m"
+        if acc_only
+        else f"LLMD 参考：{summary['reference_samples']} 个观测"
+    )
+    label((1020, 1023), f"{footer}；{scale_note}", 21, MUTED)
 
     chart_width, chart_height = 900, 685
     chart_x, chart_y = 1008, 289
@@ -115,13 +128,19 @@ def background_assets(folder, summary, rows, times, duration, font_path, fps):
     axes = fig.subplots(3, 1, sharex=True)
     fig.subplots_adjust(left=0.12, right=0.975, bottom=0.078, top=0.94, hspace=0.48)
     series = [
-        [("llmd", COLORS[0], "LLMD")],
+        [("acc_raw_left", COLORS[1], "Left"), ("acc_raw_right", COLORS[2], "Right")]
+        if acc_only
+        else [("llmd", COLORS[0], "LLMD")],
         [("acc_left", COLORS[1], "Left"), ("acc_right", COLORS[2], "Right")],
         [("mae_mm_left", COLORS[1], "Left"), ("mae_mm_right", COLORS[2], "Right")],
     ]
-    for ax, title, fields in zip(
+    for ax, plot_title, fields in zip(
         axes,
-        ["LLMD: max token squared distance", "ACC: smoothed inconsistency", "Overlap XYZ error (mm)"],
+        [
+            "ACC: raw inconsistency" if acc_only else "LLMD: max token squared distance",
+            "ACC: smoothed inconsistency",
+            "Overlap XYZ error (mm)",
+        ],
         series,
         strict=True,
     ):
@@ -129,7 +148,7 @@ def background_assets(folder, summary, rows, times, duration, font_path, fps):
         for field, color, legend in fields:
             values = [float(row[field]) if row[field] else np.nan for row in rows]
             ax.plot(times, values, color=color, linewidth=1.5, label=legend)
-        ax.set_title(title, loc="left", color=TEXT, fontsize=12, pad=10)
+        ax.set_title(plot_title, loc="left", color=TEXT, fontsize=12, pad=10)
         ax.set_xlim(0, duration)
         ax.set_ylim(bottom=0)
         ax.grid(color="#304259", alpha=0.5)
@@ -140,6 +159,10 @@ def background_assets(folder, summary, rows, times, duration, font_path, fps):
             ax.legend(loc="upper left", frameon=False, labelcolor=TEXT, ncol=2, fontsize=10)
     axes[-1].set_xlabel("Recorded episode time (s)", color=MUTED, fontsize=11)
     canvas.draw()
+    if axis_limits:
+        for ax, key in zip(axes, ["acc_raw" if acc_only else "llmd", "acc", "mae_mm"], strict=True):
+            ax.set_ylim(0, axis_limits[key])
+        canvas.draw()
     background.paste(Image.fromarray(np.asarray(canvas.buffer_rgba())).convert("RGB"), (chart_x, chart_y))
     background.save(folder / "background.png")
     cursor = Image.new("RGBA", (4, chart_height), (0, 0, 0, 0))
@@ -157,7 +180,7 @@ def ass_time(seconds):
     return f"{ticks // 360000}:{ticks // 6000 % 60:02}:{ticks // 100 % 60:02}.{ticks % 100:02}"
 
 
-def subtitle_assets(folder, rows, times, duration, font_family):
+def subtitle_assets(folder, rows, times, duration, font_family, *, acc_only=False):
     lines = [
         "[Script Info]",
         "ScriptType: v4.00+",
@@ -182,7 +205,9 @@ def subtitle_assets(folder, rows, times, duration, font_family):
         if start >= duration:
             break
         end = min(duration, times[index + 1] if index + 1 < len(times) else duration)
-        event(start, end, 1035, 163, f"{float(row['llmd']):,.0f}", color="FFB775")
+        key = "acc_max" if acc_only else "llmd"
+        number = (f"{float(row[key]):.3f}" if acc_only else f"{float(row[key]):,.0f}") if row[key] else "--"
+        event(start, end, 1035, 163, number, color="FFB775")
         for x, key, color in [(1329, "acc_left", "AED554"), (1623, "acc_right", "6BB7FF")]:
             event(start, end, x, 163, f"{float(row[key]):.3f}" if row[key] else "--", color=color)
         event(
@@ -199,7 +224,17 @@ def subtitle_assets(folder, rows, times, duration, font_family):
     (folder / "values.ass").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def render(report, output, *, dataset=None, font_path=None, font_family="Noto Sans CJK SC", limit_seconds=None):
+def render(
+    report,
+    output,
+    *,
+    dataset=None,
+    font_path=None,
+    font_family="Noto Sans CJK SC",
+    limit_seconds=None,
+    axis_limits_path=None,
+    title=None,
+):
     report, output = Path(report).resolve(), Path(output).resolve()
     if output.exists():
         raise FileExistsError(output)
@@ -210,6 +245,19 @@ def render(report, output, *, dataset=None, font_path=None, font_family="Noto Sa
     if not font_path.is_file():
         raise FileNotFoundError("Pass --font pointing to a local Chinese font")
     summary, rows, times, fps, source_count, cameras = load_inputs(report, dataset)
+    acc_only = summary.get("metric_mode") == "acc"
+    axis_limits = None
+    if axis_limits_path:
+        axis_limits = json.loads(Path(axis_limits_path).read_text(encoding="utf-8"))
+        for key, fields in {
+            **({"acc_raw": ["acc_raw_left", "acc_raw_right"]} if acc_only else {"llmd": ["llmd"]}),
+            "acc": ["acc_left", "acc_right"],
+            "mae_mm": ["mae_mm_left", "mae_mm_right"],
+        }.items():
+            maximum = float(axis_limits[key])
+            values = [float(row[field]) for row in rows for field in fields if row[field]]
+            if not np.isfinite(maximum) or maximum <= 0 or max(values, default=0) > maximum:
+                raise ValueError(f"Invalid shared axis limit or clipped data: {key}")
     count = source_count if limit_seconds is None else min(source_count, round(limit_seconds * fps))
     if count < 1:
         raise ValueError("Video must contain at least one frame")
@@ -217,8 +265,10 @@ def render(report, output, *, dataset=None, font_path=None, font_family="Noto Sa
     output.parent.mkdir(parents=True, exist_ok=True)
     folder = output.parent / (output.stem + "_assets")
     folder.mkdir(exist_ok=True)
-    x0, plot_width, chart_y = background_assets(folder, summary, rows, times, source_count / fps, font_path, fps)
-    subtitle_assets(folder, rows, times, duration, font_family)
+    x0, plot_width, chart_y = background_assets(
+        folder, summary, rows, times, source_count / fps, font_path, fps, axis_limits, title
+    )
+    subtitle_assets(folder, rows, times, duration, font_family, acc_only=acc_only)
     command = [
         "ffmpeg",
         "-hide_banner",
@@ -298,6 +348,8 @@ def render(report, output, *, dataset=None, font_path=None, font_family="Noto Sa
         "score_display": "causal sample-and-hold; no interpolation",
         "model": summary["feature_metadata"]["checkpoint"],
         "source_provenance": summary["provenance"],
+        "axis_limits": axis_limits,
+        "display_title": title,
         "ffprobe": probe,
     }
     output.with_suffix(".json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -312,6 +364,8 @@ def main():
     parser.add_argument("--font", help="Path to a Chinese font; Linux Noto CJK is the default")
     parser.add_argument("--font-family", default="Noto Sans CJK SC")
     parser.add_argument("--limit-seconds", type=float, help="Short rendering check; omit for the complete episode")
+    parser.add_argument("--axis-limits", help="JSON with llmd/acc/mae_mm upper bounds shared across comparison videos")
+    parser.add_argument("--title", help="Display label; does not change the source episode identity")
     args = parser.parse_args()
     render(
         args.report,
@@ -320,6 +374,8 @@ def main():
         font_path=args.font,
         font_family=args.font_family,
         limit_seconds=args.limit_seconds,
+        axis_limits_path=args.axis_limits,
+        title=args.title,
     )
 
 

@@ -115,6 +115,7 @@ def main():
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--reference", nargs="*", type=Path, default=[])
     parser.add_argument("--episodes", nargs="*", type=Path, default=[])
+    parser.add_argument("--episode-group", choices=["failure", "success", "evaluation"], default="failure")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--tokenizer", type=Path, help="Local tokenizer path if not bundled with the checkpoint")
@@ -160,7 +161,8 @@ def main():
             deadline = time.monotonic() + args.wait_bundle_seconds
             while not path.exists() and time.monotonic() < deadline:
                 time.sleep(2)
-            destination = args.output / kind / path.name
+            group = "reference" if kind == "reference" else args.episode_group
+            destination = args.output / group / path.name
             if destination.exists():
                 raise FileExistsError(destination)
             with np.load(path, allow_pickle=False) as archive:
@@ -206,7 +208,7 @@ def main():
                 feature_rows.append(features)
                 latency.append(time.monotonic() - started)
                 if index % 50 == 0 or index == count - 1:
-                    print(f"{kind}/{path.name} query={index+1}/{count} seconds={np.mean(latency):.3f}", flush=True)
+                    print(f"{group}/{path.name} query={index+1}/{count} seconds={np.mean(latency):.3f}", flush=True)
             extra = {}
             if kind == "failure":
                 extra = {
