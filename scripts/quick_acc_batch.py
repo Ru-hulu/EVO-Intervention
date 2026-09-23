@@ -117,6 +117,7 @@ def score(plan, output):
         torch.cuda.empty_cache()
     atomic_json(output / "selection.json", choose_groups(statistics))
     atomic_json(output / "SCORING_COMPLETE.json", {"episodes": len(statistics), "statistics": statistics})
+    atomic_json(output / "score_status.json", {"phase": "complete", "completed": len(statistics), "total": len(records)})
 
 
 def render_remote(plan, output, peer):
