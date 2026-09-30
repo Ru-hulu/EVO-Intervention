@@ -36,15 +36,12 @@ Frameworks, picked by `framework.name` in the YAML:
 ## Setup
 
 ```bash
-conda create -n evo-intervention python=3.10 -y
-conda activate evo-intervention
-pip install -r requirements.txt
-pip install flash-attn==2.7.4.post1 causal_conv1d==1.5.0.post8 --no-build-isolation
-pip install debugpy opencv-python msgpack torchcodec
-pip install -e .
+export CUDA_HOME=/usr/local/cuda-12.8
+export PATH="$CUDA_HOME/bin:$PATH"
+uv sync
 ```
 
-The third `pip install` covers packages the code imports but `requirements.txt` does not list.
+The project is locked to Python 3.10, PyTorch 2.10.0 and the official CUDA 12.8 wheel index.
 
 ## First baseline run
 
