@@ -1,0 +1,65 @@
+# V-JEPA 2-AC world model training (frozen ViT-g encoder + action-conditioned predictor).
+# Upstream reference: configs/train/vitg16/droid-256px-8f.yaml at vjepa2 commit 204698b4.
+run_id: vjepa2_ac_vitg
+run_root_dir: playground/Checkpoints
+seed: 239
+
+world_model:
+  img_size: 256
+  patch_size: 16
+  tubelet_size: 2
+  num_frames: 64             # predictor causal-mask capacity = num_frames / tubelet_size = 32 latent steps
+  normalize_reps: true
+  allow_random_encoder: false  # tests only; training requires checkpoint.encoder_path
+  encoder:
+    arch: vit_giant_xformers
+    activation_checkpointing: false
+  predictor:                 # upstream AC predictor architecture (~300M)
+    embed_dim: 1024
+    depth: 24
+    num_heads: 16
+    action_dim: 7            # must equal contract latent_action_dim; upstream also uses it as the state width
+    activation_checkpointing: true
+  checkpoint:
+    encoder_path: null       # local vjepa2-ac-vitg.pt (or vitg.pt)
+    encoder_key: encoder     # "encoder" in the AC checkpoint, "target_encoder" in V-JEPA 2 checkpoints
+    predictor_path: null     # set to vjepa2-ac-vitg.pt to fine-tune the official AC predictor; null = random init
+                             # loading is strict: every other missing/unexpected/mismatched key is an error
+    predictor_key: predictor
+    predictor_reinit_keys: []  # predictor params allowed to stay freshly initialized, e.g. [action_encoder, state_encoder, extrinsics_encoder] (all sized by action_dim)
+
+contract:                    # fix once the dataset is confirmed; recorded with every checkpoint
+  actions_per_latent_step: 1 # control actions per latent step (= frame sampling stride)
+  action_reduce: sum         # sum | mean | last | concat
+  action_dim: 7
+  state_dim: 7
+
+data:
+  source: npz                # see dataloader/world_model_windows.py
+  root: playground/Datasets/world_model_npz
+  window_frames: 9           # >= rollout_steps + 1
+  min_frames: null           # null = full windows only
+  val_fraction: 0.05
+  batch_size: 8              # per device
+  num_workers: 8
+
+loss:
+  rollout_steps: 8           # sweep 8 / 6 / 4 / 2 once the training machine is fixed
+  loss_exp: 1.0
+  truncate_every: null       # truncated backprop: detach the fed-back history every N rollout steps; null = full graph
+  eval_state_transition: null  # hold | delta_pose: also report val error with deployment-like states
+
+trainer:
+  max_train_steps: 94500
+  warmup_steps: 4500
+  lr: 4.25e-4
+  start_lr: 7.5e-5
+  final_lr: 0.0
+  weight_decay: 0.04
+  betas: [0.9, 0.999]
+  max_grad_norm: 1.0
+  mixed_precision: bf16
+  log_interval: 10
+  eval_interval: 1000
+  eval_batches: 50
+  save_interval: 5000
