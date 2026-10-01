@@ -1,209 +1,121 @@
 # Copyright 2025 starVLA community. All rights reserved.
-# Licensed under the MIT License, Version 1.0 (the "License");
-# Implemented by [Shijie LIAN/ Huazhong University of Science & Technology] in [2026].
-# Design and Merged by [Jinhui YE / HKUST University] in [2026].
-
-from typing import Optional
+# Licensed under the MIT License; see LICENSE.
+# Original interface implemented by Shijie LIAN / Huazhong University of Science & Technology (2026).
+# Original design and merge by Jinhui YE / HKUST University (2026).
+"""上次状态的 JSON Prompt + 当前历史视觉表征 → 当前状态的 JSON 答案。"""
 
 import torch
-from evo_intervention.training.trainer_utils import initialize_overwatch
-from transformers import AutoProcessor
-from transformers.modeling_outputs import CausalLMOutputWithPast
-
-try:
-    from transformers import Qwen3_5ForConditionalGeneration
-except ImportError as import_error:
-    raise ImportError(
-        "Qwen3.5 model class is unavailable. Please install transformers >= 5.2.0 or check your transformers version."
-    ) from import_error
-
-logger = initialize_overwatch(__name__)
-
-IGNORE_INDEX = -100
-IMAGE_TOKEN_INDEX = 248056
-VIDEO_TOKEN_INDEX = 248057
-DEFAULT_IMAGE_TOKEN = "<image>"
-DEFAULT_VIDEO_TOKEN = "<video>"
-
-_ACTION_TOKEN_MIN = 248077  # how can we know this range? check how you add fast tokens into VLM
-_ACTION_TOKEN_MAX = (
-    248077 + 2047
-)  # here only for fast_tokenizer, see evo_intervention/model/modules/vlm/tools/add_qwen_special_tokens/README.md
+from torch import nn
+from torch.nn import functional as F
+from transformers import AutoTokenizer, Qwen3VLForConditionalGeneration
 
 
-import torch.nn as nn
-
-
-class _QWen3_5_VL_Interface(nn.Module):
-    """
-    This exists because of the diversity of VLMs, so we encapsulate the changes here.
-    Lightweight wrapper around Qwen3.5-VL (Qwen3_5ForConditionalGeneration).
-
-    Purpose:
-        - Unify interface with other VLM backends (CausalLM-like usage).
-        - Centralize preprocessing (tokenization + multimodal packing).
-        - Provide consistent forward / generate signatures.
-
-    """
-
-    def __init__(self, config: Optional[dict] = None, **kwargs):
-        """
-        Initialize the Qwen3.5-VL wrapper.
-        Following https://huggingface.co/Qwen/Qwen3.5-VL-4B-Instruct
-
-        """
+class QwenProgressModel(nn.Module):
+    def __init__(self, model_path, feature_dim, dtype=torch.bfloat16, freeze_backbone=False):
         super().__init__()
-
-        qwenvl_config = config.framework.get("qwenvl", {})
-        model_id = qwenvl_config.get("base_vlm", "Qwen/Qwen3.5-2B")
-        attn_implementation = qwenvl_config.get("attn_implementation", "sdpa")
-
-        attn_implementation = "sdpa"
-        # Fallback to sdpa if flash_attention_2 is requested but flash_attn is not installed
-        if attn_implementation == "flash_attention_2":
-            try:
-                import flash_attn  # noqa: F401
-            except ImportError:
-                print("[WARNING] flash_attn not installed, falling back to sdpa")
-                attn_implementation = "sdpa"
-
-        model = Qwen3_5ForConditionalGeneration.from_pretrained(
-            model_id,
-            attn_implementation=attn_implementation,
-            torch_dtype=torch.bfloat16,
+        self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.qwen = Qwen3VLForConditionalGeneration.from_pretrained(
+            model_path, dtype=dtype, attn_implementation="sdpa"
         )
-        processor = AutoProcessor.from_pretrained(model_id)
-        processor.tokenizer.padding_side = "left"
+        # E_t 已经由上游编码好，本模块不重复运行原始视觉编码器。
+        self.qwen.model.visual.requires_grad_(False)
+        if freeze_backbone:
+            self.qwen.requires_grad_(False)
 
-        self.model = model
-        self.processor = processor
-        self.config = config
+        embedding = self.qwen.get_input_embeddings().weight
+        self.visual_adapter = nn.Sequential(
+            nn.LayerNorm(feature_dim),
+            nn.Linear(feature_dim, self.qwen.config.text_config.hidden_size),
+        ).to(device=embedding.device, dtype=embedding.dtype)
 
-        # alin qwen3.5 with qwen2.5
-        self.model.config.hidden_size = self.model.config.text_config.hidden_size
+    def build_inputs(self, messages, visual_features, visual_mask=None, responses=None):
+        """拼成 [有效视觉前缀, 聊天 Prompt, 答案]，仅监督答案及结束标记。
 
-        # only for fast base model
-        if "-Action" in model_id:
-            self._ACTION_TOKEN_MIN = _ACTION_TOKEN_MIN
-            self._ACTION_TOKEN_MAX = _ACTION_TOKEN_MAX
-
-    def forward(
-        self,
-        **kwargs,
-    ) -> CausalLMOutputWithPast:
+        messages 是批量 system/user 对话；responses 是对应的 JSON 答案字符串。
+        visual_features 为 [B,N,D]，visual_mask 为 [B,N]；推理时不传 responses。
+        融合后的 E_t 使用连续序列位置，不冒充原始图片的 patch 网格。
         """
-        Forward pass delegating to underlying Qwen3.5-VL backbone.
-        """
+        if responses is not None and len(responses) != len(messages):
+            raise ValueError("responses 和 messages 的样本数必须一致")
 
-        with torch.autocast("cuda", dtype=torch.bfloat16):
-            outputs = self.model(
-                **kwargs,
+        embedding = self.qwen.get_input_embeddings()
+        device = embedding.weight.device
+        visual = self.visual_adapter(visual_features.to(self.visual_adapter[1].weight))
+        # 统一设备和数据类型，再把视觉特征投影到 Qwen 的隐藏维度。
+        if visual_mask is None:
+            visual_mask = torch.ones(visual.shape[:2], device=device, dtype=torch.bool)
+        else:
+            visual_mask = visual_mask.to(device=device, dtype=torch.bool)
+
+        sequences, labels = [], []
+        for i, (chat, features, mask) in enumerate(zip(messages, visual, visual_mask, strict=True)):
+            prompt_ids = self.tokenizer.apply_chat_template(
+                chat, tokenize=True, return_dict=False, add_generation_prompt=True
+            ) # 转换为 token ID 序列
+            token_ids = prompt_ids
+            if responses is not None:
+                full_chat = chat + [{"role": "assistant", "content": responses[i]}]
+                token_ids = self.tokenizer.apply_chat_template(
+                    full_chat, tokenize=True, return_dict=False, add_generation_prompt=False
+                )
+                if token_ids[:len(prompt_ids)] != prompt_ids:
+                    raise ValueError("聊天模板的训练与推理前缀不一致，无法确定答案位置")
+                # 保留 assistant 的结束标记，不监督其后的模板换行。
+                stop = token_ids.index(self.tokenizer.eos_token_id, len(prompt_ids)) + 1
+                token_ids = token_ids[:stop]
+
+            token_ids = torch.tensor(token_ids, device=device, dtype=torch.long)
+            features = features[mask] # 图的token
+            sequences.append(torch.cat((features, embedding(token_ids)), dim=0))
+            # 视觉embedding 输入的prompt 输出的答案
+            if responses is not None:
+                text_labels = token_ids.clone() # 输入的prompt 输出的答案
+                text_labels[:len(prompt_ids)] = -100 # 把输入的prompt给掩码掉
+                visual_labels = token_ids.new_full((features.shape[0],), -100) # 把输入的image的token给掩码掉
+                labels.append(torch.cat((visual_labels, text_labels))) # 输入image token 被掩码 输入 prompt 被掩码，答案不掩码
+
+        # 统一左侧补齐，保证批量生成时最后一个位置始终是有效 Prompt。
+        max_length = max(sequence.shape[0] for sequence in sequences)
+        batch = {
+            "inputs_embeds": torch.stack([
+                F.pad(sequence, (0, 0, max_length - sequence.shape[0], 0))
+                for sequence in sequences
+            ]),
+            "attention_mask": torch.stack([
+                F.pad(torch.ones(sequence.shape[0], device=device, dtype=torch.long),
+                      (max_length - sequence.shape[0], 0))
+                for sequence in sequences
+            ]),
+        }
+        if responses is not None:
+            batch["labels"] = torch.stack([
+                F.pad(label, (max_length - label.shape[0], 0), value=-100)
+                for label in labels
+            ])
+        return batch
+
+    def forward(self, messages, visual_features, visual_mask=None, responses=None):
+        """训练：model(**inputs, **targets)，返回原生输出，通过 outputs.loss 取损失。"""
+        batch = self.build_inputs(messages, visual_features, visual_mask, responses)
+        # 即使冻结 Qwen，也要保留这段计算图，让梯度传回视觉适配层。
+        return self.qwen(**batch, use_cache=False, return_dict=True)
+
+    @torch.inference_mode()
+    def generate(self, messages, visual_features, visual_mask=None, max_new_tokens=128):
+        """推理：仅输入 Prompt 和视觉表征，返回生成的答案字符串列表。"""
+        was_training = self.training
+        self.eval()
+        try:
+            batch = self.build_inputs(messages, visual_features, visual_mask)
+            generated = self.qwen.generate(
+                **batch,
+                max_new_tokens=max_new_tokens,
+                do_sample=False,
+                pad_token_id=self.tokenizer.pad_token_id,
+                eos_token_id=self.tokenizer.eos_token_id,
+                use_cache=True,
             )
-
-        return outputs
-
-    def generate(
-        self,
-        **kwargs,
-    ):
-        """
-        High-level generation interface (auto-regressive decoding), optionally vision-conditioned.
-
-        Args:
-            **kwargs: fully follow raw model.generate() signature.
-        Returns:
-            GenerateOutput | Model-dependent generation return.
-        """
-        with torch.autocast("cuda", dtype=torch.float16):
-            generation_output = self.model.generate(
-                **kwargs,
-            )
-        return generation_output
-
-    def build_qwenvl_inputs(self, images, instructions, solutions=None, **kwargs):
-        """
-        Build model inputs from raw data (images + instructions + optional solutions).
-        Follow Oficial Qwen3.5-VL Instruct format: https://huggingface.co/Qwen/Qwen3.5-VL-4B-Instruct
-        """
-
-        # Create messages: one message per sample
-        messages = []
-        assert len(images) == len(instructions), "Images and instructions must have the same length"
-        for imgs, instruction in zip(images, instructions):
-            content = [{"type": "image", "image": img} for img in imgs]
-
-            if "CoT_prompt" in self.config.datasets.vla_data:  # If using a grounding prompt to task
-                CoT_prompt = self.config.datasets.vla_data.get("CoT_prompt", "")
-                prompt = CoT_prompt.replace("{instruction}", instruction)
-            else:
-                prompt = instruction
-
-            content.append({"type": "text", "text": prompt})
-            msg = [{"role": "user", "content": content}]
-
-            if solutions is not None:
-                solution = solutions[len(messages)]
-                msg.append({"role": "assistant", "content": [{"type": "text", "text": solution}]})
-            messages.append(msg)
-
-        # Preparation for inference
-
-        batch_inputs = self.processor.apply_chat_template(
-            messages, tokenize=True, padding=True, add_generation_prompt=True, return_dict=True, return_tensors="pt"
-        )
-
-        # if solutions, mask out the solution tokens in labels
-        if solutions is not None:  #  here only for fast_tokenizer now.
-            action_token_min = _ACTION_TOKEN_MIN  # how can we know this range? --> we has other way for this, but is slower see qwenhelix branch
-            action_token_max = _ACTION_TOKEN_MAX  # here only for fast_tokenizer, see evo_intervention/model/modules/vlm/tools/add_qwen_special_tokens/README.md
-            labels = batch_inputs["input_ids"].clone()
-            # For each sequence in the batch, find the first occurrence of an action token.
-            for i in range(labels.size(0)):
-                seq = labels[i]
-                # Create a mask for tokens within the action token range.
-                mask_seq = (seq >= action_token_min) & (seq <= action_token_max)
-                nonzero_indices = torch.nonzero(mask_seq, as_tuple=False)
-                if nonzero_indices.numel() > 0:
-                    first_action_index = nonzero_indices[0].item()
-                    # Mask out all tokens before the first action token.
-                    seq[:first_action_index] = IGNORE_INDEX
-                else:
-                    # If no action token is found, mask the entire sequence.
-                    seq[:] = IGNORE_INDEX
-                    logger.warning(
-                        "No action token found in sequence; please check action-tokenized tokenizer in "
-                        "evo_intervention/model/modules/vlm/tools/add_qwen_special_tokens/README.md"
-                    )
-
-            labels[labels == self.processor.tokenizer.pad_token_id] = -100  ## mask out pad tokens as well
-            batch_inputs["labels"] = labels
-
-        return batch_inputs.to(self.model.device)
-
-
-if __name__ == "__main__":
-    import argparse
-    import os
-
-    from omegaconf import OmegaConf
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config_yaml",
-        type=str,
-        default="evo_intervention/config/training/oxe.yaml",
-        help="Path to YAML config",
-    )
-    args, clipargs = parser.parse_known_args()
-
-    if os.getenv("DEBUGPY_ENABLE", "0") == "1":
-        import debugpy
-        debugpy.listen(("0.0.0.0", 10092))
-        print("Rank 0 waiting for debugger attach on port 10092...")
-        debugpy.wait_for_client()
-
-    cfg = OmegaConf.load(args.config_yaml)
-
-    cfg.framework.qwenvl.base_vlm = "./playground/Pretrained_models/Qwen3.5-2B"
-    qwen_vl = _QWen3_5_VL_Interface(cfg)
-    pass
+            # 只传 inputs_embeds 时，返回的 token ID 序列不含输入前缀。
+            return self.tokenizer.batch_decode(generated, skip_special_tokens=True)
+        finally:
+            self.train(was_training)
