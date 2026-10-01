@@ -1,0 +1,175 @@
+[
+  {
+    "file": "file-001",
+    "episode": 5,
+    "start_frame": 2580,
+    "end_frame": 3653,
+    "frame_count": 1074,
+    "final_scaled": 647.8371400000002,
+    "maximum": 1.0,
+    "target_contributions": {
+      "1": 156.119144,
+      "2": 195.920472,
+      "3": 89.796713,
+      "4": 84.444303,
+      "5": 121.556508
+    },
+    "task_weights": {
+      "1": 0.24098517105703443,
+      "2": 0.3024224143740816,
+      "3": 0.13861001084315722,
+      "4": 0.1303480424107824,
+      "5": 0.187634361314944
+    },
+    "events": [
+      {
+        "frame": 3228,
+        "reset_ids": [
+          "2",
+          "3",
+          "4"
+        ],
+        "episode_seconds": 21.6,
+        "source_seconds": 107.6,
+        "before": 0.812365638685056,
+        "after": 0.24310308606264863,
+        "before_scaled": 526.2806320000002,
+        "after_scaled": 157.4912080000002,
+        "removed_scaled": 370.161488
+      }
+    ],
+    "stages": [
+      {
+        "nowid": "1",
+        "start_frame": 2580,
+        "end_frame": 2711,
+        "delta_sum": 156.119144
+      },
+      {
+        "nowid": "2",
+        "start_frame": 2712,
+        "end_frame": 2981,
+        "delta_sum": 300.554855
+      },
+      {
+        "nowid": "3",
+        "start_frame": 2982,
+        "end_frame": 3083,
+        "delta_sum": 129.428898
+      },
+      {
+        "nowid": "4",
+        "start_frame": 3084,
+        "end_frame": 3227,
+        "delta_sum": 142.178603
+      },
+      {
+        "nowid": "2",
+        "start_frame": 3228,
+        "end_frame": 3401,
+        "delta_sum": 195.920472
+      },
+      {
+        "nowid": "3",
+        "start_frame": 3402,
+        "end_frame": 3479,
+        "delta_sum": 89.796713
+      },
+      {
+        "nowid": "4",
+        "start_frame": 3480,
+        "end_frame": 3563,
+        "delta_sum": 84.444303
+      },
+      {
+        "nowid": "5",
+        "start_frame": 3564,
+        "end_frame": 3653,
+        "delta_sum": 121.556508
+      }
+    ]
+  },
+  {
+    "file": "file-005",
+    "episode": 4,
+    "start_frame": 1512,
+    "end_frame": 2507,
+    "frame_count": 996,
+    "final_scaled": 563.6727279999997,
+    "maximum": 1.0,
+    "target_contributions": {
+      "2": 167.558246,
+      "1": 128.43574,
+      "3": 105.933685,
+      "4": 51.796552,
+      "5": 109.948505
+    },
+    "task_weights": {
+      "2": 0.2972615804822122,
+      "1": 0.22785516066337005,
+      "3": 0.18793473541973466,
+      "4": 0.09189117980531432,
+      "5": 0.19505734362936938
+    },
+    "events": [
+      {
+        "frame": 2094,
+        "reset_ids": [
+          "2",
+          "3"
+        ],
+        "episode_seconds": 19.4,
+        "source_seconds": 69.8,
+        "before": 0.713051476565317,
+        "after": 0.23052071094700902,
+        "before_scaled": 401.92767100000003,
+        "after_scaled": 129.93823799999996,
+        "removed_scaled": 273.4919310000001
+      }
+    ],
+    "stages": [
+      {
+        "nowid": "2",
+        "start_frame": 1512,
+        "end_frame": 1781,
+        "delta_sum": 316.670211
+      },
+      {
+        "nowid": "1",
+        "start_frame": 1782,
+        "end_frame": 1919,
+        "delta_sum": 128.43574
+      },
+      {
+        "nowid": "3",
+        "start_frame": 1920,
+        "end_frame": 2093,
+        "delta_sum": 187.072254
+      },
+      {
+        "nowid": "2",
+        "start_frame": 2094,
+        "end_frame": 2267,
+        "delta_sum": 167.558246
+      },
+      {
+        "nowid": "3",
+        "start_frame": 2268,
+        "end_frame": 2375,
+        "delta_sum": 105.933685
+      },
+      {
+        "nowid": "4",
+        "start_frame": 2376,
+        "end_frame": 2423,
+        "delta_sum": 51.796552
+      },
+      {
+        "nowid": "5",
+        "start_frame": 2424,
+        "end_frame": 2507,
+        "delta_sum": 109.948505
+      }
+    ]
+  }
+]

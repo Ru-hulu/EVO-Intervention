@@ -1,0 +1,49 @@
+[
+  {
+    "file": "file-001",
+    "episode": 5,
+    "start_frame": 2580,
+    "end_frame": 3653,
+    "frame_count": 1074,
+    "final_raw": 647.8371400000004,
+    "peak_raw": 728.2815000000004,
+    "events": [
+      {
+        "frame": 3228,
+        "reset_ids": [
+          "2",
+          "3",
+          "4"
+        ],
+        "removed_raw": 572.1623559999999,
+        "before_raw": 728.2815000000004,
+        "after_raw": 157.49120800000046,
+        "source_seconds": 107.6,
+        "episode_seconds": 21.6
+      }
+    ]
+  },
+  {
+    "file": "file-005",
+    "episode": 4,
+    "start_frame": 1512,
+    "end_frame": 2507,
+    "frame_count": 996,
+    "final_raw": 563.6727280000001,
+    "peak_raw": 632.1782050000003,
+    "events": [
+      {
+        "frame": 2094,
+        "reset_ids": [
+          "2",
+          "3"
+        ],
+        "removed_raw": 503.7424649999999,
+        "before_raw": 632.1782050000003,
+        "after_raw": 129.93823800000035,
+        "source_seconds": 69.8,
+        "episode_seconds": 19.4
+      }
+    ]
+  }
+]
