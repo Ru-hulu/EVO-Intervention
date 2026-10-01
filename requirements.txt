@@ -1,0 +1,7 @@
+# Dependencies are managed by pyproject.toml and locked in uv.lock.
+#
+# Create the complete project environment with:
+#   uv sync
+#
+# To export a pip-compatible snapshot when needed:
+#   uv export --no-dev --format requirements-txt -o requirements.lock.txt
