@@ -4,12 +4,12 @@ Unlike the VLA samples (one frame per camera), a window keeps the time axis: fra
 every `contract.actions_per_latent_step` control steps, the recorded state at each sampled
 frame, and the control actions between consecutive frames aggregated into latent actions.
 
-The training dataset is not fixed yet, so storage is behind `EpisodeSource`. `NpzEpisodeSource`
-is a minimal reference format; a LeRobot/real-robot source should implement the same methods.
+`NpzEpisodeSource` reads reference arrays; `LeRobotV3EpisodeSource` reads native robot recordings.
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Protocol, Sequence
 
@@ -55,6 +55,92 @@ class NpzEpisodeSource:
     def load_lowdim(self, episode, start, stop):
         data = np.load(self.files[episode])
         return data["states"][start:stop], data["actions"][start:stop]
+
+
+class LeRobotV3EpisodeSource:
+    """Native v3 parquet/video episodes; state and absolute actions normalized to [-1, 1]."""
+
+    def __init__(self, root: str | Path, camera_key: str):
+        import pandas as pd
+
+        self.root = Path(root).expanduser()
+        self.camera_key = camera_key
+        self.info = json.loads((self.root / "meta/info.json").read_text())
+        if self.info["codebase_version"] != "v3.0":
+            raise ValueError("LeRobotV3EpisodeSource requires codebase_version=v3.0")
+        if self.info["features"][camera_key]["dtype"] != "video":
+            raise ValueError(f"{camera_key} is not a video camera")
+        paths = sorted(self.root.glob("meta/episodes/*/*.parquet"))
+        if not paths:
+            raise FileNotFoundError(f"No episode metadata in {self.root}")
+        self.episodes = pd.concat([pd.read_parquet(path) for path in paths], ignore_index=True)
+        self.episodes = self.episodes.sort_values("episode_index").reset_index(drop=True)
+        if self.episodes["episode_index"].duplicated().any():
+            raise ValueError("Duplicate episode indices in LeRobot metadata")
+        stats = json.loads((self.root / "meta/stats.json").read_text())
+        self.lowdim_stats = {
+            key: (
+                np.asarray(stats[key]["min"], dtype=np.float32).reshape(-1),
+                np.asarray(stats[key]["max"], dtype=np.float32).reshape(-1),
+            )
+            for key in ("observation.state", "action")
+        }
+        self._cached_path = None
+        self._cached_file = None
+        self._cached_episode = None
+        self._cached_rows = None
+
+    def __len__(self):
+        return len(self.episodes)
+
+    def episode_length(self, episode):
+        return int(self.episodes.iloc[episode]["length"])
+
+    def _episode_rows(self, episode):
+        import pandas as pd
+
+        if episode == self._cached_episode:
+            return self._cached_rows
+        meta = self.episodes.iloc[episode]
+        path = self.root / self.info["data_path"].format(
+            chunk_index=int(meta["data/chunk_index"]), file_index=int(meta["data/file_index"])
+        )
+        if path != self._cached_path:
+            self._cached_file = pd.read_parquet(
+                path, columns=["episode_index", "frame_index", "timestamp", "observation.state", "action"]
+            )
+            self._cached_path = path
+        rows = self._cached_file[self._cached_file["episode_index"] == int(meta["episode_index"])]
+        rows = rows.sort_values("frame_index").reset_index(drop=True)
+        if not np.array_equal(rows["frame_index"].to_numpy(), np.arange(self.episode_length(episode))):
+            raise ValueError(f"Missing or misaligned frames in episode {meta['episode_index']}")
+        self._cached_episode, self._cached_rows = episode, rows
+        return rows
+
+    def load_frames(self, episode, indices):
+        from evo_intervention.dataloader.gr00t_lerobot.video import get_frames_by_timestamps
+
+        meta = self.episodes.iloc[episode]
+        prefix = f"videos/{self.camera_key}"
+        path = self.root / self.info["video_path"].format(
+            video_key=self.camera_key,
+            chunk_index=int(meta[f"{prefix}/chunk_index"]),
+            file_index=int(meta[f"{prefix}/file_index"]),
+        )
+        timestamps = self._episode_rows(episode)["timestamp"].to_numpy()[indices]
+        timestamps = timestamps + float(meta[f"{prefix}/from_timestamp"])
+        return get_frames_by_timestamps(str(path), timestamps, video_backend="pyav")
+
+    def load_lowdim(self, episode, start, stop):
+        rows = self._episode_rows(episode).iloc[start:stop]
+        normalized = []
+        for key in ("observation.state", "action"):
+            values = np.stack(rows[key]).astype(np.float32)
+            minimum, maximum = self.lowdim_stats[key]
+            span = maximum - minimum
+            values = np.where(span > 1e-6, 2 * (values - minimum) / np.maximum(span, 1e-6) - 1, 0)
+            normalized.append(values.astype(np.float32))
+        return tuple(normalized)
 
 
 def split_episodes(num_episodes: int, val_fraction: float, seed: int) -> tuple[list[int], list[int]]:

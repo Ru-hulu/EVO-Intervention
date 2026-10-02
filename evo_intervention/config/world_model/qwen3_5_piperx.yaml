@@ -1,0 +1,62 @@
+# Frozen Qwen3.5 vision tower + randomly initialized JEPA action-conditioned predictor.
+run_id: qwen35_piperx_jepa
+run_root_dir: /home/zhaobo/data/zhaobo/checkpoints/EVO-Intervention
+seed: 239
+
+world_model:
+  img_size: 256
+  patch_size: 32            # Native 16px patches, merged 2x2: 8x8 tokens per frame.
+  tubelet_size: 2
+  num_frames: 32           # Predictor capacity: 16 latent steps.
+  normalize_reps: true
+  allow_random_encoder: false
+  encoder:
+    type: qwen3_5
+    model_path: /home/zhaobo/data/zhaobo/models/Qwen3.5-2B
+  predictor:
+    embed_dim: 1024
+    depth: 24
+    num_heads: 16
+    action_dim: 14
+    activation_checkpointing: true
+  checkpoint:
+    predictor_path: null
+    predictor_key: predictor
+    predictor_reinit_keys: []
+
+contract:
+  actions_per_latent_step: 6  # Native 30 Hz recordings -> 5 Hz latent frames.
+  action_reduce: last        # Absolute joint targets must not be summed.
+  action_dim: 14
+  state_dim: 14
+
+data:
+  source: lerobot_v3
+  root: /home/zhaobo/data/zhaobo/datasets/piperx-bolt-intentional-drop-reinsert-22ep-20261001
+  camera_key: observation.images.right_environment_1
+  window_frames: 5
+  min_frames: null
+  val_fraction: 0.1
+  batch_size: 2
+  num_workers: 2
+
+loss:
+  rollout_steps: 4
+  loss_exp: 1.0
+  truncate_every: null
+  eval_state_transition: null
+
+trainer:
+  max_train_steps: 10000
+  warmup_steps: 500
+  lr: 4.25e-4
+  start_lr: 7.5e-5
+  final_lr: 0.0
+  weight_decay: 0.04
+  betas: [0.9, 0.999]
+  max_grad_norm: 1.0
+  mixed_precision: bf16
+  log_interval: 10
+  eval_interval: 500
+  eval_batches: 10
+  save_interval: 1000

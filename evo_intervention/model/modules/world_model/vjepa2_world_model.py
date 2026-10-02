@@ -1,4 +1,4 @@
-"""V-JEPA 2-AC world model: frozen JEPA encoder + action-conditioned latent predictor.
+"""JEPA world model: frozen V-JEPA or Qwen vision encoder + action-conditioned latent predictor.
 
 Latents are per-frame patch grids `[B, T, N, D]` (N = tokens_per_frame). Each frame is encoded
 on its own by repeating it `tubelet_size` times, as in upstream AC training and planning.
@@ -110,19 +110,31 @@ class VJEPA2ACWorldModel(nn.Module):
 
     @classmethod
     def from_config(cls, cfg) -> "VJEPA2ACWorldModel":
-        """Build from the `world_model` config section (see config/world_model/vjepa2_ac_vitg.yaml)."""
+        """Build the encoder and AC predictor from the `world_model` config section."""
         img_size = (cfg.img_size, cfg.img_size) if isinstance(cfg.img_size, int) else tuple(cfg.img_size)
         common = dict(
             img_size=img_size, patch_size=cfg.patch_size, num_frames=cfg.num_frames, tubelet_size=cfg.tubelet_size
         )
-        encoder = vision_transformer.__dict__[cfg.encoder.arch](
-            **common,
-            use_sdpa=True,
-            uniform_power=False,
-            use_rope=True,
-            use_activation_checkpointing=cfg.encoder.get("activation_checkpointing", False),
-            **cfg.encoder.get("kwargs", {}),
-        )
+        encoder_type = cfg.encoder.get("type", "vjepa2")
+        if encoder_type == "qwen3_5":
+            from .qwen3_5_encoder import Qwen3_5VisionEncoder
+
+            encoder = Qwen3_5VisionEncoder(cfg.encoder.model_path, img_size)
+            if (cfg.patch_size, cfg.tubelet_size) != (encoder.patch_size, encoder.tubelet_size):
+                raise ValueError(
+                    f"Qwen requires patch_size={encoder.patch_size}, tubelet_size={encoder.tubelet_size}"
+                )
+        elif encoder_type == "vjepa2":
+            encoder = vision_transformer.__dict__[cfg.encoder.arch](
+                **common,
+                use_sdpa=True,
+                uniform_power=False,
+                use_rope=True,
+                use_activation_checkpointing=cfg.encoder.get("activation_checkpointing", False),
+                **cfg.encoder.get("kwargs", {}),
+            )
+        else:
+            raise ValueError(f"Unknown encoder type '{encoder_type}'")
         predictor = vit_ac_predictor(
             **common,
             embed_dim=encoder.embed_dim,
@@ -141,6 +153,13 @@ class VJEPA2ACWorldModel(nn.Module):
 
         ckpt = cfg.get("checkpoint", {})
         model.load_reports = []
+        if encoder_type == "qwen3_5":
+            model.load_reports.append(
+                CheckpointReport(
+                    path=str(cfg.encoder.model_path), key="model.visual", loaded=encoder.loaded_tensors,
+                    missing=[], unexpected=[], shape_mismatch=[],
+                )
+            )
         if ckpt.get("encoder_path"):
             model.load_reports.append(
                 load_checkpoint_part(encoder, ckpt.encoder_path, ckpt.get("encoder_key", "encoder"))
@@ -164,15 +183,15 @@ class VJEPA2ACWorldModel(nn.Module):
     # ------------------------------------------------------------------ encoding
 
     def preprocess(self, frames: torch.Tensor) -> torch.Tensor:
-        """uint8 or [0, 1] float frames [B, T, 3, H, W] -> resized, ImageNet-normalized float."""
+        """uint8 or [0, 1] frames [B, T, 3, H, W] -> resized float in the encoder's input space."""
         if frames.dtype == torch.uint8:
             frames = frames.float() / 255.0
         B, T = frames.shape[:2]
         x = frames.flatten(0, 1)
         if tuple(x.shape[-2:]) != self.img_size:
             x = F.interpolate(x, size=self.img_size, mode="bilinear", align_corners=False, antialias=True)
-        mean = x.new_tensor(IMAGENET_MEAN).view(1, 3, 1, 1)
-        std = x.new_tensor(IMAGENET_STD).view(1, 3, 1, 1)
+        mean = x.new_tensor(getattr(self.encoder, "image_mean", IMAGENET_MEAN)).view(1, 3, 1, 1)
+        std = x.new_tensor(getattr(self.encoder, "image_std", IMAGENET_STD)).view(1, 3, 1, 1)
         return ((x - mean) / std).unflatten(0, (B, T))
 
     def encode(self, frames: torch.Tensor) -> torch.Tensor:
