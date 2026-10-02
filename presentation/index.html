@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>EVO-Inter · 研究动机</title>
+  <style>
+    :root {
+      --paper: #fffefa;
+      --ink: #17263b;
+      --muted: #626b77;
+      --blue: #2458a6;
+      --rule: #d9dfe5;
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      color: var(--ink);
+      background: #e9edf1;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    .stage {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 28px;
+    }
+    .frame { width: 1600px; height: 900px; position: relative; flex: none; }
+    .slide {
+      width: 1600px;
+      height: 900px;
+      padding: 56px 92px 38px;
+      display: flex;
+      flex-direction: column;
+      background: var(--paper);
+      transform-origin: top left;
+      box-shadow: 0 12px 50px #17263b0d;
+    }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 27px;
+      font-size: 19px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .eyebrow .section-name { color: var(--blue); }
+    h1 { font-size: 53px; font-weight: 600; line-height: 1.3; letter-spacing: -.025em; margin: 0; }
+    .foundation { margin-top: 25px; }
+    .foundation h2 { font-size: 22px; font-weight: 600; margin: 0 0 11px; color: var(--blue); }
+    .foundation p { font-size: 27px; line-height: 1.75; margin: 0; }
+    .foundation strong { font-weight: 600; }
+    .questions {
+      flex: 1;
+      align-content: center;
+      margin-top: 31px;
+      border-top: 1px solid var(--rule);
+      padding-top: 31px;
+      padding-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 68px;
+    }
+    .question + .question { border-left: 1px solid var(--rule); padding-left: 68px; }
+    .question-title { display: flex; align-items: baseline; gap: 16px; margin-bottom: 18px; }
+    .question-number { font-size: 22px; color: var(--blue); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .question h2 { font-size: 37px; font-weight: 600; line-height: 1.35; margin: 0; }
+    .question p { font-size: 25px; line-height: 1.7; margin: 0; }
+    .current { color: var(--muted); }
+    .label { display: block; font-size: 17px; line-height: 1.5; font-weight: 500; margin-bottom: 7px; }
+    .goal { margin-top: auto; padding: 23px 0 22px; border-top: 2px solid var(--ink); }
+    .goal-label { font-size: 18px; font-weight: 500; color: var(--blue); margin-right: 23px; }
+    .goal p { display: inline; font-size: 28px; font-weight: 500; line-height: 1.6; }
+    .footer { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 15px; }
+    .footer a { color: inherit; text-decoration-color: #abb4bf; text-underline-offset: 4px; }
+    .page-number { font-size: 18px; font-variant-numeric: tabular-nums; }
+    .toolbar { display: flex; align-items: center; gap: 16px; font-size: 12px; color: #626b77; }
+    .toolbar button {
+      appearance: none; font: inherit; background: transparent; color: #344458;
+      border: 1px solid #bac5d0; border-radius: 5px; padding: 7px 13px; cursor: pointer;
+    }
+    .toolbar button:hover { background: #fff9; }
+    .toolbar button:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+    body:fullscreen { background: #111820; }
+    body:fullscreen .stage { padding: 0; gap: 0; }
+    body:fullscreen .toolbar { display: none; }
+    body:fullscreen .slide { box-shadow: none; }
+    @media (max-width: 720px) {
+      .stage { display: block; min-height: 100svh; padding: 14px; }
+      .frame { width: 100% !important; height: auto !important; }
+      .slide { width: 100%; height: auto; min-height: 0; padding: 28px 24px; transform: none !important; }
+      .eyebrow { font-size: 12px; margin-bottom: 20px; }
+      h1 { font-size: 30px; line-height: 1.4; }
+      .foundation { margin-top: 25px; }
+      .foundation h2 { font-size: 16px; }
+      .foundation p { font-size: 17px; line-height: 1.8; }
+      .questions { grid-template-columns: 1fr; gap: 26px; padding-top: 25px; padding-bottom: 0; margin-top: 27px; }
+      .question + .question { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 25px; }
+      .question-title { gap: 12px; margin-bottom: 15px; }
+      .question-number { font-size: 16px; }
+      .question h2 { font-size: 26px; }
+      .question p { font-size: 17px; }
+      .label { font-size: 13px; margin-bottom: 5px; }
+      .goal { margin-top: 29px; padding: 20px 0; }
+      .goal-label { display: block; font-size: 13px; margin-bottom: 8px; }
+      .goal p { font-size: 21px; }
+      .footer { font-size: 11px; }
+      .page-number { font-size: 14px; }
+      .toolbar { justify-content: center; margin-top: 14px; }
+    }
+    @page { size: 16in 9in; margin: 0; }
+    @media print {
+      html, body { width: 16in; height: 9in; background: white; }
+      .stage { display: block; padding: 0; min-height: 0; }
+      .frame { width: 16in !important; height: 9in !important; }
+      .slide { transform: scale(.96) !important; box-shadow: none; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .toolbar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="科研思路汇报">
+    <div class="frame">
+      <article class="slide" aria-labelledby="slide-title">
+        <header>
+          <div class="eyebrow"><span class="section-name">研究动机</span><span>EVO-Inter</span></div>
+          <h1 id="slide-title">介入时机与介入动作的自动化</h1>
+        </header>
+
+        <section class="foundation" aria-labelledby="foundation-title">
+          <h2 id="foundation-title">研究基础：EVO-RL</h2>
+          <p>EVO-RL 通过<strong>人工介入补充纠正经验</strong>，利用优势估计筛选高价值数据，迭代更新机器人策略。<br>在这一过程中，介入时机的判断和纠正动作的提供仍依赖人工。</p>
+        </section>
+
+        <div class="questions">
+          <section class="question" aria-labelledby="timing-title">
+            <div class="question-title"><span class="question-number" aria-hidden="true">01</span><h2 id="timing-title">何时介入？</h2></div>
+            <div class="current"><span class="label">当前：人工判断</span><p>人工观察执行过程，<br>判断机器人是否需要接管。</p></div>
+          </section>
+          <section class="question" aria-labelledby="recovery-title">
+            <div class="question-title"><span class="question-number" aria-hidden="true">02</span><h2 id="recovery-title">如何恢复？</h2></div>
+            <div class="current"><span class="label">当前：人工提供动作</span><p>人工接管并执行纠正动作，<br>帮助机器人继续完成任务。</p></div>
+          </section>
+        </div>
+
+        <section class="goal" aria-label="研究目标">
+          <span class="goal-label">研究目标</span><p>减少持续人工监控与接管的需求，让机器人在必要时自主恢复。</p>
+        </section>
+        <footer class="footer">
+          <span>基础工作：<a href="https://github.com/MINT-SJTU/Evo-RL" target="_blank" rel="noopener noreferrer">EVO-RL</a></span>
+          <span class="page-number" aria-label="第 1 页">01</span>
+        </footer>
+      </article>
+    </div>
+    <div class="toolbar" aria-label="演示控制">
+      <span>16:9 · 第 1 页</span><button type="button" id="fullscreen">全屏演示</button>
+      <span id="display-status" role="status" aria-live="polite"></span>
+    </div>
+  </main>
+  <!--
+    Speaker notes / sources:
+    EVO-RL background: https://github.com/MINT-SJTU/Evo-RL
+    Also checked the user's local draft: paper_read/CVPRpaper_search/report/tmpabstract.md.
+    Automatic intervention timing and action generation are proposed research directions,
+    not completed capabilities or measured results of this project.
+  -->
+  <script>
+    const frame = document.querySelector('.frame');
+    const slide = document.querySelector('.slide');
+    const fullscreenButton = document.getElementById('fullscreen');
+    const displayStatus = document.getElementById('display-status');
+    function fitSlide() {
+      if (window.innerWidth <= 720) {
+        frame.style.removeProperty('width');
+        frame.style.removeProperty('height');
+        slide.style.removeProperty('transform');
+        return;
+      }
+      const fullscreen = Boolean(document.fullscreenElement);
+      const scale = Math.min((window.innerWidth - (fullscreen ? 0 : 56)) / 1600,
+                             (window.innerHeight - (fullscreen ? 0 : 106)) / 900, 1.5);
+      frame.style.width = `${1600 * scale}px`;
+      frame.style.height = `${900 * scale}px`;
+      slide.style.transform = `scale(${scale})`;
+    }
+    async function toggleFullscreen() {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (document.body.requestFullscreen) await document.body.requestFullscreen();
+        else displayStatus.textContent = '当前浏览器不支持全屏，可使用浏览器缩放。';
+      } catch {
+        displayStatus.textContent = '全屏未能开启，请使用浏览器全屏功能。';
+      }
+    }
+    fullscreenButton.addEventListener('click', toggleFullscreen);
+    window.addEventListener('resize', fitSlide);
+    document.addEventListener('fullscreenchange', () => {
+      fullscreenButton.textContent = document.fullscreenElement ? '退出全屏' : '全屏演示';
+      fitSlide();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key.toLowerCase() === 'f' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault();
+        toggleFullscreen();
+      }
+    });
+    fitSlide();
+  </script>
+</body>
+</html>

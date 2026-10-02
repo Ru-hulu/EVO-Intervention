@@ -1,3 +1,4 @@
 torch>=2.6
+torchvision
 transformers==5.3.0
 pillow

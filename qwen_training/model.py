@@ -7,26 +7,38 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
+from transformers import AutoImageProcessor, AutoTokenizer, Qwen3_5ForConditionalGeneration
+
+from qwen_training.vision_encoder import encode_three_views
 
 
 class QwenProgressModel(nn.Module):
-    def __init__(self, model_path, feature_dim, dtype=torch.bfloat16, freeze_backbone=False):
+    def __init__(self, model_path, feature_dim=None, dtype=torch.bfloat16, freeze_backbone=False,
+                 max_pixels=262144):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+        self.image_processor = AutoImageProcessor.from_pretrained(
+            model_path, use_fast=True, max_pixels=max_pixels,
+        )
         self.qwen = Qwen3_5ForConditionalGeneration.from_pretrained(
             model_path, dtype=dtype, attn_implementation="sdpa"
         )
-        # E_t 已经由上游编码好，本模块不重复运行原始视觉编码器。
+        # encode_images 复用这个编码器；传入 visual_features 时不重复编码。
         self.qwen.model.visual.requires_grad_(False)
         if freeze_backbone:
             self.qwen.requires_grad_(False)
 
         embedding = self.qwen.get_input_embeddings().weight
+        if feature_dim is None:
+            feature_dim = self.qwen.config.vision_config.out_hidden_size
         self.visual_adapter = nn.Sequential(
             nn.LayerNorm(feature_dim),
             nn.Linear(feature_dim, self.qwen.config.text_config.hidden_size),
         ).to(device=embedding.device, dtype=embedding.dtype)
+
+    def encode_images(self, images):
+        """三视角单帧 → 现有 visual_features 接口；图像模式使用默认 feature_dim。"""
+        return encode_three_views(self.qwen.model.visual, self.image_processor, images)
 
     def build_inputs(self, messages, visual_features, visual_mask=None, responses=None):
         """拼成 [有效视觉前缀, 聊天 Prompt, 答案]，仅监督答案及结束标记。
