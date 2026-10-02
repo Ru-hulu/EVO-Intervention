@@ -7,14 +7,14 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from transformers import AutoTokenizer, Qwen3VLForConditionalGeneration
+from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
 
 
 class QwenProgressModel(nn.Module):
     def __init__(self, model_path, feature_dim, dtype=torch.bfloat16, freeze_backbone=False):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.qwen = Qwen3VLForConditionalGeneration.from_pretrained(
+        self.qwen = Qwen3_5ForConditionalGeneration.from_pretrained(
             model_path, dtype=dtype, attn_implementation="sdpa"
         )
         # E_t 已经由上游编码好，本模块不重复运行原始视觉编码器。
@@ -49,14 +49,17 @@ class QwenProgressModel(nn.Module):
 
         sequences, labels = [], []
         for i, (chat, features, mask) in enumerate(zip(messages, visual, visual_mask, strict=True)):
+            # Qwen3.5 统一关闭 thinking，空思考前缀属于 Prompt，不参与监督。
             prompt_ids = self.tokenizer.apply_chat_template(
-                chat, tokenize=True, return_dict=False, add_generation_prompt=True
+                chat, tokenize=True, return_dict=False, add_generation_prompt=True,
+                enable_thinking=False,
             ) # 转换为 token ID 序列
             token_ids = prompt_ids
             if responses is not None:
                 full_chat = chat + [{"role": "assistant", "content": responses[i]}]
                 token_ids = self.tokenizer.apply_chat_template(
-                    full_chat, tokenize=True, return_dict=False, add_generation_prompt=False
+                    full_chat, tokenize=True, return_dict=False, add_generation_prompt=False,
+                    enable_thinking=False,
                 )
                 if token_ids[:len(prompt_ids)] != prompt_ids:
                     raise ValueError("聊天模板的训练与推理前缀不一致，无法确定答案位置")
