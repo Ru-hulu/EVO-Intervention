@@ -3,6 +3,7 @@
 Unlike the VLA samples (one frame per camera), a window keeps the time axis: frames sampled
 every `contract.actions_per_latent_step` control steps, the recorded state at each sampled
 frame, and the control actions between consecutive frames aggregated into latent actions.
+Multiple cameras retain a separate view axis in the configured order.
 
 `NpzEpisodeSource` reads reference arrays; `LeRobotV3EpisodeSource` reads native robot recordings.
 """
@@ -27,14 +28,14 @@ class EpisodeSource(Protocol):
         """Number of control steps (frames, states and actions are aligned per control step)."""
 
     def load_frames(self, episode: int, indices: np.ndarray) -> np.ndarray:
-        """uint8 frames [len(indices), H, W, 3] from the single camera used by the world model."""
+        """uint8 frames [F,H,W,3] or [F,V,H,W,3] for the configured ordered cameras."""
 
     def load_lowdim(self, episode: int, start: int, stop: int) -> tuple[np.ndarray, np.ndarray]:
         """states [stop-start, S] and actions [stop-start, A] for control steps [start, stop)."""
 
 
 class NpzEpisodeSource:
-    """One `.npz` per episode with `frames` [L, H, W, 3] uint8, `states` [L, S], `actions` [L, A]."""
+    """One `.npz` per episode: uint8 frames [L,H,W,3] or [L,V,H,W,3], states [L,S], actions [L,A]."""
 
     def __init__(self, root: str | Path, camera_key: str = "frames"):
         self.files = sorted(Path(root).glob("*.npz"))
@@ -60,16 +61,27 @@ class NpzEpisodeSource:
 class LeRobotV3EpisodeSource:
     """Native v3 parquet/video episodes; state and absolute actions normalized to [-1, 1]."""
 
-    def __init__(self, root: str | Path, camera_key: str):
+    def __init__(self, root: str | Path, camera_key: str | None = None, *, camera_keys: Sequence[str] | None = None):
         import pandas as pd
 
         self.root = Path(root).expanduser()
         self.camera_key = camera_key
+        if camera_key is not None and camera_keys is not None:
+            raise ValueError("Use camera_key or camera_keys, not both")
+        if isinstance(camera_keys, str):
+            raise ValueError("camera_keys must be a list of camera names")
+        self.multi_camera = camera_keys is not None
+        self.camera_keys = list(camera_keys) if self.multi_camera else [camera_key]
+        if not self.camera_keys or any(not isinstance(key, str) or not key for key in self.camera_keys):
+            raise ValueError("Configure at least one nonempty camera key")
+        if len(set(self.camera_keys)) != len(self.camera_keys):
+            raise ValueError("camera_keys must contain distinct cameras")
         self.info = json.loads((self.root / "meta/info.json").read_text())
         if self.info["codebase_version"] != "v3.0":
             raise ValueError("LeRobotV3EpisodeSource requires codebase_version=v3.0")
-        if self.info["features"][camera_key]["dtype"] != "video":
-            raise ValueError(f"{camera_key} is not a video camera")
+        for key in self.camera_keys:
+            if self.info["features"][key]["dtype"] != "video":
+                raise ValueError(f"{key} is not a video camera")
         paths = sorted(self.root.glob("meta/episodes/*/*.parquet"))
         if not paths:
             raise FileNotFoundError(f"No episode metadata in {self.root}")
@@ -121,15 +133,19 @@ class LeRobotV3EpisodeSource:
         from evo_intervention.dataloader.gr00t_lerobot.video import get_frames_by_timestamps
 
         meta = self.episodes.iloc[episode]
-        prefix = f"videos/{self.camera_key}"
-        path = self.root / self.info["video_path"].format(
-            video_key=self.camera_key,
-            chunk_index=int(meta[f"{prefix}/chunk_index"]),
-            file_index=int(meta[f"{prefix}/file_index"]),
-        )
         timestamps = self._episode_rows(episode)["timestamp"].to_numpy()[indices]
-        timestamps = timestamps + float(meta[f"{prefix}/from_timestamp"])
-        return get_frames_by_timestamps(str(path), timestamps, video_backend="pyav")
+        views = []
+        for key in self.camera_keys:
+            prefix = f"videos/{key}"
+            path = self.root / self.info["video_path"].format(
+                video_key=key,
+                chunk_index=int(meta[f"{prefix}/chunk_index"]),
+                file_index=int(meta[f"{prefix}/file_index"]),
+            )
+            # Each camera can have a different offset inside its own video file.
+            camera_timestamps = timestamps + float(meta[f"{prefix}/from_timestamp"])
+            views.append(get_frames_by_timestamps(str(path), camera_timestamps, video_backend="pyav"))
+        return np.stack(views, axis=1) if self.multi_camera else views[0]
 
     def load_lowdim(self, episode, start, stop):
         rows = self._episode_rows(episode).iloc[start:stop]
@@ -199,13 +215,13 @@ class TrajectoryWindowDataset(Dataset):
         raw = torch.as_tensor(actions[: (num_frames - 1) * step], dtype=torch.float32)
         actions, control_actions = self.contract.to_latent_actions(raw), self.contract.group(raw)
 
-        frames = torch.from_numpy(np.ascontiguousarray(frames)).permute(0, 3, 1, 2)  # [F, 3, H, W]
+        frames = torch.from_numpy(np.ascontiguousarray(frames)).movedim(-1, -3)  # [F,3,H,W] or [F,V,3,H,W]
         states = torch.as_tensor(states, dtype=torch.float32)
         valid = torch.zeros(F, dtype=torch.bool)
         valid[:num_frames] = True
         if num_frames < F:
             pad = F - num_frames
-            frames = torch.cat((frames, frames[-1:].expand(pad, -1, -1, -1)))
+            frames = torch.cat((frames, frames[-1:].expand(pad, *frames.shape[1:])))
             states = torch.cat((states, states[-1:].expand(pad, -1)))
             actions = torch.cat((actions, actions.new_zeros(pad, actions.shape[-1])))
             control_actions = torch.cat((control_actions, control_actions.new_zeros(pad, *control_actions.shape[1:])))

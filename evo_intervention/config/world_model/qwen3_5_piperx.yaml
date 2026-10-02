@@ -1,10 +1,11 @@
 # Frozen Qwen3.5 vision tower + randomly initialized JEPA action-conditioned predictor.
-run_id: qwen35_piperx_jepa
-run_root_dir: /home/zhaobo/data/zhaobo/checkpoints/EVO-Intervention
+run_id: qwen35_piperx_jepa_3cam
+run_root_dir: /root/MINT/checkpoints/EVO-Intervention
 seed: 239
 
 world_model:
   img_size: 256
+  num_views: 3             # Encode each camera independently, then concatenate 3 x 64 tokens.
   patch_size: 32            # Native 16px patches, merged 2x2: 8x8 tokens per frame.
   tubelet_size: 2
   num_frames: 32           # Predictor capacity: 16 latent steps.
@@ -12,7 +13,7 @@ world_model:
   allow_random_encoder: false
   encoder:
     type: qwen3_5
-    model_path: /home/zhaobo/data/zhaobo/models/Qwen3.5-2B
+    model_path: /mnt/e/WSL/Ubuntu/models/Qwen3.5-2B
   predictor:
     embed_dim: 1024
     depth: 24
@@ -32,12 +33,15 @@ contract:
 
 data:
   source: lerobot_v3
-  root: /home/zhaobo/data/zhaobo/datasets/piperx-bolt-intentional-drop-reinsert-22ep-20261001
-  camera_key: observation.images.right_environment_1
+  root: /root/MINT/datasets/piperx-bolt-intentional-drop-reinsert-22ep-raw
+  camera_keys:             # Fixed token order: external, left wrist, right wrist.
+    - observation.images.right_environment_1
+    - observation.images.left_wrist
+    - observation.images.right_wrist
   window_frames: 5
   min_frames: null
   val_fraction: 0.1
-  batch_size: 2
+  batch_size: 8
   num_workers: 2
 
 loss:

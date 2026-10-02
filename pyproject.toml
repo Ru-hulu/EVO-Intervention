@@ -29,6 +29,7 @@ dependencies = [
     "diffusers",
     "einops",
     "flash-linear-attention==0.3.2",
+    "huggingface-hub>=1.33.0",
     "msgpack",
     "numpy==1.26.4",
     "numpydantic==1.6.9",

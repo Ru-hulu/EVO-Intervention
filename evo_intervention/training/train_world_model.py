@@ -37,7 +37,9 @@ def build_source(cfg):
     if cfg.data.source == "npz":
         return NpzEpisodeSource(cfg.data.root)
     if cfg.data.source == "lerobot_v3":
-        return LeRobotV3EpisodeSource(cfg.data.root, cfg.data.camera_key)
+        return LeRobotV3EpisodeSource(
+            cfg.data.root, camera_key=cfg.data.get("camera_key"), camera_keys=cfg.data.get("camera_keys")
+        )
     raise ValueError(f"Unknown data source '{cfg.data.source}'")
 
 
@@ -224,6 +226,12 @@ def main(cfg):
 
 def train(cfg, accelerator, output_dir, logger):
     contract = LatentStepContract(**cfg.contract)
+    if cfg.data.get("source") == "lerobot_v3":
+        if cfg.data.get("camera_keys") is not None and cfg.data.get("camera_key") is not None:
+            raise ValueError("Configure data.camera_keys or data.camera_key, not both")
+        num_cameras = len(cfg.data.camera_keys) if cfg.data.get("camera_keys") is not None else 1
+        if num_cameras != cfg.world_model.get("num_views", 1):
+            raise ValueError("world_model.num_views must match the number of data.camera_keys")
     # The upstream AC predictor uses one width for its action and state encoders.
     widths = (contract.latent_action_dim, contract.state_dim, cfg.world_model.predictor.action_dim)
     if len(set(widths)) != 1:
@@ -235,11 +243,17 @@ def train(cfg, accelerator, output_dir, logger):
     )
     if not pretrained_encoder and not cfg.world_model.get("allow_random_encoder", False):
         raise ValueError(
-            "A pretrained encoder path is required: the encoder is frozen, so a random encoder "
+            "A pretrained encoder path is required: set world_model.encoder.model_path for Qwen "
+            "or world_model.checkpoint.encoder_path for V-JEPA2. The encoder is frozen, so a random encoder "
             "would train the predictor in a meaningless latent space. Set world_model.allow_random_encoder=true "
             "only for tests."
         )
     world_model = VJEPA2ACWorldModel.from_config(cfg.world_model).freeze_encoder()
+    logger.info(
+        "Visual input: %s views x %s tokens = %s tokens/frame; camera order: %s",
+        world_model.num_views, world_model.tokens_per_view, world_model.tokens_per_frame,
+        cfg.data.get("camera_keys", cfg.data.get("camera_key")),
+    )
     for report in world_model.load_reports:
         logger.info("%s", report)
     world_model.encoder.to(accelerator.device)

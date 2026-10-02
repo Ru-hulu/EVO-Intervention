@@ -1,7 +1,9 @@
 """JEPA world model: frozen V-JEPA or Qwen vision encoder + action-conditioned latent predictor.
 
-Latents are per-frame patch grids `[B, T, N, D]` (N = tokens_per_frame). Each frame is encoded
-on its own by repeating it `tubelet_size` times, as in upstream AC training and planning.
+Latents are per-frame patch grids `[B, T, V*N_view, D]`. Each camera image is independently
+encoded by repeating it `tubelet_size` times, then view grids are concatenated in camera order.
+The predictor treats them as a vertically stacked token grid, with distinct spatial positions
+for each view and a shared timestamp. This is a positional layout, not a calibrated 3D fusion.
 The predictor output at step t is the prediction of the latent at step t + 1.
 """
 
@@ -98,20 +100,29 @@ def latent_l1(pred: torch.Tensor, target: torch.Tensor, loss_exp: float = 1.0) -
 
 
 class VJEPA2ACWorldModel(nn.Module):
-    def __init__(self, encoder: nn.Module, predictor: nn.Module, normalize_reps: bool = True):
+    def __init__(self, encoder: nn.Module, predictor: nn.Module, normalize_reps: bool = True, num_views: int = 1):
         super().__init__()
         self.encoder = encoder
         self.predictor = predictor
         self.normalize_reps = normalize_reps
+        if not isinstance(num_views, int) or num_views < 1:
+            raise ValueError("num_views must be a positive integer")
+        self.num_views = num_views
         self.img_size = (encoder.img_height, encoder.img_width)
         self.tubelet_size = encoder.tubelet_size
         self.tokens_per_frame = predictor.grid_height * predictor.grid_width
+        self.tokens_per_view = (encoder.img_height // predictor.patch_size) * (encoder.img_width // predictor.patch_size)
+        if self.tokens_per_frame != num_views * self.tokens_per_view:
+            raise ValueError("Predictor token grid must match num_views times the encoder grid")
         self.max_steps = predictor.num_frames // predictor.tubelet_size
 
     @classmethod
     def from_config(cls, cfg) -> "VJEPA2ACWorldModel":
         """Build the encoder and AC predictor from the `world_model` config section."""
         img_size = (cfg.img_size, cfg.img_size) if isinstance(cfg.img_size, int) else tuple(cfg.img_size)
+        num_views = cfg.get("num_views", 1)
+        if not isinstance(num_views, int) or num_views < 1:
+            raise ValueError("num_views must be a positive integer")
         common = dict(
             img_size=img_size, patch_size=cfg.patch_size, num_frames=cfg.num_frames, tubelet_size=cfg.tubelet_size
         )
@@ -135,8 +146,11 @@ class VJEPA2ACWorldModel(nn.Module):
             )
         else:
             raise ValueError(f"Unknown encoder type '{encoder_type}'")
+        # Encoder size stays per-camera. Only the predictor's positional grid is enlarged:
+        # [view0 rows, view1 rows, ...], retaining all spatial tokens at one time step.
+        predictor_common = {**common, "img_size": (img_size[0] * num_views, img_size[1])}
         predictor = vit_ac_predictor(
-            **common,
+            **predictor_common,
             embed_dim=encoder.embed_dim,
             predictor_embed_dim=cfg.predictor.embed_dim,
             depth=cfg.predictor.depth,
@@ -149,7 +163,7 @@ class VJEPA2ACWorldModel(nn.Module):
         )
         if not predictor.use_extrinsics:  # unused parameters would break DDP
             predictor.extrinsics_encoder.requires_grad_(False)
-        model = cls(encoder, predictor, normalize_reps=cfg.get("normalize_reps", True))
+        model = cls(encoder, predictor, normalize_reps=cfg.get("normalize_reps", True), num_views=num_views)
 
         ckpt = cfg.get("checkpoint", {})
         model.load_reports = []
@@ -182,23 +196,35 @@ class VJEPA2ACWorldModel(nn.Module):
 
     # ------------------------------------------------------------------ encoding
 
+    def _check_frames(self, frames: torch.Tensor):
+        if frames.ndim not in (5, 6) or frames.shape[-3] != 3:
+            raise ValueError(f"Expected frames [B,T,3,H,W] or [B,T,V,3,H,W], got {tuple(frames.shape)}")
+        views = frames.shape[2] if frames.ndim == 6 else 1
+        if views != self.num_views:
+            raise ValueError(f"Expected {self.num_views} camera views, got {views}")
+
     def preprocess(self, frames: torch.Tensor) -> torch.Tensor:
-        """uint8 or [0, 1] frames [B, T, 3, H, W] -> resized float in the encoder's input space."""
+        """Resize/normalize each camera independently; preserve [B,T,(V),3,H,W]."""
+        self._check_frames(frames)
         if frames.dtype == torch.uint8:
             frames = frames.float() / 255.0
-        B, T = frames.shape[:2]
-        x = frames.flatten(0, 1)
+        leading_dims = frames.shape[:-3]
+        x = frames.reshape(-1, *frames.shape[-3:])
         if tuple(x.shape[-2:]) != self.img_size:
             x = F.interpolate(x, size=self.img_size, mode="bilinear", align_corners=False, antialias=True)
         mean = x.new_tensor(getattr(self.encoder, "image_mean", IMAGENET_MEAN)).view(1, 3, 1, 1)
         std = x.new_tensor(getattr(self.encoder, "image_std", IMAGENET_STD)).view(1, 3, 1, 1)
-        return ((x - mean) / std).unflatten(0, (B, T))
+        return ((x - mean) / std).view(*leading_dims, 3, *self.img_size)
 
     def encode(self, frames: torch.Tensor) -> torch.Tensor:
-        """Preprocessed frames [B, T, 3, H, W] -> latents [B, T, N, D]. Gradients follow the caller."""
+        """Encode [B,T,(V),3,H,W], concatenate view tokens -> [B,T,V*N_view,D]."""
+        self._check_frames(frames)
         B, T = frames.shape[:2]
-        clips = frames.flatten(0, 1).unsqueeze(2).repeat(1, 1, self.tubelet_size, 1, 1)  # [B*T, 3, tubelet, H, W]
+        images = frames.reshape(-1, *frames.shape[-3:])
+        clips = images.unsqueeze(2).repeat(1, 1, self.tubelet_size, 1, 1)  # [B*T*V,3,tubelet,H,W]
         h = self.encoder(clips)
+        if h.shape[1] != self.tokens_per_view:
+            raise ValueError(f"Expected {self.tokens_per_view} tokens per view, got {h.shape[1]}")
         h = h.view(B, T, -1, h.size(-1))
         return self._norm(h)
 
