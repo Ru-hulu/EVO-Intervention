@@ -219,6 +219,20 @@
     .trigger-figure svg { display: block; width: 100%; height: 300px; }
     .trigger-figure figcaption { margin-top: 12px; font-size: 22px; line-height: 1.5; color: var(--blue); }
     .trigger-conclusion p { font-size: 25px; }
+    .jepa-intro { margin: 18px 0 0; font-size: 25px; line-height: 1.6; color: var(--muted); }
+    .jepa-intro strong { color: var(--ink); font-weight: 600; }
+    .jepa-overview { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--rule); flex: 1; }
+    .jepa-sequence { margin: 0; }
+    .jepa-sequence > svg { display: block; width: 100%; height: 112px; }
+    .jepa-sequence figcaption { margin-top: 4px; font-size: 18px; line-height: 1.5; color: var(--muted); }
+    .jepa-model { margin: 14px 0 0; }
+    .jepa-model > svg { display: block; width: 100%; height: 246px; }
+    .jepa-mobile { display: none; }
+    .jepa-training { margin-top: auto; padding: 16px 0 17px; border-top: 2px solid var(--ink); }
+    .jepa-loss-row { display: flex; gap: 24px; align-items: center; }
+    .jepa-loss-row h2 { margin: 0; font-size: 18px; color: var(--blue); font-weight: 500; white-space: nowrap; }
+    .jepa-loss-row math { font-size: 30px; font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif; }
+    .jepa-training p { margin: 10px 0 0; font-size: 19px; line-height: 1.5; color: var(--muted); }
     body:fullscreen { background: #111820; }
     body:fullscreen .stage { padding: 0; gap: 0; }
     body:fullscreen .toolbar { display: none; }
@@ -363,6 +377,26 @@
       .trigger-figure svg { height: auto; min-width: 420px; }
       .trigger-figure figcaption { font-size: 17px; }
       .trigger-conclusion p { font-size: 21px; }
+      .jepa-intro { font-size: 17px; }
+      .jepa-overview { margin-top: 24px; padding-top: 20px; }
+      .jepa-sequence { overflow-x: auto; }
+      .jepa-sequence > svg { height: auto; min-width: 570px; }
+      .jepa-sequence figcaption { font-size: 13px; margin-top: 9px; }
+      .jepa-model { margin-top: 24px; }
+      .jepa-model > svg { display: none; }
+      .jepa-mobile { display: block; }
+      .jepa-mobile h2 { margin: 0 0 10px; font-size: 20px; font-weight: 600; }
+      .jepa-mobile p { margin: 0; font-size: 16px; line-height: 1.65; }
+      .jepa-mobile .jepa-inputs { color: var(--muted); }
+      .jepa-mobile .jepa-node { padding: 13px; text-align: center; background: #eef3fa; color: var(--blue); font-size: 20px; font-weight: 500; }
+      .jepa-mobile .jepa-down { padding: 7px 0; text-align: center; color: var(--blue); font-size: 21px; }
+      .jepa-mobile .jepa-target { margin-top: 10px; padding-left: 12px; border-left: 2px dashed #ad622c; color: var(--muted); font-size: 14px; }
+      .jepa-mobile .jepa-score { margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--rule); }
+      .jepa-training { margin-top: 28px; padding-top: 20px; }
+      .jepa-loss-row { display: block; }
+      .jepa-loss-row h2 { margin-bottom: 12px; font-size: 14px; }
+      .jepa-loss-row math { font-size: clamp(17px, 4.6vw, 25px); }
+      .jepa-training p { font-size: 14px; margin-top: 12px; }
     }
     @page { size: 16in 9in; margin: 0; }
     @media print {
@@ -1010,7 +1044,7 @@
                   <text class="retry-muted" x="173" y="108">loop 1</text><text class="retry-muted" x="413" y="108">loop 2</text>
                   <text class="retry-muted" x="46" y="125">预测进度</text>
                   <path d="M46 139V261H632" stroke="#aab7c6" stroke-width="1.5" fill="none"/>
-                  <path d="M70 240L137 212L200 168L252 178L320 240L377 212L440 168L492 178L560 240L610 220" stroke="#2458a6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  <path d="M70 240L137 212L200 168L315 168L320 240L377 212L440 168L555 168L560 240L610 220" stroke="#2458a6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                   <circle cx="320" cy="240" r="5" fill="#ad622c"/><circle cx="560" cy="240" r="5" fill="#ad622c"/>
                   <text class="retry-muted" x="46" y="289">过去</text><text class="retry-muted" x="535" y="289">当前时刻 t</text>
                 </g>
@@ -1028,10 +1062,90 @@
           <span class="page-number" aria-label="第 9 页">09</span>
         </footer>
       </article>
+      <article class="slide" id="slide-10" data-title="动作条件 JEPA 的训练" aria-labelledby="jepa-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">介入动作 · 未来表征预测</span><span>EVO-Inter</span></div>
+          <h1 id="jepa-title">动作条件 JEPA 的训练</h1>
+          <p class="jepa-intro">以当前 latent 和动作为条件，<strong>预测未来 latent</strong>，再由进度模型评估动作结果。</p>
+        </header>
+
+        <div class="jepa-overview">
+          <figure class="jepa-sequence">
+            <svg viewBox="0 0 1416 112" role="img" aria-labelledby="jepa-sequence-title jepa-sequence-desc">
+              <title id="jepa-sequence-title">状态与动作训练序列，以及对应的视觉 latent</title>
+              <desc id="jepa-sequence-desc">训练轨迹为 s1 经动作 a1 到 s2，再经 a2 到 s3，再经 a3 到 s4，再经 a4 到 s5。各时刻的三视角观测由相同的视觉编码器和历史融合模块得到 z1 至 z5。每个 zi 只融合截至 i 时刻的观测。</desc>
+              <defs><marker id="jepa-sequence-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#8196b0" stroke-width="1.5"/></marker></defs>
+              <text x="0" y="27" fill="#2458a6" font-size="19" font-family="PingFang SC, Microsoft YaHei, sans-serif">训练轨迹</text>
+              <g font-family="Times New Roman, serif" font-style="italic" font-size="34" fill="#17263b" text-anchor="middle"><text x="180" y="37">s₁</text><text x="475" y="37">s₂</text><text x="770" y="37">s₃</text><text x="1065" y="37">s₄</text><text x="1360" y="37">s₅</text></g>
+              <g stroke="#8196b0" stroke-width="1.6" fill="none" marker-end="url(#jepa-sequence-arrow)"><path d="M217 27H435"/><path d="M512 27H730"/><path d="M807 27H1025"/><path d="M1102 27H1320"/></g>
+              <g fill="#fffefa"><rect x="296" y="6" width="60" height="35"/><rect x="591" y="6" width="60" height="35"/><rect x="886" y="6" width="60" height="35"/><rect x="1181" y="6" width="60" height="35"/></g>
+              <g font-family="Times New Roman, serif" font-style="italic" font-size="28" fill="#626b77" text-anchor="middle"><text x="327" y="34">a₁</text><text x="622" y="34">a₂</text><text x="917" y="34">a₃</text><text x="1212" y="34">a₄</text></g>
+              <g stroke="#8196b0" stroke-width="1.4" fill="none" marker-end="url(#jepa-sequence-arrow)"><path d="M180 47V70"/><path d="M475 47V70"/><path d="M770 47V70"/><path d="M1065 47V70"/><path d="M1360 47V70"/></g>
+              <text x="0" y="98" fill="#626b77" font-size="19" font-family="PingFang SC, Microsoft YaHei, sans-serif">视觉表征</text>
+              <g font-family="Times New Roman, serif" font-style="italic" font-size="32" fill="#2458a6" text-anchor="middle"><text x="180" y="101">z₁</text><text x="475" y="101">z₂</text><text x="770" y="101">z₃</text><text x="1065" y="101">z₄</text><text x="1360" y="101">z₅</text></g>
+            </svg>
+            <figcaption>每个 s<sub>i</sub> 为三视角观测；z<sub>i</sub> 由同一视觉编码器与历史融合模块得到，包含截至 i 时刻的信息。</figcaption>
+          </figure>
+
+          <figure class="jepa-model">
+            <svg viewBox="0 0 1416 246" role="img" aria-labelledby="jepa-model-title jepa-model-desc">
+              <title id="jepa-model-title">动作条件 latent 预测与进度评分</title>
+              <desc id="jepa-model-desc">当前 zi 和执行动作 ai 输入动作条件预测器 F，得到预测的下一时刻 latent。训练时将预测 latent 与真实后继观测编码得到的 zi+1 对齐；真实后继仅作为训练目标。预测 latent 随后输入进度评估头 P，输出未来进度估计。P 以已有进度标签单独监督，和预测器使用同一 latent 空间。</desc>
+              <defs><marker id="jepa-model-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker></defs>
+              <style>
+                .jepa-svg-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
+                .jepa-svg-label { font-size: 23px; font-weight: 500; }
+                .jepa-svg-small { font-size: 18px; fill: #626b77; }
+                .jepa-svg-symbol { font-family: "Times New Roman", serif; font-style: italic; font-size: 31px; }
+                .jepa-svg-arrow { stroke: #2458a6; stroke-width: 2; fill: none; marker-end: url(#jepa-model-arrow); }
+              </style>
+              <g class="jepa-svg-text" text-anchor="middle">
+                <rect x="1" y="136" width="210" height="70" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
+                <text class="jepa-svg-label" x="106" y="163">当前 latent</text><text class="jepa-svg-symbol" x="106" y="194">z<tspan baseline-shift="sub" font-size="19">i</tspan></text>
+                <rect x="310" y="12" width="256" height="60" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
+                <text class="jepa-svg-label" x="438" y="49">执行动作 a<tspan baseline-shift="sub" font-size="16">i</tspan></text>
+                <rect x="310" y="126" width="256" height="90" rx="4" fill="#2458a6"/>
+                <text x="438" y="164" font-size="24" fill="#fffefa">动作条件预测器</text><text class="jepa-svg-symbol" x="438" y="199" fill="#fffefa">F(z<tspan baseline-shift="sub" font-size="18">i</tspan><tspan baseline-shift="baseline">, a</tspan><tspan baseline-shift="sub" font-size="18">i</tspan><tspan baseline-shift="baseline">)</tspan></text>
+                <rect x="668" y="136" width="214" height="70" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
+                <text class="jepa-svg-label" x="775" y="163">预测 latent</text><text class="jepa-svg-symbol" x="775" y="194" fill="#2458a6">ẑ<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
+                <rect x="668" y="12" width="214" height="70" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
+                <text class="jepa-svg-label" x="775" y="40">真实后继 latent</text><text class="jepa-svg-symbol" x="775" y="70">z<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
+                <rect x="982" y="136" width="232" height="70" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
+                <text class="jepa-svg-label" x="1098" y="179">进度评估头 P</text>
+                <text class="jepa-svg-small" x="1355" y="143">预测进度</text><text class="jepa-svg-symbol" x="1355" y="187" fill="#2458a6">p̂<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
+              </g>
+              <path class="jepa-svg-arrow" d="M211 171H305"/><path class="jepa-svg-arrow" d="M438 72V122"/><path class="jepa-svg-arrow" d="M566 171H663"/><path class="jepa-svg-arrow" d="M882 171H977"/><path class="jepa-svg-arrow" d="M1214 171H1290"/>
+              <path d="M775 83V134" stroke="#ad622c" stroke-width="2" stroke-dasharray="5 4"/>
+              <text x="795" y="112" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#ad622c">训练时对齐</text>
+            </svg>
+
+            <div class="jepa-mobile">
+              <h2>动作条件预测</h2>
+              <p class="jepa-inputs">当前 latent z<sub>i</sub>（含视觉历史） + 执行动作 a<sub>i</sub></p>
+              <p class="jepa-down" aria-hidden="true">↓</p><p class="jepa-node">动作条件预测器 F</p>
+              <p class="jepa-down" aria-hidden="true">↓</p><p class="jepa-node">预测未来 latent ẑ<sub>i+1</sub></p>
+              <p class="jepa-target">训练目标：真实后继观测编码得到的 z<sub>i+1</sub>。</p>
+              <div class="jepa-score"><h2>进度评分</h2><p>预测 latent → 进度评估头 P → 预测进度 p̂<sub>i+1</sub></p></div>
+            </div>
+          </figure>
+        </div>
+
+        <section class="jepa-training" aria-labelledby="jepa-loss-title">
+          <div class="jepa-loss-row">
+            <h2 id="jepa-loss-title">拟议训练目标</h2>
+            <math display="block" aria-label="训练损失为未来 latent 预测误差加上加权的 SIGReg 表征正则"><mrow><mi mathvariant="script">L</mi><mo>=</mo><msubsup><mrow><mo>‖</mo><msub><mover accent="true"><mi>z</mi><mo>^</mo></mover><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>z</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>‖</mo></mrow><mn>2</mn><mn>2</mn></msubsup><mo>+</mo><mi>λ</mi><msub><mi mathvariant="script">L</mi><mtext>SIGReg</mtext></msub><mo>(</mo><mi>Z</mi><mo>)</mo></mrow></math>
+          </div>
+          <p>SIGReg 约束批次表征分布；进度头 P 用第 8 页的进度标签监督，并与预测器使用同一 latent 空间。</p>
+        </section>
+        <footer class="footer">
+          <span>表征正则参考：<a href="https://arxiv.org/abs/2511.08544" target="_blank" rel="noopener noreferrer">LeJEPA / SIGReg</a><span class="source-note">动作条件预测与进度头为拟议扩展</span></span>
+          <span class="page-number" aria-label="第 10 页">10</span>
+        </footer>
+      </article>
     </div>
     <div class="toolbar" aria-label="演示控制">
       <button type="button" id="previous-slide" aria-label="上一页">上一页</button>
-      <span id="page-status" role="status" aria-live="polite">1 / 9</span>
+      <span id="page-status" role="status" aria-live="polite">1 / 10</span>
       <button type="button" id="next-slide" aria-label="下一页">下一页</button>
       <button type="button" id="fullscreen">全屏演示</button>
       <span id="display-status" role="status" aria-live="polite"></span>
@@ -1121,6 +1235,27 @@
     counted as stagnant. The observation window leaves time for autonomous
     recovery. These are proposed heuristics, not proof of irrecoverability.
     No durations, retry counts or progress tolerances are claimed as calibrated.
+    Slide 10 is the user's proposed action-conditioned latent model. Each s_i is
+    a three-view observation, and z_i encodes observations up to i with shared
+    visual and history-fusion modules. The data sequence supplies transitions
+    (z_i, a_i, z_(i+1)); a_i is the executed action or aligned action chunk.
+    Predicted future latents are matched to latents from actual successors in
+    training. Actual future observations are not predictor inputs at deployment.
+    The proposed objective combines latent prediction error with SIGReg on
+    batches of learned representations Z. This is an action-conditioned
+    extension inspired by LeJEPA, not a claim that the original image-based
+    LeJEPA architecture already implements this robotics model.
+    Primary sources checked:
+    https://arxiv.org/abs/2511.08544
+    https://github.com/galilai-group/lejepa
+    LeJEPA combines JEPA predictive learning with isotropic-Gaussian embedding
+    regularization. The slide does not prescribe a teacher/EMA/stop-gradient
+    branch. The separate progress head P must be supervised with the progress
+    labels on slide 8 in the same latent space. Its output is the proposed
+    recovery-action score; latent prediction loss itself is not that score.
+    The progress head scores the state represented by its input latent, not the
+    next-step state transition output of the slide 6 VLM. Shared representation
+    compatibility and accuracy on imagined states remain to be validated.
   -->
   <script>
     const frame = document.querySelector('.frame');

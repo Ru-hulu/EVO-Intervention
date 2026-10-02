@@ -271,3 +271,7 @@ evo_intervention/model/framework/VLM4A/QwenGR00T_v2.py
 
 # Project-local: StarVLA tracks these upstream despite the deepseeds rule above; accelerate launch needs them
 !evo_intervention/config/deepseeds/*.yaml
+
+# Track le-wm training configuration files under the otherwise ignored data directory
+!le-wm/config/train/data/
+!le-wm/config/train/data/*.yaml

@@ -9,7 +9,7 @@ from torch import nn
 from torch.nn import functional as F
 from transformers import AutoImageProcessor, AutoTokenizer, Qwen3_5ForConditionalGeneration
 
-from qwen_training.vision_encoder import encode_three_views
+from qwen_training.vision_encoder import encode_history, encode_three_views
 
 
 class QwenProgressModel(nn.Module):
@@ -39,6 +39,14 @@ class QwenProgressModel(nn.Module):
     def encode_images(self, images):
         """三视角单帧 → 现有 visual_features 接口；图像模式使用默认 feature_dim。"""
         return encode_three_views(self.qwen.model.visual, self.image_processor, images)
+
+    def encode_history(self, images, num_frames=None, frame_stride=1, frame_interval=1.0,
+                       frame_times=None, frame_mask=None, temporal_layers=None):
+        """三视角历史帧 → 含时间编码的 MEM 特征；本阶段仍输出所有帧的 token。"""
+        return encode_history(
+            self.qwen.model.visual, self.image_processor, images,
+            num_frames, frame_stride, frame_interval, frame_times, frame_mask, temporal_layers,
+        )
 
     def build_inputs(self, messages, visual_features, visual_mask=None, responses=None):
         """拼成 [有效视觉前缀, 聊天 Prompt, 答案]，仅监督答案及结束标记。
