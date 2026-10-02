@@ -41,7 +41,7 @@ class QwenProgressModel(nn.Module):
         return encode_three_views(self.qwen.model.visual, self.image_processor, images)
 
     def encode_history(self, images, frame_mask=None):
-        """三视角历史帧 → 含时间编码的 MEM 特征；本阶段仍输出所有帧的 token。"""
+        """三视角历史帧 → 融合历史信息的三个当前视角 token。"""
         return encode_history(
             self.qwen.model.visual, self.image_processor, images,
             frame_mask=frame_mask,

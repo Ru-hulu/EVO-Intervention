@@ -34,7 +34,7 @@ def encode_three_views(visual, image_processor, images):
 
 
 def encode_history(visual, image_processor, images, frame_mask=None):
-    """直接编码传入的三视角全部历史帧，通过共享视觉编码器进行 MEM 时序融合。
+    """融合三视角各自的历史帧，仅返回三个视角当前帧的 token。
 
     输入参数：
         visual：已加载的 Qwen 视觉编码器，三个视角共享它的权重。
@@ -47,12 +47,14 @@ def encode_history(visual, image_processor, images, frame_mask=None):
             默认 None，认为传入的帧全部有效；每个视角的当前帧必须有效。
 
     帧选择和历史不足时的占位由输入端准备；各视角长度 L 相同，时间从旧到新。
+    约定所有输入图片经过 Merger 后的 token 数 n 相同。
     编码器按输入帧顺序编码，当前帧位置为 0，MEM 使用的帧数 K 就是 L。
     MEM 时序注意力固定在第 4、8、12……层执行。
 
-    返回 visual_features [B,N,D] / visual_mask [B,N]，按视角、时间拼接所有输入帧。
-    N 是批内补齐后的 token 数，D 是 Merger 输出维度；此步尚未筛选当前帧。
-    无效帧 token 和样本间补齐 token 均为 0，对应 visual_mask=False。
+    返回 visual_features [B,N,D] / visual_mask [B,N]，按顶部、左侧、右侧拼接当前帧 token。
+    当前帧 token 已融合历史信息，每个视角保留全部空间 token；历史帧 token 不单独输出。
+    N=3*n 是三个当前视角的 token 总数，D 是 Merger 输出维度。
+    当前帧必须有效，输出长度一致，因此 visual_mask 全为 True。
     """
     batch_size = len(images)  # 样本数 B。
     num_frames = len(images[0][0])  # 每个视角传入多少帧，就编码多少帧：K=L。
@@ -74,9 +76,9 @@ def encode_history(visual, image_processor, images, frame_mask=None):
     tokens = mem_vision_forward(
         visual, inputs["pixel_values"], grid, num_frames, frame_mask=valid.reshape(-1, num_frames),
     )  # [所有帧的 Merger token 总数,D]。
-    counts = grid.prod(dim=-1) // visual.spatial_merge_size**2  # [B*3*L]。
-    lengths = counts.reshape(batch_size, -1).sum(dim=-1).tolist()  # 每个样本的 token 数。
-    token_mask = valid.to(visual.device).flatten().repeat_interleave(counts)  # 与 tokens 一一对应。
-    features = pad_sequence(tokens.split(lengths), batch_first=True)  # [B,Nmax,D]。
-    mask = pad_sequence(token_mask.split(lengths), batch_first=True, padding_value=False)  # [B,Nmax]。
+    feature_dim = tokens.shape[-1]  # D，每个 token 的特征维度。
+    tokens = tokens.reshape(batch_size, 3, num_frames, -1, feature_dim)  # [B,3,L,n,D]。
+    current_tokens = tokens[:, :, -1]  # [B,3,n,D]，取各视角的当前帧。
+    features = current_tokens.reshape(batch_size, -1, feature_dim)  # [B,3*n,D]，拼接三个视角。
+    mask = torch.ones(features.shape[:2], device=features.device, dtype=torch.bool)  # [B,3*n]，全为 True。
     return {"visual_features": features, "visual_mask": mask}

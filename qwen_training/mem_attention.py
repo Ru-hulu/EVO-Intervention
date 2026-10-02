@@ -98,7 +98,7 @@ def mem_vision_forward(visual, pixel_values, image_grid_thw, num_frames, frame_m
     同一视角在各时刻的 H/W 网格必须一致。
     MEM 固定在第 4、8、12……层执行；帧位置为 [-(K-1),...,0]，不表示实际秒数。
     frame_mask 为 [B*V,K]，默认全部有效；False 的帧不参与融合，输出 token 清零。
-    仍然保留所有历史 token，尚未执行仅保留当前帧的步骤。
+    此底层函数保留所有帧 token，由 encode_history 在融合完成后筛选各视角的当前帧。
 
     当前模型输入：pixel_values [P,1536]、image_grid_thw [M,3]。
     1536 = RGB通道3 * 原生时间patch大小2 * 空间patch大小16 * 16，是像素展开长度。
