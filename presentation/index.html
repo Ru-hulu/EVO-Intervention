@@ -233,6 +233,18 @@
     .jepa-loss-row h2 { margin: 0; font-size: 18px; color: var(--blue); font-weight: 500; white-space: nowrap; }
     .jepa-loss-row math { font-size: 30px; font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif; }
     .jepa-training p { margin: 10px 0 0; font-size: 19px; line-height: 1.5; color: var(--muted); }
+    .candidate-intro { margin: 18px 0 0; font-size: 25px; line-height: 1.6; color: var(--muted); }
+    .candidate-intro strong { color: var(--ink); font-weight: 600; }
+    .candidate-body { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--rule); flex: 1; }
+    .candidate-flow { margin: 0; }
+    .candidate-flow > .candidate-desktop { display: block; width: 100%; height: 350px; }
+    .candidate-flow > .candidate-mobile { display: none; }
+    .candidate-equations { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule); }
+    .candidate-equation { display: flex; align-items: center; gap: 20px; min-width: 0; }
+    .candidate-equation h2 { margin: 0; color: var(--blue); font-size: 19px; font-weight: 500; white-space: nowrap; }
+    .candidate-equation math { font-size: 29px; font-family: "STIX Two Math", "Cambria Math", "Times New Roman", serif; }
+    .candidate-sampling-note { margin: 10px 0 0; font-size: 18px; line-height: 1.5; color: var(--muted); }
+    .candidate-conclusion p { font-size: 26px; }
     body:fullscreen { background: #111820; }
     body:fullscreen .stage { padding: 0; gap: 0; }
     body:fullscreen .toolbar { display: none; }
@@ -397,6 +409,16 @@
       .jepa-loss-row h2 { margin-bottom: 12px; font-size: 14px; }
       .jepa-loss-row math { font-size: clamp(17px, 4.6vw, 25px); }
       .jepa-training p { font-size: 14px; margin-top: 12px; }
+      .candidate-intro { font-size: 17px; }
+      .candidate-body { margin-top: 24px; padding-top: 20px; }
+      .candidate-flow > .candidate-desktop { display: none; }
+      .candidate-flow > .candidate-mobile { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; }
+      .candidate-equations { grid-template-columns: 1fr; margin-top: 25px; gap: 20px; }
+      .candidate-equation { display: block; }
+      .candidate-equation h2 { margin-bottom: 12px; font-size: 15px; }
+      .candidate-equation math { font-size: clamp(16px, 4.1vw, 25px); }
+      .candidate-sampling-note { font-size: 13px; }
+      .candidate-conclusion p { font-size: 21px; }
     }
     @page { size: 16in 9in; margin: 0; }
     @media print {
@@ -1090,7 +1112,7 @@
           <figure class="jepa-model">
             <svg viewBox="0 0 1416 246" role="img" aria-labelledby="jepa-model-title jepa-model-desc">
               <title id="jepa-model-title">动作条件 latent 预测与进度评分</title>
-              <desc id="jepa-model-desc">当前 zi 和执行动作 ai 输入动作条件预测器 F，得到预测的下一时刻 latent。训练时将预测 latent 与真实后继观测编码得到的 zi+1 对齐；真实后继仅作为训练目标。预测 latent 随后输入进度评估头 P，输出未来进度估计。P 以已有进度标签单独监督，和预测器使用同一 latent 空间。</desc>
+              <desc id="jepa-model-desc">当前 zi 和执行动作 ai 输入动作条件预测器 F，得到预测的下一时刻 latent。训练时将预测 latent 与真实后继观测编码得到的 zi+1 对齐；真实后继仅作为训练目标。预测 latent 随后与子任务状态一起输入我们的 VLM，输出预测进度。VLM 以已有进度标签监督，预测 latent 需与其视觉输入空间一致。</desc>
               <defs><marker id="jepa-model-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker></defs>
               <style>
                 .jepa-svg-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
@@ -1111,7 +1133,7 @@
                 <rect x="668" y="12" width="214" height="70" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
                 <text class="jepa-svg-label" x="775" y="40">真实后继 latent</text><text class="jepa-svg-symbol" x="775" y="70">z<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
                 <rect x="982" y="136" width="232" height="70" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-                <text class="jepa-svg-label" x="1098" y="179">进度评估头 P</text>
+                <text class="jepa-svg-label" x="1098" y="165">我们的 VLM</text><text class="jepa-svg-small" x="1098" y="193">结合子任务状态预测进度</text>
                 <text class="jepa-svg-small" x="1355" y="143">预测进度</text><text class="jepa-svg-symbol" x="1355" y="187" fill="#2458a6">p̂<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
               </g>
               <path class="jepa-svg-arrow" d="M211 171H305"/><path class="jepa-svg-arrow" d="M438 72V122"/><path class="jepa-svg-arrow" d="M566 171H663"/><path class="jepa-svg-arrow" d="M882 171H977"/><path class="jepa-svg-arrow" d="M1214 171H1290"/>
@@ -1125,7 +1147,7 @@
               <p class="jepa-down" aria-hidden="true">↓</p><p class="jepa-node">动作条件预测器 F</p>
               <p class="jepa-down" aria-hidden="true">↓</p><p class="jepa-node">预测未来 latent ẑ<sub>i+1</sub></p>
               <p class="jepa-target">训练目标：真实后继观测编码得到的 z<sub>i+1</sub>。</p>
-              <div class="jepa-score"><h2>进度评分</h2><p>预测 latent → 进度评估头 P → 预测进度 p̂<sub>i+1</sub></p></div>
+              <div class="jepa-score"><h2>进度评分</h2><p>预测 latent + 子任务状态 → 我们的 VLM → 预测进度 p̂<sub>i+1</sub></p></div>
             </div>
           </figure>
         </div>
@@ -1135,17 +1157,196 @@
             <h2 id="jepa-loss-title">拟议训练目标</h2>
             <math display="block" aria-label="训练损失为未来 latent 预测误差加上加权的 SIGReg 表征正则"><mrow><mi mathvariant="script">L</mi><mo>=</mo><msubsup><mrow><mo>‖</mo><msub><mover accent="true"><mi>z</mi><mo>^</mo></mover><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>z</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>‖</mo></mrow><mn>2</mn><mn>2</mn></msubsup><mo>+</mo><mi>λ</mi><msub><mi mathvariant="script">L</mi><mtext>SIGReg</mtext></msub><mo>(</mo><mi>Z</mi><mo>)</mo></mrow></math>
           </div>
-          <p>SIGReg 约束批次表征分布；进度头 P 用第 8 页的进度标签监督，并与预测器使用同一 latent 空间。</p>
+          <p>SIGReg 约束批次表征分布；VLM 用第 8 页的进度标签监督，预测 latent 需与其视觉输入空间一致。</p>
         </section>
         <footer class="footer">
-          <span>表征正则参考：<a href="https://arxiv.org/abs/2511.08544" target="_blank" rel="noopener noreferrer">LeJEPA / SIGReg</a><span class="source-note">动作条件预测与进度头为拟议扩展</span></span>
+          <span>表征正则参考：<a href="https://arxiv.org/abs/2511.08544" target="_blank" rel="noopener noreferrer">LeJEPA / SIGReg</a><span class="source-note">动作条件预测与 VLM 评分为拟议扩展</span></span>
           <span class="page-number" aria-label="第 10 页">10</span>
+        </footer>
+      </article>
+      <article class="slide" id="slide-11" data-title="恢复动作的生成与选择" aria-labelledby="candidate-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">介入动作 · 生成与选择</span><span>EVO-Inter</span></div>
+          <h1 id="candidate-title">恢复动作的生成与选择</h1>
+          <p class="candidate-intro">VLA 局部采样生成候选，经 JEPA 预测与我们的 VLM 评分，选择<strong>预测进度 P 最大的动作</strong>。</p>
+        </header>
+
+        <div class="candidate-body">
+          <figure class="candidate-flow">
+            <svg class="candidate-desktop" viewBox="0 0 1416 350" role="img" aria-labelledby="candidate-flow-title candidate-flow-desc">
+              <title id="candidate-flow-title">VLA 局部采样、JEPA 预测、VLM 评分与最大进度动作选择</title>
+              <desc id="candidate-flow-desc">已触发介入。VLA 根据当前观测、任务指令和历史信息提出基准动作，围绕该动作局部采样并保留原提议，得到 K 个候选。每个候选动作与融合视觉历史的当前 latent 一起输入 JEPA，预测对应的未来 latent。将各预测 latent 与当前子任务状态输入我们的 VLM，得到一一对应的进度分数 P1 至 PK。选择分数最大的候选动作作为恢复动作执行。</desc>
+              <defs><marker id="candidate-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker></defs>
+              <style>
+                .candidate-svg-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
+                .candidate-svg-heading { font-size: 27px; font-weight: 600; }
+                .candidate-svg-label { font-size: 22px; font-weight: 500; }
+                .candidate-svg-small { font-size: 18px; fill: #626b77; }
+                .candidate-svg-blue { fill: #2458a6; }
+                .candidate-svg-symbol { font-family: "Times New Roman", serif; font-style: italic; font-size: 29px; }
+                .candidate-svg-arrow { stroke: #2458a6; stroke-width: 2; fill: none; marker-end: url(#candidate-arrow); }
+              </style>
+              <g class="candidate-svg-text" text-anchor="middle">
+                <text class="candidate-svg-small candidate-svg-blue" x="93" y="31">已触发介入</text>
+                <text class="candidate-svg-small" x="93" y="63">观测 · 指令 · 历史</text>
+                <path class="candidate-svg-arrow" d="M93 79V120"/>
+                <rect x="1" y="125" width="184" height="100" rx="4" fill="#2458a6"/>
+                <text x="93" y="169" font-size="34" font-weight="600" fill="#fffefa">VLA</text>
+                <text x="93" y="204" font-size="19" fill="#fffefa">提出基准动作</text>
+                <path class="candidate-svg-arrow" d="M185 175H262"/>
+                <text class="candidate-svg-symbol candidate-svg-blue" x="224" y="150">a<tspan baseline-shift="super" font-size="16">(0)</tspan></text>
+
+                <rect x="267" y="125" width="222" height="100" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
+                <text class="candidate-svg-heading" x="378" y="169">局部采样</text>
+                <text class="candidate-svg-small" x="378" y="204">小幅扰动 · 保留原提议</text>
+                <path class="candidate-svg-arrow" d="M489 175H620"/>
+                <text class="candidate-svg-small" x="555" y="147">K 个候选动作</text>
+                <text class="candidate-svg-symbol candidate-svg-blue" x="555" y="212">{a<tspan baseline-shift="super" font-size="16">(k)</tspan><tspan baseline-shift="baseline">}</tspan></text>
+
+                <text class="candidate-svg-label" x="728" y="31">当前 latent z<tspan baseline-shift="sub" font-size="15">t</tspan></text>
+                <text class="candidate-svg-small" x="728" y="63">已融合视觉历史</text>
+                <path class="candidate-svg-arrow" d="M728 79V120"/>
+                <rect x="625" y="125" width="205" height="100" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
+                <text class="candidate-svg-heading" x="728" y="169">JEPA</text>
+                <text class="candidate-svg-small" x="728" y="204">逐个预测动作结果</text>
+                <path class="candidate-svg-arrow" d="M830 175H968"/>
+                <text class="candidate-svg-small" x="899" y="147">K 个未来 latent</text>
+                <text class="candidate-svg-symbol candidate-svg-blue" x="899" y="212">{ẑ<tspan baseline-shift="super" font-size="16">(k)</tspan><tspan baseline-shift="baseline">}</tspan></text>
+
+                <text class="candidate-svg-label" x="1078" y="31">当前子任务状态</text>
+                <text class="candidate-svg-small" x="1078" y="63">nowid / finishid / restid</text>
+                <path class="candidate-svg-arrow" d="M1078 79V120"/>
+                <rect x="973" y="125" width="210" height="100" rx="4" fill="#2458a6"/>
+                <text x="1078" y="169" font-size="27" font-weight="600" fill="#fffefa">我们的 VLM</text>
+                <text x="1078" y="204" font-size="19" fill="#fffefa">预测任务进度</text>
+                <path class="candidate-svg-arrow" d="M1183 175H1242"/>
+
+                <text class="candidate-svg-small candidate-svg-blue" x="1327" y="89">K 个进度分数</text>
+                <g class="candidate-svg-symbol candidate-svg-blue">
+                  <text x="1313" y="133">P<tspan baseline-shift="super" font-size="16">(1)</tspan></text>
+                  <text x="1313" y="172">P<tspan baseline-shift="super" font-size="16">(2)</tspan></text>
+                  <text x="1313" y="204">⋮</text>
+                  <text x="1313" y="244">P<tspan baseline-shift="super" font-size="16">(K)</tspan></text>
+                </g>
+                <path d="M1360 111H1377V247H1360" fill="none" stroke="#7e9fc9" stroke-width="1.5"/>
+                <path class="candidate-svg-arrow" d="M1377 179H1405V272H1107V295"/>
+
+                <text class="candidate-svg-small" x="1" y="309" text-anchor="start">候选动作、预测 latent 与 P 分数一一对应</text>
+                <rect x="797" y="299" width="618" height="48" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
+                <text x="1106" y="332" font-size="24" font-weight="500" fill="#2458a6">取最大的 P → 执行对应候选动作 a<tspan baseline-shift="super" font-size="15">(k*)</tspan></text>
+              </g>
+            </svg>
+
+            <svg class="candidate-mobile" viewBox="0 0 380 1010" role="img" aria-labelledby="candidate-vertical-title candidate-vertical-desc">
+              <title id="candidate-vertical-title">恢复动作生成与选择的纵向流程图</title>
+              <desc id="candidate-vertical-desc">触发介入后，当前观测、指令与历史输入 VLA。第一步，VLA 提出基准动作，局部采样得到 K 个候选并保留原提议。第二步，各候选动作和融合视觉历史的当前 latent 输入 JEPA，得到 K 个未来 latent。第三步，各未来 latent 和当前 nowid、finishid、restid 输入我们的 VLM，输出一一对应的进度分数。取最大的 P，执行对应的候选动作作为恢复动作。</desc>
+              <defs><marker id="candidate-vertical-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.6"/></marker></defs>
+              <style>
+                .candidate-vertical-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
+                .candidate-vertical-title { font-size: 21px; font-weight: 600; fill: #2458a6; }
+                .candidate-vertical-small { font-size: 16px; fill: #626b77; }
+                .candidate-vertical-symbol { font-family: "Times New Roman", serif; font-style: italic; font-size: 26px; fill: #2458a6; }
+                .candidate-vertical-node { fill: #eef3fa; stroke: #7e9fc9; stroke-width: 1.3; }
+                .candidate-vertical-input { fill: #fffefa; stroke: #b9c5d3; stroke-width: 1.3; }
+                .candidate-vertical-link { stroke: #2458a6; stroke-width: 1.8; fill: none; marker-end: url(#candidate-vertical-arrow); }
+              </style>
+              <g class="candidate-vertical-text" text-anchor="middle">
+                <rect class="candidate-vertical-input" x="28" y="1" width="324" height="60" rx="5"/>
+                <text x="190" y="27" font-size="19" fill="#2458a6">已触发介入</text>
+                <text class="candidate-vertical-small" x="190" y="50">当前观测 · 任务指令 · 历史信息</text>
+                <path class="candidate-vertical-link" d="M190 62V91"/>
+
+                <rect class="candidate-vertical-node" x="28" y="96" width="324" height="114" rx="5"/>
+                <text class="candidate-vertical-title" x="190" y="127">01 · VLA 局部采样</text>
+                <text x="96" y="170" font-size="24" font-weight="500">VLA</text>
+                <path class="candidate-vertical-link" d="M132 163H218"/>
+                <text class="candidate-vertical-symbol" x="175" y="153" font-size="20">a<tspan baseline-shift="super" font-size="12">(0)</tspan></text>
+                <text x="272" y="170" font-size="21">局部采样</text>
+                <text class="candidate-vertical-small" x="190" y="197">小幅扰动 · 保留原提议</text>
+                <path class="candidate-vertical-link" d="M190 211V240"/>
+
+                <rect class="candidate-vertical-input" x="28" y="246" width="324" height="76" rx="5"/>
+                <text class="candidate-vertical-small" x="190" y="273">K 个候选动作</text>
+                <g class="candidate-vertical-symbol">
+                  <text x="76" y="307">a<tspan baseline-shift="super" font-size="14">(1)</tspan></text>
+                  <text x="151" y="307">a<tspan baseline-shift="super" font-size="14">(2)</tspan></text>
+                  <text x="220" y="302">…</text>
+                  <text x="295" y="307">a<tspan baseline-shift="super" font-size="14">(K)</tspan></text>
+                </g>
+                <path class="candidate-vertical-link" d="M190 323V347H275V370"/>
+
+                <rect class="candidate-vertical-input" x="1" y="379" width="140" height="81" rx="5"/>
+                <text x="71" y="405" font-size="17">当前 latent</text>
+                <text class="candidate-vertical-symbol" x="71" y="433">z<tspan baseline-shift="sub" font-size="15">t</tspan></text>
+                <text x="71" y="450" font-size="13" fill="#626b77">已融合视觉历史</text>
+                <path class="candidate-vertical-link" d="M142 419H165"/>
+                <rect class="candidate-vertical-node" x="170" y="375" width="209" height="88" rx="5"/>
+                <text class="candidate-vertical-title" x="275" y="410">02 · JEPA</text>
+                <text x="275" y="443" font-size="18">预测各动作的结果</text>
+                <path class="candidate-vertical-link" d="M275 464V489H190V508"/>
+
+                <rect class="candidate-vertical-input" x="28" y="513" width="324" height="76" rx="5"/>
+                <text class="candidate-vertical-small" x="190" y="540">K 个未来 latent</text>
+                <g class="candidate-vertical-symbol">
+                  <text x="76" y="574">ẑ<tspan baseline-shift="super" font-size="14">(1)</tspan></text>
+                  <text x="151" y="574">ẑ<tspan baseline-shift="super" font-size="14">(2)</tspan></text>
+                  <text x="220" y="569">…</text>
+                  <text x="295" y="574">ẑ<tspan baseline-shift="super" font-size="14">(K)</tspan></text>
+                </g>
+                <path class="candidate-vertical-link" d="M190 590V621H275V650"/>
+
+                <rect class="candidate-vertical-input" x="1" y="655" width="140" height="90" rx="5"/>
+                <text x="71" y="680" font-size="16">当前子任务状态</text>
+                <text x="71" y="706" font-size="14" fill="#626b77">nowid / finishid</text>
+                <text x="71" y="729" font-size="14" fill="#626b77">restid</text>
+                <path class="candidate-vertical-link" d="M142 700H165"/>
+                <rect x="170" y="655" width="209" height="90" rx="5" fill="#2458a6"/>
+                <text x="275" y="691" font-size="21" font-weight="600" fill="#fffefa">03 · 我们的 VLM</text>
+                <text x="275" y="724" font-size="18" fill="#fffefa">预测任务进度</text>
+                <path class="candidate-vertical-link" d="M275 746V771H190V792"/>
+
+                <rect class="candidate-vertical-input" x="28" y="797" width="324" height="80" rx="5"/>
+                <text class="candidate-vertical-small" x="190" y="824">与候选一一对应的进度分数</text>
+                <g class="candidate-vertical-symbol">
+                  <text x="76" y="859">P<tspan baseline-shift="super" font-size="14">(1)</tspan></text>
+                  <text x="151" y="859">P<tspan baseline-shift="super" font-size="14">(2)</tspan></text>
+                  <text x="220" y="854">…</text>
+                  <text x="295" y="859">P<tspan baseline-shift="super" font-size="14">(K)</tspan></text>
+                </g>
+                <path class="candidate-vertical-link" d="M190 878V904"/>
+
+                <rect class="candidate-vertical-node" x="28" y="909" width="324" height="91" rx="5"/>
+                <text x="190" y="946" font-size="23" font-weight="600" fill="#2458a6">选取最大的 P</text>
+                <text x="190" y="980" font-size="20">执行对应候选动作 a<tspan baseline-shift="super" font-size="13">(k*)</tspan></text>
+              </g>
+            </svg>
+          </figure>
+
+          <div class="candidate-equations">
+            <section class="candidate-equation" aria-labelledby="candidate-sampling-title">
+              <h2 id="candidate-sampling-title">局部采样</h2>
+              <math display="block" aria-label="候选动作等于 VLA 基准动作加采样扰动，扰动范数不超过采样半径 rho"><mrow><msup><mi>a</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>=</mo><msup><mi>a</mi><mrow><mo>(</mo><mn>0</mn><mo>)</mo></mrow></msup><mo>+</mo><msup><mi>ε</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>,</mo><mspace width="0.5em"/><mo>‖</mo><msup><mi>ε</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>‖</mo><mo>≤</mo><mi>ρ</mi></mrow></math>
+            </section>
+            <section class="candidate-equation" aria-labelledby="candidate-select-title">
+              <h2 id="candidate-select-title">动作选择</h2>
+              <math display="block" aria-label="选择进度分数最大的候选索引 k 星，并执行该索引对应的恢复动作"><mrow><msup><mi>k</mi><mo>*</mo></msup><mo>=</mo><munder><mo movablelimits="false">arg max</mo><mi>k</mi></munder><msup><mi>P</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>,</mo><mspace width="0.5em"/><msub><mi>a</mi><mtext>rec</mtext></msub><mo>=</mo><msup><mi>a</mi><mrow><mo>(</mo><msup><mi>k</mi><mo>*</mo></msup><mo>)</mo></mrow></msup></mrow></math>
+            </section>
+          </div>
+          <p class="candidate-sampling-note">在连续动作维度内采样；ρ 为采样半径，P<sup>(k)</sup> 为第 k 个候选对应的预测进度。</p>
+        </div>
+
+        <section class="goal candidate-conclusion" aria-label="局部采样的待验证假设">
+          <span class="goal-label">待验证假设</span><p>有效恢复动作位于 VLA 提议动作附近，局部采样能够覆盖这些动作。</p>
+        </section>
+        <footer class="footer">
+          <span>拟议方案<span class="source-note">候选数量与采样半径待实验确定</span></span>
+          <span class="page-number" aria-label="第 11 页">11</span>
         </footer>
       </article>
     </div>
     <div class="toolbar" aria-label="演示控制">
       <button type="button" id="previous-slide" aria-label="上一页">上一页</button>
-      <span id="page-status" role="status" aria-live="polite">1 / 10</span>
+      <span id="page-status" role="status" aria-live="polite">1 / 11</span>
       <button type="button" id="next-slide" aria-label="下一页">下一页</button>
       <button type="button" id="fullscreen">全屏演示</button>
       <span id="display-status" role="status" aria-live="polite"></span>
@@ -1250,12 +1451,30 @@
     https://github.com/galilai-group/lejepa
     LeJEPA combines JEPA predictive learning with isotropic-Gaussian embedding
     regularization. The slide does not prescribe a teacher/EMA/stop-gradient
-    branch. The separate progress head P must be supervised with the progress
-    labels on slide 8 in the same latent space. Its output is the proposed
-    recovery-action score; latent prediction loss itself is not that score.
-    The progress head scores the state represented by its input latent, not the
-    next-step state transition output of the slide 6 VLM. Shared representation
-    compatibility and accuracy on imagined states remain to be validated.
+    branch. As clarified by the user, progress scores are produced by our VLM,
+    supervised with the progress labels on slide 8. Predicted visual latents
+    and subtask state are its inputs; latent prediction loss is not the score.
+    This scoring use of the VLM must keep representation format and prediction
+    horizon aligned with the progress-label definition. Compatibility and
+    accuracy on imagined states remain to be validated.
+    Slide 11 shows the user's proposed recovery-action generation and selection.
+    Only VLA-centered local sampling is used. The original VLA proposal remains
+    in the candidate pool; no separate learned recovery policy is included.
+    The equation illustrates bounded perturbations in continuous coordinates.
+    Norm/coordinate scaling, sampling distribution, candidate count K, radius
+    rho and discrete-action handling are not specified. Each candidate may be
+    an action or an aligned action chunk, consistent with slide 10's predictor.
+    Pool indices enumerate K candidates, including the retained VLA proposal.
+    JEPA receives the current latent with causal visual history and candidate
+    action k, then predicts that candidate's future latent. Our VLM receives
+    each predicted latent and the shared current subtask state, producing the
+    corresponding progress score P^(k). P is an output score here, not a
+    separate scoring-model box. Select k* = argmax_k P^(k), then execute the
+    existing candidate a^(k*) as the recovery action; no action is generated
+    from the scalar score. The diagram omits unrelated VLM output fields.
+    A useful recovery action lying near the VLA proposal remains a research
+    hypothesis, not an optimality guarantee. No numerical scores or successful
+    recovery results are claimed.
   -->
   <script>
     const frame = document.querySelector('.frame');
