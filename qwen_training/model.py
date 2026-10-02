@@ -7,26 +7,46 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from transformers import AutoTokenizer, Qwen3VLForConditionalGeneration
+from transformers import AutoImageProcessor, AutoTokenizer, Qwen3_5ForConditionalGeneration
+
+from qwen_training.vision_encoder import encode_history, encode_three_views
 
 
 class QwenProgressModel(nn.Module):
-    def __init__(self, model_path, feature_dim, dtype=torch.bfloat16, freeze_backbone=False):
+    def __init__(self, model_path, feature_dim=None, dtype=torch.bfloat16, freeze_backbone=False,
+                 max_pixels=262144):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
-        self.qwen = Qwen3VLForConditionalGeneration.from_pretrained(
+        self.image_processor = AutoImageProcessor.from_pretrained(
+            model_path, use_fast=True, max_pixels=max_pixels,
+        )
+        self.qwen = Qwen3_5ForConditionalGeneration.from_pretrained(
             model_path, dtype=dtype, attn_implementation="sdpa"
         )
-        # E_t 已经由上游编码好，本模块不重复运行原始视觉编码器。
+        # encode_images 复用这个编码器；传入 visual_features 时不重复编码。
         self.qwen.model.visual.requires_grad_(False)
         if freeze_backbone:
             self.qwen.requires_grad_(False)
 
         embedding = self.qwen.get_input_embeddings().weight
+        if feature_dim is None:
+            feature_dim = self.qwen.config.vision_config.out_hidden_size
         self.visual_adapter = nn.Sequential(
             nn.LayerNorm(feature_dim),
             nn.Linear(feature_dim, self.qwen.config.text_config.hidden_size),
         ).to(device=embedding.device, dtype=embedding.dtype)
+
+    def encode_images(self, images):
+        """三视角单帧 → 现有 visual_features 接口；图像模式使用默认 feature_dim。"""
+        return encode_three_views(self.qwen.model.visual, self.image_processor, images)
+
+    def encode_history(self, images, num_frames=None, frame_stride=1, frame_interval=1.0,
+                       frame_times=None, frame_mask=None, temporal_layers=None):
+        """三视角历史帧 → 含时间编码的 MEM 特征；本阶段仍输出所有帧的 token。"""
+        return encode_history(
+            self.qwen.model.visual, self.image_processor, images,
+            num_frames, frame_stride, frame_interval, frame_times, frame_mask, temporal_layers,
+        )
 
     def build_inputs(self, messages, visual_features, visual_mask=None, responses=None):
         """拼成 [有效视觉前缀, 聊天 Prompt, 答案]，仅监督答案及结束标记。
@@ -49,14 +69,17 @@ class QwenProgressModel(nn.Module):
 
         sequences, labels = [], []
         for i, (chat, features, mask) in enumerate(zip(messages, visual, visual_mask, strict=True)):
+            # Qwen3.5 统一关闭 thinking，空思考前缀属于 Prompt，不参与监督。
             prompt_ids = self.tokenizer.apply_chat_template(
-                chat, tokenize=True, return_dict=False, add_generation_prompt=True
+                chat, tokenize=True, return_dict=False, add_generation_prompt=True,
+                enable_thinking=False,
             ) # 转换为 token ID 序列
             token_ids = prompt_ids
             if responses is not None:
                 full_chat = chat + [{"role": "assistant", "content": responses[i]}]
                 token_ids = self.tokenizer.apply_chat_template(
-                    full_chat, tokenize=True, return_dict=False, add_generation_prompt=False
+                    full_chat, tokenize=True, return_dict=False, add_generation_prompt=False,
+                    enable_thinking=False,
                 )
                 if token_ids[:len(prompt_ids)] != prompt_ids:
                     raise ValueError("聊天模板的训练与推理前缀不一致，无法确定答案位置")
