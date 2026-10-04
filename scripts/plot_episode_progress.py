@@ -30,9 +30,14 @@ def main():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--count", type=int, default=10)
     parser.add_argument("--seed", type=int)
+    parser.add_argument("--min-subtasks", type=int, default=0, help="仅从子任务数不少于此值的 episode 中抽样")
     parser.add_argument("--fps", type=float, default=30)
     parser.add_argument("--rollback-only", action="store_true", help="扫描所有 JSON，绘制全部回滚 episode")
     args = parser.parse_args()
+    if args.min_subtasks < 0 or args.count < 1 or args.fps <= 0:
+        parser.error("--min-subtasks 必须非负，--count 和 --fps 必须为正数")
+    if args.rollback_only and args.min_subtasks:
+        parser.error("--min-subtasks 仅用于随机抽样，不能与 --rollback-only 同时使用")
     seed = args.seed if args.seed is not None else random.SystemRandom().randrange(2**32)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     rollback_keys = None
@@ -61,7 +66,8 @@ def main():
             pool.extend(
                 (stem, episode)
                 for episode in task["episodes"]
-                if rollback_keys is None or (stem, episode["episode"]) in rollback_keys
+                if len(episode["subtasks"]) >= args.min_subtasks
+                and (rollback_keys is None or (stem, episode["episode"]) in rollback_keys)
             )
 
     # 只抽样一次，保存 seed 和名单，便于重现。
@@ -74,6 +80,8 @@ def main():
             print("未发现回滚 episode，扫描结果已保存。")
             return
     else:
+        if len(pool) < args.count:
+            parser.error(f"符合条件且已有 delta 的 episode 仅 {len(pool)} 个，无法抽取 {args.count} 个")
         selected = random.Random(seed).sample(pool, args.count)
     selected.sort(key=lambda item: (item[0], item[1]["episode"]))
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -92,10 +100,17 @@ def main():
             "start_frame": start,
             "end_frame": end,
             "frames": len(progress),
+            "subtask_count": len(subtasks),
+            "task_sequence": [subtask["nowid"] for subtask in subtasks],
+            "video_start_seconds": start / args.fps,
+            "video_end_seconds_exclusive": (end + 1) / args.fps,
+            "rollback_count": len(drops),
             "minimum": min(progress),
             "maximum": max(progress),
             "final": progress[-1],
             "rollback_frames": [start + int(i) for i in drops],
+            "rollback_times_seconds": [int(i) / args.fps for i in drops],
+            "rollback_drop_percentage_points": [float(values[i - 1] - values[i]) * 100 for i in drops],
         }
         output_path = args.output_dir / f"{stem}-episode-{episode['episode']}-progress.txt"
         with output_path.open("w", encoding="utf-8") as output:
@@ -126,23 +141,25 @@ def main():
     )
     rows = math.ceil(len(results) / 2)
     fig, axes = plt.subplots(rows, 2, figsize=(14, 3 * rows + 2.2), squeeze=False, sharex=True, sharey=True)
-    fig.subplots_adjust(left=0.085, right=0.965, bottom=0.055, top=0.855, hspace=0.43, wspace=0.15)
+    fig.subplots_adjust(left=0.085, right=0.965, bottom=0.09, top=0.79, hspace=0.5, wspace=0.15)
     fig.suptitle(
         f"{len(task_names)} 阶段任务进度 · "
         + (f"全部 {len(results)} 个回滚 episode" if args.rollback_only else f"随机抽取 {len(results)} 个 episode"),
         x=0.085,
         y=0.975,
         ha="left",
-        fontsize=23,
+        fontsize=21,
         color="#0f172a",
     )
     fig.text(
         0.085,
-        0.944,
+        0.910,
         (
             f"扫描 {scan['json_files']} 份 JSON / {scan['episodes']} 个 episode · 红线为回滚"
             if args.rollback_only
-            else f"候选 {len(pool)} 个 episode · 随机种子 {seed}"
+            else f"已回传 {len(videos)} 个视频 · 候选 {len(pool)} 个 episode"
+            + (f"（Subtask ≥ {args.min_subtasks}）" if args.min_subtasks else "")
+            + f" · 随机种子 {seed}"
         )
         + f" · 原视频 {args.fps:g} fps",
         color="#64748b",
@@ -155,7 +172,7 @@ def main():
             for task_id, name in task_names.items()
         ],
         loc="upper left",
-        bbox_to_anchor=(0.078, 0.923),
+        bbox_to_anchor=(0.078, 0.907),
         ncol=2,
         frameon=False,
         fontsize=11,
@@ -175,9 +192,10 @@ def main():
         for i in drops:
             axis.axvline(time[i], color="#dc4b38", linestyle="--", linewidth=1.2)
             axis.scatter([time[i - 1], time[i]], [values[i - 1], values[i]], color="#dc4b38", s=22, zorder=5)
-        title = f"{summary['file']} / episode {summary['episode']}"
-        if len(drops):
-            title += "  ·  红线为回滚"
+        title = (
+            f"{summary['file']} / episode {summary['episode']}"
+            f"  ·  {len(subtasks)} 个 Subtask / {len(drops)} 次回滚"
+        )
         axis.set_title(title, loc="left", fontsize=11, color="#0f172a", pad=10)
         axis.set_xlim(0, xmax)
         axis.set_ylim(0, 1.13)
@@ -187,7 +205,7 @@ def main():
         axis.grid(axis="y", color="#e2e8f0", linewidth=0.6)
     for axis in list(axes.flat)[len(results) :]:
         axis.set_visible(False)
-    fig.supxlabel("episode 内时间（秒）", y=0.015, fontsize=12, color="#334155")
+    fig.supxlabel("episode 内时间（秒） · 红色虚线为进度回滚点", y=0.015, fontsize=12, color="#334155")
     fig.supylabel("任务进度 p(t)", x=0.018, fontsize=12, color="#334155")
     plot_name = "rollback_progress" if args.rollback_only else "sampled_progress"
     fig.savefig(args.output_dir / f"{plot_name}.png", dpi=190, facecolor="white")
@@ -197,6 +215,13 @@ def main():
         "mode": "rollback" if args.rollback_only else "random",
         "seed": None if args.rollback_only else seed,
         "candidate_episodes": len(pool),
+        "available_videos": len(videos),
+        "available_video_files": list(videos),
+        "min_subtasks": args.min_subtasks,
+        "candidate_pool": [
+            {"file": stem, "episode": episode["episode"], "subtask_count": len(episode["subtasks"])}
+            for stem, episode in pool
+        ],
         "label_dir": str(args.label_dir.resolve()),
         "delta_dir": str(args.delta_dir.resolve()),
         "fps": args.fps,

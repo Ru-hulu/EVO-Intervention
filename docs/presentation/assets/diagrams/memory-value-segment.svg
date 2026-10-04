@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="240" viewBox="0 0 460 240" role="img" aria-labelledby="memory-plot-title memory-plot-desc">
+  <title id="memory-plot-title">从训练轨迹中选取价值明显上升的参考片段</title>
+  <desc id="memory-plot-desc">复用第 3 页短暂回退曲线的示意形状：价值先上升，接近垂直下降后再次上升。高亮回退后价值由 0.22 上升至 0.72 的片段，将片段起点状态与终点的高价值目标配对入库。曲线为原理示意，不是实测数据，也不表示所有记忆条目都必须包含回退。</desc>
+  <style>
+    text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 18px; fill: #626b77; }
+    .value-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <rect x="232" y="30" width="184" height="160" fill="#e8eff9"/>
+  <path d="M48 30H416M48 110H416" fill="none" stroke="#e1e6ec" stroke-width="1"/>
+  <path d="M48 25V190H423" fill="none" stroke="#acb8c5" stroke-width="1.5"/>
+  <text x="14" y="196">0</text><text x="4" y="115">0.5</text><text x="14" y="36">1</text>
+  <text x="49" y="18">价值 V</text>
+  <text x="324" y="53" text-anchor="middle" fill="#2458a6">入库参考片段</text>
+  <path class="value-line" d="M48 170.8L94 156.4L140 138.8L228 119.6L232 154.8L278 140.4L324 114.8L370 92.4L416 74.8" stroke="#8b9bae" stroke-width="2.8"/>
+  <path class="value-line" d="M232 154.8L278 140.4L324 114.8L370 92.4L416 74.8" stroke="#2458a6" stroke-width="4"/>
+  <path d="M232 154.8V190M416 74.8V190" fill="none" stroke="#9db4d4" stroke-width="1.3" stroke-dasharray="4 4"/>
+  <circle cx="232" cy="154.8" r="5" fill="#ad622c"/>
+  <circle cx="416" cy="74.8" r="5" fill="#2458a6"/>
+  <text x="48" y="219">时间</text>
+  <text x="232" y="219" text-anchor="middle" fill="#ad622c">起点状态</text>
+  <text x="416" y="219" text-anchor="middle" fill="#2458a6">目标状态</text>
+</svg>

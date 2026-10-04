@@ -1,25 +1,21 @@
-"""固定的 JSON 对话与视觉占位表征，供 Qwen 文本生成训练使用。"""
+"""固定的三视角历史假图像与 JSON 对话，供完整视觉训练链路使用。"""
 import json
 import torch
 
-SYSTEM_PROMPT = (
-    "输入 JSON 表示上一次阶段更新时的状态。结合当前融合三视角与历史信息的视觉表征，"
-    "判断当前任务状态与进度。"
-    "任务 ID：1=拿起套筒，2=拿起螺钉，3=将螺钉和套筒对齐并插入，4=将装配好的组件放入盒子。"
-    "nowid 是当前阶段；finishid 是当前仍有效的已完成任务；restid 是除当前阶段外仍需执行的任务。"
-    "异常恢复时允许已完成任务失效、进度下降。"
-    "仅输出合法 JSON：nowid 为整数，finishid 和 restid 为整数数组，progress 为 0 到 1 的数值。"
-)
+from qwen_training.prompts import SYSTEM_PROMPT
 
-def fakefunc(batch_size=3, num_tokens=16, feature_dim=128, seed=0, device="cpu"):
+
+def fakefunc(batch_size=3, num_frames=3, image_size=128, seed=0):
     """返回 (inputs, targets)，按顺序循环取保持、切换、回滚三种样本。
 
-    inputs["messages"]：每个样本的 system 指令和 user JSON（上次更新状态）。
+    inputs["messages"]：每个样本的 system 指令和 user JSON（上一观测时刻的状态）。
+    inputs["images"]：CPU uint8 [B,3,L,3,H,W]，三视角依次为顶部、左侧、右侧，时间从旧到新。
+        L=num_frames，包含当前帧；H=W=image_size，所有图片尺寸相同。
+    inputs["frame_mask"]：bool [B,3,L]，此处生成的帧全部有效。
     targets["responses"]：每个样本的 JSON 答案（当前状态与进度）。
-    训练时将答案追加为 assistant 消息；推理时只使用 inputs。
-    visual_features [B,N,D] 是已融合三视角与历史的占位表征，不写入 JSON。
+    图像先交给 model.encode_history()，得到视觉特征后再和 messages 一起送入 VLM。
     """
-    # 每对分别是上次更新状态、当前答案；ID 沿用标注的 1..4。
+    # 每对分别是上一观测时刻的状态、当前答案；ID 沿用标注的 1..4。
     samples = [
         (
             {"nowid": 2, "finishid": [1], "restid": [3, 4]},
@@ -47,11 +43,12 @@ def fakefunc(batch_size=3, num_tokens=16, feature_dim=128, seed=0, device="cpu")
     generator = torch.Generator().manual_seed(seed)
     inputs = {
         "messages": messages,
-        # 固定种子生成三个特征模板，使重复调用可以用于小样本拟合。
-        "visual_features": torch.randn(
-            3, num_tokens, feature_dim, generator=generator
-        )[cases].to(device),  # [B,N,D]
-        "visual_mask": torch.ones(batch_size, num_tokens, dtype=torch.bool, device=device),  # [B,N]
+        # 固定种子生成三组历史图像；重复调用使用相同样本，便于检查训练链路。
+        "images": torch.randint(
+            0, 256, (3, 3, num_frames, 3, image_size, image_size),
+            generator=generator, dtype=torch.uint8,
+        )[cases],  # [B,3,L,3,H,W]，由图像预处理器负责转换。
+        "frame_mask": torch.ones(batch_size, 3, num_frames, dtype=torch.bool),  # [B,3,L]
     }
     targets = {"responses": responses}
     return inputs, targets

@@ -5,6 +5,7 @@
 """上次状态的 JSON Prompt + 当前历史视觉表征 → 当前状态的 JSON 答案。"""
 
 import torch
+from peft import LoraConfig, inject_adapter_in_model
 from torch import nn
 from torch.nn import functional as F
 from transformers import AutoImageProcessor, AutoTokenizer, Qwen3_5ForConditionalGeneration
@@ -14,7 +15,7 @@ from qwen_training.vision_encoder import encode_history, encode_three_views
 
 class QwenProgressModel(nn.Module):
     def __init__(self, model_path, feature_dim=None, dtype=torch.bfloat16, freeze_backbone=False,
-                 max_pixels=262144):
+                 max_pixels=262144, lora_rank=0, lora_alpha=32, lora_dropout=0.05):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.image_processor = AutoImageProcessor.from_pretrained(
@@ -27,6 +28,16 @@ class QwenProgressModel(nn.Module):
         self.qwen.model.visual.requires_grad_(False)
         if freeze_backbone:
             self.qwen.requires_grad_(False)
+        if lora_rank:
+            # 只给语言层的 Linear 加 LoRA，覆盖全注意力、线性注意力和 MLP。
+            # 不改视觉编码器、词嵌入和原语言输出头；原模型接口保持不变。
+            targets = [name for name, module in self.qwen.named_modules()
+                       if name.startswith("model.language_model.layers.")
+                       and isinstance(module, nn.Linear)]
+            inject_adapter_in_model(LoraConfig(
+                r=lora_rank, lora_alpha=lora_alpha, lora_dropout=lora_dropout,
+                target_modules=targets, bias="none",
+            ), self.qwen)
 
         embedding = self.qwen.get_input_embeddings().weight
         if feature_dim is None:
@@ -117,7 +128,7 @@ class QwenProgressModel(nn.Module):
         return batch
 
     def forward(self, messages, visual_features, visual_mask=None, responses=None):
-        """训练：model(**inputs, **targets)，返回原生输出，通过 outputs.loss 取损失。"""
+        """训练：输入对话、编码后的视觉特征和 JSON 答案，通过 outputs.loss 取损失。"""
         batch = self.build_inputs(messages, visual_features, visual_mask, responses)
         # 即使冻结 Qwen，也要保留这段计算图，让梯度传回视觉适配层。
         return self.qwen(**batch, use_cache=False, return_dict=True)
