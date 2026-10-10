@@ -1,16 +1,49 @@
 # ruff: noqa: RUF001
-"""真实样本和假样本共用的状态预测指令。"""
+"""构造两种输入提示，并把任务意图和阶段标签转成监督文本。"""
 
-SYSTEM_PROMPT = (
-    "根据本次视觉观测，预测当前任务状态与进度。"
-    "输入 JSON 是上一观测时刻的状态，视觉表征融合了当前三个视角及历史信息。"
-    "训练样本中，输入状态对应倒数第二个采样时刻，输出对应最后一个采样时刻；"
-    "只有一个真实帧时，输入采用该 episode 首阶段的初始状态。"
-    "任务 ID：1=拿起套筒，2=拿起螺钉，3=将螺钉和套筒对齐并插入，4=将装配好的组件放入盒子。"
-    "nowid 是当前阶段；restid 是除当前阶段外仍待完成或需要重做的阶段；"
-    "finishid 是除当前阶段外已完成且成果仍有效的阶段。三者互不重叠，合起来覆盖全部任务 ID。"
-    "每次观测后状态可以保持或改变，不要求按 ID 数值顺序执行；"
-    "异常恢复时允许已完成任务失效、进度下降，状态不变时进度也可以增长。"
-    "仅输出合法 JSON，不输出解释：nowid 为整数，restid 和 finishid 为升序整数数组，"
-    "progress 为 0 到 1 的数值。"
+import random
+
+
+TASK_INTENT = "将螺丝插入螺栓中"
+STAGE_NAMES = {
+    1: "拿起套筒",
+    2: "拿起螺钉",
+    3: "将螺钉和套筒对齐并插入",
+    4: "将装配好的组件放入盒子",
+}
+TASK_DESCRIPTION = "任务一共有四个阶段：" + "、".join(STAGE_NAMES.values()) + "。\n"
+OBSERVATION_INSTRUCTION = (
+    "现在获得了三个视角的当前以及历史视觉信息，判断当前任务状态。\n"
+    "请输出任务意图，以及当前视觉观测下正在执行的阶段、已完成阶段、未完成阶段。"
 )
+VISUAL_ONLY_INSTRUCTION = (
+    "现在获得了三个视角的当前以及历史视觉信息，判断当前任务意图、任务阶段和任务进度。"
+)
+
+
+def describe_state(state):
+    """只转换名称，不推算或交换 nowid / finishid / restid 的内容。"""
+    current = STAGE_NAMES[state["nowid"]]
+    finished = "、".join(STAGE_NAMES[i] for i in state["finishid"]) or "无"
+    remaining = "、".join(STAGE_NAMES[i] for i in state["restid"]) or "无"
+    return f"正在执行的阶段：{current}；已完成阶段：{finished}；未完成阶段：{remaining}。"
+
+
+def describe_target(target):
+    """输出意图和当前状态；上一状态提示仍只使用 describe_state。"""
+    return f"任务意图为{target['intent']}，当前任务状态{describe_state(target)}"
+
+
+def build_messages(states, state_drop_probability=0.0, seed=0):
+    """训练时以 0.3 概率仅给简短指令，同时省略四阶段说明与上一状态。"""
+    rng = random.Random(seed)
+    messages = []
+    for state in states:
+        if rng.random() >= state_drop_probability:
+            prompt = TASK_DESCRIPTION
+            prompt += "在获取当前视觉观测前，" + describe_state(state) + "\n"
+            prompt += OBSERVATION_INSTRUCTION
+        else:
+            prompt = VISUAL_ONLY_INSTRUCTION
+        messages.append([{"role": "user", "content": prompt}])
+    return messages

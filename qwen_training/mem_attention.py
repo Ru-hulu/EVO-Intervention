@@ -13,6 +13,40 @@ from torch.nn import functional as F
 from transformers.models.qwen3_5.modeling_qwen3_5 import apply_rotary_pos_emb_vision
 
 
+def spatial_attention(query, key, value, frame_patch_counts, dropout_p=0.0, scale=None):
+    """相同网格的图像放到 batch 维，一次调用 SDPA；图像之间仍完全隔离。"""
+    heads, head_dim = value.shape[1:]
+    if len(set(frame_patch_counts)) == 1:
+        patches = frame_patch_counts[0]
+        q, k, v = [x.reshape(-1, patches, heads, head_dim).transpose(1, 2)
+                   for x in (query, key, value)]
+        output = F.scaled_dot_product_attention(q, k, v, dropout_p=dropout_p, scale=scale)
+        return output.transpose(1, 2).reshape(-1, heads * head_dim)
+    outputs = []
+    for q, k, v in zip(query.split(frame_patch_counts), key.split(frame_patch_counts),
+                       value.split(frame_patch_counts)):
+        q, k, v = [x.transpose(0, 1).unsqueeze(0) for x in (q, k, v)]
+        output = F.scaled_dot_product_attention(q, k, v, dropout_p=dropout_p, scale=scale)
+        outputs.append(output.squeeze(0).transpose(0, 1).reshape(-1, heads * head_dim))
+    return torch.cat(outputs)
+
+
+def spatial_block_forward(block, hidden_states, position_embeddings, frame_patch_counts):
+    """与原生视觉块相同的计算，合并逐帧 SDPA 调用以减少 CPU/GPU 调度开销。"""
+    attn = block.attn
+    query, key, value = (
+        attn.qkv(block.norm1(hidden_states))
+        .reshape(-1, 3, attn.num_heads, attn.head_dim).permute(1, 0, 2, 3).unbind(0)
+    )
+    query, key = apply_rotary_pos_emb_vision(query, key, *position_embeddings)
+    output = spatial_attention(
+        query, key, value, frame_patch_counts,
+        dropout_p=attn.attention_dropout if attn.training else 0.0, scale=attn.scaling,
+    )
+    hidden_states = hidden_states + attn.proj(output)
+    return hidden_states + block.mlp(block.norm2(hidden_states))
+
+
 def temporal_attention(query, key, value, frame_patch_counts, num_frames, frame_mask=None):
     """Q/K/V 为 [所有 patch, heads, head_dim]，每个视角的帧按从旧到新连续排列。"""
     heads, head_dim = value.shape[1:]  # value: [P,A,d]；取出两个整数 A=16、d=64。
@@ -21,6 +55,22 @@ def temporal_attention(query, key, value, frame_patch_counts, num_frames, frame_
                     for i in range(0, len(frame_patch_counts), num_frames)]
     # frame_patch_counts 是长度 M 的列表；stream_sizes 是长度 B*V 的列表，每项为 K*n。
     causal_mask = torch.ones(num_frames, num_frames, device=value.device, dtype=torch.bool).tril()
+    if len(set(frame_patch_counts)) == 1:
+        patches = frame_patch_counts[0]
+        stream_count = len(frame_patch_counts) // num_frames
+        q, k, v = [x.reshape(stream_count, num_frames, patches, heads, head_dim)
+                   .permute(0, 2, 3, 1, 4).reshape(-1, heads, num_frames, head_dim)
+                   for x in (query, key, value)]
+        if frame_mask is None:
+            output = F.scaled_dot_product_attention(q, k, v, is_causal=True)
+        else:
+            allowed = causal_mask & frame_mask[:, None, :] & frame_mask[:, :, None]
+            allowed = allowed.repeat_interleave(patches, dim=0)[:, None]
+            output = F.scaled_dot_product_attention(q, k, v, attn_mask=allowed)
+            valid = frame_mask.repeat_interleave(patches, dim=0)
+            output = output.masked_fill(~valid[:, None, :, None], 0)
+        return (output.reshape(stream_count, patches, heads, num_frames, head_dim)
+                .permute(0, 3, 1, 2, 4).reshape(-1, heads, head_dim))
     outputs = []  # 收集 B*V 个张量，每个形状为 [K*n,A,d]。
     streams = zip(query.split(stream_sizes), key.split(stream_sizes), value.split(stream_sizes))
     for stream_index, (q, k, v) in enumerate(streams):
@@ -64,18 +114,8 @@ def mem_block_forward(block, hidden_states, position_embeddings, frame_patch_cou
     value = temporal_attention(query, key, value, frame_patch_counts, num_frames, frame_mask)
     # [P,A,d] → [P,A,d]。
     # num_frames 表示每个视角参与时序注意力的帧数 K
-    outputs = []  # 收集 M 张图像的空间注意力输出，每张为 [n,D]。
-    # 每张图像独立进行空间注意力，避免不同视角、样本之间混合。
-    for q, k, v in zip(query.split(frame_patch_counts), key.split(frame_patch_counts),
-                       value.split(frame_patch_counts)):
-        # split 后，本次 q/k/v 都是一张图像：[n,A,d]。
-        # transpose: [n,A,d] → [A,n,d]；unsqueeze: → [1,A,n,d]，1 是本次注意力的 batch 维。
-        q, k, v = [x.transpose(0, 1).unsqueeze(0) for x in (q, k, v)]
-        output = F.scaled_dot_product_attention(q, k, v)  # 沿 n 做空间注意力，输出 [1,A,n,d]。
-        # squeeze: → [A,n,d]；transpose: → [n,A,d]；reshape: → [n,D]，合并注意力头。
-        outputs.append(output.squeeze(0).transpose(0, 1).reshape(-1, attn.dim))
-    # cat: 各图像 [n,D] → [P,D]；proj: [P,D] → [P,D]；残差相加后仍为 [P,D]。
-    hidden_states = hidden_states + attn.proj(torch.cat(outputs))
+    output = spatial_attention(query, key, value, frame_patch_counts)
+    hidden_states = hidden_states + attn.proj(output)
     # norm2 保持 [P,D]；当前 MLP 为 [P,1024] → [P,4096] → [P,1024]；残差后仍为 [P,D]。
     return hidden_states + block.mlp(block.norm2(hidden_states))
 
@@ -152,7 +192,11 @@ def mem_vision_forward(visual, pixel_values, image_grid_thw, num_frames, frame_m
                 block, hidden_states, position_embeddings, frame_patch_counts, num_frames,
                 frame_mask=frame_mask, time_embeddings=time_embeddings,
             )  # [P,1024] → [P,1024]，时序融合不减少 patch 数量。
-        else:  # 普通层：每张图像独立进行空间注意力。
+        elif len(set(frame_patch_counts)) == 1:
+            hidden_states = spatial_block_forward(
+                block, hidden_states, position_embeddings, frame_patch_counts,
+            )
+        else:  # 可变网格沿用原生路径。
             hidden_states = block(
                 hidden_states, cu_seqlens=cu_seqlens, position_embeddings=position_embeddings,
             )  # [P,1024] → [P,1024]。

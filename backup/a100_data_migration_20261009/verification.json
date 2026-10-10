@@ -1,0 +1,1968 @@
+{
+  "verified_at": 1791552342.2161674,
+  "datasets": [
+    {
+      "dataset": "piperx_insert_copper_screw",
+      "index": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/samples/samples.jsonl",
+      "samples": 118990,
+      "sample_types": {
+        "within_stage": 16386,
+        "initial_padding": 14415,
+        "cross_stage_changed": 38782,
+        "cross_stage_same": 49407
+      },
+      "labels": 58,
+      "deltas": 58,
+      "videos_checked": [
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-000.mp4",
+          "frames": 4076,
+          "maximum_referenced_frame": 4073,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-000.mp4",
+          "frames": 4076,
+          "maximum_referenced_frame": 4073,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-000.mp4",
+          "frames": 4076,
+          "maximum_referenced_frame": 4073,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-001.mp4",
+          "frames": 3703,
+          "maximum_referenced_frame": 3653,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-001.mp4",
+          "frames": 3703,
+          "maximum_referenced_frame": 3653,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-001.mp4",
+          "frames": 3703,
+          "maximum_referenced_frame": 3653,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-002.mp4",
+          "frames": 3021,
+          "maximum_referenced_frame": 2897,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-002.mp4",
+          "frames": 3021,
+          "maximum_referenced_frame": 2897,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-002.mp4",
+          "frames": 3021,
+          "maximum_referenced_frame": 2897,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-003.mp4",
+          "frames": 3698,
+          "maximum_referenced_frame": 3611,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-003.mp4",
+          "frames": 3698,
+          "maximum_referenced_frame": 3611,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-003.mp4",
+          "frames": 3698,
+          "maximum_referenced_frame": 3611,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-004.mp4",
+          "frames": 3266,
+          "maximum_referenced_frame": 3191,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-004.mp4",
+          "frames": 3266,
+          "maximum_referenced_frame": 3191,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-004.mp4",
+          "frames": 3266,
+          "maximum_referenced_frame": 3191,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-005.mp4",
+          "frames": 3081,
+          "maximum_referenced_frame": 2987,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-005.mp4",
+          "frames": 3081,
+          "maximum_referenced_frame": 2987,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-005.mp4",
+          "frames": 3081,
+          "maximum_referenced_frame": 2987,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-006.mp4",
+          "frames": 2666,
+          "maximum_referenced_frame": 2567,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-006.mp4",
+          "frames": 2666,
+          "maximum_referenced_frame": 2567,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-006.mp4",
+          "frames": 2666,
+          "maximum_referenced_frame": 2567,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-007.mp4",
+          "frames": 2955,
+          "maximum_referenced_frame": 2885,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-007.mp4",
+          "frames": 2955,
+          "maximum_referenced_frame": 2885,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-007.mp4",
+          "frames": 2955,
+          "maximum_referenced_frame": 2885,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-008.mp4",
+          "frames": 2433,
+          "maximum_referenced_frame": 2351,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-008.mp4",
+          "frames": 2433,
+          "maximum_referenced_frame": 2351,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-008.mp4",
+          "frames": 2433,
+          "maximum_referenced_frame": 2351,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-009.mp4",
+          "frames": 2662,
+          "maximum_referenced_frame": 2573,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-009.mp4",
+          "frames": 2662,
+          "maximum_referenced_frame": 2573,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-009.mp4",
+          "frames": 2662,
+          "maximum_referenced_frame": 2573,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-010.mp4",
+          "frames": 2500,
+          "maximum_referenced_frame": 2333,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-010.mp4",
+          "frames": 2500,
+          "maximum_referenced_frame": 2333,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-010.mp4",
+          "frames": 2500,
+          "maximum_referenced_frame": 2333,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-011.mp4",
+          "frames": 2693,
+          "maximum_referenced_frame": 2573,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-011.mp4",
+          "frames": 2693,
+          "maximum_referenced_frame": 2573,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-011.mp4",
+          "frames": 2693,
+          "maximum_referenced_frame": 2573,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-012.mp4",
+          "frames": 3001,
+          "maximum_referenced_frame": 2921,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-012.mp4",
+          "frames": 3001,
+          "maximum_referenced_frame": 2921,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-012.mp4",
+          "frames": 3001,
+          "maximum_referenced_frame": 2921,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-013.mp4",
+          "frames": 2602,
+          "maximum_referenced_frame": 2519,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-013.mp4",
+          "frames": 2602,
+          "maximum_referenced_frame": 2519,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-013.mp4",
+          "frames": 2602,
+          "maximum_referenced_frame": 2519,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-014.mp4",
+          "frames": 2758,
+          "maximum_referenced_frame": 2669,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-014.mp4",
+          "frames": 2758,
+          "maximum_referenced_frame": 2669,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-014.mp4",
+          "frames": 2758,
+          "maximum_referenced_frame": 2669,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-015.mp4",
+          "frames": 3045,
+          "maximum_referenced_frame": 2951,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-015.mp4",
+          "frames": 3045,
+          "maximum_referenced_frame": 2951,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-015.mp4",
+          "frames": 3045,
+          "maximum_referenced_frame": 2951,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-016.mp4",
+          "frames": 3168,
+          "maximum_referenced_frame": 3059,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-016.mp4",
+          "frames": 3168,
+          "maximum_referenced_frame": 3059,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-016.mp4",
+          "frames": 3168,
+          "maximum_referenced_frame": 3059,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-017.mp4",
+          "frames": 2518,
+          "maximum_referenced_frame": 2441,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-017.mp4",
+          "frames": 2518,
+          "maximum_referenced_frame": 2441,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-017.mp4",
+          "frames": 2518,
+          "maximum_referenced_frame": 2441,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-018.mp4",
+          "frames": 3451,
+          "maximum_referenced_frame": 3335,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-018.mp4",
+          "frames": 3451,
+          "maximum_referenced_frame": 3335,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-018.mp4",
+          "frames": 3451,
+          "maximum_referenced_frame": 3335,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-019.mp4",
+          "frames": 2086,
+          "maximum_referenced_frame": 1967,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-019.mp4",
+          "frames": 2086,
+          "maximum_referenced_frame": 1967,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-019.mp4",
+          "frames": 2086,
+          "maximum_referenced_frame": 1967,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-020.mp4",
+          "frames": 2490,
+          "maximum_referenced_frame": 2387,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-020.mp4",
+          "frames": 2490,
+          "maximum_referenced_frame": 2387,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-020.mp4",
+          "frames": 2490,
+          "maximum_referenced_frame": 2387,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-021.mp4",
+          "frames": 2322,
+          "maximum_referenced_frame": 2237,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-021.mp4",
+          "frames": 2322,
+          "maximum_referenced_frame": 2237,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-021.mp4",
+          "frames": 2322,
+          "maximum_referenced_frame": 2237,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-022.mp4",
+          "frames": 2018,
+          "maximum_referenced_frame": 1931,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-022.mp4",
+          "frames": 2018,
+          "maximum_referenced_frame": 1931,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-022.mp4",
+          "frames": 2018,
+          "maximum_referenced_frame": 1931,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-023.mp4",
+          "frames": 2684,
+          "maximum_referenced_frame": 2543,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-023.mp4",
+          "frames": 2684,
+          "maximum_referenced_frame": 2543,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-023.mp4",
+          "frames": 2684,
+          "maximum_referenced_frame": 2543,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-024.mp4",
+          "frames": 1972,
+          "maximum_referenced_frame": 1877,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-024.mp4",
+          "frames": 1972,
+          "maximum_referenced_frame": 1877,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-024.mp4",
+          "frames": 1972,
+          "maximum_referenced_frame": 1877,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-025.mp4",
+          "frames": 2244,
+          "maximum_referenced_frame": 2129,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-025.mp4",
+          "frames": 2244,
+          "maximum_referenced_frame": 2129,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-025.mp4",
+          "frames": 2244,
+          "maximum_referenced_frame": 2129,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-026.mp4",
+          "frames": 2251,
+          "maximum_referenced_frame": 2153,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-026.mp4",
+          "frames": 2251,
+          "maximum_referenced_frame": 2153,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-026.mp4",
+          "frames": 2251,
+          "maximum_referenced_frame": 2153,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-027.mp4",
+          "frames": 2256,
+          "maximum_referenced_frame": 2165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-027.mp4",
+          "frames": 2256,
+          "maximum_referenced_frame": 2165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-027.mp4",
+          "frames": 2256,
+          "maximum_referenced_frame": 2165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-028.mp4",
+          "frames": 2058,
+          "maximum_referenced_frame": 1943,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-028.mp4",
+          "frames": 2058,
+          "maximum_referenced_frame": 1943,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-028.mp4",
+          "frames": 2058,
+          "maximum_referenced_frame": 1943,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-029.mp4",
+          "frames": 1830,
+          "maximum_referenced_frame": 1769,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-029.mp4",
+          "frames": 1830,
+          "maximum_referenced_frame": 1769,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-029.mp4",
+          "frames": 1830,
+          "maximum_referenced_frame": 1769,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-030.mp4",
+          "frames": 2236,
+          "maximum_referenced_frame": 2153,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-030.mp4",
+          "frames": 2236,
+          "maximum_referenced_frame": 2153,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-030.mp4",
+          "frames": 2236,
+          "maximum_referenced_frame": 2153,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-031.mp4",
+          "frames": 1862,
+          "maximum_referenced_frame": 1757,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-031.mp4",
+          "frames": 1862,
+          "maximum_referenced_frame": 1757,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-031.mp4",
+          "frames": 1862,
+          "maximum_referenced_frame": 1757,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-032.mp4",
+          "frames": 2482,
+          "maximum_referenced_frame": 2261,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-032.mp4",
+          "frames": 2482,
+          "maximum_referenced_frame": 2261,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-032.mp4",
+          "frames": 2482,
+          "maximum_referenced_frame": 2261,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-033.mp4",
+          "frames": 2059,
+          "maximum_referenced_frame": 1949,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-033.mp4",
+          "frames": 2059,
+          "maximum_referenced_frame": 1949,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-033.mp4",
+          "frames": 2059,
+          "maximum_referenced_frame": 1949,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-034.mp4",
+          "frames": 2256,
+          "maximum_referenced_frame": 2177,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-034.mp4",
+          "frames": 2256,
+          "maximum_referenced_frame": 2177,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-034.mp4",
+          "frames": 2256,
+          "maximum_referenced_frame": 2177,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-035.mp4",
+          "frames": 2299,
+          "maximum_referenced_frame": 2225,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-035.mp4",
+          "frames": 2299,
+          "maximum_referenced_frame": 2225,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-035.mp4",
+          "frames": 2299,
+          "maximum_referenced_frame": 2225,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-036.mp4",
+          "frames": 2317,
+          "maximum_referenced_frame": 2231,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-036.mp4",
+          "frames": 2317,
+          "maximum_referenced_frame": 2231,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-036.mp4",
+          "frames": 2317,
+          "maximum_referenced_frame": 2231,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-037.mp4",
+          "frames": 1768,
+          "maximum_referenced_frame": 1685,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-037.mp4",
+          "frames": 1768,
+          "maximum_referenced_frame": 1685,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-037.mp4",
+          "frames": 1768,
+          "maximum_referenced_frame": 1685,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-038.mp4",
+          "frames": 2349,
+          "maximum_referenced_frame": 2279,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-038.mp4",
+          "frames": 2349,
+          "maximum_referenced_frame": 2279,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-038.mp4",
+          "frames": 2349,
+          "maximum_referenced_frame": 2279,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-039.mp4",
+          "frames": 2312,
+          "maximum_referenced_frame": 2213,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-039.mp4",
+          "frames": 2312,
+          "maximum_referenced_frame": 2213,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-039.mp4",
+          "frames": 2312,
+          "maximum_referenced_frame": 2213,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-040.mp4",
+          "frames": 2275,
+          "maximum_referenced_frame": 2201,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-040.mp4",
+          "frames": 2275,
+          "maximum_referenced_frame": 2201,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-040.mp4",
+          "frames": 2275,
+          "maximum_referenced_frame": 2201,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-041.mp4",
+          "frames": 2119,
+          "maximum_referenced_frame": 2033,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-041.mp4",
+          "frames": 2119,
+          "maximum_referenced_frame": 2033,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-041.mp4",
+          "frames": 2119,
+          "maximum_referenced_frame": 2033,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-042.mp4",
+          "frames": 2202,
+          "maximum_referenced_frame": 2123,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-042.mp4",
+          "frames": 2202,
+          "maximum_referenced_frame": 2123,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-042.mp4",
+          "frames": 2202,
+          "maximum_referenced_frame": 2123,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-043.mp4",
+          "frames": 2048,
+          "maximum_referenced_frame": 1751,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-043.mp4",
+          "frames": 2048,
+          "maximum_referenced_frame": 1751,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-043.mp4",
+          "frames": 2048,
+          "maximum_referenced_frame": 1751,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-044.mp4",
+          "frames": 2073,
+          "maximum_referenced_frame": 1973,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-044.mp4",
+          "frames": 2073,
+          "maximum_referenced_frame": 1973,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-044.mp4",
+          "frames": 2073,
+          "maximum_referenced_frame": 1973,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-045.mp4",
+          "frames": 2151,
+          "maximum_referenced_frame": 2033,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-045.mp4",
+          "frames": 2151,
+          "maximum_referenced_frame": 2033,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-045.mp4",
+          "frames": 2151,
+          "maximum_referenced_frame": 2033,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-046.mp4",
+          "frames": 2536,
+          "maximum_referenced_frame": 2441,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-046.mp4",
+          "frames": 2536,
+          "maximum_referenced_frame": 2441,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-046.mp4",
+          "frames": 2536,
+          "maximum_referenced_frame": 2441,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-047.mp4",
+          "frames": 2215,
+          "maximum_referenced_frame": 2123,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-047.mp4",
+          "frames": 2215,
+          "maximum_referenced_frame": 2123,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-047.mp4",
+          "frames": 2215,
+          "maximum_referenced_frame": 2123,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-048.mp4",
+          "frames": 2194,
+          "maximum_referenced_frame": 2093,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-048.mp4",
+          "frames": 2194,
+          "maximum_referenced_frame": 2093,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-048.mp4",
+          "frames": 2194,
+          "maximum_referenced_frame": 2093,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-049.mp4",
+          "frames": 2218,
+          "maximum_referenced_frame": 2093,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-049.mp4",
+          "frames": 2218,
+          "maximum_referenced_frame": 2093,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-049.mp4",
+          "frames": 2218,
+          "maximum_referenced_frame": 2093,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-050.mp4",
+          "frames": 2198,
+          "maximum_referenced_frame": 2087,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-050.mp4",
+          "frames": 2198,
+          "maximum_referenced_frame": 2087,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-050.mp4",
+          "frames": 2198,
+          "maximum_referenced_frame": 2087,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-051.mp4",
+          "frames": 2403,
+          "maximum_referenced_frame": 2285,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-051.mp4",
+          "frames": 2403,
+          "maximum_referenced_frame": 2285,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-051.mp4",
+          "frames": 2403,
+          "maximum_referenced_frame": 2285,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-052.mp4",
+          "frames": 2534,
+          "maximum_referenced_frame": 2117,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-052.mp4",
+          "frames": 2534,
+          "maximum_referenced_frame": 2117,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-052.mp4",
+          "frames": 2534,
+          "maximum_referenced_frame": 2117,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-053.mp4",
+          "frames": 2076,
+          "maximum_referenced_frame": 1979,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-053.mp4",
+          "frames": 2076,
+          "maximum_referenced_frame": 1979,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-053.mp4",
+          "frames": 2076,
+          "maximum_referenced_frame": 1979,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-054.mp4",
+          "frames": 2887,
+          "maximum_referenced_frame": 2759,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-054.mp4",
+          "frames": 2887,
+          "maximum_referenced_frame": 2759,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-054.mp4",
+          "frames": 2887,
+          "maximum_referenced_frame": 2759,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-055.mp4",
+          "frames": 2215,
+          "maximum_referenced_frame": 2117,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-055.mp4",
+          "frames": 2215,
+          "maximum_referenced_frame": 2117,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-055.mp4",
+          "frames": 2215,
+          "maximum_referenced_frame": 2117,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-056.mp4",
+          "frames": 2148,
+          "maximum_referenced_frame": 1979,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-056.mp4",
+          "frames": 2148,
+          "maximum_referenced_frame": 1979,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-056.mp4",
+          "frames": 2148,
+          "maximum_referenced_frame": 1979,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-057.mp4",
+          "frames": 2012,
+          "maximum_referenced_frame": 1925,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-057.mp4",
+          "frames": 2012,
+          "maximum_referenced_frame": 1925,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-057.mp4",
+          "frames": 2012,
+          "maximum_referenced_frame": 1925,
+          "width": 640,
+          "height": 480
+        }
+      ],
+      "decoded_samples": [
+        {
+          "kind": "within_stage",
+          "sample_id": "piperx_insert_copper_screw/0000000",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            36,
+            85,
+            134,
+            183,
+            232,
+            281
+          ]
+        },
+        {
+          "kind": "initial_padding",
+          "sample_id": "piperx_insert_copper_screw/0000059",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            21
+          ]
+        },
+        {
+          "kind": "cross_stage_changed",
+          "sample_id": "piperx_insert_copper_screw/0000109",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            175,
+            205,
+            235,
+            265,
+            295,
+            337
+          ]
+        },
+        {
+          "kind": "cross_stage_same",
+          "sample_id": "piperx_insert_copper_screw/0000169",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            196,
+            222,
+            249,
+            275,
+            314,
+            340
+          ]
+        },
+        {
+          "kind": "last_sample",
+          "sample_id": "piperx_insert_copper_screw/0118989",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            1846,
+            1870,
+            1882,
+            1894,
+            1906,
+            1918
+          ]
+        },
+        {
+          "kind": "largest_frame_index",
+          "sample_id": "piperx_insert_copper_screw/0002307",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            3947,
+            3982,
+            4005,
+            4027,
+            4050,
+            4073
+          ]
+        }
+      ]
+    },
+    {
+      "dataset": "piperx-bolt-intentional-drop-reinsert-22ep-raw",
+      "index": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/samples/samples.jsonl",
+      "samples": 80463,
+      "sample_types": {
+        "within_stage": 9930,
+        "initial_padding": 5500,
+        "cross_stage_changed": 31754,
+        "cross_stage_same": 33279
+      },
+      "labels": 22,
+      "deltas": 22,
+      "videos_checked": [
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-000.mp4",
+          "frames": 5548,
+          "maximum_referenced_frame": 5423,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-000.mp4",
+          "frames": 5548,
+          "maximum_referenced_frame": 5423,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-000.mp4",
+          "frames": 5548,
+          "maximum_referenced_frame": 5423,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-001.mp4",
+          "frames": 5849,
+          "maximum_referenced_frame": 5747,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-001.mp4",
+          "frames": 5849,
+          "maximum_referenced_frame": 5747,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-001.mp4",
+          "frames": 5849,
+          "maximum_referenced_frame": 5747,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-002.mp4",
+          "frames": 5586,
+          "maximum_referenced_frame": 5459,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-002.mp4",
+          "frames": 5586,
+          "maximum_referenced_frame": 5459,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-002.mp4",
+          "frames": 5586,
+          "maximum_referenced_frame": 5459,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-003.mp4",
+          "frames": 5960,
+          "maximum_referenced_frame": 5885,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-003.mp4",
+          "frames": 5960,
+          "maximum_referenced_frame": 5885,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-003.mp4",
+          "frames": 5960,
+          "maximum_referenced_frame": 5885,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-004.mp4",
+          "frames": 4785,
+          "maximum_referenced_frame": 4691,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-004.mp4",
+          "frames": 4785,
+          "maximum_referenced_frame": 4691,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-004.mp4",
+          "frames": 4785,
+          "maximum_referenced_frame": 4691,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-005.mp4",
+          "frames": 5944,
+          "maximum_referenced_frame": 5843,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-005.mp4",
+          "frames": 5944,
+          "maximum_referenced_frame": 5843,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-005.mp4",
+          "frames": 5944,
+          "maximum_referenced_frame": 5843,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-006.mp4",
+          "frames": 5242,
+          "maximum_referenced_frame": 5165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-006.mp4",
+          "frames": 5242,
+          "maximum_referenced_frame": 5165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-006.mp4",
+          "frames": 5242,
+          "maximum_referenced_frame": 5165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-007.mp4",
+          "frames": 5458,
+          "maximum_referenced_frame": 5297,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-007.mp4",
+          "frames": 5458,
+          "maximum_referenced_frame": 5297,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-007.mp4",
+          "frames": 5458,
+          "maximum_referenced_frame": 5297,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-008.mp4",
+          "frames": 5393,
+          "maximum_referenced_frame": 5303,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-008.mp4",
+          "frames": 5393,
+          "maximum_referenced_frame": 5303,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-008.mp4",
+          "frames": 5393,
+          "maximum_referenced_frame": 5303,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-009.mp4",
+          "frames": 5430,
+          "maximum_referenced_frame": 5309,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-009.mp4",
+          "frames": 5430,
+          "maximum_referenced_frame": 5309,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-009.mp4",
+          "frames": 5430,
+          "maximum_referenced_frame": 5309,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-010.mp4",
+          "frames": 5461,
+          "maximum_referenced_frame": 5363,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-010.mp4",
+          "frames": 5461,
+          "maximum_referenced_frame": 5363,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-010.mp4",
+          "frames": 5461,
+          "maximum_referenced_frame": 5363,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-011.mp4",
+          "frames": 5578,
+          "maximum_referenced_frame": 5501,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-011.mp4",
+          "frames": 5578,
+          "maximum_referenced_frame": 5501,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-011.mp4",
+          "frames": 5578,
+          "maximum_referenced_frame": 5501,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-012.mp4",
+          "frames": 5580,
+          "maximum_referenced_frame": 5495,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-012.mp4",
+          "frames": 5580,
+          "maximum_referenced_frame": 5495,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-012.mp4",
+          "frames": 5580,
+          "maximum_referenced_frame": 5495,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-013.mp4",
+          "frames": 5152,
+          "maximum_referenced_frame": 5075,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-013.mp4",
+          "frames": 5152,
+          "maximum_referenced_frame": 5075,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-013.mp4",
+          "frames": 5152,
+          "maximum_referenced_frame": 5075,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-014.mp4",
+          "frames": 5682,
+          "maximum_referenced_frame": 5585,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-014.mp4",
+          "frames": 5682,
+          "maximum_referenced_frame": 5585,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-014.mp4",
+          "frames": 5682,
+          "maximum_referenced_frame": 5585,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-015.mp4",
+          "frames": 5348,
+          "maximum_referenced_frame": 5249,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-015.mp4",
+          "frames": 5348,
+          "maximum_referenced_frame": 5249,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-015.mp4",
+          "frames": 5348,
+          "maximum_referenced_frame": 5249,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-016.mp4",
+          "frames": 4615,
+          "maximum_referenced_frame": 4505,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-016.mp4",
+          "frames": 4615,
+          "maximum_referenced_frame": 4505,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-016.mp4",
+          "frames": 4615,
+          "maximum_referenced_frame": 4505,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-017.mp4",
+          "frames": 4632,
+          "maximum_referenced_frame": 4565,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-017.mp4",
+          "frames": 4632,
+          "maximum_referenced_frame": 4565,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-017.mp4",
+          "frames": 4632,
+          "maximum_referenced_frame": 4565,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-018.mp4",
+          "frames": 5256,
+          "maximum_referenced_frame": 5165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-018.mp4",
+          "frames": 5256,
+          "maximum_referenced_frame": 5165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-018.mp4",
+          "frames": 5256,
+          "maximum_referenced_frame": 5165,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-019.mp4",
+          "frames": 5024,
+          "maximum_referenced_frame": 4805,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-019.mp4",
+          "frames": 5024,
+          "maximum_referenced_frame": 4805,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-019.mp4",
+          "frames": 5024,
+          "maximum_referenced_frame": 4805,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-020.mp4",
+          "frames": 5433,
+          "maximum_referenced_frame": 5291,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-020.mp4",
+          "frames": 5433,
+          "maximum_referenced_frame": 5291,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-020.mp4",
+          "frames": 5433,
+          "maximum_referenced_frame": 5291,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_environment_1/chunk-000/file-021.mp4",
+          "frames": 5835,
+          "maximum_referenced_frame": 5765,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.left_wrist/chunk-000/file-021.mp4",
+          "frames": 5835,
+          "maximum_referenced_frame": 5765,
+          "width": 640,
+          "height": 480
+        },
+        {
+          "path": "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/videos/observation.images.right_wrist/chunk-000/file-021.mp4",
+          "frames": 5835,
+          "maximum_referenced_frame": 5765,
+          "width": 640,
+          "height": 480
+        }
+      ],
+      "decoded_samples": [
+        {
+          "kind": "within_stage",
+          "sample_id": "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000000",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            150,
+            166,
+            182,
+            198,
+            214,
+            230
+          ]
+        },
+        {
+          "kind": "initial_padding",
+          "sample_id": "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000086",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            148
+          ]
+        },
+        {
+          "kind": "cross_stage_changed",
+          "sample_id": "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000136",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            143,
+            161,
+            179,
+            197,
+            215,
+            245
+          ]
+        },
+        {
+          "kind": "cross_stage_same",
+          "sample_id": "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000172",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            159,
+            177,
+            195,
+            213,
+            243,
+            261
+          ]
+        },
+        {
+          "kind": "last_sample",
+          "sample_id": "piperx-bolt-intentional-drop-reinsert-22ep-raw/0080462",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            5704,
+            5726,
+            5735,
+            5745,
+            5754,
+            5764
+          ]
+        },
+        {
+          "kind": "largest_frame_index",
+          "sample_id": "piperx-bolt-intentional-drop-reinsert-22ep-raw/0014789",
+          "shape": [
+            1,
+            3,
+            6,
+            3,
+            480,
+            640
+          ],
+          "frame_indices": [
+            5840,
+            5849,
+            5858,
+            5867,
+            5876,
+            5885
+          ]
+        }
+      ]
+    }
+  ],
+  "cleanup": {
+    "deleted_files": 168,
+    "freed_bytes": 1658299425,
+    "retained_data_and_video_files": 232,
+    "metadata_episodes": 58,
+    "metadata_frames": 143952,
+    "original_metadata_backup": "/root/dataset/.migration_jobs/a100_20261009/original_copper_meta"
+  },
+  "status": "PASSED"
+}

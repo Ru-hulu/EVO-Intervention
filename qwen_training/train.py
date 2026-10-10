@@ -2,7 +2,7 @@
 # Licensed under the MIT License; see LICENSE.
 # Original trainer implemented by Jinhui YE / HKUST University (2025).
 # ruff: noqa: RUF001, RUF003
-"""真实视频样本 → MEM 视觉特征 → JSON 答案损失 → 更新 LoRA 和视觉适配层。"""
+"""真实视频 → MEM → 状态文本与进度回归，联合训练 LoRA、适配层和回归头。"""
 
 import argparse
 from pathlib import Path
@@ -14,6 +14,7 @@ from peft import get_peft_model_state_dict, set_peft_model_state_dict
 from qwen_training.dataloader import build_dataloaders
 from qwen_training.dataset import augment_training_images
 from qwen_training.model import QwenProgressModel
+from qwen_training.prompts import build_messages
 
 
 def main():
@@ -28,6 +29,8 @@ def main():
     parser.add_argument("--val-fraction", type=float, default=0.1)
     parser.add_argument("--max-pixels", type=int, default=262144, help="每张图像预处理后的最大像素数")
     parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--text-loss-weight", type=float, default=0.7, help="状态文本 CE 损失权重")
+    parser.add_argument("--progress-loss-weight", type=float, default=0.3, help="进度 MSE 损失权重")
     parser.add_argument("--lora-rank", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=32)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
@@ -41,12 +44,14 @@ def main():
     checkpoint = None
     if args.resume:
         checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True)
-        if "lora" not in checkpoint:
-            parser.error("此入口恢复 LoRA 检查点；旧适配层检查点请重新开始训练")
+        if "lora" not in checkpoint or "progress_head" not in checkpoint:
+            parser.error("此入口恢复含 LoRA 和进度回归头的检查点；旧版本请重新开始训练")
         # 恢复模型与数据配置；总步数、设备、输出目录和读取进程数可在本次指定。
         for key in ("model_path", "index_files", "batch_size", "val_fraction", "max_pixels", "lr", "seed",
-                    "lora_rank", "lora_alpha", "lora_dropout"):
+                    "lora_rank", "lora_alpha", "lora_dropout", "progress_loss_weight"):
             setattr(args, key, checkpoint["config"][key])
+        # 旧检查点的文本权重固定为 1；恢复时延续原损失尺度。
+        args.text_loss_weight = checkpoint["config"].get("text_loss_weight", 1.0)
     if not args.model_path or not args.index_files:
         parser.error("首次训练需要 --model-path 和 --index-files；恢复训练使用 --resume")
     if args.lora_rank < 1:
@@ -62,8 +67,9 @@ def main():
     model = QwenProgressModel(
         args.model_path, dtype=dtype, freeze_backbone=True, max_pixels=args.max_pixels,
         lora_rank=args.lora_rank, lora_alpha=args.lora_alpha, lora_dropout=args.lora_dropout,
+        progress_loss_weight=args.progress_loss_weight, text_loss_weight=args.text_loss_weight,
     ).to(device)
-    # LoRA、视觉适配层和 AdamW 状态保留 FP32；CUDA 前向使用 BF16。
+    # LoRA、视觉适配层、回归头和 AdamW 状态保留 FP32；CUDA 前向使用 BF16。
     parameters = [p for p in model.parameters() if p.requires_grad]
     for parameter in parameters:
         parameter.data = parameter.data.float()
@@ -74,6 +80,7 @@ def main():
     start_step = 0
     if checkpoint is not None:
         model.visual_adapter.load_state_dict(checkpoint["visual_adapter"])
+        model.progress_head.load_state_dict(checkpoint["progress_head"])
         set_peft_model_state_dict(model.qwen, checkpoint["lora"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         start_step = checkpoint["step"]
@@ -98,17 +105,22 @@ def main():
             if batch_index < completed_batches:
                 batch_started = perf_counter()
                 continue
-            # 仅训练执行；18 张图共享轻量增强，恢复到同一步时参数相同。
+            # 每次取样按 70% / 30% 保留或隐藏上一状态；与 worker 数无关，可按 step 重建。
+            inputs["messages"] = build_messages(
+                inputs["input_states"], state_drop_probability=0.3, seed=args.seed + step,
+            )
+            # 18 张图共享轻量增强，恢复到同一步时参数相同。
             inputs["images"] = augment_training_images(
-                inputs["images"], inputs["messages"], targets["responses"], seed=args.seed + step,
+                inputs["images"], inputs["state_pairs"], seed=args.seed + step,
             )
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast(device_type=device.type, dtype=torch.bfloat16,
                                 enabled=device.type == "cuda"):
-                # 视觉编码器冻结；语言前向保留计算图，更新 LoRA 和视觉适配层。
+                # 视觉编码器冻结；语言前向保留计算图，联合训练状态与进度。
                 with torch.no_grad():
                     visual = model.encode_history(inputs["images"], frame_mask=inputs["frame_mask"])
-                loss = model(messages=inputs["messages"], **visual, **targets).loss
+                outputs = model(messages=inputs["messages"], **visual, **targets)
+                loss = outputs.loss
             loss.backward()
             torch.nn.utils.clip_grad_norm_(parameters, max_norm=1.0, error_if_nonfinite=True)
             optimizer.step()
@@ -120,6 +132,8 @@ def main():
             if step % args.log_every == 0 or step == args.steps:
                 print(f"step={step}/{args.steps} epoch={epoch + 1} "
                       f"batch={batch_index + 1}/{len(train_loader)} loss={loss.item():.6f} "
+                      f"text_loss={outputs.text_loss.item():.6f} "
+                      f"progress_loss={outputs.progress_loss.item():.6f} "
                       f"step_s={step_seconds:.3f}", flush=True)
 
             if step % args.save_every == 0 or step == args.steps:
@@ -127,6 +141,7 @@ def main():
                 temporary = output_dir / "last.pt.tmp"
                 torch.save({
                     "visual_adapter": model.visual_adapter.state_dict(),
+                    "progress_head": model.progress_head.state_dict(),
                     "lora": get_peft_model_state_dict(model.qwen, save_embedding_layers=False),
                     "optimizer": optimizer.state_dict(),
                     "step": step,

@@ -1,0 +1,23 @@
+{
+  "checked_at_unix": 1791567960.7454505,
+  "run_dir": "/data/evo-inter/outputs/qwen35-8gpu-12epochs-20261010-014204",
+  "exit_code": null,
+  "latest_metrics": [
+    {
+      "kind": "train",
+      "step": 50,
+      "epoch": 1,
+      "timestamp": 1791567953.5009463,
+      "loss": 0.12749508067624762,
+      "text_ce": 0.16259720217203394,
+      "progress_mse": 0.04559013051941292,
+      "progress_mae": 0.16700201073661447,
+      "samples": 1600,
+      "samples_per_second": 8.437556443449493
+    }
+  ],
+  "errors": [],
+  "gpu": "0, 35851 MiB, 85 %\n1, 35751 MiB, 86 %\n2, 35751 MiB, 94 %\n3, 35851 MiB, 87 %\n4, 35793 MiB, 90 %\n5, 35851 MiB, 82 %\n6, 35857 MiB, 73 %\n7, 35751 MiB, 82 %\n",
+  "gpu_processes": "630962, /data/evo-inter/.venv/bin/python, 35842 MiB\n630963, /data/evo-inter/.venv/bin/python, 35742 MiB\n630964, /data/evo-inter/.venv/bin/python, 35742 MiB\n630965, /data/evo-inter/.venv/bin/python, 35842 MiB\n630966, /data/evo-inter/.venv/bin/python, 35784 MiB\n630967, /data/evo-inter/.venv/bin/python, 35842 MiB\n630968, /data/evo-inter/.venv/bin/python, 35848 MiB\n630969, /data/evo-inter/.venv/bin/python, 35742 MiB\n",
+  "startup_verified": true
+}

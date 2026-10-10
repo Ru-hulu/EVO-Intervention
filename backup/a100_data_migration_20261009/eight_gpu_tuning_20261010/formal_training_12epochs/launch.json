@@ -1,0 +1,52 @@
+{
+  "run_dir": "/data/evo-inter/outputs/qwen35-8gpu-12epochs-20261010-014204",
+  "wrapper_pid": 630861,
+  "process_group": 630861,
+  "started_at_unix": 1791567724.31818,
+  "started_at_asia_shanghai": "2026-10-10T01:42:04.318194+08:00",
+  "command": [
+    "bash",
+    "/data/evo-inter/code/qwen_training/run_a100_8gpu.sh",
+    "/data/evo-inter/outputs/qwen35-8gpu-12epochs-20261010-014204",
+    "--epochs",
+    "12",
+    "--save-epochs",
+    "2",
+    "4",
+    "6",
+    "8",
+    "10",
+    "12"
+  ],
+  "epochs": 12,
+  "checkpoint_epochs": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12
+  ],
+  "world_size": 8,
+  "per_gpu_train_batch": 4,
+  "global_train_batch": 32,
+  "per_gpu_val_batch": 16,
+  "background_detached": true,
+  "source_sha256": {
+    "qwen_training/__init__.py": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+    "qwen_training/benchmark_distributed.py": "bd9a65ea6d1ccce02675da365dd824f1fa5e2354c55af1426dee55165d3e6830",
+    "qwen_training/build_sample_index.py": "754129f1aab63fc6db2b34e537e260fd81eba5587f7ab984613397de7c39872a",
+    "qwen_training/dataloader.py": "243befde55dbdcaf057228fceb9fd29293bb04fb5035599c2a74af719995b97a",
+    "qwen_training/dataset.py": "30fdc03d0feeacc982ed541b83e607e0346d0646d175aaff36f501af0f955e3c",
+    "qwen_training/delta_to_progress.py": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+    "qwen_training/fake_data.py": "d8fceb68f218a863b6a3cf2ab7dc553a45a1354882684a4d62fd99d2f553f9ab",
+    "qwen_training/mem_attention.py": "5c06cbc7ed889450ace69eeee2907ef64b49c48b3d50ed05236c656207dd3fef",
+    "qwen_training/model.py": "d8402ce4ec0a3601f4a32a495501948f4bf35fd4256d68b1885ac218ae1ebf55",
+    "qwen_training/prompts.py": "f2082d37ed469fea52d9c9786711fac0361c3d9adc4ebed64925cb26320a1842",
+    "qwen_training/train.py": "6b0d63e8db65e9e749efd787592c6f562d1dae69ab4023da9bed9cda95349fa7",
+    "qwen_training/train_distributed.py": "f7faa8407cc81ee18ecda579520bf44056747ab8585ebf7dee0c3487fd9ca1fe",
+    "qwen_training/utils.py": "09f9406592e77890c8109f6447f6ea20b76bf405aac0be785cdf04bace683ade",
+    "qwen_training/vision_encoder.py": "d65f0d57fe851c4449efddf3f334c57f8dfc8aafcd002651177214fdcab1d15d"
+  },
+  "launcher_sha256": "5f55ef0833115390859a24c3d1929cf8683057925dc4ecf4f6ca53285172ff4b"
+}

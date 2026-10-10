@@ -1,0 +1,19 @@
+{
+  "pixel_shape": [
+    16848,
+    1536
+  ],
+  "gpu_preprocessing_device": "cuda:0",
+  "max_abs_difference": 0.039215683937072754,
+  "mean_abs_difference": 0.0004862615605816245,
+  "grid_equal": true,
+  "normalization_std": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "changed_fraction": 2.318524394695487e-07,
+  "status": "PASSED_WITH_CPU_CUDA_INTERPOLATION_ROUNDING",
+  "mean_difference_in_uint8_levels": 0.061998348974157125,
+  "max_difference_in_uint8_levels": 4.999999701976776
+}

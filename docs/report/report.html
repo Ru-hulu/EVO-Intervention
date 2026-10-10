@@ -51,6 +51,92 @@
 <p>每个样本的 <strong>6 个时刻 × 3 个视角，共 18 张图</strong>共享一组参数，不同样本各自采样。保持图像尺寸、uint8 格式、相机与时间顺序，以及状态和进度标签不变。验证集使用原图。</p>
 <p>增强在训练主进程执行，独立随机种子为训练种子加当前 step；同一步可复现，不消耗模型随机数状态。已验证共享参数、类别筛选与复现，并使用 6 个真实训练样本核对单进程 / 2 个 worker 的增强结果一致；验证集的目标类别仍读取原图。临时检查脚本已清理。</p>
 </section>
+<section id="stage-text-prompts">
+<h2>阶段名称提示词（2026-10-05）</h2>
+<p>语言输入和监督答案均使用具体阶段名称，取消数字 ID JSON 输出要求。映射固定为：1=拿起套筒；2=拿起螺钉；3=将螺钉和套筒对齐并插入；4=将装配好的组件放入盒子。</p>
+<p>训练每次取样时，<strong>70% 提供上一观测时刻的文字状态，30% 不提供上一状态</strong>；两者都提供四阶段任务说明及根据本次三视角和历史视觉判断状态的指令。答案按正在执行、已完成、未完成三项描述，空集合写“无”。</p>
+<p>随机选择在训练主进程按 seed + step 执行，可重建同一步提示词。原始索引的 ID、采样比例与进度标签继续使用；图像增强通过原始 ID 对选择类别，不依赖提示词内容。验证读取默认保留上一状态，也可以显式构造无状态模式。</p>
+<p>已核对 80 份任务映射、199,453 条索引及 32 种状态组合，无字段错位。5 类真实视频样本通过标签与增强检查；缩小版 Qwen3.5 通过 MEM、混合提示词、答案掩码、CE/MSE、梯度与推理接口测试。此轮未运行真实 4B 长程训练，临时副本已清理。</p>
+</section>
+<section id="progress-regression">
+<h2>任务进度改用独立回归头（已接入）</h2>
+<p>状态通过自然语言生成正在执行、已完成、未完成阶段的名称。进度完全由回归头预测：<strong>主干最后一层全部有效输入 token → 注意力池化 → 2560 → 512 → 128 → 1 → Sigmoid</strong>，前两层 MLP 使用 GELU，输出范围为 0～1。</p>
+<p>池化包含视觉和 Prompt token，排除 padding 及 teacher forcing 的答案 token，不收集前面各层中间特征。训练联合使用 0.7 × 状态 CE + 0.3 × 进度 MSE；LoRA、视觉适配层和进度回归头共同更新。原索引和进度标签继续使用。</p>
+<p>2026-10-04 远程真实 Qwen3.5-4B 与视频数据完成两步训练，包含第 1 步保存后恢复到第 2 步。已验证三部分参数更新、优化器续接和回归头参数恢复；两个实际样本的推理均返回三字段状态 JSON 与独立进度值，进度复用生成首轮前向。缩小模型验证了答案内容隔离、padding 屏蔽、文本损失等价和回归梯度链路。</p>
+<p>旧检查点缺少进度回归头，不能直接完整续训。临时检查点已清理；以上验证仅说明训练与推理链路可运行，不代表任务预测准确率。</p>
+</section>
+<section id="batch-size-benchmark">
+<h2>Batch Size 实测（2026-10-05）</h2>
+<p class="note"><strong>当前配置建议 batch size = 4；实测最大可运行值为 5，6 会显存不足。</strong>延长测试中，5 比 4 的吞吐仅高约 2.7%，却多占约 15.2 GiB 显存。初轮短测的增益约 0.9%，两档已经比较接近。</p>
+<p>环境：RTX PRO 6000 Blackwell Server Edition（96GB），测试前无其他 GPU 任务。本地与远程训练代码哈希一致。使用真实视频、六帧三视角、每图 max_pixels=262144、每样本 702 个视觉 token、自然语言状态提示词与答案、70%/30% 状态提示、轻量增强、MEM、LoRA rank=16 和进度回归头。BF16 前向，训练参数与 AdamW 状态为 FP32；num_workers=4、OMP_NUM_THREADS=8。没有启用梯度累积或梯度检查点。</p>
+<table><thead><tr><th>Batch size</th><th>峰值已分配显存（GiB）</th><th>峰值预留显存（GiB）</th><th>平均秒/step</th><th>样本/秒</th><th>结果</th></tr></thead><tbody>
+<tr><td>2</td><td>39.44</td><td>40.01</td><td>1.556</td><td>1.285</td><td>完成 15 步，排除前 3 步预热</td></tr>
+<tr><td><strong>4</strong></td><td><strong>69.46</strong></td><td>70.46</td><td><strong>2.282</strong></td><td><strong>1.753</strong></td><td>完成 40 步，排除前 5 步预热</td></tr>
+<tr><td>5</td><td>84.71</td><td>85.45</td><td>2.778</td><td>1.800</td><td>完成 32 步，排除前 4 步预热</td></tr>
+<tr><td>6</td><td>93.90（失败时）</td><td>94.25（失败时）</td><td>—</td><td>—</td><td>首个训练步骤 CUDA OOM</td></tr>
+</tbody></table>
+<p>显存数字来自 PyTorch 的峰值统计，不包含全部驱动占用。时间包含数据等待、增强、视觉编码、语言前向、反向和优化器更新，排除模型加载、worker 启动预热、保存和验证。4 与 5 的延长测试使用同一采样序列：各处理 160 个样本，其中前 20 个用于预热，后 140 个用于比较。两档训练损失和梯度有限，显存没有持续上涨。</p>
+<p>延长测试的 nvidia-smi 1 秒采样平均 GPU 利用率约为 58%（batch 4）与 54%（batch 5），尚未跑满。数据等待平均低于 1 毫秒；仅增加 batch 已接近吞吐平台。日志提示线性注意力使用 PyTorch 回退实现，后续提速需进一步做算子性能分析，本次未修改依赖。</p>
+<p>按每轮 180,104 个训练样本估算，batch 4 为 45,026 步、约 28.5 小时/epoch；batch 5 为 36,021 步、约 27.8 小时/epoch。这是短测外推，未包含保存、验证和长时间运行波动。</p>
+<p>首次训练可使用 <code>--batch-size 4 --num-workers 4</code>；若优先使用最大的实测单批容量，可使用 5。代码默认 batch size 仍为 2；本次未修改训练配置。当前 <code>--resume</code> 会恢复检查点中的 batch size，命令行覆盖不生效。</p>
+<p>初轮短测提前终止读取时出现过 DataLoader worker 退出报错；将临时测试限定为所需样本并自然读完后，4、5 的延长测试均正常退出。此结论只验证当前输入配置的容量与吞吐，未运行完整 epoch，也未评估增大 batch 对预测效果的影响。临时测试脚本、日志和结果文件已清理，未保存测试模型。</p>
+</section>
+<section id="mem-batching-evaluation">
+<h2>MEM 批量化尝试（2026-10-05，未采用）</h2>
+<p class="note"><strong>已实现并测试两处注意力的批量计算，最终恢复原实现。</strong>当前输入配置下，完整训练吞吐仅提高约 1.3%，峰值显存没有实质改善；BF16 编码还引入了数值差异，不值得为这点短测收益保留修改。本地与远程正式 MEM 代码保持原版本。</p>
+<p>对比使用真实 Qwen3.5-4B、三视角六帧、batch size=4、num_workers=4、max_pixels=262144、LoRA 与进度回归头。新旧版本各训练 35 步，排除前 5 步预热后统计 30 步；每轮恢复相同初始训练参数和随机种子，使用同一采样顺序与增强。两轮训练损失、梯度均有限，507 个可训练参数张量均得到更新，并正常退出。</p>
+<table><thead><tr><th>实现</th><th>平均秒/step</th><th>样本/秒</th><th>峰值已分配显存（GiB）</th></tr></thead><tbody>
+<tr><td>原逐流、逐图像注意力</td><td>2.140</td><td>1.869</td><td>69.475</td></tr>
+<tr><td>批量注意力（已撤回）</td><td>2.112</td><td>1.894</td><td>69.480</td></tr>
+</tbody></table>
+<p>单独视觉编码使用预处理后的同一批图像，交替运行新旧版本，排除各 2 次预热后各统计 10 次：0.519 → 0.511 秒，耗时减少约 1.6%。完整训练计时包含读取等待、增强、预处理、视觉编码、语言前向、反向与优化器更新，不包含保存、验证和启动。上述均为短测，不能保证长期也有这点收益。</p>
+<p>正确性检查：基础 CPU FP32 / GPU BF16 的时序注意力、整块输出与梯度对照通过；样本/视角/patch 隔离、未来帧隔离、无效历史屏蔽及单帧路径通过。真实完整视觉编码在 FP32 下逐元素一致，但 BF16 未通过原逐元素接近检查：特征相对 RMS 差约 2.73%，平均 token 余弦相似度约 0.99962，4 个真实样本的进度预测最大绝对差约 0.00375。差异定位于批量空间注意力的 BF16 计算，而非时序重排；本次未将其视为精度验证通过，也未评估长期任务准确率。</p>
+<p>临时优化副本、检查脚本、日志与测试结果文件已删除，未保存测试模型。继续使用原 MEM 实现与此前建议的 batch size=4。</p>
+</section>
+<section id="loss-weight-sweep">
+<h2>损失权重快速对比（2026-10-05）</h2>
+<p class="note"><strong>初步建议：0.7 × 状态文本 CE + 0.3 × 进度 MSE。</strong>本轮 100 步后，0.7/0.3 的完整状态准确率最高；相较 0.5/0.5，准确率提高 7.64 个百分点，进度 MAE 增加 1.47 个百分点。0.5/0.5 的进度误差最低；0.9/0.1 没有显示出更好的综合表现。用户已确定采用 0.7/0.3，正式代码的新训练默认值已更新。</p>
+<p>三张 RTX PRO 6000 Blackwell Server 96GB GPU 各运行一组独立实验。三组均为 Qwen3.5-4B、LoRA rank=16 / alpha=32 / dropout=0.05、AdamW lr=1e-4、weight_decay=0.01、梯度裁剪 1；训练参数与优化器 FP32，前向 BF16。每组 <strong>100 次优化器更新，有效 batch=10（单卡 micro-batch=5，累积 2 次）</strong>，共处理相同的 1,000 次训练取样。这不是单卡直接 batch=10，也不是三卡 DDP。</p>
+<p>三组使用相同初始可训练参数（SHA-256 一致）、seed=0、相同采样顺序、增强和 70%/30% 提示词。因视觉编码器冻结，先共享缓存本轮固定增强后的 MEM 特征，再进行联合训练；缓存不包含监督答案特征。文本 CE 按有效答案 token 数合并两个 micro-batch，MSE 按样本数合并。各组均完成训练与评估，无 OOM、NaN 或非有限梯度；峰值已分配显存约 <strong>84.86 GiB</strong>。</p>
+<p>评估来自原视频隔离的验证集，从 11 类 nowid 转移各取 10 条，共 <strong>110 条唯一窗口</strong>；每条分别以有、无上一状态提示评估，并在第 50、100 步实际生成状态文本。完整状态准确率要求 nowid、finishid、restid 三项均正确，集合内顺序不影响判定；进度来自生成首轮输入特征的独立回归头。以下为 100 步结果，按有提示 70% + 无提示 30% 加权，类别等权；不是全量验证集的自然分布准确率。MAE 用<strong>进度百分点</strong>表示，例如 12.23 表示 p∈[0,1] 上的平均绝对误差 0.1223。</p>
+<table><thead><tr><th>文本 / 进度权重</th><th>完整状态准确率</th><th>当前阶段准确率</th><th>进度 MAE ↓<small>百分点</small></th><th>状态变化样本的当前阶段准确率</th></tr></thead><tbody>
+<tr><td>0.5 / 0.5</td><td>70.82%</td><td>71.91%</td><td>12.23</td><td>77.14%</td></tr><tr><td>0.7 / 0.3</td><td>78.45%</td><td>79.27%</td><td>13.70</td><td>85.57%</td></tr><tr><td>0.9 / 0.1</td><td>58.18%</td><td>71.45%</td><td>13.31</td><td>74.43%</td></tr>
+</tbody></table>
+<details><summary>有、无上一状态提示的独立结果</summary>
+<table><thead><tr><th>文本 / 进度权重</th><th>提示词模式</th><th>完整状态准确率</th><th>当前阶段准确率</th><th>进度 MAE<small>百分点</small></th><th>变化样本仍输出输入状态的比例</th></tr></thead><tbody>
+<tr><td>0.5 / 0.5</td><td>有上一状态</td><td>72.73%</td><td>72.73%</td><td>10.26</td><td>5.71%</td></tr><tr><td>0.5 / 0.5</td><td>无上一状态</td><td>66.36%</td><td>70.00%</td><td>16.82</td><td>5.71%</td></tr><tr><td>0.7 / 0.3</td><td>有上一状态</td><td>78.18%</td><td>78.18%</td><td>13.28</td><td>4.29%</td></tr><tr><td>0.7 / 0.3</td><td>无上一状态</td><td>79.09%</td><td>81.82%</td><td>14.67</td><td>2.86%</td></tr><tr><td>0.9 / 0.1</td><td>有上一状态</td><td>58.18%</td><td>76.36%</td><td>12.34</td><td>5.71%</td></tr><tr><td>0.9 / 0.1</td><td>无上一状态</td><td>58.18%</td><td>60.00%</td><td>15.56</td><td>4.29%</td></tr>
+</tbody></table>
+<p>两种模式使用同一组 110 条窗口，不能视为 220 个独立样本。所有生成文本均可解析为有效状态，但格式正确不等于状态正确。该平衡验证子集上，直接复制上一状态的完整状态准确率为 36.36%。</p>
+</details>
+<details><summary>第 50、100 步的变化</summary>
+<table><thead><tr><th>文本 / 进度权重</th><th>50 步完整状态准确率</th><th>50 步 MAE<small>百分点</small></th><th>100 步完整状态准确率</th><th>100 步 MAE<small>百分点</small></th></tr></thead><tbody>
+<tr><td>0.5 / 0.5</td><td>46.27%</td><td>14.69</td><td>70.82%</td><td>12.23</td></tr><tr><td>0.7 / 0.3</td><td>53.45%</td><td>16.99</td><td>78.45%</td><td>13.70</td></tr><tr><td>0.9 / 0.1</td><td>50.73%</td><td>17.21</td><td>58.18%</td><td>13.31</td></tr>
+</tbody></table><p>均按有提示 70% + 无提示 30% 加权。0.7/0.3 在两个检查点的完整状态准确率均最高，0.5/0.5 的进度误差均最低；这仍只是训练早期的取舍。</p></details>
+<details><summary>各转移类别的完整状态准确率（100 步）</summary>
+<table><thead><tr><th>输入 → 输出 nowid</th><th>0.5/0.5<br>有提示</th><th>0.5/0.5<br>无提示</th><th>0.7/0.3<br>有提示</th><th>0.7/0.3<br>无提示</th><th>0.9/0.1<br>有提示</th><th>0.9/0.1<br>无提示</th></tr></thead><tbody>
+<tr><td>1 → 1</td><td>30%</td><td>40%</td><td>40%</td><td>40%</td><td>50%</td><td>50%</td></tr><tr><td>1 → 2</td><td>100%</td><td>60%</td><td>100%</td><td>80%</td><td>0%</td><td>10%</td></tr><tr><td>1 → 3</td><td>80%</td><td>60%</td><td>90%</td><td>70%</td><td>80%</td><td>60%</td></tr><tr><td>2 → 1</td><td>100%</td><td>90%</td><td>100%</td><td>100%</td><td>0%</td><td>90%</td></tr><tr><td>2 → 2</td><td>40%</td><td>20%</td><td>40%</td><td>30%</td><td>40%</td><td>0%</td></tr><tr><td>2 → 3</td><td>90%</td><td>80%</td><td>80%</td><td>80%</td><td>80%</td><td>80%</td></tr><tr><td>3 → 1</td><td>0%</td><td>100%</td><td>20%</td><td>100%</td><td>0%</td><td>100%</td></tr><tr><td>3 → 2</td><td>100%</td><td>90%</td><td>100%</td><td>90%</td><td>100%</td><td>10%</td></tr><tr><td>3 → 3</td><td>90%</td><td>80%</td><td>100%</td><td>100%</td><td>90%</td><td>90%</td></tr><tr><td>3 → 4</td><td>70%</td><td>60%</td><td>100%</td><td>100%</td><td>100%</td><td>80%</td></tr><tr><td>4 → 4</td><td>100%</td><td>50%</td><td>90%</td><td>80%</td><td>100%</td><td>70%</td></tr>
+</tbody></table><p>每格仅 10 条窗口。3 → 1 的 10 条窗口全部来自同一个验证 episode，其余各类来自 10 个 episode，不能把稀有恢复类的窗口数当作独立事件数。</p></details>
+<p>已核对具体生成结果：0.9/0.1 在有提示的 1 → 2、2 → 1 样本中，当前阶段均正确，但把应保留为“已完成”的拿取阶段写成“未完成”，因此完整状态准确率低于仅统计 nowid 的结果。只观察文本训练 CE 或当前阶段准确率会漏掉这类问题。</p>
+<p><strong>结论范围：</strong>单个随机种子、100 步、110 条分层验证窗口，只能筛选后续候选，不能证明 20 epoch 的最优比例。若优先状态识别，先尝试 0.7/0.3；若更重视进度误差，保留等权方案作为对照。正式长训仍需在更完整的验证集上确认。</p>
+<p>三组权重系数之和均为 1。用户确认后，正式模型与训练入口均改为 0.7×CE + 0.3×MSE，并保存两个权重供断点恢复；日志继续记录未加权的 CE 与 MSE。恢复旧检查点时，仍沿用其文本权重 1 和原进度权重，保持续训一致。</p>
+<p>缓存训练阶段约 2.73 秒/优化器更新，不能用作端到端训练速度估计，因为视觉编码已预先完成。临时脚本、缓存、原始日志和测试结果在核对并汇总后清理；未保存试验模型。此处保留最终结论与必要的比较数据。</p>
+</section>
+<section id="eight-epoch-training">
+<h2>正式三卡训练：8 个 Epoch（2026-10-05）</h2>
+<p class="note"><strong>已启动三卡 DDP 联合训练，目标 8 个 epoch，全局 batch=10，损失为 0.7×文本 CE + 0.3×进度 MSE。</strong>三卡每次分别处理 4/3/3 个样本；最后一批共 4 条，分配为 2/1/1。每轮 18,011 次更新，共 144,088 次更新。</p>
+<p>保留原视频隔离的数据划分：训练 180,104 条、验证 19,349 条（72/8 组原视频）。训练仍使用既定 11 类采样比例；验证不做重采样，不使用图像增强，每轮保持同一套 70%/30% 状态提示。三卡 CE 按全局有效答案 token 数平均，MSE 按全局样本数平均，避免不等批量的梯度权重偏差。</p>
+<p><strong>按用户要求只保留终端日志，不生成损失曲线或 TensorBoard 文件。</strong>每 50 次更新记录训练总 loss、文本 CE、进度 MSE、进度 MAE 与吞吐；每轮结束遍历完整验证集，记录相同损失与 MAE。训练集重采样而验证集保留自然分布，两者 loss 的分布口径有所不同；验证 CE 也不能替代自由生成状态的准确率。</p>
+<table><thead><tr><th>保存轮次</th><th>累计更新次数</th><th>检查点</th></tr></thead><tbody>
+<tr><td>3</td><td>54,033</td><td><code>epoch-03.pt</code></td></tr>
+<tr><td>6</td><td>108,066</td><td><code>epoch-06.pt</code></td></tr>
+<tr><td>8</td><td>144,088</td><td><code>epoch-08.pt</code></td></tr>
+</tbody></table>
+<p>仅在上述轮次完成验证后保存 LoRA、视觉适配层、进度头、优化器、配置及各卡随机状态；不重复保存冻结的 4B 权重。实测每个检查点约 464 MiB，三个约 1.36 GiB。</p>
+<p>远程运行目录：<code>/root/autodl-tmp/qwen35-ft/runs/progress-8ep-20261005-1615</code>；终端日志为其中的 <code>train.log</code>，启动进程 PID 为 <code>85700</code>。使用独立代码快照和后台进程；<code>config.json</code>、<code>video_split.json</code>、<code>source.sha256</code>、<code>indices.sha256</code> 保存配置与来源。正式运行从原始 Qwen3.5-4B 开始，不使用试跑模型。</p>
+<p>启动前验证：全量采样合并后与原类别配额一致；训练/验证视频无交叉，验证分片无重复遗漏；三卡不等批量的梯度与全局单批 FP64 参考一致。84 条训练、40 条验证真实样本跑通 8 轮，确认每轮完整验证且只在 3/6/8 保存；从第 6 轮续训到第 8 轮成功，优化器步数连续、首次恢复前向与原运行一致。后续 BF16/DDP 运行存在数值差异，不承诺逐位复现。试跑指标只用于验证链路，不作为正式模型效果结论。</p>
+<p>2026-10-05 16:19（北京时间）确认正式训练完成前 50 次更新、处理 500 次样本，三卡均在运行；窗口总 loss=0.05434、文本 CE=0.05177、进度 MSE=0.06036。此为训练日志，不代表验证效果。临时试跑脚本、日志和检查点已清理。正式训练尚未完成；本页不会自动刷新，后续状态以远程终端日志为准。</p>
+</section>
+
 <h2>样本类别汇总</h2>
 <table id="sample-types"><thead><tr><th scope="col">样本类别</th><th scope="col">样本数（示范 + 恢复）</th></tr></thead><tbody><tr><td>同阶段：普通样本</td><td><span class="sample-count"><span class="demo-count">16,386</span><span class="count-plus"> + </span><span class="recovery-count">9,930</span></span></td></tr><tr><td>同阶段：首阶段特殊样本</td><td><span class="sample-count"><span class="demo-count">14,415</span><span class="count-plus"> + </span><span class="recovery-count">5,500</span></span></td></tr><tr><td>跨阶段：nowid 变化</td><td><span class="sample-count"><span class="demo-count">38,782</span><span class="count-plus"> + </span><span class="recovery-count">31,754</span></span></td></tr><tr><td>跨阶段：nowid 不变</td><td><span class="sample-count"><span class="demo-count">49,407</span><span class="count-plus"> + </span><span class="recovery-count">33,279</span></span></td></tr><tr><td><strong>合计</strong></td><td><span class="sample-count"><span class="demo-count">118,990</span><span class="count-plus"> + </span><span class="recovery-count">80,463</span></span></td></tr></tbody></table>
 <p class="id-legend">任务 ID：<strong>1</strong> 拿起套筒；<strong>2</strong> 拿起螺钉；<strong>3</strong> 将螺钉和套筒对齐并插入；<strong>4</strong> 将装配好的组件放入盒子。</p>

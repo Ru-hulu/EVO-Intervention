@@ -1,0 +1,1 @@
+{"kind": "train", "step": 50, "epoch": 1, "timestamp": 1791567953.5009463, "loss": 0.12749508067624762, "text_ce": 0.16259720217203394, "progress_mse": 0.04559013051941292, "progress_mae": 0.16700201073661447, "samples": 1600, "samples_per_second": 8.437556443449493}

@@ -1,0 +1,46 @@
+[
+  {
+    "dataset": "piperx_insert_copper_screw",
+    "samples": 118990,
+    "sample_id": "piperx_insert_copper_screw/0000109",
+    "response": "任务意图为将螺丝插入螺栓中，当前任务状态正在执行的阶段：拿起螺钉；已完成阶段：拿起套筒；未完成阶段：将螺钉和套筒对齐并插入、将装配好的组件放入盒子。",
+    "progress": 0.43843212723731995,
+    "variants": [
+      {
+        "probability": 0,
+        "prompt": "任务一共有四个阶段：拿起套筒、拿起螺钉、将螺钉和套筒对齐并插入、将装配好的组件放入盒子。\n在获取当前视觉观测前，正在执行的阶段：拿起套筒；已完成阶段：无；未完成阶段：拿起螺钉、将螺钉和套筒对齐并插入、将装配好的组件放入盒子。\n现在获得了三个视角的当前以及历史视觉信息，判断当前任务状态。\n请输出任务意图，以及当前视觉观测下正在执行的阶段、已完成阶段、未完成阶段。",
+        "prompt_tokens": 117,
+        "supervised_tokens": 44
+      },
+      {
+        "probability": 1,
+        "prompt": "现在获得了三个视角的当前以及历史视觉信息，判断当前任务意图、任务阶段和任务进度。",
+        "prompt_tokens": 34,
+        "supervised_tokens": 44
+      }
+    ],
+    "status": "PASSED"
+  },
+  {
+    "dataset": "piperx-bolt-intentional-drop-reinsert-22ep-raw",
+    "samples": 80463,
+    "sample_id": "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000136",
+    "response": "任务意图为将螺丝插入螺栓中，当前任务状态正在执行的阶段：拿起螺钉；已完成阶段：拿起套筒；未完成阶段：将螺钉和套筒对齐并插入、将装配好的组件放入盒子。",
+    "progress": 0.19887380301952362,
+    "variants": [
+      {
+        "probability": 0,
+        "prompt": "任务一共有四个阶段：拿起套筒、拿起螺钉、将螺钉和套筒对齐并插入、将装配好的组件放入盒子。\n在获取当前视觉观测前，正在执行的阶段：拿起套筒；已完成阶段：无；未完成阶段：拿起螺钉、将螺钉和套筒对齐并插入、将装配好的组件放入盒子。\n现在获得了三个视角的当前以及历史视觉信息，判断当前任务状态。\n请输出任务意图，以及当前视觉观测下正在执行的阶段、已完成阶段、未完成阶段。",
+        "prompt_tokens": 117,
+        "supervised_tokens": 44
+      },
+      {
+        "probability": 1,
+        "prompt": "现在获得了三个视角的当前以及历史视觉信息，判断当前任务意图、任务阶段和任务进度。",
+        "prompt_tokens": 34,
+        "supervised_tokens": 44
+      }
+    ],
+    "status": "PASSED"
+  }
+]

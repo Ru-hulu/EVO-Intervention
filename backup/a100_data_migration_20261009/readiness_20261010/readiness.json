@@ -1,0 +1,83 @@
+{
+  "jobs": {
+    "global_batch_10": {
+      "directory": "/data/evo-inter/verification/real4b-readiness-20261010-xUUhzQ",
+      "exit_code": 1,
+      "config": {
+        "model_path": "/data/evo-inter/models/Qwen3.5-4B",
+        "index_files": [
+          "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/samples/samples.jsonl",
+          "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/samples/samples.jsonl"
+        ],
+        "output_dir": "/data/evo-inter/verification/real4b-readiness-20261010-xUUhzQ/output",
+        "epochs": 1,
+        "save_epochs": [
+          1
+        ],
+        "global_batch_size": 10,
+        "val_batch_size": 5,
+        "num_workers": 0,
+        "val_fraction": 0.1,
+        "max_pixels": 262144,
+        "lr": 0.0001,
+        "text_loss_weight": 0.7,
+        "progress_loss_weight": 0.3,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "seed": 0,
+        "log_every": 1,
+        "resume": null
+      },
+      "local_log": "/Users/hongru/paper_project/Evo-Inter/backup/a100_data_migration_20261009/readiness_20261010/global_batch_10.log",
+      "oom_detected": true,
+      "completed_training_steps": 0,
+      "validation_completed": false
+    },
+    "global_batch_4": {
+      "directory": "/data/evo-inter/verification/real4b-smallbatch-20261010-MMKGbH",
+      "exit_code": 1,
+      "config": {
+        "model_path": "/data/evo-inter/models/Qwen3.5-4B",
+        "index_files": [
+          "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/samples/samples.jsonl",
+          "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/samples/samples.jsonl"
+        ],
+        "output_dir": "/data/evo-inter/verification/real4b-smallbatch-20261010-MMKGbH/output",
+        "epochs": 1,
+        "save_epochs": [
+          1
+        ],
+        "global_batch_size": 4,
+        "val_batch_size": 1,
+        "num_workers": 0,
+        "val_fraction": 0.1,
+        "max_pixels": 262144,
+        "lr": 0.0001,
+        "text_loss_weight": 0.7,
+        "progress_loss_weight": 0.3,
+        "lora_rank": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "seed": 0,
+        "log_every": 1,
+        "resume": null
+      },
+      "local_log": "/Users/hongru/paper_project/Evo-Inter/backup/a100_data_migration_20261009/readiness_20261010/global_batch_4.log",
+      "oom_detected": true,
+      "completed_training_steps": 0,
+      "validation_completed": false
+    }
+  },
+  "gpu_status": "0, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB\n1, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB\n2, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB\n3, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB\n4, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB\n5, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB\n6, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB\n7, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 40443 MiB",
+  "compute_processes": "",
+  "checked_at_local": "2026-10-10T00:20:00.924346+08:00",
+  "ready_with_current_configuration": false,
+  "reason": "Real Qwen3.5-4B DDP training failed at the first forward with CUDA OOM at global batches 10 and 4 on three 40GB A100 GPUs; no training step or validation completed.",
+  "data_samples": 199453,
+  "train_samples": 180104,
+  "validation_samples": 19349,
+  "training_started": false,
+  "code_modified_for_diagnostics": false,
+  "additional_eight_gpu_issue": "Current GlobalBatchSampler raises for the last batch of 4 samples when world_size=8 and global_batch_size=10."
+}

@@ -1,0 +1,5 @@
+{
+  "train_batches": 8,
+  "val_batches": 2,
+  "output_dir": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch32-gpu/output"
+}

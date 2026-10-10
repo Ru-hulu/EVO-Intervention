@@ -20,6 +20,7 @@ from pathlib import Path
 import random
 
 from qwen_training.delta_to_progress import delta_to_progress
+from qwen_training.prompts import TASK_INTENT
 
 
 CAMERAS = {
@@ -208,7 +209,10 @@ def build_index(dataset_root, delta_dir, seed=0):
                                 "sampling_method": "independent_intervals" if augmented else "shared_offset",
                                 "video_paths": videos, "frame_indices": frames,
                                 "frame_mask": [mask, mask, mask], "input_state": input_state,
-                                "target": {**target_state, "progress": round(progress[frames[-1]], 8)},
+                                "target": {
+                                    **target_state, "intent": TASK_INTENT,
+                                    "progress": round(progress[frames[-1]], 8),
+                                },
                             }
                             output.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
                             counts[kind] += 1
@@ -220,6 +224,7 @@ def build_index(dataset_root, delta_dir, seed=0):
     result = {
         "dataset": dataset_root.name, "dataset_root": str(dataset_root),
         "settings": {
+            "task_intent": TASK_INTENT,
             "seed": seed, "fps": 30, "num_frames": 6, "camera_order": list(CAMERAS),
             "frame_index_base": 0, "padding_frame": None, "frame_mask_shape": [3, 6],
             "boundary_margin_seconds": 0.2, "cross_boundary_extra_seconds": 0.4,

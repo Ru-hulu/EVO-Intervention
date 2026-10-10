@@ -9,7 +9,7 @@ import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import functional as TF
 
-from qwen_training.prompts import SYSTEM_PROMPT
+from qwen_training.prompts import build_messages, describe_target
 
 
 AUGMENTED_PAIRS = {(3, 1), (3, 2), (1, 2), (2, 1)}
@@ -68,18 +68,17 @@ class VLMProgressDataset(Dataset):
         }
 
 
-def augment_training_images(images, messages, responses, seed):
-    """训练专用：按状态对原地更新 CPU uint8 [B,3,6,3,H,W] 图像，返回 images。
+def augment_training_images(images, state_pairs, seed):
+    """训练专用：按状态对原地更新 CPU/CUDA uint8 [B,3,6,3,H,W] 图像，返回 images。
 
     每个目标样本的 18 张图共享三个增强系数，不同样本各自采样。
     seed 使用训练种子 + 当前 step；独立生成器不影响模型随机状态。
-    图像尺寸、相机与时间顺序不变，messages / responses 仅用于读取类别。
+    state_pairs 是标注中的 (输入 nowid, 输出 nowid)，不依赖语言文本或状态是否被隐藏。
     """
     generator = torch.Generator().manual_seed(seed)
     low, high = COLOR_FACTOR_RANGE
-    for i, (chat, response) in enumerate(zip(messages, responses)):
-        pair = (json.loads(chat[-1]["content"])["nowid"], json.loads(response)["nowid"])
-        if pair not in AUGMENTED_PAIRS:
+    for i, pair in enumerate(state_pairs):
+        if tuple(pair) not in AUGMENTED_PAIRS:
             continue
         brightness, contrast, saturation = (
             low + (high - low) * torch.rand(3, generator=generator)
@@ -93,18 +92,18 @@ def augment_training_images(images, messages, responses, seed):
 
 def collate_fn(samples):
     """单样本列表 → (inputs, targets)，与 fakefunc 的批量接口一致。"""
+    states = [sample["input_state"] for sample in samples]
     inputs = {
         "images": torch.stack([sample["images"] for sample in samples]),  # [B,3,6,3,H,W]。
         "frame_mask": torch.stack([sample["frame_mask"] for sample in samples]),  # [B,3,6]。
-        "messages": [
-            [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": json.dumps(sample["input_state"], ensure_ascii=False)},
-            ]
-            for sample in samples
-        ],
+        "messages": build_messages(states),
+        # 仅训练端使用的元数据，不传给 VLM；便于隐藏上一状态及按类别增强。
+        "input_states": states,
+        "state_pairs": [(sample["input_state"]["nowid"], sample["target"]["nowid"])
+                        for sample in samples],
     }
     targets = {
-        "responses": [json.dumps(sample["target"], ensure_ascii=False) for sample in samples],
+        "responses": [describe_target(sample["target"]) for sample in samples],
+        "progress": torch.tensor([sample["target"]["progress"] for sample in samples], dtype=torch.float32),
     }
     return inputs, targets

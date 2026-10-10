@@ -1,0 +1,297 @@
+{
+  "created_at_unix": 1791566447.4561114,
+  "hardware": "8 x NVIDIA A100 PCIe 40GB",
+  "status": "DEPLOYED_AND_BENCHMARKED",
+  "formal_training_started": false,
+  "selected_run": "batch32-gpu-workers4-prefetch2",
+  "runs": [
+    {
+      "name": "batch16-vectorized",
+      "exit_code": 0,
+      "train_steps": 8,
+      "train_samples": 128,
+      "global_batch_size": 16,
+      "per_gpu_train_batch": 2,
+      "per_gpu_val_batch": 2,
+      "workers_per_gpu": 2,
+      "prefetch_factor": 1,
+      "gpu_image_processing": false,
+      "gradient_checkpointing": false,
+      "steady_samples_per_second_after_first_2_steps": 4.1701194571964235,
+      "peak_allocated_mib": 21683.73095703125,
+      "peak_reserved_mib": 22642.0,
+      "all_8_ranks_updated_and_synchronized": true,
+      "parameter_max_abs_change": {
+        "lora": 0.0007691661594435573,
+        "visual_adapter": 0.000776984728872776,
+        "progress_head": 7.782888133078814e-05
+      },
+      "validation": [
+        {
+          "kind": "validation",
+          "step": 8,
+          "epoch": 1,
+          "loss": 0.05729549386487077,
+          "text_ce": 0.04917601309975762,
+          "progress_mse": 0.07624094898346812,
+          "progress_mae": 0.2586828349158168,
+          "samples": 32,
+          "seconds": 67.28882106859237
+        }
+      ],
+      "checkpoint_sizes": {
+        "epoch-01.pt": 485534499
+      }
+    },
+    {
+      "name": "batch32-vectorized",
+      "exit_code": 0,
+      "train_steps": 8,
+      "train_samples": 256,
+      "global_batch_size": 32,
+      "per_gpu_train_batch": 4,
+      "per_gpu_val_batch": 4,
+      "workers_per_gpu": 2,
+      "prefetch_factor": 1,
+      "gpu_image_processing": false,
+      "gradient_checkpointing": false,
+      "steady_samples_per_second_after_first_2_steps": 5.325058647779871,
+      "peak_allocated_mib": 33690.44189453125,
+      "peak_reserved_mib": 35326.0,
+      "all_8_ranks_updated_and_synchronized": true,
+      "parameter_max_abs_change": {
+        "lora": 0.0007733972743153572,
+        "visual_adapter": 0.0007785717025399208,
+        "progress_head": 0.00012289138976484537
+      },
+      "validation": [
+        {
+          "kind": "validation",
+          "step": 8,
+          "epoch": 1,
+          "timestamp": 1791564538.073189,
+          "loss": 0.06218640254561798,
+          "text_ce": 0.04701831001832296,
+          "progress_mse": 0.09757861844263971,
+          "progress_mae": 0.27890112344175577,
+          "samples": 64,
+          "seconds": 64.95572025794536
+        }
+      ],
+      "checkpoint_sizes": {
+        "epoch-01.pt": 485534499
+      }
+    },
+    {
+      "name": "batch32-gpu",
+      "exit_code": 0,
+      "train_steps": 8,
+      "train_samples": 256,
+      "global_batch_size": 32,
+      "per_gpu_train_batch": 4,
+      "per_gpu_val_batch": 4,
+      "workers_per_gpu": 2,
+      "prefetch_factor": 1,
+      "gpu_image_processing": true,
+      "gradient_checkpointing": false,
+      "steady_samples_per_second_after_first_2_steps": 9.84014671643889,
+      "peak_allocated_mib": 33753.84228515625,
+      "peak_reserved_mib": 35188.0,
+      "all_8_ranks_updated_and_synchronized": true,
+      "parameter_max_abs_change": {
+        "lora": 0.0007804991910234094,
+        "visual_adapter": 0.0007760599255561829,
+        "progress_head": 0.0001386443618685007
+      },
+      "validation": [
+        {
+          "kind": "validation",
+          "step": 8,
+          "epoch": 1,
+          "timestamp": 1791564862.4251087,
+          "loss": 0.05409421915170348,
+          "text_ce": 0.03535478687154106,
+          "progress_mse": 0.09781956113874912,
+          "progress_mae": 0.2782492144033313,
+          "samples": 64,
+          "seconds": 57.24064824776724
+        }
+      ],
+      "checkpoint_sizes": {
+        "epoch-01.pt": 485534499
+      }
+    },
+    {
+      "name": "batch64-gpu-checkpoint-workers4",
+      "exit_code": 0,
+      "train_steps": 16,
+      "train_samples": 1024,
+      "global_batch_size": 64,
+      "per_gpu_train_batch": 8,
+      "per_gpu_val_batch": 8,
+      "workers_per_gpu": 4,
+      "prefetch_factor": 1,
+      "gpu_image_processing": true,
+      "gradient_checkpointing": true,
+      "steady_samples_per_second_after_first_2_steps": 14.738315322824498,
+      "peak_allocated_mib": 15959.47607421875,
+      "peak_reserved_mib": 18058.0,
+      "all_8_ranks_updated_and_synchronized": true,
+      "parameter_max_abs_change": {
+        "lora": 0.0012600604677572846,
+        "visual_adapter": 0.0011945534497499466,
+        "progress_head": 0.0001648367615416646
+      },
+      "validation": [
+        {
+          "kind": "validation",
+          "step": 16,
+          "epoch": 1,
+          "timestamp": 1791565319.970481,
+          "loss": 0.04272848667913934,
+          "text_ce": 0.0363860916261412,
+          "progress_mse": 0.057527408469468355,
+          "progress_mae": 0.19199493795167655,
+          "samples": 128,
+          "seconds": 125.47204074496403
+        }
+      ],
+      "checkpoint_sizes": {
+        "epoch-01.pt": 485534499
+      }
+    },
+    {
+      "name": "batch32-gpu-workers4-prefetch2",
+      "exit_code": 0,
+      "train_steps": 24,
+      "train_samples": 768,
+      "global_batch_size": 32,
+      "per_gpu_train_batch": 4,
+      "per_gpu_val_batch": 16,
+      "workers_per_gpu": 4,
+      "prefetch_factor": 2,
+      "gpu_image_processing": true,
+      "gradient_checkpointing": false,
+      "steady_samples_per_second_after_first_2_steps": 17.963699722814823,
+      "peak_allocated_mib": 33757.65771484375,
+      "peak_reserved_mib": 39134.0,
+      "all_8_ranks_updated_and_synchronized": true,
+      "parameter_max_abs_change": {
+        "lora": 0.0015553084667772055,
+        "visual_adapter": 0.0016612336039543152,
+        "progress_head": 0.0001862316858023405
+      },
+      "validation": [
+        {
+          "kind": "validation",
+          "step": 24,
+          "epoch": 1,
+          "timestamp": 1791565720.0551832,
+          "loss": 0.02937608982048165,
+          "text_ce": 0.026448828172126487,
+          "progress_mse": 0.036206366999977035,
+          "progress_mae": 0.10614978050580248,
+          "samples": 256,
+          "seconds": 145.81964949099347
+        }
+      ],
+      "checkpoint_sizes": {
+        "epoch-01.pt": 485534563
+      },
+      "steady_samples_per_second_after_first_8_steps": 17.892939928875222,
+      "steady_samples_per_second_after_first_12_steps": 17.884363376109246,
+      "gpu_utilization_percent_steps_9_to_24": {
+        "0": {
+          "mean": 74.21428571428571,
+          "max": 100.0,
+          "observations": 14
+        },
+        "1": {
+          "mean": 78.78571428571429,
+          "max": 100.0,
+          "observations": 14
+        },
+        "2": {
+          "mean": 81.21428571428571,
+          "max": 100.0,
+          "observations": 14
+        },
+        "3": {
+          "mean": 85.5,
+          "max": 100.0,
+          "observations": 14
+        },
+        "4": {
+          "mean": 78.35714285714286,
+          "max": 100.0,
+          "observations": 14
+        },
+        "5": {
+          "mean": 80.28571428571429,
+          "max": 100.0,
+          "observations": 14
+        },
+        "6": {
+          "mean": 88.5,
+          "max": 100.0,
+          "observations": 14
+        },
+        "7": {
+          "mean": 88.64285714285714,
+          "max": 100.0,
+          "observations": 14
+        }
+      },
+      "mean_utilization_all_gpus": 81.9375,
+      "shutdown_warning": "Original early-stopping benchmark iterator left prefetch workers active after checkpoint save, causing worker-Aborted shutdown warnings; exit code was 0. Fixed by bounding sampler before dispatch. Separately verified both train and validation loaders terminate with no remaining child processes."
+    }
+  ],
+  "production_config": {
+    "world_size": 8,
+    "train_batch_per_gpu": 4,
+    "global_train_batch": 32,
+    "gradient_accumulation_steps": 1,
+    "validation_batch_per_gpu": 16,
+    "precision": "BF16 autocast; trainable parameters and optimizer FP32",
+    "workers_per_gpu": 4,
+    "prefetch_factor": 2,
+    "gpu_image_processing": true,
+    "gradient_checkpointing": false,
+    "learning_rate": 0.0001,
+    "epochs": 8,
+    "save_epochs": [
+      3,
+      6,
+      8
+    ],
+    "max_pixels": 262144,
+    "views": 3,
+    "history_frames": 6,
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "text_loss_weight": 0.7,
+    "progress_loss_weight": 0.3,
+    "prompt_minimal_probability": 0.3,
+    "prompt_with_stage_and_previous_state_probability": 0.7,
+    "target_intent": "将螺丝插入螺栓中"
+  },
+  "validation_checks": {
+    "tests": "19 passed, 14 warnings in 16.41s",
+    "loader_cleanup": "PASS: train 8 samples, validation 32 samples, no surviving child processes",
+    "index_sha256": {
+      "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/samples/samples.jsonl": "2026942edb1b2f8f865b455630295be412abbdb7ab3ea586a8385c86a4db28e7",
+      "/root/dataset/piperx-bolt-intentional-drop-reinsert-22ep-raw/samples/samples.jsonl": "b399a30cad9814ef3f95dcef53bb048d07319b9d2dab76741211c577beea6643"
+    },
+    "gpu_compute_processes_after_cleanup": ""
+  },
+  "launcher": "/data/evo-inter/code/qwen_training/run_a100_8gpu.sh",
+  "limits": [
+    "Performance selection among the five tested configurations, not an exhaustive search or evidence of model convergence.",
+    "Throughput excludes first two startup/warm-up steps; selected run also confirmed after excluding eight and twelve steps.",
+    "GPU utilization is a sampled busy-time percentage, not achieved FLOPs or a claim of continuous 100% utilization.",
+    "Peak allocated and peak reserved memory include validation. Reserved CUDA cache is reusable.",
+    "CPU/CUDA bicubic preprocessing has small measured rounding differences; see gpu-preprocessing-check.json.",
+    "Diagnostic checkpoints are benchmark-only and must not be resumed as formal training."
+  ]
+}

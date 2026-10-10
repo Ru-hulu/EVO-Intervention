@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "samples_checked": 118990,
+  "original_samples_preserved": 99599,
+  "added_independent_windows": 19391,
+  "progress_check": "all samples compared against independent contribution-ledger calculation",
+  "state_mask_frame_bounds_and_duplicates": "passed",
+  "per_boundary_exact_doubling": "passed",
+  "samples_sha256": "13b2f4f140ea7ffd9b5fb95ab96582f121f07ee27aa429f55b22f4e384de7b0c"
+}

@@ -1,18 +1,18 @@
-"""固定的三视角历史假图像与 JSON 对话，供完整视觉训练链路使用。"""
-import json
+"""固定的三视角历史假图像与意图、阶段文本，供完整视觉训练链路使用。"""
 import torch
 
-from qwen_training.prompts import SYSTEM_PROMPT
+from qwen_training.prompts import TASK_INTENT, build_messages, describe_target
 
 
 def fakefunc(batch_size=3, num_frames=3, image_size=128, seed=0):
     """返回 (inputs, targets)，按顺序循环取保持、切换、回滚三种样本。
 
-    inputs["messages"]：每个样本的 system 指令和 user JSON（上一观测时刻的状态）。
+    inputs["messages"]：70% 提供四阶段说明和上一状态，30% 只提供简短判断指令。
     inputs["images"]：CPU uint8 [B,3,L,3,H,W]，三视角依次为顶部、左侧、右侧，时间从旧到新。
         L=num_frames，包含当前帧；H=W=image_size，所有图片尺寸相同。
     inputs["frame_mask"]：bool [B,3,L]，此处生成的帧全部有效。
-    targets["responses"]：每个样本的 JSON 答案（当前状态与进度）。
+    targets["responses"]：每个样本的任务意图和当前阶段状态答案。
+    targets["progress"]：float32 [B]，单独监督进度回归头。
     图像先交给 model.encode_history()，得到视觉特征后再和 messages 一起送入 VLM。
     """
     # 每对分别是上一观测时刻的状态、当前答案；ID 沿用标注的 1..4。
@@ -30,19 +30,20 @@ def fakefunc(batch_size=3, num_frames=3, image_size=128, seed=0):
             {"nowid": 2, "finishid": [1], "restid": [3, 4], "progress": 0.3},
         ),
     ]
-    messages, responses = [], []
+    states, state_pairs, responses, progress = [], [], [], []
     for i in range(batch_size):
         previous, current = samples[i % len(samples)]
-        messages.append([
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": json.dumps(previous, ensure_ascii=False)},
-        ])
-        responses.append(json.dumps(current, ensure_ascii=False))
+        states.append(previous)
+        state_pairs.append((previous["nowid"], current["nowid"]))
+        responses.append(describe_target({**current, "intent": TASK_INTENT}))
+        progress.append(current["progress"])
 
     cases = torch.arange(batch_size) % 3
     generator = torch.Generator().manual_seed(seed)
     inputs = {
-        "messages": messages,
+        "messages": build_messages(states, state_drop_probability=0.3, seed=seed),
+        "input_states": states,
+        "state_pairs": state_pairs,
         # 固定种子生成三组历史图像；重复调用使用相同样本，便于检查训练链路。
         "images": torch.randint(
             0, 256, (3, 3, num_frames, 3, image_size, image_size),
@@ -50,5 +51,5 @@ def fakefunc(batch_size=3, num_frames=3, image_size=128, seed=0):
         )[cases],  # [B,3,L,3,H,W]，由图像预处理器负责转换。
         "frame_mask": torch.ones(batch_size, 3, num_frames, dtype=torch.bool),  # [B,3,L]
     }
-    targets = {"responses": responses}
+    targets = {"responses": responses, "progress": torch.tensor(progress, dtype=torch.float32)}
     return inputs, targets
