@@ -80,16 +80,15 @@ def mem_block_forward(block, hidden_states, position_embeddings, frame_patch_cou
     return hidden_states + block.mlp(block.norm2(hidden_states))
 
 
-def temporal_position_encoding(frame_times, hidden_size):
-    """秒数 → 固定时间编码 [...,D]；sin(tω)、cos(tω)-1 保证 e(0)=0。"""
-    frequencies = 10000.0 ** (-torch.arange(0, hidden_size, 2, device=frame_times.device).float()
+def temporal_position_encoding(frame_positions, hidden_size):
+    """相对帧位置 → 固定时间编码 [...,D]；sin(tω)、cos(tω)-1 保证 e(0)=0。"""
+    frequencies = 10000.0 ** (-torch.arange(0, hidden_size, 2, device=frame_positions.device).float()
                              / hidden_size)  # [ceil(D/2)]，无可学习参数。
-    angles = frame_times.float()[..., None] * frequencies  # [...,ceil(D/2)]。
+    angles = frame_positions.float()[..., None] * frequencies  # [...,ceil(D/2)]。
     return torch.stack((angles.sin(), angles.cos() - 1), dim=-1).flatten(-2)[..., :hidden_size]
 
 
-def mem_vision_forward(visual, pixel_values, image_grid_thw, num_frames, temporal_layers=None,
-                       frame_times=None, frame_mask=None):
+def mem_vision_forward(visual, pixel_values, image_grid_thw, num_frames, frame_mask=None):
     """对已逐帧预处理的 patch 执行 MEM 编码，返回所有帧的 Merger 输出 token。
 
     输入排列为 [样本, 视角, 时间]，时间从旧到新；每帧都用 images 接口单独预处理，
@@ -97,10 +96,9 @@ def mem_vision_forward(visual, pixel_values, image_grid_thw, num_frames, tempora
     K表示每个视角参与时序注意力的帧数
     每行的 T 必须为 1。BVK 分别表示[样本, 视角, 时间]
     同一视角在各时刻的 H/W 网格必须一致。
-    temporal_layers 使用从 0 开始的层编号，默认第 4、8、12……层。
-    frame_times / frame_mask 均为 [B*V,K]；时间单位为秒，内部减去末帧时间。
-    默认相邻帧相隔 1 秒且全部有效；mask=False 的帧不参与融合，输出 token 清零。
-    仍然保留所有历史 token，尚未执行仅保留当前帧的步骤。
+    MEM 固定在第 4、8、12……层执行；帧位置为 [-(K-1),...,0]，不表示实际秒数。
+    frame_mask 为 [B*V,K]，默认全部有效；False 的帧不参与融合，输出 token 清零。
+    此底层函数保留所有帧 token，由 encode_history 在融合完成后筛选各视角的当前帧。
 
     当前模型输入：pixel_values [P,1536]、image_grid_thw [M,3]。
     1536 = RGB通道3 * 原生时间patch大小2 * 空间patch大小16 * 16，是像素展开长度。
@@ -115,34 +113,28 @@ def mem_vision_forward(visual, pixel_values, image_grid_thw, num_frames, tempora
     # grid[:,0]: [M]；streams[:,:1]: [B*V,1,3]，广播到 [B*V,K,3] 后比较；any() 返回标量。
     if (grid[:, 0] != 1).any() or (streams != streams[:, :1]).any():
         raise ValueError("MEM 需要逐帧图像输入，且同一视角的历史帧网格必须一致")
-    temporal_attention_layer_indices = set(
-        range(3, len(visual.blocks), 4) if temporal_layers is None else temporal_layers
-    )  # Python 整数集合，默认 {3,7,11,15,19,23}；不是张量。
-    if any(i < 0 or i >= len(visual.blocks) for i in temporal_attention_layer_indices):
-        raise ValueError("temporal_layers 超出视觉编码器的层范围")
+    temporal_attention_layer_indices = set(range(3, len(visual.blocks), 4))
+    # Python 整数集合，当前模型为 {3,7,11,15,19,23}；不是张量。
     if frame_mask is None:
         frame_mask = torch.ones(streams.shape[:2], device=visual.device, dtype=torch.bool)
     else:
         frame_mask = torch.as_tensor(frame_mask, device=visual.device, dtype=torch.bool)
-    if frame_times is None:
-        frame_times = torch.arange(num_frames, device=visual.device).expand(streams.shape[:2])
-    else:
-        frame_times = torch.as_tensor(frame_times, device=visual.device, dtype=torch.float64)
-    if frame_mask.shape != streams.shape[:2] or frame_times.shape != streams.shape[:2]:
-        raise ValueError("frame_times 和 frame_mask 必须为 [B*V,K]")
-    # 先相减再转 FP32，避免 Unix 等绝对时间戳过大时损失亚秒精度。
-    frame_times = (frame_times - frame_times[:, -1:]).float().masked_fill(~frame_mask, 0)
+    if frame_mask.shape != streams.shape[:2]:
+        raise ValueError("frame_mask 必须为 [B*V,K]")
+    # [K] → [B*V,K]；按帧顺序生成相对位置，当前帧为 0，无效位置清零。
+    frame_positions = torch.arange(1 - num_frames, 1, device=visual.device).expand(streams.shape[:2])
+    frame_positions = frame_positions.masked_fill(~frame_mask, 0)
     counts = grid.prod(dim=-1)  # [M]，每张图像合并前的 patch 数。
     token_mask = frame_mask.flatten().repeat_interleave(counts // visual.spatial_merge_size**2)
     # token_mask: [P/4]，每个 Merger 输出 token 是否来自有效帧。
     pixels = pixel_values.to(device=visual.device, dtype=visual.dtype)  # [P,1536]，仅换设备/类型。
-    if num_frames == 1 or not temporal_attention_layer_indices:  # K=1 或关闭时序注意力。
+    if num_frames == 1 or not temporal_attention_layer_indices:  # K=1 或视觉编码器不足 4 层。
         tokens = visual(pixels, grid_thw=grid, return_dict=True).pooler_output
         return tokens.masked_fill(~token_mask[:, None], 0)  # [P/4,2560]。
 
     # patch_embed: [P,1536] → [P,1024]；空间位置编码: [M,3] → [P,1024]；相加后 [P,1024]。
     hidden_states = visual.patch_embed(pixels) + visual.fast_pos_embed_interpolate(grid)
-    time_embeddings = temporal_position_encoding(frame_times, hidden_states.shape[-1])
+    time_embeddings = temporal_position_encoding(frame_positions, hidden_states.shape[-1])
     # [B*V,K,D] → [M,D] → [P,D]，同一帧的所有 patch 共用该帧的时间编码。
     time_embeddings = time_embeddings.reshape(-1, hidden_states.shape[-1]).repeat_interleave(counts, dim=0)
     time_embeddings = time_embeddings.to(hidden_states.dtype)
