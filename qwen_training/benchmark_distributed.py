@@ -30,9 +30,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--train-batches", type=int, default=8)
     parser.add_argument("--val-batches", type=int, default=2)
+    parser.add_argument("--benchmark-epochs", type=int, default=1,
+                        help="多轮短程测试用于覆盖训练、验证和下一轮训练的进程切换")
     parser.add_argument("--output-dir", required=True)
     args, remaining = parser.parse_known_args()
-    if min(args.train_batches, args.val_batches) < 1 or "--resume" in remaining:
+    if min(args.train_batches, args.val_batches, args.benchmark_epochs) < 1 or "--resume" in remaining:
         parser.error("性能测试需要正数批次数，不能恢复正式检查点")
     captured = {}
 
@@ -70,7 +72,8 @@ def main():
     training.DataLoader = LimitedLoader
     training.QwenProgressModel = MeasuredModel
     sys.argv = [sys.argv[0], *remaining, "--output-dir", args.output_dir,
-                "--epochs", "1", "--save-epochs", "1", "--log-every", "1"]
+                "--epochs", str(args.benchmark_epochs), "--save-epochs", str(args.benchmark_epochs),
+                "--log-every", "1"]
     training.main()
     device = int(os.environ["LOCAL_RANK"])
     torch.cuda.synchronize(device)

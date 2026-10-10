@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "samples": 20,
+  "ids": [
+    "piperx_insert_copper_screw/0000000",
+    "piperx_insert_copper_screw/0000001",
+    "piperx_insert_copper_screw/0003278",
+    "piperx_insert_copper_screw/0014592",
+    "piperx_insert_copper_screw/0029256",
+    "piperx_insert_copper_screw/0032098",
+    "piperx_insert_copper_screw/0036048",
+    "piperx_insert_copper_screw/0083810",
+    "piperx_insert_copper_screw/0097196",
+    "piperx_insert_copper_screw/0118989",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000000",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000001",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0003278",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0013434",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0014592",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0018289",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0029256",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0032098",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0036048",
+    "piperx-bolt-intentional-drop-reinsert-22ep-raw/0080462"
+  ],
+  "views_per_sample": 3,
+  "frames_per_view": 6,
+  "pixel_comparison": "exact"
+}

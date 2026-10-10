@@ -1,0 +1,94 @@
+{
+  "checked_at_unix": 1791604708.6610358,
+  "status": "Efficiency investigation complete; formal training remains on hold",
+  "formal_training_started": false,
+  "production_memory_fix_hashes_verified": true,
+  "memory_validation_report": "/data/evo-inter/verification/memory_fix_20261010/memory_fix_report.json",
+  "baseline": {
+    "gpus": 8,
+    "per_gpu_batch": 4,
+    "global_batch": 32,
+    "gradient_checkpointing": false,
+    "total_measured_steps": 32,
+    "warmup_steps_excluded": 4,
+    "rank_step_measurements": 224,
+    "steady_global_samples_per_second": 19.026995177475552,
+    "mean_data_wait_ms": 0.8812523114361933,
+    "mean_compute_wall_seconds": 1.6717554029809045,
+    "stages": {
+      "prompt_transfer_augmentation": {
+        "mean_ms": 23.359389100755966,
+        "fraction": 0.0139764852128055
+      },
+      "vision": {
+        "mean_ms": 702.9758843013218,
+        "fraction": 0.42060740584942474
+      },
+      "language_forward": {
+        "mean_ms": 340.5199223927089,
+        "fraction": 0.20374127249044158
+      },
+      "loss_and_denominator_sync": {
+        "mean_ms": 51.30902831016907,
+        "fraction": 0.03069942764202207
+      },
+      "backward_with_ddp": {
+        "mean_ms": 520.7664007459368,
+        "fraction": 0.3115870825198926
+      },
+      "metrics_clip_optimizer": {
+        "mean_ms": 32.404388572488514,
+        "fraction": 0.01938832628541353
+      }
+    },
+    "max_peak_allocated_mib": 33763.341796875,
+    "max_peak_reserved_mib": 39134.0,
+    "exit_code": 0,
+    "note": "CUDA event stage spans include CPU dispatch gaps and synchronization; vision includes preprocessing. Short real-data profile, not a full epoch. Throughput is total samples divided by total elapsed logging intervals after warmup."
+  },
+  "batch5_trial": {
+    "gpus": 8,
+    "per_gpu_batch": 5,
+    "global_batch": 40,
+    "gradient_checkpointing": false,
+    "exit_code": 1,
+    "result": "CUDA OOM in language model first training forward; no successful optimizer step",
+    "recommendation": "Retain per-GPU batch 4 for the current implementation; the direct increase to 5 is not viable with the tested configuration.",
+    "log": "/data/evo-inter/verification/memory_fix_20261010/batch40-test/run.log"
+  },
+  "frozen_vision_cache_candidate": {
+    "implemented": false,
+    "benchmark_completed": false,
+    "training_cache_eligible_unique_records": 157100,
+    "validation_cache_eligible_unique_records": 19349,
+    "sampled_training_cache_hit_fraction": 0.7189,
+    "sampled_image_augmentation_fraction": 0.2811,
+    "feature_shape": [
+      702,
+      2560
+    ],
+    "feature_dtype": "bfloat16",
+    "bytes_per_sample": 3594240,
+    "estimated_feature_bytes": 634200053760,
+    "estimated_feature_gib": 590.6448268890381,
+    "current_data_disk_free_gib": 2359.437656402588,
+    "ideal_training_seconds_saved_fraction": 0.30237466406515146,
+    "ideal_training_samples_per_second": 27.273945192914393,
+    "note": "Theoretical ceiling inferred from measured stage fractions, not a measured speedup. Build cost, storage metadata, cache I/O and partial-batch efficiency are not included. Image augmentation share is separate from the 30/70 prompt mix.",
+    "semantics": "Only deterministic unaugmented frozen-vision outputs can be reused. Keep augmented samples online and keep the trainable visual adapter, language LoRA and progress head online. All validation images are unaugmented.",
+    "cache_invalidation_keys": [
+      "vision weights",
+      "vision/MEM implementation",
+      "preprocessing configuration",
+      "frame selection and masks",
+      "video identity"
+    ],
+    "recommended_next_step": "Small cache proof-of-concept with feature/loss parity and throughput tests before bulk precomputation."
+  },
+  "recommendations": [
+    "Do not add DataLoader workers as the first optimization: steady-state data wait is already below 0.1%.",
+    "Prioritize the frozen-vision cache proof-of-concept while preserving augmentation semantics.",
+    "Leave formal 8-GPU / 12-epoch / save-every-2-epoch run paused pending the user decision."
+  ],
+  "gpu_state_after_diagnostics": "0, 0 MiB, 0 %\n1, 0 MiB, 0 %\n2, 0 MiB, 0 %\n3, 0 MiB, 0 %\n4, 0 MiB, 0 %\n5, 0 MiB, 0 %\n6, 0 MiB, 0 %\n7, 0 MiB, 0 %"
+}

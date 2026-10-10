@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import multiprocessing
 import os
 from pathlib import Path
 from time import perf_counter, time
@@ -77,11 +78,27 @@ def collect_metrics(totals, args):
     }
 
 
+def phase_batches(loader):
+    """耗尽本阶段数据后等待它创建的 worker 退出，不触碰框架的辅助进程。"""
+    existing = {child.pid for child in multiprocessing.active_children()}
+    iterator = iter(loader)
+    workers = [child for child in multiprocessing.active_children() if child.pid not in existing]
+    try:
+        yield from iterator
+    finally:
+        del iterator
+        for worker in workers:
+            worker.join(timeout=30)
+        alive = [worker.pid for worker in workers if worker.is_alive()]
+        if alive:
+            raise RuntimeError(f"本阶段 DataLoader 进程未退出：{alive}")
+
+
 @torch.no_grad()
 def evaluate(model, loader, args, rank, device):
     model.eval()
     totals = torch.zeros(5, dtype=torch.float64, device=device)
-    for batch_index, (inputs, targets) in enumerate(loader):
+    for batch_index, (inputs, targets) in enumerate(phase_batches(loader)):
         if args.gpu_image_processing:
             inputs["images"] = inputs["images"].to(device, non_blocking=True)
         # 每轮使用同一批验证视频、同一提示词；不做图像增强或类别重采样。
@@ -154,7 +171,8 @@ def main():
     options = dict(
         num_workers=args.num_workers, collate_fn=collate_fn, pin_memory=True,
         multiprocessing_context="spawn" if args.num_workers else None,
-        persistent_workers=args.num_workers > 0,
+        # 每阶段耗尽 loader 后退出 worker，避免训练和验证两套解码器/索引副本同时驻留。
+        persistent_workers=False,
         prefetch_factor=args.prefetch_factor if args.num_workers else None,
     )
     train_loader = DataLoader(
@@ -220,12 +238,23 @@ def main():
         with (output / "metrics.jsonl").open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(row) + "\n")
 
+    def record_phase(phase, epoch):
+        # phase_batches 已等待本阶段 worker 退出；同步所有 rank 后才能创建下一批 worker。
+        dist.barrier()
+        if rank == 0:
+            memory = dict(line.split(":", 1) for line in Path("/proc/meminfo").read_text().splitlines())
+            record("phase", {
+                "phase": phase, "active_data_workers": 0,
+                "host_available_gib": int(memory["MemAvailable"].split()[0]) / 2**20,
+            }, epoch)
+
     for epoch in range(start_epoch, args.epochs):
+        record_phase("before_train", epoch + 1)
         sampler.epoch = epoch
         epoch_totals = torch.zeros(5, dtype=torch.float64, device=device)
         window_totals = torch.zeros_like(epoch_totals)
         epoch_started = window_started = perf_counter()
-        for batch_index, (inputs, targets) in enumerate(train_loader):
+        for batch_index, (inputs, targets) in enumerate(phase_batches(train_loader)):
             seed = args.seed + step * world_size + rank
             messages = build_messages(inputs["input_states"], state_drop_probability=0.3, seed=seed)
             if args.gpu_image_processing:
@@ -262,10 +291,12 @@ def main():
         metrics = collect_metrics(epoch_totals, args)
         metrics["seconds"] = perf_counter() - epoch_started
         record("train_epoch", metrics, epoch + 1)
+        record_phase("before_validation", epoch + 1)
         validation_started = perf_counter()
         metrics = evaluate(model, val_loader, args, rank, device)
         metrics["seconds"] = perf_counter() - validation_started
         record("validation", metrics, epoch + 1)
+        record_phase("after_validation", epoch + 1)
         if epoch + 1 in args.save_epochs:
             rng_by_rank = [None] * world_size
             dist.all_gather_object(rng_by_rank, {"cpu": torch.get_rng_state(), "cuda": torch.cuda.get_rng_state(device)})

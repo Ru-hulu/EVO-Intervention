@@ -1,0 +1,6 @@
+{
+  "train_batches": 32,
+  "val_batches": 2,
+  "benchmark_epochs": 1,
+  "output_dir": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch48-workers6-comparison/output"
+}

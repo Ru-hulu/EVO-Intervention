@@ -44,18 +44,26 @@ class VLMProgressDataset(Dataset):
             decoded = {}
             with av.open(sample["video_paths"][view]) as video:
                 stream = video.streams.video[0]
+                # worker 已并行取样，禁止每个短视频解码器再按整机 CPU 数开线程。
+                stream.codec_context.thread_count = 1
                 fps = stream.average_rate
                 start_time = stream.start_time or 0
                 # 跳到首个目标帧之前的关键帧，再按时间戳定位原视频帧号。
                 timestamp = start_time + int(min(wanted) / fps / stream.time_base)
                 video.seek(timestamp, stream=stream, backward=True)
-                for frame in video.decode(stream):
-                    frame_index = round((frame.pts - start_time) * stream.time_base * fps)
-                    if frame_index in wanted:
-                        rgb = frame.to_ndarray(format="rgb24")  # [H,W,3]，uint8。
-                        decoded[frame_index] = torch.from_numpy(rgb).permute(2, 0, 1)  # [3,H,W]。
-                    if frame_index >= indices[-1]:
-                        break
+                frames = video.decode(stream)
+                try:
+                    for frame in frames:
+                        frame_index = round((frame.pts - start_time) * stream.time_base * fps)
+                        if frame_index in wanted:
+                            rgb = frame.to_ndarray(format="rgb24")  # [H,W,3]，uint8。
+                            decoded[frame_index] = torch.from_numpy(rgb).permute(2, 0, 1)  # [3,H,W]。
+                        if frame_index >= indices[-1]:
+                            break
+                finally:
+                    # PyAV 12 的 container.close 不关闭 codec；提前结束解码也必须释放线程和缓冲。
+                    frames.close()
+                    stream.codec_context.close(strict=False)
             blank = torch.zeros_like(decoded[indices[-1]])
             images.append(torch.stack([blank if i is None else decoded[i] for i in indices]))
 

@@ -1,0 +1,28 @@
+{
+  "unique_state_response_combinations": 18,
+  "min_total_tokens": 780,
+  "max_total_tokens": 865,
+  "longest_examples": [
+    {
+      "sample_id": "piperx_insert_copper_screw/0000000",
+      "minimal_prompt": false,
+      "prompt_tokens": 117,
+      "text_tokens": 163,
+      "total_tokens_with_702_visual": 865
+    },
+    {
+      "sample_id": "piperx_insert_copper_screw/0000045",
+      "minimal_prompt": false,
+      "prompt_tokens": 117,
+      "text_tokens": 163,
+      "total_tokens_with_702_visual": 865
+    },
+    {
+      "sample_id": "piperx_insert_copper_screw/0006635",
+      "minimal_prompt": false,
+      "prompt_tokens": 117,
+      "text_tokens": 163,
+      "total_tokens_with_702_visual": 865
+    }
+  ]
+}

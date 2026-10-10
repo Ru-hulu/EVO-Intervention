@@ -1,0 +1,251 @@
+{
+  "model": "/data/evo-inter/models/Qwen3.5-2B",
+  "hardware": "8 x NVIDIA A100-PCIE-40GB",
+  "formal_training_started": false,
+  "measurement": {
+    "throughput": "Global samples / summed step time, excludes first four steps of EACH short epoch, validation and phase startup/shutdown.",
+    "memory": "CUDA allocated and reserved are exact allocator maxima across all ranks and train/validation. NVML snapshots are every five seconds and can miss brief peaks.",
+    "input_wait": "Time blocked getting a batch. Consumer wall time includes DDP waits for other ranks; these quantities are not independent and must not be added.",
+    "limits": "Real-data short benchmarks only; throughput depends on video mix and does not prove full-epoch stability or model quality. Different batch sizes consume different sample counts."
+  },
+  "cases": [
+    {
+      "name": "batch32-baseline",
+      "exit_code": 0,
+      "per_gpu_batch": 4,
+      "global_batch": 32,
+      "workers_per_gpu": 4,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 1024,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 20.90469077964091,
+      "steady_samples_per_second_by_epoch": {
+        "1": 20.90469077964091
+      },
+      "late_half_samples_per_second": 21.15805311146483,
+      "cuda_peak_allocated_gib": 17.100133895874023,
+      "cuda_peak_reserved_gib": 31.1015625,
+      "sampled_peak_device_used_gib": 32.8349609375,
+      "minimum_host_available_gib": 531.6719207763672,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": null,
+      "mean_step_slowest_rank_input_wait_seconds": null,
+      "mean_consumer_wall_seconds": null,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791606670.0904894,
+          "loss": 0.04476866110333004,
+          "text_ce": 0.0355903288331248,
+          "progress_mse": 0.06618476973380893,
+          "progress_mae": 0.22873842663830146,
+          "samples": 256,
+          "seconds": 134.272147892043
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch48",
+      "exit_code": 0,
+      "per_gpu_batch": 6,
+      "global_batch": 48,
+      "workers_per_gpu": 4,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 1536,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 20.697803686943633,
+      "steady_samples_per_second_by_epoch": {
+        "1": 20.697803686943633
+      },
+      "late_half_samples_per_second": 18.412709224607948,
+      "cuda_peak_allocated_gib": 22.682987213134766,
+      "cuda_peak_reserved_gib": 34.576171875,
+      "sampled_peak_device_used_gib": 35.2373046875,
+      "minimum_host_available_gib": 531.2973098754883,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": null,
+      "mean_step_slowest_rank_input_wait_seconds": null,
+      "mean_consumer_wall_seconds": null,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791607091.9355123,
+          "loss": 0.03261269404023301,
+          "text_ce": 0.023566136614703873,
+          "progress_mse": 0.05372132803313434,
+          "progress_mae": 0.18158207082888111,
+          "samples": 256,
+          "seconds": 139.7543243379332
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch48-workers6-comparison",
+      "exit_code": 0,
+      "per_gpu_batch": 6,
+      "global_batch": 48,
+      "workers_per_gpu": 6,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 1536,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 24.17933531778772,
+      "steady_samples_per_second_by_epoch": {
+        "1": 24.17933531778772
+      },
+      "late_half_samples_per_second": 26.42001518622272,
+      "cuda_peak_allocated_gib": 22.683639526367188,
+      "cuda_peak_reserved_gib": 34.53125,
+      "sampled_peak_device_used_gib": 35.1904296875,
+      "minimum_host_available_gib": 505.8758430480957,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": 0.0007447536564931008,
+      "mean_step_slowest_rank_input_wait_seconds": 0.0013871773844584823,
+      "mean_consumer_wall_seconds": 1.9854370485824933,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791609261.2154903,
+          "loss": 0.029640520170933618,
+          "text_ce": 0.019518414336186247,
+          "progress_mse": 0.0532587671186775,
+          "progress_mae": 0.19104733760468662,
+          "samples": 256,
+          "seconds": 180.0343275531195
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch64-input-timing",
+      "exit_code": 0,
+      "per_gpu_batch": 8,
+      "global_batch": 64,
+      "workers_per_gpu": 4,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 2048,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 19.903241857311393,
+      "steady_samples_per_second_by_epoch": {
+        "1": 19.903241857311393
+      },
+      "late_half_samples_per_second": 18.077783680131642,
+      "cuda_peak_allocated_gib": 28.842715740203857,
+      "cuda_peak_reserved_gib": 38.833984375,
+      "sampled_peak_device_used_gib": 31.5498046875,
+      "minimum_host_available_gib": 532.9648094177246,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": 0.22343496846484154,
+      "mean_step_slowest_rank_input_wait_seconds": 0.9252838251413777,
+      "mean_consumer_wall_seconds": 2.9930677376583583,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791607542.6721299,
+          "loss": 0.030547416273632323,
+          "text_ce": 0.020167893720973357,
+          "progress_mse": 0.05476630222983658,
+          "progress_mae": 0.20339442527620122,
+          "samples": 256,
+          "seconds": 136.63087485404685
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch64-workers6-confirm",
+      "exit_code": 0,
+      "per_gpu_batch": 8,
+      "global_batch": 64,
+      "workers_per_gpu": 6,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 2,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 8,
+      "train_samples_tested": 4096,
+      "validation_samples_tested": 2048,
+      "steady_samples_per_second": 25.15720044741246,
+      "steady_samples_per_second_by_epoch": {
+        "1": 25.511888042831853,
+        "2": 24.81223994475585
+      },
+      "late_half_samples_per_second": 26.56948836717454,
+      "cuda_peak_allocated_gib": 28.842715740203857,
+      "cuda_peak_reserved_gib": 38.833984375,
+      "sampled_peak_device_used_gib": 35.5322265625,
+      "minimum_host_available_gib": 493.05981826782227,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-02.pt"
+      ],
+      "mean_rank_input_wait_seconds": 0.007726903248112649,
+      "mean_step_slowest_rank_input_wait_seconds": 0.05594761192332953,
+      "mean_consumer_wall_seconds": 2.5375638613217495,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791608268.4634256,
+          "loss": 0.025903249685675134,
+          "text_ce": 0.018007163004358295,
+          "progress_mse": 0.0443274519420811,
+          "progress_mae": 0.17265490924182814,
+          "samples": 1024,
+          "seconds": 217.61141342576593
+        },
+        {
+          "kind": "validation",
+          "step": 64,
+          "epoch": 2,
+          "timestamp": 1791608748.14507,
+          "loss": 0.01777372388543296,
+          "text_ce": 0.012896572526725153,
+          "progress_mse": 0.029153743722417857,
+          "progress_mae": 0.1253964260831708,
+          "samples": 1024,
+          "seconds": 223.9585184622556
+        }
+      ],
+      "passed": true
+    }
+  ]
+}

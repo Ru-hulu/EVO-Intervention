@@ -1,0 +1,6 @@
+{
+  "train_batches": 32,
+  "val_batches": 16,
+  "benchmark_epochs": 2,
+  "output_dir": "/data/evo-inter/verification/memory_fix_20261010/transition-test-v2/output"
+}

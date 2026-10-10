@@ -1,0 +1,18 @@
+{
+  "tokenizer.json": {
+    "present_in_both": true,
+    "identical": true
+  },
+  "tokenizer_config.json": {
+    "present_in_both": true,
+    "identical": false
+  },
+  "chat_template.jinja": {
+    "present_in_both": true,
+    "identical": false
+  },
+  "preprocessor_config.json": {
+    "present_in_both": true,
+    "identical": true
+  }
+}

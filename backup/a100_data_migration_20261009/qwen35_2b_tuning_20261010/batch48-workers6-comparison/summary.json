@@ -1,0 +1,141 @@
+{
+  "case": "batch48-workers6-comparison",
+  "exit_code": 0,
+  "per_gpu_batch": 6,
+  "global_batch": 48,
+  "measured_steps_after_warmup": 28,
+  "steady_samples_per_second": 24.17933531778772,
+  "peak_allocated_mib": 23228.046875,
+  "peak_reserved_mib": 35360.0,
+  "sampled_peak_device_used_mib": 36035.0,
+  "sampled_min_device_free_mib": 4925.0,
+  "minimum_host_available_gib": 505.8758430480957,
+  "rank_results": [
+    {
+      "rank": 0,
+      "peak_allocated_mib": 23216.6796875,
+      "peak_reserved_mib": 35150.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    },
+    {
+      "rank": 1,
+      "peak_allocated_mib": 23226.609375,
+      "peak_reserved_mib": 35346.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    },
+    {
+      "rank": 2,
+      "peak_allocated_mib": 23222.36328125,
+      "peak_reserved_mib": 35150.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    },
+    {
+      "rank": 3,
+      "peak_allocated_mib": 23222.36328125,
+      "peak_reserved_mib": 35150.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    },
+    {
+      "rank": 4,
+      "peak_allocated_mib": 23225.87939453125,
+      "peak_reserved_mib": 35360.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    },
+    {
+      "rank": 5,
+      "peak_allocated_mib": 23220.65234375,
+      "peak_reserved_mib": 35142.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    },
+    {
+      "rank": 6,
+      "peak_allocated_mib": 23228.046875,
+      "peak_reserved_mib": 35150.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    },
+    {
+      "rank": 7,
+      "peak_allocated_mib": 23220.77783203125,
+      "peak_reserved_mib": 35348.0,
+      "parameter_max_abs_change": {
+        "lora": 0.001919879694469273,
+        "visual_adapter": 0.001967817544937134,
+        "progress_head": 0.0003257244825363159
+      }
+    }
+  ],
+  "validation": [
+    {
+      "kind": "validation",
+      "step": 32,
+      "epoch": 1,
+      "timestamp": 1791609261.2154903,
+      "loss": 0.029640520170933618,
+      "text_ce": 0.019518414336186247,
+      "progress_mse": 0.0532587671186775,
+      "progress_mae": 0.19104733760468662,
+      "samples": 256,
+      "seconds": 180.0343275531195
+    }
+  ],
+  "phases": [
+    {
+      "kind": "phase",
+      "step": 0,
+      "epoch": 1,
+      "timestamp": 1791608846.1755068,
+      "phase": "before_train",
+      "active_data_workers": 0,
+      "host_available_gib": 601.6876564025879
+    },
+    {
+      "kind": "phase",
+      "step": 32,
+      "epoch": 1,
+      "timestamp": 1791609081.1809633,
+      "phase": "before_validation",
+      "active_data_workers": 0,
+      "host_available_gib": 582.7098960876465
+    },
+    {
+      "kind": "phase",
+      "step": 32,
+      "epoch": 1,
+      "timestamp": 1791609261.2262175,
+      "phase": "after_validation",
+      "active_data_workers": 0,
+      "host_available_gib": 579.5244369506836
+    }
+  ],
+  "completed_unix": 1791609271.6940768,
+  "formal_training": false,
+  "note": "Real-data bounded benchmark. CUDA allocator peaks span training and validation. Device memory sampled every five seconds can miss transient peaks. Throughput excludes warmup and validation; best batch is only among tested settings."
+}

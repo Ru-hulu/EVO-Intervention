@@ -1,0 +1,26 @@
+{
+  "lora": {
+    "tensors": 496,
+    "numel": 32464896,
+    "bytes": 129859584,
+    "dtypes": [
+      "torch.float32"
+    ]
+  },
+  "visual_adapter": {
+    "tensors": 4,
+    "numel": 6561280,
+    "bytes": 26245120,
+    "dtypes": [
+      "torch.float32"
+    ]
+  },
+  "progress_head": {
+    "tensors": 7,
+    "numel": 1379585,
+    "bytes": 5518340,
+    "dtypes": [
+      "torch.float32"
+    ]
+  }
+}

@@ -3,4 +3,4 @@ torchvision
 transformers==5.3.0
 peft==0.19.1
 pillow
-av>=12.3
+av==12.3.0

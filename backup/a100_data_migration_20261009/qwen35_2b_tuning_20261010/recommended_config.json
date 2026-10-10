@@ -1,0 +1,32 @@
+{
+  "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+  "world_size": 8,
+  "per_gpu_batch": 8,
+  "global_batch_size": 64,
+  "gradient_accumulation_steps": 1,
+  "val_batch_size_per_gpu": 16,
+  "num_workers_per_gpu": 6,
+  "prefetch_factor": 2,
+  "persistent_workers": false,
+  "gpu_image_processing": true,
+  "require_fast_kernels": true,
+  "gradient_checkpointing": false,
+  "max_pixels": 262144,
+  "epochs_when_formal_training_is_requested": 12,
+  "save_epochs_when_formal_training_is_requested": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12
+  ],
+  "formal_training_started": false,
+  "launcher": "/data/evo-inter/code/qwen_training/run_a100_8gpu_2b.sh",
+  "launcher_sha256": "c0472978858381912c0dee86b5413afd5a6ee4d1bf2d29203e5e388d9822ca4d",
+  "selected_case": "batch64-workers6-confirm",
+  "selection_policy": "Prefer sustained throughput; within 3% of best measured throughput, favor lower activation memory. Best among tested settings only.",
+  "steady_samples_per_second": 25.15720044741246,
+  "cuda_peak_allocated_gib": 28.842715740203857,
+  "cuda_peak_reserved_gib": 38.833984375
+}

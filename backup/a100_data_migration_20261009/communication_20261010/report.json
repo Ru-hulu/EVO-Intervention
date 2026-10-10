@@ -1,0 +1,123 @@
+{
+  "checked_at_unix": 1791605168.8462796,
+  "formal_training_started": false,
+  "production_configuration_modified": false,
+  "gradient_elements": 40405761,
+  "gradient_fp32_mib": 154.13574600219727,
+  "baseline_transport": "NCCL logs show SHM/direct/direct, with shared host buffers",
+  "forced_phb_transport": "NCCL_P2P_LEVEL=PHB diagnostic logs show P2P/CUMEM; slower for all tested gradient payload sizes",
+  "baseline_exit_code": 0,
+  "forced_phb_exit_code": 0,
+  "baseline": [
+    {
+      "dtype": "fp32",
+      "bucket_cap_fp32_mib": 8,
+      "payload_mib": 154.13574600219727,
+      "slowest_rank_median_ms": 112.49711620621383
+    },
+    {
+      "dtype": "fp32",
+      "bucket_cap_fp32_mib": 25,
+      "payload_mib": 154.13574600219727,
+      "slowest_rank_median_ms": 112.36413870938122
+    },
+    {
+      "dtype": "fp32",
+      "bucket_cap_fp32_mib": 50,
+      "payload_mib": 154.13574600219727,
+      "slowest_rank_median_ms": 112.08211979828775
+    },
+    {
+      "dtype": "bf16",
+      "bucket_cap_fp32_mib": 8,
+      "payload_mib": 77.06787300109863,
+      "slowest_rank_median_ms": 56.17836746387184
+    },
+    {
+      "dtype": "bf16",
+      "bucket_cap_fp32_mib": 25,
+      "payload_mib": 77.06787300109863,
+      "slowest_rank_median_ms": 55.98602490499616
+    },
+    {
+      "dtype": "bf16",
+      "bucket_cap_fp32_mib": 50,
+      "payload_mib": 77.06787300109863,
+      "slowest_rank_median_ms": 55.95543491654098
+    },
+    {
+      "dtype": "scalar2",
+      "bucket_cap_fp32_mib": null,
+      "payload_mib": 1.52587890625e-05,
+      "slowest_rank_median_ms": 0.170272309333086
+    }
+  ],
+  "forced_phb": [
+    {
+      "dtype": "fp32",
+      "bucket_cap_fp32_mib": 8,
+      "payload_mib": 154.13574600219727,
+      "slowest_rank_median_ms": 847.3152106162161
+    },
+    {
+      "dtype": "fp32",
+      "bucket_cap_fp32_mib": 25,
+      "payload_mib": 154.13574600219727,
+      "slowest_rank_median_ms": 1020.3325869515538
+    },
+    {
+      "dtype": "fp32",
+      "bucket_cap_fp32_mib": 50,
+      "payload_mib": 154.13574600219727,
+      "slowest_rank_median_ms": 927.9596763662994
+    },
+    {
+      "dtype": "bf16",
+      "bucket_cap_fp32_mib": 8,
+      "payload_mib": 77.06787300109863,
+      "slowest_rank_median_ms": 326.478915521875
+    },
+    {
+      "dtype": "bf16",
+      "bucket_cap_fp32_mib": 25,
+      "payload_mib": 77.06787300109863,
+      "slowest_rank_median_ms": 484.1129134874791
+    },
+    {
+      "dtype": "bf16",
+      "bucket_cap_fp32_mib": 50,
+      "payload_mib": 77.06787300109863,
+      "slowest_rank_median_ms": 469.5789432153106
+    },
+    {
+      "dtype": "scalar2",
+      "bucket_cap_fp32_mib": null,
+      "payload_mib": 1.52587890625e-05,
+      "slowest_rank_median_ms": 0.19066687673330307
+    }
+  ],
+  "bf16_payload_only_time_saved_ms": 56.378113804385066,
+  "bf16_payload_only_time_saved_as_fraction_of_previous_1p6718s_step": 0.03372390918788044,
+  "important_limitations": [
+    "Previous 31.16% backward stage combines computation, communication, overlap and synchronization; it is not the communication fraction.",
+    "These measurements synchronize all ready synthetic gradient buckets with no backward computation; they do not measure exposed DDP communication tail.",
+    "BF16 tests measure half-size payload only, excluding casting, gradient numerical error and convergence impact.",
+    "Bucket-capacity comparisons here exclude overlap changes in a real backward pass; whole parameter tensors may make real DDP buckets differ from these synthetic slices.",
+    "The baseline correctness check covered the first element of each constant tensor; the P2P trial checked every element for the expected sum.",
+    "Microbenchmark latency is not a guaranteed bound or predicted end-to-end training speedup."
+  ],
+  "recommendations": [
+    "Keep default NCCL transport; do not force P2P_LEVEL=PHB on this host based on measured regression.",
+    "BF16 gradient communication is a candidate for a short real-model A/B test with numerical checks; parameters and optimizer can remain FP32.",
+    "Retain the default 25 MiB DDP bucket size until a real backward-overlap profile shows a reason to change it; 8/25/50 MiB synthetic tests had nearly identical baseline latency.",
+    "Profile the uncovered communication tail before promising a training speedup. Prioritize frozen-vision caching over speculative large communication gains.",
+    "Do not remove global token/sample loss normalization. Its standalone scalar all-reduce latency was around 0.17 ms; the previously measured 51 ms stage includes rank imbalance and surrounding work.",
+    "Gradient accumulation can reduce synchronization frequency if increasing effective batch size, but changes optimization cadence; splitting the same global batch is not automatically faster."
+  ],
+  "sources": [
+    "https://docs.pytorch.org/docs/2.10/generated/torch.nn.parallel.DistributedDataParallel.html",
+    "https://docs.pytorch.org/docs/2.10/ddp_comm_hooks.html",
+    "https://docs.nvidia.com/deeplearning/nccl/archives/nccl_2275/user-guide/docs/env.html"
+  ],
+  "gpu_state_after_diagnostics": "0, 0 MiB, 0 %\n1, 0 MiB, 0 %\n2, 0 MiB, 0 %\n3, 0 MiB, 0 %\n4, 0 MiB, 0 %\n5, 0 MiB, 0 %\n6, 0 MiB, 0 %\n7, 0 MiB, 0 %\n"
+}

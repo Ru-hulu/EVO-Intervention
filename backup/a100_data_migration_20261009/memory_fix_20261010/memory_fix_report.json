@@ -1,0 +1,133 @@
+{
+  "verified_at_unix": 1791603847.8142507,
+  "status": "PASS",
+  "formal_training_started": false,
+  "restart_on_hold": "User requested efficiency investigation before formal restart",
+  "cause": "PyAV 12 input container closure left codec resources awaiting cyclic GC; decoder threads and native buffers accumulated. Persistent training workers overlapped with newly started validation workers.",
+  "fix": [
+    "One decoder thread per loader worker; explicitly close decoder generator and codec in finally.",
+    "Nonpersistent data workers; join only children created by each loader, then synchronize ranks before next phase."
+  ],
+  "test_run": "/data/evo-inter/verification/memory_fix_20261010/transition-test-v2",
+  "tests": "22 passed",
+  "actual_train_steps": 64,
+  "short_epochs": 2,
+  "validation_samples_per_epoch": 2048,
+  "checkpoint": {
+    "path": "/data/evo-inter/verification/memory_fix_20261010/transition-test-v2/output/epoch-02.pt",
+    "bytes": 485534499,
+    "epoch": 2,
+    "step": 64,
+    "world_size": 8,
+    "optimizer_state_entries": 507,
+    "all_trainable_weights_finite": true,
+    "rng_rank_count": 8
+  },
+  "phases": [
+    {
+      "kind": "phase",
+      "step": 0,
+      "epoch": 1,
+      "timestamp": 1791602983.0045295,
+      "phase": "before_train",
+      "active_data_workers": 0,
+      "host_available_gib": 600.6677703857422
+    },
+    {
+      "kind": "phase",
+      "step": 32,
+      "epoch": 1,
+      "timestamp": 1791603153.5995805,
+      "phase": "before_validation",
+      "active_data_workers": 0,
+      "host_available_gib": 587.2520904541016
+    },
+    {
+      "kind": "phase",
+      "step": 32,
+      "epoch": 1,
+      "timestamp": 1791603395.0984573,
+      "phase": "after_validation",
+      "active_data_workers": 0,
+      "host_available_gib": 581.9278602600098
+    },
+    {
+      "kind": "phase",
+      "step": 32,
+      "epoch": 2,
+      "timestamp": 1791603395.0993664,
+      "phase": "before_train",
+      "active_data_workers": 0,
+      "host_available_gib": 581.9278602600098
+    },
+    {
+      "kind": "phase",
+      "step": 64,
+      "epoch": 2,
+      "timestamp": 1791603562.9845188,
+      "phase": "before_validation",
+      "active_data_workers": 0,
+      "host_available_gib": 582.885311126709
+    },
+    {
+      "kind": "phase",
+      "step": 64,
+      "epoch": 2,
+      "timestamp": 1791603809.7549186,
+      "phase": "after_validation",
+      "active_data_workers": 0,
+      "host_available_gib": 583.5430755615234
+    }
+  ],
+  "memory": {
+    "peak_process_rss_sum_gib": 98.57176208496094,
+    "minimum_host_available_gib": 527.2287712097168,
+    "peak_worker_rss_mib": 2276.73828125,
+    "rss_sum_note": "Summed process RSS may count shared pages more than once."
+  },
+  "long_decoder_test": {
+    "samples": 1000,
+    "views_per_sample": 3,
+    "frames_per_view": 6,
+    "max_threads": 1,
+    "rss_min_mib": 1612.33203125,
+    "rss_max_mib": 1640.15234375,
+    "manual_gc_during_decode": false
+  },
+  "real_pixel_parity": {
+    "status": "PASS",
+    "samples": 20,
+    "ids": [
+      "piperx_insert_copper_screw/0000000",
+      "piperx_insert_copper_screw/0000001",
+      "piperx_insert_copper_screw/0003278",
+      "piperx_insert_copper_screw/0014592",
+      "piperx_insert_copper_screw/0029256",
+      "piperx_insert_copper_screw/0032098",
+      "piperx_insert_copper_screw/0036048",
+      "piperx_insert_copper_screw/0083810",
+      "piperx_insert_copper_screw/0097196",
+      "piperx_insert_copper_screw/0118989",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000000",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0000001",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0003278",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0013434",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0014592",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0018289",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0029256",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0032098",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0036048",
+      "piperx-bolt-intentional-drop-reinsert-22ep-raw/0080462"
+    ],
+    "views_per_sample": 3,
+    "frames_per_view": 6,
+    "pixel_comparison": "exact"
+  },
+  "av_version": "12.3.0",
+  "torch_version": "2.10.0+cu128",
+  "limitations": [
+    "Two shortened training epochs with real model/data; not two full dataset epochs.",
+    "A separate 1000-sample continuous decoding run checked resource growth.",
+    "Diagnostics checkpoint is not a formal training checkpoint."
+  ]
+}

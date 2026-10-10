@@ -1,0 +1,905 @@
+{
+  "captured_utc": "2026-10-10T05:30:20.595176+00:00",
+  "operation": "read_only_inventory",
+  "remote_files_deleted": false,
+  "size_method": "du allocated disk usage, GiB = 1024^3 bytes. Parent directory size includes listed children; do not sum both.",
+  "current_training": {
+    "output_dir": "/data/evo-inter/outputs/qwen35-2b-8gpu-10ep-20261010-052019Z",
+    "torchrun_pid": 1548734,
+    "latest_metric": {
+      "kind": "train",
+      "step": 100,
+      "epoch": 1,
+      "timestamp": 1791610084.7783346,
+      "loss": 0.014810467835470624,
+      "text_ce": 0.012008114971496977,
+      "progress_mse": 0.02134929118474247,
+      "progress_mae": 0.10321127941133454,
+      "samples": 3200,
+      "samples_per_second": 22.998208451013245
+    },
+    "resume": null
+  },
+  "inventory": [
+    {
+      "category": "current_training",
+      "path": "/data/evo-inter/outputs/qwen35-2b-8gpu-10ep-20261010-052019Z",
+      "allocated_bytes": 36864,
+      "gib": 0.0,
+      "children": []
+    },
+    {
+      "category": "old_evo_formal",
+      "path": "/data/evo-inter/outputs/qwen35-8gpu-12epochs-20261010-014204",
+      "allocated_bytes": 184320,
+      "gib": 0.0002,
+      "children": [
+        {
+          "path": "/data/evo-inter/outputs/qwen35-8gpu-12epochs-20261010-014204/source-before-launch",
+          "allocated_bytes": 49152,
+          "gib": 0.0
+        }
+      ],
+      "checkpoints": []
+    },
+    {
+      "category": "evo_4b_tuning",
+      "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010",
+      "allocated_bytes": 2634620928,
+      "gib": 2.4537,
+      "children": [
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch32-gpu-workers4-prefetch2",
+          "allocated_bytes": 485699584,
+          "gib": 0.4523
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch64-gpu-checkpoint-workers4",
+          "allocated_bytes": 485699584,
+          "gib": 0.4523
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch16-vectorized",
+          "allocated_bytes": 485670912,
+          "gib": 0.4523
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch32-vectorized",
+          "allocated_bytes": 485662720,
+          "gib": 0.4523
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch32-gpu",
+          "allocated_bytes": 485650432,
+          "gib": 0.4523
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/packages",
+          "allocated_bytes": 196583424,
+          "gib": 0.1831
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/profiler",
+          "allocated_bytes": 7880704,
+          "gib": 0.0073
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/candidate-gpu",
+          "allocated_bytes": 376832,
+          "gib": 0.0004
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/candidate-vectorized",
+          "allocated_bytes": 368640,
+          "gib": 0.0003
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/candidate",
+          "allocated_bytes": 335872,
+          "gib": 0.0003
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/candidate-final",
+          "allocated_bytes": 253952,
+          "gib": 0.0002
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/before",
+          "allocated_bytes": 110592,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/deployment-staging",
+          "allocated_bytes": 110592,
+          "gib": 0.0001
+        }
+      ],
+      "checkpoints": [
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch16-vectorized/output/epoch-01.pt",
+          "bytes": 485534499,
+          "mib": 463.04
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch32-gpu/output/epoch-01.pt",
+          "bytes": 485534499,
+          "mib": 463.04
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch32-gpu-workers4-prefetch2/output/epoch-01.pt",
+          "bytes": 485534563,
+          "mib": 463.04
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch32-vectorized/output/epoch-01.pt",
+          "bytes": 485534499,
+          "mib": 463.04
+        },
+        {
+          "path": "/data/evo-inter/verification/eight_gpu_tuning_20261010/batch64-gpu-checkpoint-workers4/output/epoch-01.pt",
+          "bytes": 485534499,
+          "mib": 463.04
+        }
+      ]
+    },
+    {
+      "category": "evo_2b_tuning",
+      "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010",
+      "allocated_bytes": 1332310016,
+      "gib": 1.2408,
+      "children": [
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch64-workers6-confirm",
+          "allocated_bytes": 266555392,
+          "gib": 0.2482
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch48-workers6-comparison",
+          "allocated_bytes": 266407936,
+          "gib": 0.2481
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch64-input-timing",
+          "allocated_bytes": 266399744,
+          "gib": 0.2481
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch32-baseline",
+          "allocated_bytes": 266334208,
+          "gib": 0.248
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch48",
+          "allocated_bytes": 266326016,
+          "gib": 0.248
+        }
+      ],
+      "checkpoints": [
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch32-baseline/output/epoch-01.pt",
+          "bytes": 266152083,
+          "mib": 253.82
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch64-workers6-confirm/output/epoch-02.pt",
+          "bytes": 266152083,
+          "mib": 253.82
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch48-workers6-comparison/output/epoch-01.pt",
+          "bytes": 266152083,
+          "mib": 253.82
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch48/output/epoch-01.pt",
+          "bytes": 266152083,
+          "mib": 253.82
+        },
+        {
+          "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch64-input-timing/output/epoch-01.pt",
+          "bytes": 266152083,
+          "mib": 253.82
+        }
+      ]
+    },
+    {
+      "category": "evo_memory_tests",
+      "path": "/data/evo-inter/verification/memory_fix_20261010",
+      "allocated_bytes": 973246464,
+      "gib": 0.9064,
+      "children": [
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/transition-test-v2",
+          "allocated_bytes": 486051840,
+          "gib": 0.4527
+        },
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/profile-baseline",
+          "allocated_bytes": 485863424,
+          "gib": 0.4525
+        },
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/profile-candidate",
+          "allocated_bytes": 389120,
+          "gib": 0.0004
+        },
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/candidate",
+          "allocated_bytes": 385024,
+          "gib": 0.0004
+        },
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/transition-test",
+          "allocated_bytes": 163840,
+          "gib": 0.0002
+        },
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/batch40-test",
+          "allocated_bytes": 151552,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/before-production",
+          "allocated_bytes": 81920,
+          "gib": 0.0001
+        }
+      ],
+      "checkpoints": [
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/profile-baseline/output/epoch-01.pt",
+          "bytes": 485534499,
+          "mib": 463.04
+        },
+        {
+          "path": "/data/evo-inter/verification/memory_fix_20261010/transition-test-v2/output/epoch-02.pt",
+          "bytes": 485534499,
+          "mib": 463.04
+        }
+      ]
+    },
+    {
+      "category": "other_training",
+      "path": "/data/train_outputs",
+      "allocated_bytes": 285194289152,
+      "gib": 265.6079,
+      "children": [
+        {
+          "path": "/data/train_outputs/pi05_so101_stationery_full_zero2_bf16_8gpu_bs64_ep397_seed1000_1ep_20260903",
+          "allocated_bytes": 66353586176,
+          "gib": 61.7966
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_fold_full_zero2_bf16_8gpu_bs64_ep32_seed1000_1ep_20260902",
+          "allocated_bytes": 66312929280,
+          "gib": 61.7587
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_stationery_full_zero2_bf16_8gpu_bs64_smoke_v5_20260902",
+          "allocated_bytes": 66295312384,
+          "gib": 61.7423
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_stationery_full_zero2_bf16_8gpu_bs64_resume_v6_20260902",
+          "allocated_bytes": 66295312384,
+          "gib": 61.7423
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_fold_expert_bf16_8gpu_bs64_1ep_20260829",
+          "allocated_bytes": 11620163584,
+          "gib": 10.8221
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_stationery_full_zero2_bf16_8gpu_bs64_smoke_v4_20260902",
+          "allocated_bytes": 8287027200,
+          "gib": 7.7179
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_stationery_expert_bf16_8gpu_bs64_1ep_20260901",
+          "allocated_bytes": 18968576,
+          "gib": 0.0177
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_insert_expert_bf16_8gpu_bs64_1ep_20260901",
+          "allocated_bytes": 10964992,
+          "gib": 0.0102
+        },
+        {
+          "path": "/data/train_outputs/pi05_so101_stationery_full_zero2_bf16_8gpu_bs64_smoke_v3_20260902",
+          "allocated_bytes": 20480,
+          "gib": 0.0
+        }
+      ]
+    },
+    {
+      "category": "other_smoke_tests",
+      "path": "/data/smoke_outputs",
+      "allocated_bytes": 11549290496,
+      "gib": 10.7561,
+      "children": [
+        {
+          "path": "/data/smoke_outputs/pi05_so101_fold_bf16_8gpu_bs64_ddp_expert_2step_20260829",
+          "allocated_bytes": 11549286400,
+          "gib": 10.7561
+        }
+      ]
+    },
+    {
+      "category": "other_experiment",
+      "path": "/data/experiments/value-vision-schedules-20260907",
+      "allocated_bytes": 333105168384,
+      "gib": 310.2284,
+      "children": [
+        {
+          "path": "/data/experiments/value-vision-schedules-20260907/runs",
+          "allocated_bytes": 221500952576,
+          "gib": 206.2888
+        },
+        {
+          "path": "/data/experiments/value-vision-schedules-20260907/cross-task-epoch",
+          "allocated_bytes": 108170039296,
+          "gib": 100.7412
+        },
+        {
+          "path": "/data/experiments/value-vision-schedules-20260907/assets",
+          "allocated_bytes": 3433619456,
+          "gib": 3.1978
+        },
+        {
+          "path": "/data/experiments/value-vision-schedules-20260907/__pycache__",
+          "allocated_bytes": 81920,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/experiments/value-vision-schedules-20260907/reports",
+          "allocated_bytes": 32768,
+          "gib": 0.0
+        }
+      ]
+    },
+    {
+      "category": "other_experiment",
+      "path": "/data/experiments/value-demo3-20260906",
+      "allocated_bytes": 287384018944,
+      "gib": 267.6472,
+      "children": [
+        {
+          "path": "/data/experiments/value-demo3-20260906/runs",
+          "allocated_bytes": 274719727616,
+          "gib": 255.8527
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/venv-py312-torch210-cu128",
+          "allocated_bytes": 8554774528,
+          "gib": 7.9673
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/models",
+          "allocated_bytes": 4090781696,
+          "gib": 3.8098
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/code",
+          "allocated_bytes": 13991936,
+          "gib": 0.013
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/reports",
+          "allocated_bytes": 3956736,
+          "gib": 0.0037
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/split90_10",
+          "allocated_bytes": 131072,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/__pycache__",
+          "allocated_bytes": 110592,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/manifests",
+          "allocated_bytes": 90112,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/experiments/value-demo3-20260906/train-only-stats",
+          "allocated_bytes": 28672,
+          "gib": 0.0
+        }
+      ]
+    },
+    {
+      "category": "other_experiment",
+      "path": "/data/experiments/value-ablation-20260906",
+      "allocated_bytes": 279541809152,
+      "gib": 260.3436,
+      "children": [
+        {
+          "path": "/data/experiments/value-ablation-20260906/runs",
+          "allocated_bytes": 279540559872,
+          "gib": 260.3424
+        },
+        {
+          "path": "/data/experiments/value-ablation-20260906/state-probe-step3000",
+          "allocated_bytes": 499712,
+          "gib": 0.0005
+        },
+        {
+          "path": "/data/experiments/value-ablation-20260906/reports",
+          "allocated_bytes": 192512,
+          "gib": 0.0002
+        },
+        {
+          "path": "/data/experiments/value-ablation-20260906/__pycache__",
+          "allocated_bytes": 98304,
+          "gib": 0.0001
+        }
+      ]
+    },
+    {
+      "category": "other_experiment",
+      "path": "/data/experiments/so101-stationery-jax-v12-20260909",
+      "allocated_bytes": 64685756416,
+      "gib": 60.2433,
+      "children": [
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/lerobot-release",
+          "allocated_bytes": 33182048256,
+          "gib": 30.9032
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/jax-numpy",
+          "allocated_bytes": 13413965824,
+          "gib": 12.4927
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/pi05-jax-v12",
+          "allocated_bytes": 12440883200,
+          "gib": 11.5865
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/pure-human-v3",
+          "allocated_bytes": 5551390720,
+          "gib": 5.1701
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/lerobot-mixed",
+          "allocated_bytes": 34136064,
+          "gib": 0.0318
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/dagger",
+          "allocated_bytes": 33984512,
+          "gib": 0.0317
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/test-deps",
+          "allocated_bytes": 14671872,
+          "gib": 0.0137
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/fold-reference",
+          "allocated_bytes": 438272,
+          "gib": 0.0004
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/tools",
+          "allocated_bytes": 167936,
+          "gib": 0.0002
+        },
+        {
+          "path": "/data/experiments/so101-stationery-jax-v12-20260909/lerobot-weights-only-candidate",
+          "allocated_bytes": 8192,
+          "gib": 0.0
+        }
+      ]
+    },
+    {
+      "category": "other_experiment",
+      "path": "/data/experiments/value-mixed-takeover-20260907",
+      "allocated_bytes": 42327519232,
+      "gib": 39.4206,
+      "children": [
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/runs",
+          "allocated_bytes": 36195078144,
+          "gib": 33.7093
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/hf-upload-demo558-mirror-v1",
+          "allocated_bytes": 5055164416,
+          "gib": 4.708
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/demo558-top10-a50-w20-build",
+          "allocated_bytes": 244580352,
+          "gib": 0.2278
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-bottom30-episode11-three-models",
+          "allocated_bytes": 151052288,
+          "gib": 0.1407
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-extremes10-chunk50-episode11-three-models",
+          "allocated_bytes": 137543680,
+          "gib": 0.1281
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-top10_positive-episode11-three-models",
+          "allocated_bytes": 114372608,
+          "gib": 0.1065
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-demo-heldout-extremes5_10-chunk50",
+          "allocated_bytes": 101740544,
+          "gib": 0.0948
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-demo-global30-step1500",
+          "allocated_bytes": 58683392,
+          "gib": 0.0547
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-top30_positive-episode11-three-models",
+          "allocated_bytes": 39112704,
+          "gib": 0.0364
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-review-episode11-step1000",
+          "allocated_bytes": 37601280,
+          "gib": 0.035
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-demo-global10-adv20-window20-step1500",
+          "allocated_bytes": 36552704,
+          "gib": 0.034
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/review-demo558-slow100-v1",
+          "allocated_bytes": 31952896,
+          "gib": 0.0298
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-positive-chunk50-episode11-three-models",
+          "allocated_bytes": 29474816,
+          "gib": 0.0275
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-demo-global10-window20-step1500",
+          "allocated_bytes": 27295744,
+          "gib": 0.0254
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/review-demo558-final-v1",
+          "allocated_bytes": 22589440,
+          "gib": 0.021
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-demo-global10-window9-step1500",
+          "allocated_bytes": 20611072,
+          "gib": 0.0192
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-top20-episode11-three-models",
+          "allocated_bytes": 10493952,
+          "gib": 0.0098
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-demo-heldout-raw10-selected-frames",
+          "allocated_bytes": 10153984,
+          "gib": 0.0095
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/video-demo-heldout-mixed-predictions",
+          "allocated_bytes": 1892352,
+          "gib": 0.0018
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/__pycache__",
+          "allocated_bytes": 221184,
+          "gib": 0.0002
+        },
+        {
+          "path": "/data/experiments/value-mixed-takeover-20260907/logs",
+          "allocated_bytes": 114688,
+          "gib": 0.0001
+        }
+      ]
+    },
+    {
+      "category": "other_experiment",
+      "path": "/data/experiments/value-demo558-z7440-3gpu-20260914",
+      "allocated_bytes": 37775265792,
+      "gib": 35.181,
+      "children": [
+        {
+          "path": "/data/experiments/value-demo558-z7440-3gpu-20260914/runs",
+          "allocated_bytes": 36057935872,
+          "gib": 33.5816
+        },
+        {
+          "path": "/data/experiments/value-demo558-z7440-3gpu-20260914/export-a800-step1500",
+          "allocated_bytes": 1717157888,
+          "gib": 1.5992
+        },
+        {
+          "path": "/data/experiments/value-demo558-z7440-3gpu-20260914/__pycache__",
+          "allocated_bytes": 65536,
+          "gib": 0.0001
+        }
+      ]
+    },
+    {
+      "category": "other_unlearning_runs",
+      "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs",
+      "allocated_bytes": 11318919168,
+      "gib": 10.5416,
+      "children": [
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13ks_qwen25",
+          "allocated_bytes": 2605101056,
+          "gib": 2.4262
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_risky_qwen3vl8b",
+          "allocated_bytes": 1250181120,
+          "gib": 1.1643
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_risky_qwen25",
+          "allocated_bytes": 986439680,
+          "gib": 0.9187
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9full40g_llavaov15_8b",
+          "allocated_bytes": 937385984,
+          "gib": 0.873
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9r2_llavaov15_8b",
+          "allocated_bytes": 865288192,
+          "gib": 0.8059
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9riskyfull_llavaov15_8b",
+          "allocated_bytes": 745168896,
+          "gib": 0.694
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_in100cmu_route2",
+          "allocated_bytes": 448425984,
+          "gib": 0.4176
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9riskyfull40g_qwen3vl8b",
+          "allocated_bytes": 399040512,
+          "gib": 0.3716
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9g_llavaov15_8b",
+          "allocated_bytes": 384573440,
+          "gib": 0.3582
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_risky_llavaov15_8b",
+          "allocated_bytes": 384573440,
+          "gib": 0.3582
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13risky_qwen25",
+          "allocated_bytes": 356802560,
+          "gib": 0.3323
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p10full_llava15_7b",
+          "allocated_bytes": 318906368,
+          "gib": 0.297
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_risky47cmu_route2",
+          "allocated_bytes": 296488960,
+          "gib": 0.2761
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9g40g_qwen3vl8b",
+          "allocated_bytes": 266002432,
+          "gib": 0.2477
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p10proxy_llava15_7b",
+          "allocated_bytes": 239198208,
+          "gib": 0.2228
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9g40g_qwen25",
+          "allocated_bytes": 209887232,
+          "gib": 0.1955
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_risky47cmu",
+          "allocated_bytes": 192901120,
+          "gib": 0.1797
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p6_qwen3vl8b_k16",
+          "allocated_bytes": 97476608,
+          "gib": 0.0908
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p10risky_llava15_7b",
+          "allocated_bytes": 75800576,
+          "gib": 0.0706
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_risky",
+          "allocated_bytes": 45211648,
+          "gib": 0.0421
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p6_models",
+          "allocated_bytes": 44802048,
+          "gib": 0.0417
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13kswarm_qwen25",
+          "allocated_bytes": 43421696,
+          "gib": 0.0404
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p10full_cmu",
+          "allocated_bytes": 28332032,
+          "gib": 0.0264
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13ks_cmu",
+          "allocated_bytes": 24760320,
+          "gib": 0.0231
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p10proxy_cmu",
+          "allocated_bytes": 21266432,
+          "gib": 0.0198
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13riskywarm_qwen25",
+          "allocated_bytes": 20992000,
+          "gib": 0.0196
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9full40g_cmu",
+          "allocated_bytes": 7839744,
+          "gib": 0.0073
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13risky_cmu",
+          "allocated_bytes": 4993024,
+          "gib": 0.0047
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9r2_cmu",
+          "allocated_bytes": 4222976,
+          "gib": 0.0039
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9g40g_cmu",
+          "allocated_bytes": 4050944,
+          "gib": 0.0038
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9riskyfull_cmu",
+          "allocated_bytes": 3420160,
+          "gib": 0.0032
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9riskyfull40g_cmu",
+          "allocated_bytes": 3072000,
+          "gib": 0.0029
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9g_cmu",
+          "allocated_bytes": 1773568,
+          "gib": 0.0017
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13_ksearch",
+          "allocated_bytes": 643072,
+          "gib": 0.0006
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p6_run99_llavaov15_8b_k16",
+          "allocated_bytes": 344064,
+          "gib": 0.0003
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p13_risky",
+          "allocated_bytes": 65536,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p9riskyfull40g_qwen25",
+          "allocated_bytes": 49152,
+          "gib": 0.0
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/p8_cmu",
+          "allocated_bytes": 8192,
+          "gib": 0.0
+        },
+        {
+          "path": "/data/vlm-unlearning/vlm-unlearning-multimodal-rebuild/runs/.incoming",
+          "allocated_bytes": 4096,
+          "gib": 0.0
+        }
+      ]
+    },
+    {
+      "category": "other_mixed_runs",
+      "path": "/data/ummu/runs",
+      "allocated_bytes": 5559451648,
+      "gib": 5.1776,
+      "children": [
+        {
+          "path": "/data/ummu/runs/unlearn",
+          "allocated_bytes": 5526360064,
+          "gib": 5.1468
+        },
+        {
+          "path": "/data/ummu/runs/novel_entity_hf_probe",
+          "allocated_bytes": 21073920,
+          "gib": 0.0196
+        },
+        {
+          "path": "/data/ummu/runs/novel_entity_hf_download",
+          "allocated_bytes": 11337728,
+          "gib": 0.0106
+        },
+        {
+          "path": "/data/ummu/runs/identity-multiview-review",
+          "allocated_bytes": 524288,
+          "gib": 0.0005
+        },
+        {
+          "path": "/data/ummu/runs/remem-download",
+          "allocated_bytes": 57344,
+          "gib": 0.0001
+        },
+        {
+          "path": "/data/ummu/runs/modal-faces-prepare",
+          "allocated_bytes": 36864,
+          "gib": 0.0
+        },
+        {
+          "path": "/data/ummu/runs/downloads",
+          "allocated_bytes": 24576,
+          "gib": 0.0
+        },
+        {
+          "path": "/data/ummu/runs/blender-instance-pilot8",
+          "allocated_bytes": 24576,
+          "gib": 0.0
+        }
+      ]
+    },
+    {
+      "category": "other_outputs",
+      "path": "/data/umm-ica/outputs",
+      "allocated_bytes": 619479040,
+      "gib": 0.5769,
+      "children": [
+        {
+          "path": "/data/umm-ica/outputs/color_shapes_640_v2",
+          "allocated_bytes": 619474944,
+          "gib": 0.5769
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "The 12 Evo-Inter checkpoint files are bounded-test outputs, not completed formal epochs.",
+    "The old 4B formal run exited with code 1 and contains no checkpoint.",
+    "Other experiment directories may also contain model copies, environments, assets and data; whole-directory removal has not been assessed.",
+    "Current Evo-Inter models, datasets, code, environment and caches are not deletion candidates in this inventory."
+  ]
+}

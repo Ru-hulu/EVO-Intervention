@@ -1,0 +1,46 @@
+{
+  "status": "PREPARED; waiting for the next scheduled download check",
+  "automation_id": "qwen3-5-2b-8",
+  "formal_training_allowed": false,
+  "first_case": {
+    "name": "batch32-baseline",
+    "per_gpu_batch": 4,
+    "train_batches": 32,
+    "val_batches": 2,
+    "benchmark_epochs": 1
+  },
+  "adaptive_candidates": "After batch 4, test batch 6. If it succeeds with headroom, test batch 8; if an increment fails with CUDA OOM, test the intermediate integer as needed. Only consider larger values if measured memory and throughput justify them. Stop broadening once throughput plateaus or headroom becomes too small.",
+  "selection": "Compare weighted steady throughput after warmup, CUDA allocated/reserved peaks and sampled device usage. Prefer at least about 2-3 GiB active-allocation headroom; avoid choosing the largest batch solely because a few steps fit. Default allocator reservations can include reusable cache, so assess active allocations alongside device usage.",
+  "confirmation": "For the selected batch, run two bounded epochs, each with 32-64 training batches and 8-16 validation batches, to cover train -> validation -> train -> validation and checkpoint save. Check all eight ranks have finite nonzero updates and memory remains bounded.",
+  "comparison_baseline_4b_samples_per_second": 19.026995177475552,
+  "configuration": "Keep model source files, data/video split, prompt mix, loss, pixel limit, augmentation, LoRA rank and precision unchanged. Change only model path and tested batch arguments.",
+  "run_command_template": "source /data/evo-inter/env.sh; python /data/evo-inter/verification/qwen35_2b_tuning_20261010/run_case.py --name CASE_NAME --per-gpu-batch N --train-batches 32 --val-batches 2",
+  "launch_guidance": "Launch this command in a detached subprocess with stdin DEVNULL and a driver log in this directory. The driver takes an exclusive lock and checks download completion and idle GPUs before launch. Inspect active_case.json plus process identity before considering another test.",
+  "completion": "Save a report and recommended 2B launch configuration without executing it, copy small artifacts locally, notify user, and pause automation qwen3-5-2b-8.",
+  "current_findings": {
+    "batch4_workers4_samples_per_second": 20.90469077964091,
+    "batch6_workers4_samples_per_second": 20.697803686943633,
+    "batch8_workers4_samples_per_second": 19.903241857311393,
+    "batch8_mean_max_rank_input_wait_seconds": 0.9252838251413777
+  },
+  "next_case": {
+    "name": "batch64-workers6-confirm",
+    "per_gpu_batch": 8,
+    "num_workers": 6,
+    "train_batches": 32,
+    "val_batches": 8,
+    "benchmark_epochs": 2,
+    "measure_input": true
+  },
+  "next_case_reason": "Compare batch 6 vs 8 after removing the measured input bottleneck, using matched worker count. Formal training remains prohibited.",
+  "next_case_after_current": "batch48-workers6-comparison",
+  "next_case_parameters": {
+    "per_gpu_batch": 6,
+    "num_workers": 6,
+    "train_batches": 32,
+    "val_batches": 2,
+    "benchmark_epochs": 1,
+    "measure_input": true
+  },
+  "selection_policy": "Compare sustained throughput after startup. Prefer the faster measured setting; when rates are within roughly 3% (the observed repeat variation), prefer lower activation memory. Recommendation is among tested settings, not an exhaustive optimum."
+}

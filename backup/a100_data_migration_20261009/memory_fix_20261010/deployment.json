@@ -1,0 +1,15 @@
+{
+  "deployed_at_unix": 1791603930.7868497,
+  "files": {
+    "qwen_training/dataset.py": "71fb634be7ceb1764b4e47707ce4bc2098db3e8d8f29437091a30baa94deb4ae",
+    "qwen_training/train_distributed.py": "906ccbc56be40810165a79a1928e2e19cea2ba7ecce2cf5c6808595f8f0f1906",
+    "qwen_training/benchmark_distributed.py": "62232eefa3852159c66b451d923acc27ae31835da226f240c4963f479610dd19",
+    "qwen_training/tests/test_decoder_lifecycle.py": "e22530b351226d46effe7b04db79add1b3be880a97b2c9853fe5ed93a0dddf72",
+    "qwen_training/tests/test_loader_phases.py": "afbefdfb470ffa984eeb92df98cc1875d8aef74b7780db62c9d4d14c9736a8bc",
+    "qwen_training/requirements.txt": "262d250c7aead6d6eabc2c571e177bf37ff2e646ecb4cc850a9e01e8446dbd73",
+    "qwen_training/README.md": "759d48e89bc04f50f0e514db14d6ad51e7e3a9dc2dd1ba05720ae182bb582687"
+  },
+  "backup": "/data/evo-inter/verification/memory_fix_20261010/before-production",
+  "formal_training_started": false,
+  "status": "DEPLOYED; formal training on hold for efficiency investigation"
+}

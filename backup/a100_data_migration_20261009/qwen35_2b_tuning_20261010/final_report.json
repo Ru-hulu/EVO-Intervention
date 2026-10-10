@@ -1,0 +1,357 @@
+{
+  "status": "complete",
+  "completed_unix": 1791609274.728064,
+  "download_verified": true,
+  "hardware": "8 x NVIDIA A100-PCIE-40GB",
+  "recommendation": {
+    "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+    "world_size": 8,
+    "per_gpu_batch": 8,
+    "global_batch_size": 64,
+    "gradient_accumulation_steps": 1,
+    "val_batch_size_per_gpu": 16,
+    "num_workers_per_gpu": 6,
+    "prefetch_factor": 2,
+    "persistent_workers": false,
+    "gpu_image_processing": true,
+    "require_fast_kernels": true,
+    "gradient_checkpointing": false,
+    "max_pixels": 262144,
+    "epochs_when_formal_training_is_requested": 12,
+    "save_epochs_when_formal_training_is_requested": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "formal_training_started": false,
+    "launcher": "/data/evo-inter/code/qwen_training/run_a100_8gpu_2b.sh",
+    "launcher_sha256": "c0472978858381912c0dee86b5413afd5a6ee4d1bf2d29203e5e388d9822ca4d",
+    "selected_case": "batch64-workers6-confirm",
+    "selection_policy": "Prefer sustained throughput; within 3% of best measured throughput, favor lower activation memory. Best among tested settings only.",
+    "steady_samples_per_second": 25.15720044741246,
+    "cuda_peak_allocated_gib": 28.842715740203857,
+    "cuda_peak_reserved_gib": 38.833984375
+  },
+  "cases": [
+    {
+      "name": "batch32-baseline",
+      "exit_code": 0,
+      "per_gpu_batch": 4,
+      "global_batch": 32,
+      "workers_per_gpu": 4,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 1024,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 20.90469077964091,
+      "steady_samples_per_second_by_epoch": {
+        "1": 20.90469077964091
+      },
+      "late_half_samples_per_second": 21.15805311146483,
+      "cuda_peak_allocated_gib": 17.100133895874023,
+      "cuda_peak_reserved_gib": 31.1015625,
+      "sampled_peak_device_used_gib": 32.8349609375,
+      "minimum_host_available_gib": 531.6719207763672,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": null,
+      "mean_step_slowest_rank_input_wait_seconds": null,
+      "mean_consumer_wall_seconds": null,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791606670.0904894,
+          "loss": 0.04476866110333004,
+          "text_ce": 0.0355903288331248,
+          "progress_mse": 0.06618476973380893,
+          "progress_mae": 0.22873842663830146,
+          "samples": 256,
+          "seconds": 134.272147892043
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch48",
+      "exit_code": 0,
+      "per_gpu_batch": 6,
+      "global_batch": 48,
+      "workers_per_gpu": 4,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 1536,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 20.697803686943633,
+      "steady_samples_per_second_by_epoch": {
+        "1": 20.697803686943633
+      },
+      "late_half_samples_per_second": 18.412709224607948,
+      "cuda_peak_allocated_gib": 22.682987213134766,
+      "cuda_peak_reserved_gib": 34.576171875,
+      "sampled_peak_device_used_gib": 35.2373046875,
+      "minimum_host_available_gib": 531.2973098754883,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": null,
+      "mean_step_slowest_rank_input_wait_seconds": null,
+      "mean_consumer_wall_seconds": null,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791607091.9355123,
+          "loss": 0.03261269404023301,
+          "text_ce": 0.023566136614703873,
+          "progress_mse": 0.05372132803313434,
+          "progress_mae": 0.18158207082888111,
+          "samples": 256,
+          "seconds": 139.7543243379332
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch48-workers6-comparison",
+      "exit_code": 0,
+      "per_gpu_batch": 6,
+      "global_batch": 48,
+      "workers_per_gpu": 6,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 1536,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 24.17933531778772,
+      "steady_samples_per_second_by_epoch": {
+        "1": 24.17933531778772
+      },
+      "late_half_samples_per_second": 26.42001518622272,
+      "cuda_peak_allocated_gib": 22.683639526367188,
+      "cuda_peak_reserved_gib": 34.53125,
+      "sampled_peak_device_used_gib": 35.1904296875,
+      "minimum_host_available_gib": 505.8758430480957,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": 0.0007447536564931008,
+      "mean_step_slowest_rank_input_wait_seconds": 0.0013871773844584823,
+      "mean_consumer_wall_seconds": 1.9854370485824933,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791609261.2154903,
+          "loss": 0.029640520170933618,
+          "text_ce": 0.019518414336186247,
+          "progress_mse": 0.0532587671186775,
+          "progress_mae": 0.19104733760468662,
+          "samples": 256,
+          "seconds": 180.0343275531195
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch64-input-timing",
+      "exit_code": 0,
+      "per_gpu_batch": 8,
+      "global_batch": 64,
+      "workers_per_gpu": 4,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 1,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 2,
+      "train_samples_tested": 2048,
+      "validation_samples_tested": 256,
+      "steady_samples_per_second": 19.903241857311393,
+      "steady_samples_per_second_by_epoch": {
+        "1": 19.903241857311393
+      },
+      "late_half_samples_per_second": 18.077783680131642,
+      "cuda_peak_allocated_gib": 28.842715740203857,
+      "cuda_peak_reserved_gib": 38.833984375,
+      "sampled_peak_device_used_gib": 31.5498046875,
+      "minimum_host_available_gib": 532.9648094177246,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-01.pt"
+      ],
+      "mean_rank_input_wait_seconds": 0.22343496846484154,
+      "mean_step_slowest_rank_input_wait_seconds": 0.9252838251413777,
+      "mean_consumer_wall_seconds": 2.9930677376583583,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791607542.6721299,
+          "loss": 0.030547416273632323,
+          "text_ce": 0.020167893720973357,
+          "progress_mse": 0.05476630222983658,
+          "progress_mae": 0.20339442527620122,
+          "samples": 256,
+          "seconds": 136.63087485404685
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "batch64-workers6-confirm",
+      "exit_code": 0,
+      "per_gpu_batch": 8,
+      "global_batch": 64,
+      "workers_per_gpu": 6,
+      "validation_batch_per_gpu": 16,
+      "short_epochs": 2,
+      "train_batches_per_epoch": 32,
+      "validation_batches_per_epoch": 8,
+      "train_samples_tested": 4096,
+      "validation_samples_tested": 2048,
+      "steady_samples_per_second": 25.15720044741246,
+      "steady_samples_per_second_by_epoch": {
+        "1": 25.511888042831853,
+        "2": 24.81223994475585
+      },
+      "late_half_samples_per_second": 26.56948836717454,
+      "cuda_peak_allocated_gib": 28.842715740203857,
+      "cuda_peak_reserved_gib": 38.833984375,
+      "sampled_peak_device_used_gib": 35.5322265625,
+      "minimum_host_available_gib": 493.05981826782227,
+      "all_eight_ranks_updated_all_trainable_components": true,
+      "phase_cleanup_checks_passed": true,
+      "checkpoint_paths": [
+        "output/epoch-02.pt"
+      ],
+      "mean_rank_input_wait_seconds": 0.007726903248112649,
+      "mean_step_slowest_rank_input_wait_seconds": 0.05594761192332953,
+      "mean_consumer_wall_seconds": 2.5375638613217495,
+      "validation_metrics": [
+        {
+          "kind": "validation",
+          "step": 32,
+          "epoch": 1,
+          "timestamp": 1791608268.4634256,
+          "loss": 0.025903249685675134,
+          "text_ce": 0.018007163004358295,
+          "progress_mse": 0.0443274519420811,
+          "progress_mae": 0.17265490924182814,
+          "samples": 1024,
+          "seconds": 217.61141342576593
+        },
+        {
+          "kind": "validation",
+          "step": 64,
+          "epoch": 2,
+          "timestamp": 1791608748.14507,
+          "loss": 0.01777372388543296,
+          "text_ce": 0.012896572526725153,
+          "progress_mse": 0.029153743722417857,
+          "progress_mae": 0.1253964260831708,
+          "samples": 1024,
+          "seconds": 223.9585184622556
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "measurement": {
+    "throughput": "Global samples / summed step time, excludes first four steps of EACH short epoch, validation and phase startup/shutdown.",
+    "memory": "CUDA allocated and reserved are exact allocator maxima across all ranks and train/validation. NVML snapshots are every five seconds and can miss brief peaks.",
+    "input_wait": "Time blocked getting a batch. Consumer wall time includes DDP waits for other ranks; these quantities are not independent and must not be added.",
+    "limits": "Real-data short benchmarks only; throughput depends on video mix and does not prove full-epoch stability or model quality. Different batch sizes consume different sample counts."
+  },
+  "checkpoint_audit": {
+    "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch64-workers6-confirm/output/epoch-02.pt",
+    "size_bytes": 266152083,
+    "checks": {
+      "epoch_is_two": true,
+      "step_is_64": true,
+      "world_size_is_eight": true,
+      "model_is_2b": true,
+      "global_batch_is_64": true,
+      "workers_is_six": true,
+      "all_components_present": true,
+      "eight_rank_rng_states": true,
+      "lora_tensors_finite": true,
+      "visual_adapter_tensors_finite": true,
+      "progress_head_tensors_finite": true
+    },
+    "passed": true,
+    "loaded_on": "cpu",
+    "formal_training_started": false
+  },
+  "tokenization_parity": {
+    "status": "PASS",
+    "unique_state_target_combinations": 18,
+    "prompt_branches_tested": 2,
+    "token_ids_equal_to_4b_with_thinking_disabled": true,
+    "supervision_prefix_valid": true,
+    "min_total_tokens": 780,
+    "max_total_tokens": 865,
+    "visual_prefix_tokens": 702
+  },
+  "provenance": {
+    "production_code_sha256": {
+      "model.py": "d8402ce4ec0a3601f4a32a495501948f4bf35fd4256d68b1885ac218ae1ebf55",
+      "dataset.py": "71fb634be7ceb1764b4e47707ce4bc2098db3e8d8f29437091a30baa94deb4ae",
+      "train_distributed.py": "906ccbc56be40810165a79a1928e2e19cea2ba7ecce2cf5c6808595f8f0f1906",
+      "benchmark_distributed.py": "62232eefa3852159c66b451d923acc27ae31835da226f240c4963f479610dd19",
+      "run_a100_8gpu.sh": "5f55ef0833115390859a24c3d1929cf8683057925dc4ecf4f6ca53285172ff4b",
+      "requirements.txt": "262d250c7aead6d6eabc2c571e177bf37ff2e646ecb4cc850a9e01e8446dbd73"
+    },
+    "benchmark_scope": "Bounded train/validation only; no formal training launched.",
+    "invariants": {
+      "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+      "train_samples": 180104,
+      "validation_samples": 19349,
+      "train_videos": 72,
+      "validation_videos": 8,
+      "state_drop_probability": 0.3,
+      "minimal_prompt_includes_four_stages": false,
+      "minimal_prompt_includes_previous_state": false,
+      "task_intent": "将螺丝插入螺栓中",
+      "views": 3,
+      "history_frames_per_view": 6,
+      "max_pixels": 262144,
+      "precision": "bf16 autocast; trainable parameters FP32",
+      "lora_rank": 16,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "learning_rate": 0.0001,
+      "text_loss_weight": 0.7,
+      "progress_loss_weight": 0.3,
+      "prefetch_factor": 2,
+      "gradient_checkpointing": false,
+      "frozen_visual_backbone": true,
+      "fast_kernels_required": true
+    }
+  },
+  "training_implementation_modified_during_tuning": false,
+  "formal_training_started": false,
+  "gpu_compute_processes_at_completion": [],
+  "all_benchmark_processes_exited": true,
+  "two_short_train_validation_cycles_passed": true,
+  "total_train_samples_tested": 10240,
+  "total_validation_samples_tested": 3072
+}

@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "verified_at_utc": "2026-10-10T05:26:35.662362+00:00",
+  "output_dir": "/data/evo-inter/outputs/qwen35-2b-8gpu-10ep-20261010-052019Z",
+  "torchrun_pid": 1548734,
+  "effective_configuration": {
+    "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+    "epochs": 10,
+    "save_epochs": [
+      2,
+      4,
+      6,
+      8,
+      10
+    ],
+    "global_batch_size": 64,
+    "val_batch_size": 16,
+    "num_workers": 6,
+    "prefetch_factor": 2,
+    "resume": null,
+    "gradient_checkpointing": false,
+    "require_fast_kernels": true,
+    "gpu_image_processing": true
+  },
+  "latest_training_metric": {
+    "kind": "train",
+    "step": 50,
+    "epoch": 1,
+    "timestamp": 1791609945.6351023,
+    "loss": 0.12165961516718676,
+    "text_ce": 0.15666256597033196,
+    "progress_mse": 0.039986063293181356,
+    "progress_mae": 0.15213617072906346,
+    "samples": 3200,
+    "samples_per_second": 11.044047848248603
+  },
+  "throughput_note": "First log window includes DataLoader initialization; do not treat its throughput as steady-state.",
+  "video_split_matches_short_test": true,
+  "gpu_compute_processes": [
+    "GPU-7cf325fb-8879-f842-51da-b27bdf04ec93, 1548771, 31482",
+    "GPU-cb591432-1cba-9701-0191-caeb38577186, 1548772, 31962",
+    "GPU-889c5b4a-1c50-0705-53ae-8bca8c9237a9, 1548773, 31488",
+    "GPU-f5e38841-74b9-9f12-1250-27839e346fde, 1548774, 31498",
+    "GPU-0f3b5849-6482-0f5a-afe4-f2105b3c1f19, 1548775, 31974",
+    "GPU-42d4e16a-3f6a-9a42-9393-0777ed6a6785, 1548776, 31478",
+    "GPU-6d1ecc37-6d4b-8227-5adb-fbaa9306d45f, 1548777, 31504",
+    "GPU-2aa83999-8e1c-6adb-1a39-5dc5824a28e1, 1548778, 32298"
+  ],
+  "errors": [],
+  "background_training_running": true
+}

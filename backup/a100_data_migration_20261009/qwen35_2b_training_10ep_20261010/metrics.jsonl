@@ -1,0 +1,2 @@
+{"kind": "phase", "step": 0, "epoch": 1, "timestamp": 1791609655.885334, "phase": "before_train", "active_data_workers": 0, "host_available_gib": 601.8870811462402}
+{"kind": "train", "step": 50, "epoch": 1, "timestamp": 1791609945.6351023, "loss": 0.12165961516718676, "text_ce": 0.15666256597033196, "progress_mse": 0.039986063293181356, "progress_mae": 0.15213617072906346, "samples": 3200, "samples_per_second": 11.044047848248603}

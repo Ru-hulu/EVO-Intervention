@@ -1,0 +1,49 @@
+{
+  "status": "running",
+  "formal_training": true,
+  "started_unix": 1791609619.7454655,
+  "started_utc": "2026-10-10T05:20:19.745473+00:00",
+  "driver_pid": 1548730,
+  "torchrun_pid": 1548734,
+  "process_group_id": 1548734,
+  "command": [
+    "bash",
+    "/data/evo-inter/code/qwen_training/run_a100_8gpu_2b.sh",
+    "/data/evo-inter/outputs/qwen35-2b-8gpu-10ep-20261010-052019Z",
+    "--epochs",
+    "10",
+    "--save-epochs",
+    "2",
+    "4",
+    "6",
+    "8",
+    "10"
+  ],
+  "output_dir": "/data/evo-inter/outputs/qwen35-2b-8gpu-10ep-20261010-052019Z",
+  "log_path": "/data/evo-inter/outputs/qwen35-2b-8gpu-10ep-20261010-052019Z/train.log",
+  "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+  "world_size": 8,
+  "per_gpu_batch": 8,
+  "global_batch_size": 64,
+  "num_workers_per_gpu": 6,
+  "val_batch_size_per_gpu": 16,
+  "epochs": 10,
+  "save_epochs": [
+    2,
+    4,
+    6,
+    8,
+    10
+  ],
+  "resume": null,
+  "host_available_gib_at_launch": 618.1268463134766,
+  "launcher_sha256": "5477ac2bf50c36ed28a29c88b832237926192ec86bd8fc088c91145839fe9669",
+  "tested_source_sha256": {
+    "model.py": "d8402ce4ec0a3601f4a32a495501948f4bf35fd4256d68b1885ac218ae1ebf55",
+    "dataset.py": "71fb634be7ceb1764b4e47707ce4bc2098db3e8d8f29437091a30baa94deb4ae",
+    "train_distributed.py": "906ccbc56be40810165a79a1928e2e19cea2ba7ecce2cf5c6808595f8f0f1906",
+    "benchmark_distributed.py": "62232eefa3852159c66b451d923acc27ae31835da226f240c4963f479610dd19",
+    "run_a100_8gpu.sh": "5f55ef0833115390859a24c3d1929cf8683057925dc4ecf4f6ca53285172ff4b",
+    "requirements.txt": "262d250c7aead6d6eabc2c571e177bf37ff2e646ecb4cc850a9e01e8446dbd73"
+  }
+}

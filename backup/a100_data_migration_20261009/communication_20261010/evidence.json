@@ -1,0 +1,28 @@
+{
+  "ddp_source": "/data/evo-inter/code/qwen_training/train_distributed.py",
+  "ddp_constructor": [
+    "    distributed_model = DistributedDataParallel(",
+    "        model, device_ids=[device.index], broadcast_buffers=False, gradient_as_bucket_view=True,",
+    "    )"
+  ],
+  "gradient_fp32": [
+    "    parameters = [p for p in model.parameters() if p.requires_grad]",
+    "    for parameter in parameters:",
+    "        parameter.data = parameter.data.float()"
+  ],
+  "loss_denominator_sync": [
+    "                count = len(targets[\"progress\"])",
+    "                denominators = torch.stack((outputs.text_tokens.double(), window_totals.new_tensor(count)))",
+    "                dist.all_reduce(denominators)",
+    "                # DDP 对卡取平均，乘 world_size 抵消；CE 按 token，MSE 按样本加权。",
+    "                loss = world_size * (",
+    "                    args.text_loss_weight * outputs.text_loss * outputs.text_tokens / denominators[0]",
+    "                    + args.progress_loss_weight * outputs.progress_loss * count / denominators[1]",
+    "                )"
+  ],
+  "gpu_topology": "\t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nGPU0\t X \tPHB\tPHB\tPHB\tPHB\tPHB\tPHB\tPHB\t0-79\t0-1\t\tN/A\nGPU1\tPHB\t X \tPHB\tPHB\tPHB\tPHB\tPHB\tPHB\t0-79\t0-1\t\tN/A\nGPU2\tPHB\tPHB\t X \tPHB\tPHB\tPHB\tPHB\tPHB\t0-79\t0-1\t\tN/A\nGPU3\tPHB\tPHB\tPHB\t X \tPHB\tPHB\tPHB\tPHB\t0-79\t0-1\t\tN/A\nGPU4\tPHB\tPHB\tPHB\tPHB\t X \tPHB\tPHB\tPHB\t0-79\t0-1\t\tN/A\nGPU5\tPHB\tPHB\tPHB\tPHB\tPHB\t X \tPHB\tPHB\t0-79\t0-1\t\tN/A\nGPU6\tPHB\tPHB\tPHB\tPHB\tPHB\tPHB\t X \tPHB\t0-79\t0-1\t\tN/A\nGPU7\tPHB\tPHB\tPHB\tPHB\tPHB\tPHB\tPHB\t X \t0-79\t0-1\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n",
+  "p2p_read_support": " \t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\t\u001b[0m\n GPU0\tX\tOK\tOK\tOK\tOK\tOK\tOK\tOK\t\n GPU1\tOK\tX\tOK\tOK\tOK\tOK\tOK\tOK\t\n GPU2\tOK\tOK\tX\tOK\tOK\tOK\tOK\tOK\t\n GPU3\tOK\tOK\tOK\tX\tOK\tOK\tOK\tOK\t\n GPU4\tOK\tOK\tOK\tOK\tX\tOK\tOK\tOK\t\n GPU5\tOK\tOK\tOK\tOK\tOK\tX\tOK\tOK\t\n GPU6\tOK\tOK\tOK\tOK\tOK\tOK\tX\tOK\t\n GPU7\tOK\tOK\tOK\tOK\tOK\tOK\tOK\tX\t\n\nLegend:\n\n  X    = Self\n  OK   = Status Ok\n  CNS  = Chipset not supported\n  GNS  = GPU not supported\n  TNS  = Topology not supported\n  NS   = Not supported\n  U    = Unknown\n",
+  "p2p_write_support": " \t\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tGPU4\tGPU5\tGPU6\tGPU7\t\u001b[0m\n GPU0\tX\tOK\tOK\tOK\tOK\tOK\tOK\tOK\t\n GPU1\tOK\tX\tOK\tOK\tOK\tOK\tOK\tOK\t\n GPU2\tOK\tOK\tX\tOK\tOK\tOK\tOK\tOK\t\n GPU3\tOK\tOK\tOK\tX\tOK\tOK\tOK\tOK\t\n GPU4\tOK\tOK\tOK\tOK\tX\tOK\tOK\tOK\t\n GPU5\tOK\tOK\tOK\tOK\tOK\tX\tOK\tOK\t\n GPU6\tOK\tOK\tOK\tOK\tOK\tOK\tX\tOK\t\n GPU7\tOK\tOK\tOK\tOK\tOK\tOK\tOK\tX\t\n\nLegend:\n\n  X    = Self\n  OK   = Status Ok\n  CNS  = Chipset not supported\n  GNS  = GPU not supported\n  TNS  = Topology not supported\n  NS   = Not supported\n  U    = Unknown\n",
+  "formal_training_started": false,
+  "production_configuration_modified": false
+}

@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "unique_state_target_combinations": 18,
+  "prompt_branches_tested": 2,
+  "token_ids_equal_to_4b_with_thinking_disabled": true,
+  "supervision_prefix_valid": true,
+  "min_total_tokens": 780,
+  "max_total_tokens": 865,
+  "visual_prefix_tokens": 702
+}

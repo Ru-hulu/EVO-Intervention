@@ -1,0 +1,10 @@
+{
+  "rank": 5,
+  "peak_allocated_mib": 23219.984375,
+  "peak_reserved_mib": 35398.0,
+  "parameter_max_abs_change": {
+    "lora": 0.0018561213510110974,
+    "visual_adapter": 0.00179360993206501,
+    "progress_head": 0.0003121718764305115
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "pid": 1511919,
+  "log": "/data/evo-inter/logs/download-qwen35-2b-20261010-121554.log",
+  "destination": "/data/evo-inter/models/Qwen3.5-2B",
+  "source": "https://modelscope.cn/models/Qwen/Qwen3.5-2B",
+  "detached": true,
+  "progress_monitoring": false
+}

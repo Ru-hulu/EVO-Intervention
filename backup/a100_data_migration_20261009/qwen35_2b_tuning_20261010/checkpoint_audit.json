@@ -1,0 +1,20 @@
+{
+  "path": "/data/evo-inter/verification/qwen35_2b_tuning_20261010/batch64-workers6-confirm/output/epoch-02.pt",
+  "size_bytes": 266152083,
+  "checks": {
+    "epoch_is_two": true,
+    "step_is_64": true,
+    "world_size_is_eight": true,
+    "model_is_2b": true,
+    "global_batch_is_64": true,
+    "workers_is_six": true,
+    "all_components_present": true,
+    "eight_rank_rng_states": true,
+    "lora_tensors_finite": true,
+    "visual_adapter_tensors_finite": true,
+    "progress_head_tensors_finite": true
+  },
+  "passed": true,
+  "loaded_on": "cpu",
+  "formal_training_started": false
+}

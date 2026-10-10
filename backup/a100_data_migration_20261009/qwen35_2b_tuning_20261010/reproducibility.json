@@ -1,0 +1,36 @@
+{
+  "production_code_sha256": {
+    "model.py": "d8402ce4ec0a3601f4a32a495501948f4bf35fd4256d68b1885ac218ae1ebf55",
+    "dataset.py": "71fb634be7ceb1764b4e47707ce4bc2098db3e8d8f29437091a30baa94deb4ae",
+    "train_distributed.py": "906ccbc56be40810165a79a1928e2e19cea2ba7ecce2cf5c6808595f8f0f1906",
+    "benchmark_distributed.py": "62232eefa3852159c66b451d923acc27ae31835da226f240c4963f479610dd19",
+    "run_a100_8gpu.sh": "5f55ef0833115390859a24c3d1929cf8683057925dc4ecf4f6ca53285172ff4b",
+    "requirements.txt": "262d250c7aead6d6eabc2c571e177bf37ff2e646ecb4cc850a9e01e8446dbd73"
+  },
+  "benchmark_scope": "Bounded train/validation only; no formal training launched.",
+  "invariants": {
+    "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+    "train_samples": 180104,
+    "validation_samples": 19349,
+    "train_videos": 72,
+    "validation_videos": 8,
+    "state_drop_probability": 0.3,
+    "minimal_prompt_includes_four_stages": false,
+    "minimal_prompt_includes_previous_state": false,
+    "task_intent": "将螺丝插入螺栓中",
+    "views": 3,
+    "history_frames_per_view": 6,
+    "max_pixels": 262144,
+    "precision": "bf16 autocast; trainable parameters FP32",
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "learning_rate": 0.0001,
+    "text_loss_weight": 0.7,
+    "progress_loss_weight": 0.3,
+    "prefetch_factor": 2,
+    "gradient_checkpointing": false,
+    "frozen_visual_backbone": true,
+    "fast_kernels_required": true
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "rank_step_rows": 224,
+  "mean_input_wait_seconds": 0.22343496846484154,
+  "mean_max_rank_input_wait_seconds": 0.9252838251413777,
+  "mean_consumer_seconds": 2.9930677376583583
+}

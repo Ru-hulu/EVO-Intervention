@@ -1,0 +1,63 @@
+{
+  "status": "PASS: configuration and module dimensions support 2B without source edits",
+  "production_code_modified": false,
+  "formal_training_started": false,
+  "download_progress_checked": false,
+  "versions": {
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "peft": "0.19.1"
+  },
+  "fast_kernels_available": true,
+  "structure": {
+    "language_layers": 24,
+    "language_hidden_dim": 2048,
+    "vision_layers": 24,
+    "vision_hidden_dim": 1024,
+    "vision_output_dim": 2048,
+    "visual_adapter_input_dim": 2048,
+    "visual_adapter_output_dim": 2048,
+    "progress_head_input_dim": 2048,
+    "lora_linear_modules": 186,
+    "lora_parameters": 16819200,
+    "all_trainable_parameters": 22136577,
+    "vision_frozen": true
+  },
+  "component_check": "Existing visual adapter and progress head ran forward/backward with synthetic CPU tensors at width 2048; no optimizer step.",
+  "cli_override": {
+    "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+    "epochs": 12,
+    "save_epochs": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "global_batch_size": 32,
+    "resume": null
+  },
+  "source_sha256": {
+    "model.py": "d8402ce4ec0a3601f4a32a495501948f4bf35fd4256d68b1885ac218ae1ebf55",
+    "vision_encoder.py": "d65f0d57fe851c4449efddf3f334c57f8dfc8aafcd002651177214fdcab1d15d",
+    "mem_attention.py": "5c06cbc7ed889450ace69eeee2907ef64b49c48b3d50ed05236c656207dd3fef",
+    "train_distributed.py": "906ccbc56be40810165a79a1928e2e19cea2ba7ecce2cf5c6808595f8f0f1906",
+    "run_a100_8gpu.sh": "5f55ef0833115390859a24c3d1929cf8683057925dc4ecf4f6ca53285172ff4b"
+  },
+  "findings": [
+    "Qwen3.5-2B uses the same Qwen3_5ForConditionalGeneration class supported by the installed Transformers.",
+    "LoRA targets are discovered from language-layer Linear modules; layer count and widths are not hardcoded.",
+    "Visual adapter dimensions come from vision/text config; ProgressHead input comes from text hidden size.",
+    "MEM uses actual attention head dimensions, block count, merger and output tensor shape. References to 2560 in these files are documentation, not shape constraints.",
+    "The launcher appends user arguments after defaults; argparse accepts the final --model-path override.",
+    "Dataset, 30/70 prompt sampling, labels, loss weighting and validation split do not depend on the language hidden dimension."
+  ],
+  "requirements_before_real_training": [
+    "Wait for the independently running downloader to complete; this audit did not inspect download state.",
+    "Use a fresh output directory and omit --resume from any 4B run: resume restores the checkpoint configuration, including model_path.",
+    "Retain the existing batch settings initially. A larger 2B batch is optional tuning, not required for dimension compatibility.",
+    "Actual pretrained loading, full multimodal forward/backward, eight-GPU validation and throughput are not verified by this configuration-only check."
+  ],
+  "command_example_not_executed": "bash /data/evo-inter/code/qwen_training/run_a100_8gpu.sh /data/evo-inter/outputs/qwen35-2b-8gpu --model-path /data/evo-inter/models/Qwen3.5-2B"
+}
