@@ -274,11 +274,137 @@
     .architecture-flow { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--rule); flex: 1; }
     .architecture-flow > .architecture-desktop { display: block; width: 100%; height: 535px; }
     .architecture-flow > .architecture-mobile { display: none; }
+    .vlm-supervision-flow { display: grid; grid-template-columns: 430px 34px 104px 34px minmax(0, 1fr); gap: 14px; align-items: center; margin-top: 20px; padding: 18px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .vlm-shared-input h2 { margin: 0 0 8px; font-size: 25px; line-height: 1.35; font-weight: 600; }
+    .vlm-shared-input p { margin: 3px 0 0; font-size: 20px; line-height: 1.5; color: var(--muted); }
+    .vlm-connector { color: var(--blue); font-size: 29px; text-align: center; }
+    .vlm-core { padding: 24px 0; background: var(--blue); color: var(--paper); text-align: center; font-size: 31px; font-weight: 600; }
+    .vlm-supervision-targets { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .vlm-supervision-targets section { min-width: 0; padding-left: 18px; border-left: 3px solid var(--blue); }
+    .vlm-supervision-targets .vlm-task-target { border-color: #ad622c; }
+    .vlm-target-basis { margin: 0 0 6px; color: var(--blue); font-size: 20px; font-weight: 500; }
+    .vlm-task-target .vlm-target-basis { color: #935023; }
+    .vlm-supervision-targets h2 { margin: 0; font-size: 27px; line-height: 1.4; font-weight: 600; }
+    .vlm-target-detail { margin: 6px 0 0; color: var(--muted); font-size: 18px; line-height: 1.5; }
+    .vlm-samples { margin: 22px 0 0; }
+    .vlm-sample-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 22px; line-height: 1.4; }
+    .vlm-sample-table col:nth-child(1) { width: 16%; }
+    .vlm-sample-table col:nth-child(2) { width: 15%; }
+    .vlm-sample-table col:nth-child(3) { width: 24%; }
+    .vlm-sample-table col:nth-child(4) { width: 24%; }
+    .vlm-sample-table col:nth-child(5) { width: 21%; }
+    .vlm-sample-table thead th { padding: 9px 14px 12px; text-align: left; font-size: 19px; line-height: 1.4; font-weight: 500; color: var(--muted); border-bottom: 1px solid #aebac7; }
+    .vlm-sample-table tbody th, .vlm-sample-table td { height: 81px; padding: 9px 14px; vertical-align: middle; text-align: left; border-bottom: 1px solid var(--rule); }
+    .vlm-sample-table tbody th { font-size: 24px; font-weight: 600; }
+    .vlm-sample-table th:first-child { padding-left: 0; }
+    .vlm-sample-table th:last-child, .vlm-sample-table td:last-child { padding-right: 0; }
+    .vlm-sample-number { display: inline-block; width: 34px; color: var(--blue); font-size: 18px; font-weight: 400; }
+    .vlm-sample-table strong { color: #935023; font-weight: 600; }
+    .vlm-sample-table small { display: block; margin-top: 3px; color: var(--muted); font-size: 18px; line-height: 1.4; }
+    .vlm-sample-table .vlm-purpose { color: var(--blue); font-size: 21px; }
+    .vlm-samples figcaption { margin-top: 13px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+    .vlm-training-slide .footer { margin-top: auto; }
+    .vlm-example-stages { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 20px 0 0; padding: 14px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font-size: 20px; line-height: 1.5; color: var(--muted); }
+    .vlm-example-stages strong { color: var(--blue); font-weight: 600; }
+    .vlm-example-layout { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 52px; margin-top: 22px; flex: 1; align-content: start; }
+    .vlm-example-column { min-width: 0; }
+    .vlm-example-column + .vlm-example-column { border-left: 1px solid var(--rule); padding-left: 36px; }
+    .vlm-example-column > h2 { margin: 0 0 18px; font-size: 29px; line-height: 1.3; font-weight: 600; }
+    .vlm-example-item + .vlm-example-item { margin-top: 16px; }
+    .vlm-example-item h3 { margin: 0 0 6px; color: var(--blue); font-size: 20px; line-height: 1.4; font-weight: 500; }
+    .vlm-example-item p { margin: 0; font-size: 24px; line-height: 1.55; }
+    .vlm-example-item .vlm-example-mismatch { color: #b42318; font-weight: 600; }
+    .vlm-example-prompt h3, .vlm-example-task h3 { color: #935023; }
+    .vlm-example-memory { margin: 0; }
+    .vlm-example-memory > div { display: flex; gap: 12px; font-size: 22px; line-height: 1.65; }
+    .vlm-example-memory dt { flex: 0 0 4.5em; color: var(--muted); white-space: nowrap; }
+    .vlm-example-memory dd { margin: 0; min-width: 0; }
+    .vlm-example-task { display: grid; grid-template-columns: .8fr 1.2fr; gap: 24px; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--rule); }
+    .vlm-example-task h3 { margin: 0 0 7px; font-size: 20px; font-weight: 500; line-height: 1.4; }
+    .vlm-example-value { margin: 0; color: var(--blue); font-size: 38px; font-weight: 500; line-height: 1.3; }
+    .vlm-example-stage-value { margin: 0; color: var(--blue); font-size: 28px; font-weight: 500; line-height: 1.5; }
+    .modal-grid.modal-summary { gap: 42px; padding-top: 35px; }
+    .modal-grid.modal-summary .modal-case + .modal-case { padding-left: 36px; }
+    .modal-grid.modal-summary .modal-definition { min-height: 106px; font-size: 25px; line-height: 1.6; }
+    .modal-grid.modal-summary .modal-example { min-height: 0; margin-top: 24px; }
+    .modal-grid.modal-summary .modal-example p { font-size: 23px; }
+    .modal-signal { margin: 14px 0 0; padding: 20px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--blue); font-size: 25px; line-height: 1.55; font-weight: 500; }
+    .modal-signal small { display: block; margin-bottom: 7px; color: var(--muted); font-size: 18px; font-weight: 400; }
+    .modal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 52px; margin-top: 24px; padding-top: 23px; border-top: 1px solid var(--rule); flex: 1; }
+    .modal-case { min-width: 0; }
+    .modal-case + .modal-case { border-left: 1px solid var(--rule); padding-left: 36px; }
+    .modal-heading { display: flex; align-items: baseline; gap: 16px; }
+    .modal-heading > span { color: var(--blue); font-size: 22px; }
+    .modal-heading h2 { margin: 0; font-size: 30px; line-height: 1.3; font-weight: 600; }
+    .modal-heading small { display: block; color: var(--blue); font-size: 18px; font-weight: 400; margin-top: 5px; }
+    .modal-definition { margin: 18px 0 0; font-size: 23px; line-height: 1.55; }
+    .modal-sequence { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 20px; padding: 18px 16px; background: #eef3fa; color: var(--blue); font-size: 21px; }
+    .modal-sequence b { font-weight: 400; font-size: 26px; }
+    .modal-sequence strong { font-weight: 500; }
+    .modal-example { margin-top: 18px; }
+    .modal-example h3 { margin: 0 0 6px; font-size: 18px; font-weight: 500; color: var(--blue); }
+    .modal-example p { margin: 0; font-size: 23px; line-height: 1.55; }
+    .modal-focus { margin: 18px 0 0; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 21px; line-height: 1.55; }
+    .modal-focus > span { display: block; margin-bottom: 4px; color: var(--blue); font-size: 18px; }
+    .modal-conclusion { padding-top: 18px; padding-bottom: 18px; }
+    .modal-conclusion p { font-size: 24px; }
+    .modal-grid-three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; }
+    .modal-grid-three .modal-case + .modal-case { padding-left: 30px; }
+    .modal-grid-three .modal-definition { font-size: 22px; min-height: 137px; }
+    .modal-grid-three .modal-example { margin-top: 20px; min-height: 139px; }
+    .modal-grid-three .modal-example p { font-size: 21px; }
+    .modal-grid-three .modal-focus { margin-top: 14px; font-size: 20px; }
     body:fullscreen { background: #111820; }
     body:fullscreen .stage { padding: 0; gap: 0; }
     body:fullscreen .toolbar { display: none; }
     body:fullscreen .slide { box-shadow: none; }
     @media (max-width: 720px) {
+      .vlm-example-stages { gap: 8px 18px; margin-top: 22px; font-size: 14px; }
+      .vlm-example-layout { grid-template-columns: 1fr; gap: 26px; }
+      .vlm-example-column + .vlm-example-column { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 24px; }
+      .vlm-example-column > h2 { font-size: 25px; }
+      .vlm-example-item h3, .vlm-example-task h3 { font-size: 16px; }
+      .vlm-example-item p { font-size: 18px; }
+      .vlm-example-memory > div { gap: 8px; font-size: 16px; }
+      .vlm-example-task { gap: 18px; }
+      .vlm-example-value { font-size: 29px; }
+      .vlm-example-stage-value { font-size: 22px; }
+      .vlm-supervision-flow { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 20px 0; }
+      .vlm-shared-input h2 { font-size: 21px; }
+      .vlm-shared-input p { font-size: 15px; }
+      .vlm-connector { transform: rotate(90deg); font-size: 23px; line-height: 1; }
+      .vlm-core { justify-self: center; padding: 13px 30px; font-size: 27px; }
+      .vlm-supervision-targets { grid-template-columns: 1fr; gap: 22px; margin: 8px 0; }
+      .vlm-supervision-targets h2 { font-size: 22px; }
+      .vlm-target-basis { font-size: 16px; }
+      .vlm-target-detail { font-size: 14px; }
+      .vlm-sample-table, .vlm-sample-table tbody { display: block; width: 100%; }
+      .vlm-sample-table colgroup { display: none; }
+      .vlm-sample-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+      .vlm-sample-table tr { display: block; padding: 17px 0; border-bottom: 1px solid var(--rule); }
+      .vlm-sample-table tbody th { display: block; padding: 0 0 12px; height: auto; border: 0; font-size: 21px; }
+      .vlm-sample-table td { display: grid; grid-template-columns: 94px minmax(0, 1fr); gap: 12px; padding: 6px 0; height: auto; border: 0; font-size: 16px; }
+      .vlm-sample-table td::before { content: attr(data-label); color: var(--muted); font-size: 13px; line-height: 1.7; }
+      .vlm-sample-table small { font-size: 14px; }
+      .vlm-sample-table .vlm-purpose { font-size: 16px; }
+      .vlm-samples figcaption { font-size: 13px; margin-bottom: 26px; }
+      .modal-grid, .modal-grid-three { grid-template-columns: 1fr; gap: 28px; }
+      .modal-case + .modal-case, .modal-grid-three .modal-case + .modal-case { border-left: 0; padding-left: 0; padding-top: 26px; border-top: 1px solid var(--rule); }
+      .modal-heading h2 { font-size: 25px; }
+      .modal-heading > span, .modal-heading small { font-size: 16px; }
+      .modal-definition, .modal-grid-three .modal-definition { font-size: 18px; min-height: 0; margin-top: 18px; }
+      .modal-sequence { font-size: 14px; gap: 5px; padding: 18px 9px; }
+      .modal-sequence b { font-size: 20px; }
+      .modal-example p, .modal-grid-three .modal-example p, .modal-focus, .modal-grid-three .modal-focus { font-size: 17px; }
+      .modal-grid-three .modal-example { min-height: 0; }
+      .modal-conclusion p { font-size: 20px; }
+      .modal-grid.modal-summary { gap: 28px; padding-top: 23px; }
+      .modal-grid.modal-summary .modal-case + .modal-case { padding-left: 0; }
+      .modal-grid.modal-summary .modal-definition { min-height: 0; font-size: 18px; }
+      .modal-grid.modal-summary .modal-example { margin-top: 18px; }
+      .modal-grid.modal-summary .modal-example p { font-size: 17px; }
+      .modal-signal { padding: 16px 0; font-size: 21px; }
+      .modal-signal small { font-size: 14px; }
       .stage { display: block; min-height: 100svh; padding: 14px; }
       .frame { width: 100% !important; height: auto !important; }
       .slide { width: 100%; height: auto; min-height: 0; padding: 28px 24px; transform: none !important; }
@@ -539,758 +665,11 @@
           <span class="page-number" aria-label="第 1 页">01</span>
         </footer>
       </article>
-
-      <article class="slide chapter-slide" id="slide-2" data-title="Related Work · 现有介入时机判定" aria-labelledby="related-section-title" hidden>
-        <div class="chapter-content related-chapter-content">
-          <h1 id="related-section-title">Related Work</h1>
-          <p>现有介入时机判定</p>
-        </div>
+      <article class="slide chapter-slide" id="slide-2" data-title="介入时机方案设计" aria-labelledby="timing-section-title" hidden>
+        <div class="chapter-content"><h1 id="timing-section-title">介入时机方案设计</h1></div>
         <footer class="footer"><span class="page-number" aria-label="第 2 页">02</span></footer>
       </article>
-
-      <article class="slide" id="slide-3" data-title="基于统计特征进行介入" aria-labelledby="methods-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">现有介入判定方案</span><span>EVO-Inter</span></div>
-          <h1 id="methods-title">基于统计特征进行介入</h1>
-        </header>
-
-        <div class="methods">
-          <section class="method" aria-labelledby="llmd-title">
-            <h2 id="llmd-title"><span>LLMD</span>：Token 级马氏距离</h2>
-            <p class="method-description">比较当前 token 特征与微调数据分布。</p>
-            <figure aria-label="LLMD 原理示意，非实验数据">
-              <svg viewBox="0 0 640 240" role="img" aria-labelledby="llmd-chart-title llmd-chart-desc">
-                <title id="llmd-chart-title">单个 token 的特征分布示意</title>
-                <desc id="llmd-chart-desc">蓝点表示训练特征，椭圆表示分布形状。橙色菱形表示偏离训练分布的当前特征。对所有 token 分别计算后取最大值。</desc>
-                <path d="M46 24V207H602" fill="none" stroke="#b9c3ce" stroke-width="1.5"/>
-                <text x="50" y="17" class="small">特征维度 2</text>
-                <text x="520" y="231" class="small">特征维度 1</text>
-                <g transform="rotate(-16 223 132)">
-                  <ellipse cx="223" cy="132" rx="137" ry="59" fill="#eef3fa"/>
-                  <ellipse cx="223" cy="132" rx="102" ry="44" fill="none" stroke="#8ba8cf" stroke-width="1.5"/>
-                  <ellipse cx="223" cy="132" rx="63" ry="27" fill="none" stroke="#b6c9e2" stroke-width="1.5"/>
-                  <g fill="#527ead">
-                    <circle cx="129" cy="124" r="4"/><circle cx="145" cy="138" r="4"/><circle cx="155" cy="105" r="4"/>
-                    <circle cx="173" cy="145" r="4"/><circle cx="180" cy="120" r="4"/><circle cx="190" cy="109" r="4"/>
-                    <circle cx="204" cy="148" r="4"/><circle cx="214" cy="112" r="4"/><circle cx="230" cy="155" r="4"/>
-                    <circle cx="242" cy="120" r="4"/><circle cx="254" cy="143" r="4"/><circle cx="267" cy="101" r="4"/>
-                    <circle cx="283" cy="122" r="4"/><circle cx="290" cy="148" r="4"/><circle cx="312" cy="132" r="4"/>
-                    <circle cx="229" cy="92" r="4"/><circle cx="189" cy="160" r="4"/><circle cx="255" cy="166" r="4"/>
-                  </g>
-                </g>
-                <path d="M223 132L451 62" stroke="#b87842" stroke-width="1.5" stroke-dasharray="5 5"/>
-                <circle cx="223" cy="132" r="5" fill="#2458a6"/>
-                <text x="232" y="155" class="chart-label">均值 μₖ</text>
-                <path d="M451 54L459 62L451 70L443 62Z" fill="#ad622c"/>
-                <text x="410" y="37" class="chart-label">当前特征 zₜ,ₖ</text>
-                <text x="382" y="137" class="chart-label">偏离训练分布</text>
-                <text x="118" y="229" class="small">单个 token 的分布示意</text>
-              </svg>
-            </figure>
-            <div class="formula">
-              <math display="block" aria-label="LLMD 分数等于所有 token 的正则化马氏距离平方的最大值">
-                <mrow>
-                  <msub><mi>s</mi><mtext>LLMD</mtext></msub><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo>
-                  <munder><mo>max</mo><mi>k</mi></munder>
-                  <msubsup><mi>δ</mi><mrow><mi>t</mi><mo>,</mo><mi>k</mi></mrow><mi mathvariant="normal">T</mi></msubsup>
-                  <msup><mrow><mo>(</mo><msub><mi>Σ</mi><mi>k</mi></msub><mo>+</mo><mi>λ</mi><mi>I</mi><mo>)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup>
-                  <msub><mi>δ</mi><mrow><mi>t</mi><mo>,</mo><mi>k</mi></mrow></msub>
-                </mrow>
-              </math>
-            </div>
-            <p class="formula-note"><span>δₜ,ₖ = zₜ,ₖ − μₖ；Σₖ 为该 token 的协方差。</span><span>固定先验噪声提取特征，减少动作采样噪声的干扰。</span></p>
-          </section>
-
-          <section class="method" aria-labelledby="acc-title">
-            <h2 id="acc-title"><span>ACC</span>：动作块一致性</h2>
-            <p class="method-description">比较两次预测在重叠时刻的动作差异。</p>
-            <figure aria-label="ACC 动作块重叠示意，非实验数据">
-              <svg viewBox="0 0 640 240" role="img" aria-labelledby="acc-chart-title acc-chart-desc">
-                <title id="acc-chart-title">比较连续动作块的重叠部分</title>
-                <desc id="acc-chart-desc">示例动作块长度为六步，每次执行两步。上一次预测的第三至第六步，与本次预测的第一至第四步，对应相同的未来执行时刻。</desc>
-                <text x="260" y="25" class="chart-label">对齐同一未来时刻</text>
-                <rect x="250" y="40" width="224" height="155" fill="#f0f3f7"/>
-                <text x="0" y="80" class="chart-label">上一次预测</text>
-                <text x="0" y="174" class="chart-label">本次预测</text>
-                <g fill="#e8ecf0" stroke="#c5cdd6" stroke-width="1">
-                  <rect x="138" y="52" width="50" height="44" rx="3"/><rect x="194" y="52" width="50" height="44" rx="3"/>
-                </g>
-                <g fill="#e4edf9" stroke="#6d93c2" stroke-width="1">
-                  <rect x="250" y="52" width="50" height="44" rx="3"/><rect x="306" y="52" width="50" height="44" rx="3"/>
-                  <rect x="362" y="52" width="50" height="44" rx="3"/><rect x="418" y="52" width="50" height="44" rx="3"/>
-                </g>
-                <g fill="#faebdf" stroke="#bd8b63" stroke-width="1">
-                  <rect x="250" y="146" width="50" height="44" rx="3"/><rect x="306" y="146" width="50" height="44" rx="3"/>
-                  <rect x="362" y="146" width="50" height="44" rx="3"/><rect x="418" y="146" width="50" height="44" rx="3"/>
-                </g>
-                <g fill="#f9f4ee" stroke="#d6c5b6" stroke-width="1">
-                  <rect x="474" y="146" width="50" height="44" rx="3"/><rect x="530" y="146" width="50" height="44" rx="3"/>
-                </g>
-                <g text-anchor="middle" class="action-label">
-                  <text x="163" y="81">a₁</text><text x="219" y="81">a₂</text><text x="275" y="81">a₃</text>
-                  <text x="331" y="81">a₄</text><text x="387" y="81">a₅</text><text x="443" y="81">a₆</text>
-                  <text x="275" y="176">a₁</text><text x="331" y="176">a₂</text><text x="387" y="176">a₃</text>
-                  <text x="443" y="176">a₄</text><text x="499" y="176">a₅</text><text x="555" y="176">a₆</text>
-                </g>
-                <g stroke="#8b97a6" stroke-width="1.5" stroke-dasharray="3 3">
-                  <path d="M275 99V111M275 133V143M331 99V111M331 133V143M387 99V111M387 133V143M443 99V111M443 133V143"/>
-                </g>
-                <g text-anchor="middle" font-size="17" fill="#626b77">
-                  <text x="275" y="128">Δ</text><text x="331" y="128">Δ</text><text x="387" y="128">Δ</text><text x="443" y="128">Δ</text>
-                </g>
-                <text x="144" y="123" class="small">已执行</text>
-                <text x="160" y="227" class="small">重叠 4 步（示意：H = 6，R = 2）</text>
-              </svg>
-            </figure>
-            <div class="formula">
-              <math display="block" aria-label="未平滑 ACC 分数是动作块重叠位置差异的速度归一化平均值">
-                <mrow>
-                  <msub><mover accent="true"><mi>s</mi><mo>^</mo></mover><mtext>ACC</mtext></msub><mo>(</mo><mi>t</mi><mo>)</mo><mo>=</mo>
-                  <munder><mo>mean</mo><mrow><mi>i</mi><mo>,</mo><mi>d</mi></mrow></munder>
-                  <mfrac>
-                    <mrow><mo>|</mo><msubsup><mi>a</mi><mrow><mi>R</mi><mo>+</mo><mi>i</mi><mo>,</mo><mi>d</mi></mrow><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msubsup><mo>−</mo><msubsup><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>d</mi></mrow><mi>t</mi></msubsup><mo>|</mo></mrow>
-                    <mrow><msub><mi>v</mi><mi>d</mi></msub><mo>(</mo><mi>t</mi><mo>)</mo></mrow>
-                  </mfrac>
-                </mrow>
-              </math>
-            </div>
-            <p class="formula-note"><span>i 为重叠步，d 为动作维度；v 为速度归一化尺度。</span><span>对上述分数做时序平滑，降低短暂重规划的影响。</span></p>
-          </section>
-        </div>
-
-        <section class="goal method-conclusion" aria-label="报警规则">
-          <span class="goal-label">触发方式</span><p>任一分数超过校准阈值，即发出失败报警。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 3 页">03</span>
-        </footer>
-      </article>
-      <article class="slide" id="slide-4" data-title="基于进度估计进行介入" aria-labelledby="risk-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">现有介入判定方案</span><span>EVO-Inter</span></div>
-          <h1 id="risk-title">基于进度估计进行介入</h1>
-          <p class="risk-intro">将近期进度增量与期望进展比较，通过窗口内的<strong>累计进展缺口</strong>识别持续停滞。</p>
-        </header>
-
-        <section class="risk-trends" aria-label="三类进度估计变化趋势的示意对照">
-          <figure class="risk-trend">
-            <h2>正常推进</h2>
-            <svg viewBox="0 0 460 230" role="img" aria-labelledby="risk-normal-title risk-normal-desc">
-              <title id="risk-normal-title">进度估计持续上升</title>
-              <desc id="risk-normal-desc">示意进度估计从 0.12 持续上升到 0.72。淡蓝色区域标出近期窗口，窗口内仍然持续取得进展。图中没有表示实际触发阈值。</desc>
-              <rect class="risk-window" x="232" y="30" width="184" height="160"/>
-              <path class="risk-grid" d="M48 30H416M48 110H416"/>
-              <path class="risk-axis" d="M48 25V190H423"/>
-              <text x="14" y="196">0</text><text x="4" y="115">0.5</text><text x="14" y="36">1</text>
-              <text x="49" y="18">进度估计 V</text><text x="298" y="52">近期窗口</text>
-              <path class="risk-line" d="M48 170.8L94 158L140 146.8L186 134L232 122.8L278 110L324 97.2L370 84.4L416 74.8"/>
-              <circle cx="416" cy="74.8" r="4.5" fill="#2458a6"/>
-              <text x="48" y="218">过去</text><text x="326" y="218">当前时刻 t</text>
-            </svg>
-            <figcaption>估计进度持续增长，进展缺口较小。</figcaption>
-          </figure>
-
-          <figure class="risk-trend">
-            <h2>短暂回退</h2>
-            <svg viewBox="0 0 460 230" role="img" aria-labelledby="risk-recover-title risk-recover-desc">
-              <title id="risk-recover-title">进度估计短暂下降后重新增长</title>
-              <desc id="risk-recover-desc">估计进度先上升至 0.44，短暂下降至 0.22，随后回升至 0.72。下降带来进展缺口，后续增长可以抵消部分缺口，是否触发仍取决于完整窗口、参数和风险估计。</desc>
-              <rect class="risk-window" x="232" y="30" width="184" height="160"/>
-              <path class="risk-grid" d="M48 30H416M48 110H416"/>
-              <path class="risk-axis" d="M48 25V190H423"/>
-              <text x="14" y="196">0</text><text x="4" y="115">0.5</text><text x="14" y="36">1</text>
-              <text x="49" y="18">进度估计 V</text><text x="298" y="52">近期窗口</text>
-              <path class="risk-line" d="M48 170.8L94 156.4L140 138.8L228 119.6L232 154.8L278 140.4L324 114.8L370 92.4L416 74.8"/>
-              <circle cx="232" cy="154.8" r="5" fill="#ad622c"/>
-              <circle cx="416" cy="74.8" r="4.5" fill="#2458a6"/>
-              <text x="48" y="218">过去</text><text x="326" y="218">当前时刻 t</text>
-            </svg>
-            <figcaption>后续增长可抵消部分进展缺口。</figcaption>
-          </figure>
-
-          <figure class="risk-trend">
-            <h2>持续停滞</h2>
-            <svg viewBox="0 0 460 230" role="img" aria-labelledby="risk-stagnation-title risk-stagnation-desc">
-              <title id="risk-stagnation-title">近期窗口内估计进度持续缺少增长</title>
-              <desc id="risk-stagnation-desc">估计进度上升至约 0.42 后，连续多步停留在 0.42 至 0.43，窗口内的进度增量持续不足，累积正向进展缺口。这是原理示意，不是实验结果。</desc>
-              <rect class="risk-window" x="232" y="30" width="184" height="160"/>
-              <path class="risk-grid" d="M48 30H416M48 110H416"/>
-              <path class="risk-axis" d="M48 25V190H423"/>
-              <text x="14" y="196">0</text><text x="4" y="115">0.5</text><text x="14" y="36">1</text>
-              <text x="49" y="18">进度估计 V</text><text x="298" y="52">近期窗口</text>
-              <path class="risk-line" d="M48 170.8L94 156.4L140 138.8L186 122.8"/>
-              <path class="risk-line stagnant-line" d="M186 122.8L232 121.2L278 122.8L324 121.2L370 121.2L416 122.8"/>
-              <circle cx="416" cy="122.8" r="4.5" fill="#ad622c"/>
-              <text x="48" y="218">过去</text><text x="326" y="218">当前时刻 t</text>
-            </svg>
-            <figcaption>估计进度增长持续不足，累积正向缺口。</figcaption>
-          </figure>
-        </section>
-
-        <section class="risk-formula-row" aria-label="基于进度估计的时序风险公式">
-          <div>
-            <h2 class="risk-formula-heading">基于阈值判定是否介入</h2>
-            <div class="risk-equation">
-              <math display="block" aria-label="时序风险 R t 等于剩余进度一减 V t，乘以最近 K 步经折扣的期望增长与实际增长之差的总和">
-                <mrow>
-                  <msub><mi>R</mi><mi>t</mi></msub><mo>=</mo>
-                  <mo>(</mo><mn>1</mn><mo>−</mo><msub><mi>V</mi><mi>t</mi></msub><mo>)</mo>
-                  <munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>K</mi><mo>−</mo><mn>1</mn></mrow></munderover>
-                  <msubsup><mi>γ</mi><mi>r</mi><mi>i</mi></msubsup>
-                  <mo>[</mo><mi>ε</mi><mo>−</mo><mi>Δ</mi><msub><mi>V</mi><mrow><mi>t</mi><mo>−</mo><mi>i</mi></mrow></msub><mo>]</mo>
-                </mrow>
-              </math>
-            </div>
-          </div>
-        </section>
-
-        <section class="goal risk-conclusion" aria-label="在线介入判定">
-          <span class="goal-label">在线判定</span><p>风险头结合未来表征与进度估计历史预测风险，介入分数达到阈值时触发恢复。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 4 页">04</span>
-        </footer>
-      </article>
-      <article class="slide" id="slide-5" data-title="异常与介入必要性" aria-labelledby="cases-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">介入判定 · 视频案例</span><span>EVO-Inter</span></div>
-          <h1 id="cases-title">出现异常，是否就需要介入？</h1>
-        </header>
-
-        <div class="case-grid">
-          <section class="case" aria-labelledby="case-acc-title">
-            <h2 id="case-acc-title"><span>ACC</span> 的失败指示有限</h2>
-            <p class="case-description">失败轨迹中，ACC 也有较长的低值区间。</p>
-            <figure class="case-media">
-              <div class="video-frame">
-                <video id="case-video-1" src="assets/videos/acc-failure-190-200.mp4" poster="assets/videos/acc-failure-190-200-poster.jpg" controls playsinline preload="metadata" aria-label="视频 1：下半部分失败轨迹及其 ACC 曲线，原视频 3 分 10 秒至 3 分 20 秒" aria-describedby="case-caption-1">当前浏览器无法播放此视频，请使用下方的“放大查看”链接。</video>
-              </div>
-              <figcaption id="case-caption-1"><span>原视频 3:10–3:20 · 阈值未校准</span><a href="assets/videos/acc-failure-190-200.mp4" target="_blank" rel="noopener">放大查看</a></figcaption>
-            </figure>
-          </section>
-
-          <section class="case" aria-labelledby="case-recovery-title">
-            <h2 id="case-recovery-title"><span>进度回退</span> ≠ 无法恢复</h2>
-            <p class="case-description">进度分数回退后，机器人继续尝试，进度重新回升。</p>
-            <figure class="case-media case-recovery-media">
-              <div class="video-frame">
-                <video id="case-video-2" src="assets/videos/progress-recovery-3-9.mp4" poster="assets/videos/recovery-3-9-poster.jpg" controls playsinline preload="metadata" aria-label="视频 2：关闭炉门过程中进度下降后回升，原视频第 3 至 9 秒" aria-describedby="case-caption-2">当前浏览器无法播放此视频，请使用下方的“放大查看”链接。</video>
-              </div>
-              <figcaption id="case-caption-2"><span>原视频 3–9 s · 截取后时长 6 s</span><a href="assets/videos/progress-recovery-3-9.mp4" target="_blank" rel="noopener">放大查看</a></figcaption>
-            </figure>
-            <figure class="case-progress-detail" aria-label="视频片段最后一帧的进度曲线">
-              <a href="assets/videos/recovery-3-9-last-frame-curve.png" target="_blank" rel="noopener" aria-label="放大查看视频最后一帧的进度曲线">
-                <img src="assets/videos/recovery-3-9-last-frame-curve.png" width="808" height="196" alt="当前 3–9 秒视频片段的最后一帧曲线截图：进度先上升，再明显下降，随后重新回升；画面显示 Progress 67.1%，Frame 269。">
-              </a>
-            </figure>
-          </section>
-        </div>
-
-        <section class="goal case-conclusion" aria-label="研究问题">
-          <span class="goal-label">核心问题</span><p>判断当前策略是否仍能自主恢复，再决定是否介入。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 5 页">05</span>
-        </footer>
-      </article>
-      <article class="slide chapter-slide" id="slide-6" data-title="Related Work · 介入动作生成" aria-labelledby="related-action-section-title" hidden>
-        <div class="chapter-content related-chapter-content">
-          <h1 id="related-action-section-title">Related Work</h1>
-          <p>介入动作生成</p>
-        </div>
-        <footer class="footer"><span class="page-number" aria-label="第 6 页">06</span></footer>
-      </article>
-
-      <article class="slide" id="slide-7" data-title="记忆引导的恢复动作" aria-labelledby="memory-recovery-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">现有介入动作 · UniIntervene</span><span>EVO-Inter</span></div>
-          <h1 id="memory-recovery-title">记忆引导的目标条件恢复</h1>
-          <p class="recovery-intro">从历史经验中<strong>检索恢复目标</strong>，再由目标条件策略<strong>生成纠正动作</strong>。</p>
-        </header>
-
-        <figure class="recovery-flow">
-          <svg viewBox="0 0 1416 390" role="img" aria-labelledby="recovery-flow-title recovery-flow-desc">
-            <title id="recovery-flow-title">检索恢复目标，再生成纠正动作</title>
-            <desc id="recovery-flow-desc">离线构建记忆库时，从训练轨迹中筛选价值上升较大的参考片段，存储片段起点状态与高价值终点的配对。图中复用第 4 页的回退曲线，高亮回退后价值明显上升的一段；曲线为原理示意。在线介入触发后，用当前观测与任务指令检索相似的片段起点，返回对应终点作为恢复目标。目标条件恢复策略接收目标、当前观测和任务指令，生成纠正动作块。</desc>
-            <defs>
-              <marker id="recovery-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker>
-            </defs>
-            <style>
-              .recovery-svg-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
-              .recovery-svg-heading { font-size: 25px; font-weight: 600; }
-              .recovery-svg-label { font-size: 21px; }
-              .recovery-svg-small { font-size: 19px; fill: #626b77; }
-              .recovery-svg-blue { fill: #2458a6; }
-              .recovery-svg-connector { stroke: #2458a6; stroke-width: 2; fill: none; marker-end: url(#recovery-arrow); }
-            </style>
-
-            <path class="recovery-svg-connector" d="M105 150V42H1256V150"/>
-            <rect x="551" y="24" width="314" height="35" fill="#fffefa"/>
-            <text class="recovery-svg-text recovery-svg-label recovery-svg-blue" x="708" y="49" text-anchor="middle">当前观测 + 任务指令</text>
-
-            <g class="recovery-svg-text" text-anchor="middle">
-              <text class="recovery-svg-small" x="105" y="298">已触发介入</text>
-              <rect x="1" y="151" width="208" height="114" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
-              <text class="recovery-svg-heading" x="105" y="197">当前失败情境</text>
-              <text class="recovery-svg-small" x="105" y="231">观测 · 任务指令</text>
-            </g>
-            <path class="recovery-svg-connector" d="M210 208H286"/>
-            <text class="recovery-svg-text recovery-svg-small" x="248" y="191" text-anchor="middle">检索</text>
-
-            <g class="recovery-svg-text">
-              <rect x="292" y="78" width="424" height="306" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
-              <text class="recovery-svg-heading" x="312" y="110">历史经验记忆库</text>
-              <text x="312" y="137" font-size="18" fill="#626b77">从训练轨迹选取价值上升较大的片段</text>
-              <image href="assets/diagrams/memory-value-segment.svg" x="306" y="147" width="396" height="207" preserveAspectRatio="xMidYMid meet"><title>高亮价值上升片段，将起点与高价值目标配对入库</title></image>
-              <text class="recovery-svg-small recovery-svg-blue" x="504" y="373" text-anchor="middle">存储：片段起点 → 高价值目标</text>
-            </g>
-            <path class="recovery-svg-connector" d="M716 208H795"/>
-            <text class="recovery-svg-text recovery-svg-small" x="756" y="191" text-anchor="middle">选定</text>
-
-            <g class="recovery-svg-text" text-anchor="middle">
-              <rect x="800" y="151" width="220" height="114" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-              <text class="recovery-svg-heading recovery-svg-blue" x="910" y="197">恢复目标</text>
-              <text class="recovery-svg-small" x="910" y="231">所选片段的终点状态</text>
-            </g>
-            <path class="recovery-svg-connector" d="M1020 208H1095"/>
-            <text class="recovery-svg-text recovery-svg-small" x="1058" y="191" text-anchor="middle">条件</text>
-
-            <g class="recovery-svg-text" text-anchor="middle">
-              <rect x="1100" y="151" width="312" height="114" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-              <text class="recovery-svg-heading" x="1256" y="197">目标条件恢复策略</text>
-              <text class="recovery-svg-small" x="1256" y="231">结合当前状态生成动作</text>
-              <path class="recovery-svg-connector" d="M1256 265V314"/>
-              <text class="recovery-svg-heading recovery-svg-blue" x="1256" y="352">纠正动作块</text>
-            </g>
-          </svg>
-
-          <ol class="recovery-mobile" aria-label="记忆引导恢复流程">
-            <li><span class="step-number" aria-hidden="true">01</span><h2>当前失败情境</h2><p>介入触发后，以当前观测与任务指令检索记忆库。</p></li>
-            <li><span class="step-number" aria-hidden="true">02</span><h2>历史经验记忆库</h2><p>从训练轨迹中选取价值上升较大的片段。</p><img class="memory-reference" src="assets/diagrams/memory-value-segment.svg" width="460" height="240" alt="沿用短暂回退曲线，高亮回退后价值明显上升的入库参考片段"><div class="memory-pair"><span>片段起点</span><span>→</span><span>高价值目标</span></div></li>
-            <li><span class="step-number" aria-hidden="true">03</span><h2>恢复目标</h2><p>检索相似的片段起点，取对应终点作为目标。</p></li>
-            <li><span class="step-number" aria-hidden="true">04</span><h2>目标条件恢复策略</h2><p>输入恢复目标、当前观测与任务指令。</p><p class="recovery-output">↓ 生成纠正动作块</p></li>
-          </ol>
-          <figcaption><strong>策略训练</strong>：用所选参考片段中的动作做行为克隆。</figcaption>
-        </figure>
-
-        <section class="goal recovery-conclusion" aria-label="方法局限">
-          <span class="goal-label">局限</span><p>记忆库未覆盖的失败情形，可能难以检索到合适的恢复目标。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 7 页">07</span>
-        </footer>
-      </article>
-      <article class="slide chapter-slide" id="slide-8" data-title="介入时机方案设计" aria-labelledby="timing-section-title" hidden>
-        <div class="chapter-content"><h1 id="timing-section-title">介入时机方案设计</h1></div>
-        <footer class="footer"><span class="page-number" aria-label="第 8 页">08</span></footer>
-      </article>
-
-      <article class="slide" id="slide-9" data-title="全局架构：从自主执行到自动恢复" aria-labelledby="architecture-title-overview" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">方案总览 · 在线执行闭环</span><span>EVO-Inter</span></div>
-          <h1 id="architecture-title-overview">从自主执行到自动恢复</h1>
-          <p class="architecture-intro">独立 VLA 提供动作；我们的 VLM 判断状态与进度，触发介入后结合 JEPA 选出<strong>预测进度最大的恢复动作</strong>。</p>
-        </header>
-        <figure class="architecture-flow">
-          <svg class="architecture-desktop" viewBox="0 0 1416 535" role="img" aria-labelledby="architecture-desktop-title-overview architecture-desktop-desc-overview">
-            <title id="architecture-desktop-title-overview">独立 VLA、VLM 与 JEPA 构成自动介入闭环</title>
-            <desc id="architecture-desktop-desc-overview">当前三视角观测与任务指令输入独立 VLA，生成基准动作。视觉历史与当前观测经编码和时序融合形成当前 latent z_t，与子任务状态输入VLM，得到状态与进度。根据 restid 和进度历史，在持续停滞或多次重试且无持续改善时触发介入；未触发时直接执行 VLA 动作。触发后围绕 VLA 提议局部采样并保留原动作，各候选与当前 z_t 输入JEPA，得到未来 latent。未来 latent 与子任务状态输入同一个 VLM，得到各候选进度 P，执行 P 最大的候选动作。执行后更新观测并再次判断。输出包含任务进度预测 p̂，以及示例状态：当前阶段拿起螺栓，已完成拿起螺丝，未完成插入螺丝与放置装配件。</desc>
-            <defs>
-              <marker id="architecture-arrow-overview" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker>
-              <marker id="architecture-control-overview" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#ad622c" stroke-width="1.5"/></marker>
-              <marker id="architecture-feedback-overview" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#8493a4" stroke-width="1.5"/></marker>
-              <style>
-                .ga-overview-text { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #17263b; }
-                .ga-overview-title { font-size: 25px; font-weight: 600; }
-                .ga-overview-small { font-size: 18px; fill: #626b77; }
-                .ga-overview-link { fill: none; stroke: #2458a6; stroke-width: 2; marker-end: url(#architecture-arrow-overview); }
-                .ga-overview-control { fill: none; stroke: #ad622c; stroke-width: 2; stroke-dasharray: 6 4; marker-end: url(#architecture-control-overview); }
-                .ga-overview-node { fill: #fffefa; stroke: #aebed1; stroke-width: 1.5; }
-                .ga-overview-symbol { font-family: 'Times New Roman', serif; font-size: 25px; font-style: italic; }
-              </style>
-            </defs>
-            <rect x="236" y="350" width="991" height="136" rx="7" fill="#eef3fa"/>
-            <g class="ga-overview-text">
-              <!-- Solid paths carry observations/actions; dashed brown paths control the action route. -->
-              <path class="ga-overview-link" d="M195 232H245"/>
-              <path class="ga-overview-link" d="M218 232V68H245"/>
-              <circle cx="218" cy="232" r="3.5" fill="#2458a6"/>
-              <path class="ga-overview-link" d="M455 68H1095"/>
-              <path class="ga-overview-link" d="M480 68V325H222V431H245"/>
-              <circle cx="480" cy="68" r="3.5" fill="#2458a6"/>
-              <path class="ga-overview-link" d="M455 232H472C472 218 488 218 488 232H510"/>
-              <path class="ga-overview-link" d="M617 171V182"/>
-              <path class="ga-overview-link" d="M720 232H755"/>
-              <path class="ga-overview-control" d="M1105 218H1150V101"/>
-              <path class="ga-overview-control" d="M930 310V350"/>
-              <path class="ga-overview-link" d="M1200 68H1330V192"/>
-              <path class="ga-overview-link" d="M455 431H510"/>
-              <path class="ga-overview-link" d="M720 431H775"/>
-              <path class="ga-overview-link" d="M985 431H1030"/>
-              <path class="ga-overview-link" d="M1215 431H1330V307"/>
-              <path d="M1405 248H1413V525H97V284" fill="none" stroke="#8493a4" stroke-width="1.7" stroke-dasharray="5 5" marker-end="url(#architecture-feedback-overview)"/>
-
-              <rect class="ga-overview-node" x="1" y="185" width="194" height="95" rx="5"/>
-              <text class="ga-overview-title" x="98" y="224" text-anchor="middle">当前观测</text>
-              <text x="98" y="256" text-anchor="middle" font-size="16" fill="#626b77">三视角图像 · 任务指令</text>
-              <rect x="250" y="28" width="205" height="80" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.5"/>
-              <text class="ga-overview-title" x="352" y="62" text-anchor="middle">独立 VLA</text>
-              <text class="ga-overview-small" x="352" y="89" text-anchor="middle">生成基准动作</text>
-              <text x="655" y="54" font-size="20" fill="#2458a6">VLA 提议动作 a<tspan baseline-shift="super" font-size="13">(0)</tspan></text>
-              <text class="ga-overview-symbol" x="489" y="132" fill="#2458a6">a<tspan baseline-shift="super" font-size="15">(0)</tspan></text>
-              <rect class="ga-overview-node" x="250" y="185" width="205" height="95" rx="5"/>
-              <text x="352" y="221" text-anchor="middle" font-size="20" font-weight="600">视觉编码 · 时序融合</text>
-              <text class="ga-overview-small" x="352" y="255" text-anchor="middle">历史 + 当前 → z<tspan baseline-shift="sub" font-size="13">t</tspan></text>
-              <text class="ga-overview-small" x="617" y="160" text-anchor="middle">子任务状态</text>
-              <rect x="515" y="185" width="205" height="95" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(690 186)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="ga-overview-title" x="617" y="224" text-anchor="middle" fill="#fffefa">VLM</text>
-              <text x="617" y="255" text-anchor="middle" font-size="19" fill="#fffefa">预测状态与进度</text>
-
-              <rect x="760" y="152" width="345" height="158" rx="5" fill="#faf4ec" stroke="#d0a57f" stroke-width="1.5"/>
-              <text x="782" y="184" font-size="21">当前阶段：拿起螺栓</text>
-              <text x="782" y="217" font-size="21">已完成：拿起螺丝</text>
-              <text x="782" y="250" font-size="21">未完成：插入螺丝、放置装配件</text>
-              <text x="782" y="283" font-size="21">任务进度预测：<tspan font-family="Times New Roman, serif" font-style="italic" font-size="25">p̂</tspan></text>
-              <rect x="1100" y="38" width="100" height="60" rx="4" fill="#fffefa" stroke="#aebed1" stroke-width="1.5"/>
-              <text x="1150" y="76" text-anchor="middle" font-size="22" font-weight="500">直接执行</text>
-              <text x="1159" y="143" font-size="18" fill="#ad622c">未触发</text>
-              <text x="944" y="335" font-size="18" fill="#ad622c">触发介入</text>
-
-              <text x="250" y="375" font-size="18" fill="#2458a6">候选动作评估 · 保留 VLA 原提议</text>
-              <text x="882" y="375" text-anchor="middle" font-size="17" fill="#2458a6">与上方 VLM 共享参数</text>
-              <rect class="ga-overview-node" x="250" y="390" width="205" height="85" rx="5"/>
-              <text class="ga-overview-title" x="352" y="424" text-anchor="middle">局部采样</text>
-              <text class="ga-overview-small" x="352" y="454" text-anchor="middle">生成 K 个候选动作</text>
-              <text class="ga-overview-symbol" x="482" y="416" text-anchor="middle">a<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <rect x="515" y="390" width="205" height="85" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(690 391)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="ga-overview-title" x="617" y="424" text-anchor="middle" fill="#fffefa">JEPA</text>
-              <text class="ga-overview-symbol" x="617" y="458" text-anchor="middle" fill="#fffefa">z<tspan baseline-shift="sub" font-size="15">t</tspan> + a<tspan baseline-shift="super" font-size="14">(k)</tspan> → ẑ<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <text class="ga-overview-symbol" x="747" y="416" text-anchor="middle">ẑ<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <rect x="780" y="390" width="205" height="85" rx="5" fill="#2458a6"/>
-              <text class="ga-overview-title" x="882" y="424" text-anchor="middle" fill="#fffefa">VLM</text>
-              <text x="882" y="454" text-anchor="middle" font-size="18" fill="#fffefa">预测状态与进度</text>
-              <text class="ga-overview-symbol" x="1010" y="416" text-anchor="middle">P<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <rect class="ga-overview-node" x="1035" y="390" width="180" height="85" rx="5"/>
-              <g transform="translate(1047 417)" fill="#2458a6" font-family="Times New Roman, serif" font-size="23" aria-label="k 星等于使预测进度 P 最大的候选索引">
-                <text x="0" y="0" font-style="italic" text-anchor="start">k<tspan baseline-shift="super" font-size="14">*</tspan></text>
-                <text x="27" y="0" text-anchor="start">=</text>
-                <text x="46" y="0" font-size="22" text-anchor="start">arg max</text>
-                <text x="80" y="14" font-size="14" font-style="italic" text-anchor="middle">k</text>
-                <text x="123" y="0" font-style="italic" text-anchor="start">P<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              </g>
-              <text class="ga-overview-symbol" x="1125" y="458" text-anchor="middle">a<tspan baseline-shift="sub" font-size="15">rec</tspan> = a<tspan baseline-shift="super" font-size="14">(k*)</tspan></text>
-              <text class="ga-overview-small" x="1294" y="371" text-anchor="middle">恢复动作</text>
-
-              <rect x="1245" y="197" width="160" height="105" rx="5" fill="#17263b"/>
-              <text class="ga-overview-title" x="1325" y="242" text-anchor="middle" fill="#fffefa">机器人执行</text>
-              <text x="1325" y="274" text-anchor="middle" font-size="18" fill="#fffefa">更新环境状态</text>
-              <text x="590" y="516" font-size="18" fill="#626b77">执行后更新观测，再次判断是否介入</text>
-            </g>
-          </svg>
-          <svg class="architecture-mobile" viewBox="0 0 420 1350" role="img" aria-labelledby="architecture-mobile-title-overview architecture-mobile-desc-overview">
-            <title id="architecture-mobile-title-overview">全局架构的竖向流程图</title>
-            <desc id="architecture-mobile-desc-overview">独立 VLA 生成基准动作，融合视觉历史的 VLM 预测状态与进度。介入判定保留自主恢复窗口，持续停滞或重试超限才进入局部采样、JEPA 预测、同一 VLM 评分和最大进度候选选择；否则直接执行 VLA 动作。两条路径汇入机器人执行，更新观测，形成闭环。输出包含任务进度预测 p̂，以及示例状态：当前阶段拿起螺栓，已完成拿起螺丝，未完成插入螺丝与放置装配件。</desc>
-            <defs>
-              <marker id="architecture-mobile-arrow-overview" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker>
-              <marker id="architecture-mobile-control-overview" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#ad622c" stroke-width="1.5"/></marker>
-              <marker id="architecture-mobile-feedback-overview" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#8493a4" stroke-width="1.5"/></marker>
-              <style>
-                .gam-overview-text { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #17263b; text-anchor: middle; }
-                .gam-overview-title { font-size: 22px; font-weight: 600; }
-                .gam-overview-small { font-size: 16px; fill: #626b77; }
-                .gam-overview-link { fill: none; stroke: #2458a6; stroke-width: 2; marker-end: url(#architecture-mobile-arrow-overview); }
-                .gam-overview-control { fill: none; stroke: #ad622c; stroke-width: 2; stroke-dasharray: 5 4; marker-end: url(#architecture-mobile-control-overview); }
-                .gam-overview-node { fill: #fffefa; stroke: #aebed1; stroke-width: 1.3; }
-              </style>
-            </defs>
-            <g class="gam-overview-text">
-              <path class="gam-overview-link" d="M210 80V102H105V121"/>
-              <path class="gam-overview-link" d="M210 102H315V121"/>
-              <path class="gam-overview-link" d="M315 206V252"/>
-              <path class="gam-overview-link" d="M315 352V395"/>
-              <path class="gam-overview-link" d="M105 206V466"/>
-              <path class="gam-overview-link" d="M105 350H123V615H155V630"/>
-              <circle cx="105" cy="350" r="3.2" fill="#2458a6"/>
-              <path class="gam-overview-control" d="M135 497H131C131 486 115 486 115 497H112"/>
-              <path class="gam-overview-control" d="M265 592V630"/>
-              <path class="gam-overview-link" d="M25 510H8V1265H81"/>
-              <path class="gam-overview-link" d="M210 720V755H279V790"/>
-              <path class="gam-overview-link" d="M117 839H153"/>
-              <path class="gam-overview-link" d="M279 884V946"/>
-              <path class="gam-overview-link" d="M117 996H153"/>
-              <path class="gam-overview-link" d="M279 1038V1070H210V1110"/>
-              <path class="gam-overview-link" d="M210 1198V1222"/>
-              <path d="M335 1265H411V45H399" fill="none" stroke="#8493a4" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#architecture-mobile-feedback-overview)"/>
-
-              <rect class="gam-overview-node" x="25" y="10" width="370" height="70" rx="5"/>
-              <text class="gam-overview-title" x="210" y="39">当前观测 + 任务指令</text>
-              <text class="gam-overview-small" x="210" y="65">三视角图像</text>
-              <rect x="25" y="126" width="160" height="80" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.3"/>
-              <text class="gam-overview-title" x="105" y="159">独立 VLA</text>
-              <text class="gam-overview-small" x="105" y="187">生成基准动作</text>
-              <rect class="gam-overview-node" x="235" y="126" width="160" height="80" rx="5"/>
-              <text x="315" y="159" font-size="21" font-weight="600">编码 · 时序融合</text>
-              <text class="gam-overview-small" x="315" y="187">历史 + 当前 → z<tspan baseline-shift="sub" font-size="12">t</tspan></text>
-              <rect x="235" y="256" width="160" height="96" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(366 257)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="gam-overview-title" x="315" y="290" fill="#fffefa">VLM</text>
-              <text x="315" y="316" font-size="16" fill="#fffefa">输入 z<tspan baseline-shift="sub" font-size="11">t</tspan> + 子任务状态</text>
-              <text x="315" y="340" font-size="16" fill="#fffefa">预测状态与进度</text>
-              <text x="105" y="244" font-size="18" fill="#2458a6">基准动作 a<tspan baseline-shift="super" font-size="12">(0)</tspan></text>
-
-              <rect x="135" y="400" width="260" height="192" rx="5" fill="#faf4ec" stroke="#d0a57f" stroke-width="1.3"/>
-              <text x="146" y="438" text-anchor="start" font-size="17">当前阶段：拿起螺栓</text>
-              <text x="146" y="476" text-anchor="start" font-size="17">已完成：拿起螺丝</text>
-              <text x="146" y="514" text-anchor="start" font-size="17">未完成：插入螺丝、放置装配件</text>
-              <text x="146" y="552" text-anchor="start" font-size="17">任务进度预测：<tspan font-family="Times New Roman, serif" font-style="italic" font-size="21">p̂</tspan></text>
-              <rect class="gam-overview-node" x="25" y="470" width="85" height="76" rx="5"/>
-              <text x="67" y="501" font-size="17">未触发</text>
-              <text x="67" y="526" font-size="17">直接执行</text>
-              <text x="308" y="622" font-size="17" fill="#ad622c">触发介入</text>
-
-              <rect x="75" y="635" width="250" height="85" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.3"/>
-              <text class="gam-overview-title" x="200" y="667">局部采样</text>
-              <text x="200" y="692" font-size="17">围绕 VLA 动作生成 K 个候选</text>
-              <text class="gam-overview-small" x="200" y="713">保留原提议</text>
-              <text x="312" y="760" font-size="19" fill="#2458a6">a<tspan baseline-shift="super" font-size="12">(k)</tspan></text>
-              <rect class="gam-overview-node" x="25" y="798" width="92" height="80" rx="5"/>
-              <text x="71" y="827" font-size="17">当前 z<tspan baseline-shift="sub" font-size="12">t</tspan></text>
-              <text x="71" y="853" font-size="14" fill="#626b77">已融合历史</text>
-              <rect x="158" y="795" width="237" height="89" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(366 796)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="gam-overview-title" x="277" y="831" fill="#fffefa">JEPA</text>
-              <text x="277" y="863" font-size="18" fill="#fffefa">预测各动作的未来 latent</text>
-              <text x="329" y="922" font-size="21" fill="#2458a6">ẑ<tspan baseline-shift="super" font-size="13">(k)</tspan></text>
-
-              <rect class="gam-overview-node" x="25" y="955" width="92" height="80" rx="5"/>
-              <text x="71" y="986" font-size="16">子任务</text>
-              <text x="71" y="1010" font-size="16">状态</text>
-              <rect x="158" y="951" width="237" height="87" rx="5" fill="#2458a6"/>
-              <text class="gam-overview-title" x="277" y="986" fill="#fffefa">VLM</text>
-              <text x="277" y="1017" font-size="17" fill="#fffefa">共享参数 · 预测状态与进度</text>
-              <text x="290" y="1098" font-size="18" fill="#2458a6">P<tspan baseline-shift="super" font-size="12">(1)</tspan> … P<tspan baseline-shift="super" font-size="12">(K)</tspan></text>
-              <rect x="75" y="1115" width="250" height="83" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.3"/>
-              <g transform="translate(122 1147)" fill="#2458a6" font-family="Times New Roman, serif" font-size="23" aria-label="k 星等于使预测进度 P 最大的候选索引">
-                <text x="0" y="0" font-style="italic" text-anchor="start">k<tspan baseline-shift="super" font-size="14">*</tspan></text>
-                <text x="27" y="0" text-anchor="start">=</text>
-                <text x="46" y="0" font-size="22" text-anchor="start">arg max</text>
-                <text x="80" y="14" font-size="14" font-style="italic" text-anchor="middle">k</text>
-                <text x="123" y="0" font-style="italic" text-anchor="start">P<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              </g>
-              <text x="200" y="1183" font-family="Times New Roman, serif" font-size="24" font-style="italic">a<tspan baseline-shift="sub" font-size="14">rec</tspan> = a<tspan baseline-shift="super" font-size="14">(k*)</tspan></text>
-              <rect x="85" y="1227" width="250" height="78" rx="5" fill="#17263b"/>
-              <text class="gam-overview-title" x="210" y="1261" fill="#fffefa">机器人执行</text>
-              <text x="210" y="1289" font-size="17" fill="#fffefa">更新环境状态</text>
-              <text x="210" y="1339" font-size="16" fill="#626b77">执行后更新观测，再次判断是否介入 ↗</text>
-            </g>
-          </svg>
-        </figure>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 9 页">09</span>
-        </footer>
-      </article>
-
-      <article class="slide" id="slide-10" data-title="Astra 视频分段标注" aria-labelledby="annotation-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">训练标签 · 视频分段标注</span><span>EVO-Inter</span></div>
-          <h1 id="annotation-title">用 Astra 标注子任务片段</h1>
-          <p class="annotation-intro">对视频标注<strong>子任务、执行顺序与时间边界</strong>，形成状态与进度监督所需的分段信息。</p>
-        </header>
-
-        <figure class="annotation-pipeline" aria-label="视频分段标注与原视频帧对齐流程">
-          <svg viewBox="0 0 1416 80" role="img" aria-labelledby="annotation-flow-title annotation-flow-desc">
-            <title id="annotation-flow-title">原始视频经 Astra 标注后对齐到原视频帧</title>
-            <desc id="annotation-flow-desc">提供 30 FPS 原始视频和子任务清单，以 5 FPS 采样视频供 Astra 标注子任务及其起止时间，再将分段结果对齐到原视频帧索引。</desc>
-            <defs><marker id="annotation-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker></defs>
-            <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
-              <g fill="#17263b" font-size="26" font-weight="600">
-                <text x="0" y="29">原始视频 · 30 FPS</text>
-                <text x="501" y="29" fill="#2458a6">Astra 标注 · 5 FPS</text>
-                <text x="1030" y="29">对齐原视频帧</text>
-              </g>
-              <g fill="#626b77" font-size="20">
-                <text x="0" y="64">完整轨迹与子任务清单</text>
-                <text x="501" y="64">标注子任务与起止时间</text>
-                <text x="1030" y="64">保留状态标签与帧区间</text>
-              </g>
-            </g>
-            <g stroke="#2458a6" stroke-width="2" fill="none" marker-end="url(#annotation-arrow)"><path d="M335 34H455"/><path d="M863 34H984"/></g>
-          </svg>
-          <ol class="annotation-pipeline-mobile">
-            <li><strong>原始视频 · 30 FPS</strong><span>完整轨迹与子任务清单</span></li>
-            <li><strong>Astra 标注 · 5 FPS</strong><span>标注子任务与起止时间</span></li>
-            <li><strong>对齐原视频帧</strong><span>保留状态标签与帧区间</span></li>
-          </ol>
-        </figure>
-
-        <figure class="annotation-example" aria-labelledby="annotation-example-title">
-          <h2 id="annotation-example-title">螺钉装配 · 分段标签示例</h2>
-          <table class="annotation-table" aria-label="五个子任务的状态字段与时间边界" aria-describedby="annotation-table-note">
-            <colgroup><col class="annotation-name-column"><col class="annotation-now-column"><col class="annotation-finish-column"><col class="annotation-rest-column"><col class="annotation-time-column"><col class="annotation-frame-column"></colgroup>
-            <thead><tr><th scope="col">子任务</th><th scope="col">nowid</th><th scope="col" class="annotation-derived">finishid*</th><th scope="col">restid</th><th scope="col">5 FPS 时间 / s</th><th scope="col">30 FPS 原帧</th></tr></thead>
-            <tbody>
-              <tr><td data-label="子任务">拿起螺钉</td><td data-label="nowid" class="annotation-id">2</td><td data-label="finishid*" class="annotation-derived">∅</td><td data-label="restid">1,3,4,5</td><td data-label="5 FPS 时间 / s">25.2–30.0</td><td data-label="30 FPS 原帧">756–905</td></tr>
-              <tr><td data-label="子任务">拿起套筒</td><td data-label="nowid" class="annotation-id">1</td><td data-label="finishid*" class="annotation-derived">2</td><td data-label="restid">3,4,5</td><td data-label="5 FPS 时间 / s">30.2–32.4</td><td data-label="30 FPS 原帧">906–977</td></tr>
-              <tr><td data-label="子任务">将螺钉和套筒对齐</td><td data-label="nowid" class="annotation-id">3</td><td data-label="finishid*" class="annotation-derived">1,2</td><td data-label="restid">4,5</td><td data-label="5 FPS 时间 / s">32.6–35.8</td><td data-label="30 FPS 原帧">978–1079</td></tr>
-              <tr><td data-label="子任务">将螺钉插入套筒</td><td data-label="nowid" class="annotation-id">4</td><td data-label="finishid*" class="annotation-derived">1,2,3</td><td data-label="restid">5</td><td data-label="5 FPS 时间 / s">36.0–37.2</td><td data-label="30 FPS 原帧">1080–1121</td></tr>
-              <tr><td data-label="子任务">将装配好的组件放入盒子</td><td data-label="nowid" class="annotation-id">5</td><td data-label="finishid*" class="annotation-derived">1,2,3,4</td><td data-label="restid">∅</td><td data-label="5 FPS 时间 / s">37.4–39.4</td><td data-label="30 FPS 原帧">1122–1187</td></tr>
-            </tbody>
-          </table>
-          <figcaption id="annotation-table-note"><span>* finishid 由全部步骤扣除 nowid 与 restid 后补全；∅ 表示空集合。</span><span>时间为采样点时间，原帧区间含首尾。</span></figcaption>
-        </figure>
-
-        <section class="goal annotation-conclusion" aria-label="分段标签的用途">
-          <span class="goal-label">标签用途</span><p>为逐帧状态监督与连续进度计算提供子任务边界。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 10 页">10</span>
-        </footer>
-      </article>
-      <article class="slide" id="slide-11" data-title="子任务状态与任务进度预测" aria-labelledby="state-prediction-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">基本方案 · 状态与进度建模</span><span>EVO-Inter</span></div>
-          <h1 id="state-prediction-title">子任务状态与任务进度联合预测</h1>
-          <p class="state-intro">将<strong>融合历史信息的当前视觉表征</strong>与子任务状态输入 VLM，预测下一时刻的状态和进度。</p>
-        </header>
-
-        <figure class="state-flow">
-          <svg viewBox="0 0 1416 414" role="img" aria-labelledby="state-flow-title state-flow-desc">
-            <title id="state-flow-title">VLM 的先前任务阶段输入与目标任务阶段预测</title>
-            <desc id="state-flow-desc">左侧六张图像来自所提供顶部视角视频的第 3、4、5、6、7、8 秒，按从左到右、从上到下排列，示意时序融合得到含历史信息的当前视觉表征，再与 nowid、finishid、restid 一起输入 VLM。图像为单视角时序示例，状态字段是独立的切换示例，不是这六帧的标注。VLM 预测 t+1 时刻的三个状态字段和任务进度 p(t+1)，进度允许回退。图中使用子任务切换时刻作示例：当前拿起螺钉，nowid 为 2，finishid 为空，restid 为 1、3、4、5；下一时刻拿起套筒，nowid 为 1，finishid 为 2，restid 为 3、4、5。子任务名称是对应编号的说明，图中未给出示例进度数值。</desc>
-            <defs>
-              <marker id="state-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker>
-            </defs>
-            <style>
-              .state-svg-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
-              .state-svg-heading { font-size: 24px; font-weight: 600; }
-              .state-svg-name { font-size: 27px; font-weight: 500; }
-              .state-svg-label { font-size: 21px; }
-              .state-svg-small { font-size: 19px; fill: #626b77; }
-              .state-svg-key { font-family: Menlo, Consolas, monospace; font-size: 23px; fill: #626b77; }
-              .state-svg-value { font-family: Menlo, Consolas, monospace; font-size: 25px; }
-              .state-svg-blue { fill: #2458a6; }
-              .state-svg-connector { stroke: #2458a6; stroke-width: 2; fill: none; marker-end: url(#state-arrow); }
-            </style>
-
-            <g class="state-svg-text">
-              <image href="assets/history/state-frame-03s.jpg" x="1" y="1" width="144" height="108" preserveAspectRatio="xMidYMid meet"><title>视频第 3 秒</title></image>
-              <rect x="1" y="1" width="144" height="108" fill="none" stroke="#b9c5d3" stroke-width="1"/>
-              <text class="state-svg-small" x="73" y="129" text-anchor="middle">3 s</text>
-              <image href="assets/history/state-frame-04s.jpg" x="169" y="1" width="144" height="108" preserveAspectRatio="xMidYMid meet"><title>视频第 4 秒</title></image>
-              <rect x="169" y="1" width="144" height="108" fill="none" stroke="#b9c5d3" stroke-width="1"/>
-              <text class="state-svg-small" x="241" y="129" text-anchor="middle">4 s</text>
-              <image href="assets/history/state-frame-05s.jpg" x="337" y="1" width="144" height="108" preserveAspectRatio="xMidYMid meet"><title>视频第 5 秒</title></image>
-              <rect x="337" y="1" width="144" height="108" fill="none" stroke="#b9c5d3" stroke-width="1"/>
-              <text class="state-svg-small" x="409" y="129" text-anchor="middle">5 s</text>
-              <image href="assets/history/state-frame-06s.jpg" x="1" y="145" width="144" height="108" preserveAspectRatio="xMidYMid meet"><title>视频第 6 秒</title></image>
-              <rect x="1" y="145" width="144" height="108" fill="none" stroke="#b9c5d3" stroke-width="1"/>
-              <text class="state-svg-small" x="73" y="273" text-anchor="middle">6 s</text>
-              <image href="assets/history/state-frame-07s.jpg" x="169" y="145" width="144" height="108" preserveAspectRatio="xMidYMid meet"><title>视频第 7 秒</title></image>
-              <rect x="169" y="145" width="144" height="108" fill="none" stroke="#b9c5d3" stroke-width="1"/>
-              <text class="state-svg-small" x="241" y="273" text-anchor="middle">7 s</text>
-              <image href="assets/history/state-frame-08s.jpg" x="337" y="145" width="144" height="108" preserveAspectRatio="xMidYMid meet"><title>视频第 8 秒</title></image>
-              <rect x="337" y="145" width="144" height="108" fill="none" stroke="#b9c5d3" stroke-width="1"/>
-              <text class="state-svg-small" x="409" y="273" text-anchor="middle">8 s</text>
-              <path d="M482 1H495V253H482" stroke="#7e9fc9" stroke-width="1.5" fill="none"/>
-              <path class="state-svg-connector" d="M495 127H515V174H628"/>
-              <text class="state-svg-label state-svg-blue" x="573" y="151" text-anchor="middle">时序融合</text>
-
-              <rect x="1" y="298" width="480" height="106" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
-              <text class="state-svg-label state-svg-blue" x="25" y="326">先前任务阶段 · t</text>
-              <text class="state-svg-name" x="290" y="327">拿起螺钉</text>
-              <text class="state-svg-key" x="25" y="355">nowid</text><text class="state-svg-value" x="25" y="385">2</text>
-              <text class="state-svg-key" x="172" y="355">finishid</text><text class="state-svg-value" x="172" y="385">∅</text>
-              <text class="state-svg-key" x="325" y="355">restid</text><text class="state-svg-value" x="325" y="385">1,3,4,5</text>
-            </g>
-            <path class="state-svg-connector" d="M481 351H546V233H628"/>
-
-            <rect x="632" y="119" width="224" height="166" rx="5" fill="#2458a6"/>
-            <g font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#fffefa" text-anchor="middle">
-              <text x="744" y="192" font-size="47" font-weight="600">VLM</text>
-              <text x="744" y="239" font-size="21">状态与进度预测</text>
-            </g>
-            <path class="state-svg-connector" d="M856 202H987"/>
-            <text class="state-svg-text state-svg-label state-svg-blue" x="921" y="182" text-anchor="middle">预测</text>
-
-            <g class="state-svg-text">
-              <text class="state-svg-heading" x="994" y="26">目标任务阶段 · t+1</text>
-              <rect x="994" y="49" width="420" height="355" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-              <text class="state-svg-name" x="1020" y="94">拿起套筒</text>
-              <text class="state-svg-key" x="1020" y="143">nowid</text><text class="state-svg-value state-svg-blue" x="1216" y="143">1</text>
-              <text class="state-svg-key" x="1020" y="187">finishid</text><text class="state-svg-value state-svg-blue" x="1216" y="187">2</text>
-              <text class="state-svg-key" x="1020" y="231">restid</text><text class="state-svg-value state-svg-blue" x="1216" y="231">3,4,5</text>
-              <path d="M1020 258H1388" stroke="#c4d4e9" stroke-width="1.5"/>
-              <text x="1020" y="310" font-family="Times New Roman, serif" font-size="36" font-style="italic" class="state-svg-blue">p(t+1)</text>
-              <text class="state-svg-label" x="1020" y="360">连续任务进度 · 允许回退</text>
-            </g>
-          </svg>
-
-          <div class="state-mobile">
-            <section aria-label="当前时刻输入">
-              <h2>输入 · t</h2>
-              <div class="state-history-flow" aria-label="第 3 至 8 秒的六帧图像进行时序融合">
-                <div class="state-history-images">
-                  <div class="state-history-frame"><img src="assets/history/state-frame-03s.jpg" width="640" height="480" alt="顶部视角视频第 3 秒的画面"><span>3 s</span></div>
-                  <div class="state-history-frame"><img src="assets/history/state-frame-04s.jpg" width="640" height="480" alt="顶部视角视频第 4 秒的画面"><span>4 s</span></div>
-                  <div class="state-history-frame"><img src="assets/history/state-frame-05s.jpg" width="640" height="480" alt="顶部视角视频第 5 秒的画面"><span>5 s</span></div>
-                  <div class="state-history-frame"><img src="assets/history/state-frame-06s.jpg" width="640" height="480" alt="顶部视角视频第 6 秒的画面"><span>6 s</span></div>
-                  <div class="state-history-frame"><img src="assets/history/state-frame-07s.jpg" width="640" height="480" alt="顶部视角视频第 7 秒的画面"><span>7 s</span></div>
-                  <div class="state-history-frame"><img src="assets/history/state-frame-08s.jpg" width="640" height="480" alt="顶部视角视频第 8 秒的画面"><span>8 s</span></div>
-                </div>
-                <p class="state-history-fusion">↓ 时序融合</p>
-              </div>
-              <p>先前任务阶段</p><p class="state-example-name">拿起螺钉</p>
-              <dl class="state-fields"><dt>nowid</dt><dd>2</dd><dt>finishid</dt><dd>∅</dd><dt>restid</dt><dd>1,3,4,5</dd></dl>
-            </section>
-            <section class="state-model" aria-label="预测模型"><h2>VLM</h2></section>
-            <section aria-label="目标任务阶段">
-              <h2>目标任务阶段 · t+1</h2><p class="state-example-name">拿起套筒</p>
-              <dl class="state-fields"><dt>nowid</dt><dd>1</dd><dt>finishid</dt><dd>2</dd><dt>restid</dt><dd>3,4,5</dd></dl>
-              <p class="state-progress">p(t+1)：连续任务进度，允许回退。</p>
-            </section>
-          </div>
-          <figcaption><span>nowid：当前步骤</span><span>finishid：已完成步骤</span><span>restid：待执行步骤</span></figcaption>
-        </figure>
-
-        <section class="goal state-conclusion" aria-label="使用时序信息的原因">
-          <span class="goal-label">为何需要时序</span><p>区分视觉相似、任务状态不同的场景。</p>
-          <p class="state-example">例如物体放入抽屉再关门后，画面与初始相似；历史信息可保留“已放入”的证据，避免进度误判为零。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 11 页">11</span>
-        </footer>
-      </article>
-      <article class="slide" id="slide-12" data-title="可回退的逐帧进度标签" aria-labelledby="progress-label-title" hidden>
+      <article class="slide" id="slide-3" data-title="可回退的逐帧进度标签" aria-labelledby="progress-label-title" hidden>
         <header>
           <div class="eyebrow"><span class="section-name">训练标签 · 离线进度计算</span><span>EVO-Inter</span></div>
           <h1 id="progress-label-title">可回退的逐帧进度标签</h1>
@@ -1332,587 +711,389 @@
           <span class="goal-label">监督目标</span><p>保留“已完成 → 需重做”的状态变化，让进度标签能够回退。</p>
         </section>
         <footer class="footer">
-          <span class="page-number" aria-label="第 12 页">12</span>
+          <span class="page-number" aria-label="第 3 页">03</span>
         </footer>
       </article>
-      <article class="slide" id="slide-13" data-title="基于停滞与重试的介入判定" aria-labelledby="trigger-title" hidden>
+      <article class="slide" id="slide-4" data-title="Astra 视频分段标注" aria-labelledby="annotation-title" hidden>
         <header>
-          <div class="eyebrow"><span class="section-name">介入时机 · 拟议判定规则</span><span>EVO-Inter</span></div>
-          <h1 id="trigger-title">基于停滞与重试的介入判定</h1>
-          <p class="trigger-intro">跟踪 restid 与预测进度的时序变化，在<strong>持续无进展</strong>时触发介入。</p>
+          <div class="eyebrow"><span class="section-name">训练标签 · 视频分段标注</span><span>EVO-Inter</span></div>
+          <h1 id="annotation-title">用 Astra 标注子任务片段</h1>
+          <p class="annotation-intro">对视频标注<strong>子任务、执行顺序与时间边界</strong>，形成状态与进度监督所需的分段信息。</p>
         </header>
 
-        <div class="trigger-grid">
-          <section class="trigger-case" aria-labelledby="stall-trigger-title">
-            <h2 id="stall-trigger-title"><span aria-hidden="true">01</span>持续停滞</h2>
-            <p class="trigger-description">restid 长时间不变，且预测进度没有有效增长。</p>
-            <figure class="trigger-figure">
-              <svg viewBox="0 0 660 300" role="img" aria-labelledby="stall-plot-title stall-plot-desc">
-                <title id="stall-plot-title">剩余步骤不变，进度持续停滞</title>
-                <desc id="stall-plot-desc">原理示意。剩余步骤 restid 始终为 4、5；预测进度在早期上升后长时间持平。淡蓝区域表示停滞观察窗口，窗口达到时长阈值 T s 时触发介入。没有给定实际时长或实验分数。</desc>
-                <defs><marker id="stall-time-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#8b9bae" stroke-width="1.5"/></marker></defs>
-                <style>
-                  .stall-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; font-size: 21px; }
-                  .stall-muted { fill: #626b77; font-size: 18px; }
-                  .stall-state { font-family: Menlo, Consolas, monospace; font-size: 22px; fill: #2458a6; }
-                </style>
-                <g class="stall-text">
-                  <text class="stall-muted" x="2" y="25">restid</text>
-                  <g class="stall-state" text-anchor="middle"><text x="80" y="66">{4,5}</text><text x="240" y="66">{4,5}</text><text x="400" y="66">{4,5}</text><text x="560" y="66">{4,5}</text></g>
-                  <g stroke="#8b9bae" stroke-width="1.5" fill="none" marker-end="url(#stall-time-arrow)"><path d="M128 58H191"/><path d="M288 58H351"/><path d="M448 58H511"/></g>
-                  <path d="M2 92H642" stroke="#d9dfe5"/>
-                  <text class="stall-muted" x="46" y="125">预测进度</text>
-                  <rect x="240" y="141" width="358" height="120" fill="#eef3fa"/>
-                  <text x="326" y="163" font-size="19" fill="#2458a6">持续时间 ≥ T<tspan baseline-shift="sub" font-size="13">s</tspan></text>
-                  <path d="M46 139V261H632" stroke="#aab7c6" stroke-width="1.5" fill="none"/>
-                  <path d="M240 176V261M598 176V261" stroke="#91aace" stroke-width="1.2" stroke-dasharray="4 4"/>
-                  <path d="M54 248L96 236L146 219L198 208L240 207L300 207L360 209L420 207L480 208L540 207L598 208" stroke="#2458a6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                  <circle cx="598" cy="208" r="5" fill="#ad622c"/>
-                  <text class="stall-muted" x="46" y="289">过去</text><text class="stall-muted" x="535" y="289">当前时刻 t</text>
-                </g>
-              </svg>
-              <figcaption>停滞时长达到 T<sub>s</sub> → 触发介入</figcaption>
-            </figure>
-          </section>
-
-          <section class="trigger-case" aria-labelledby="retry-trigger-title">
-            <h2 id="retry-trigger-title"><span aria-hidden="true">02</span>多次重试</h2>
-            <p class="trigger-description">restid 循环出现，进度反复回退且没有持续改善。</p>
-            <figure class="trigger-figure">
-              <svg viewBox="0 0 660 300" role="img" aria-labelledby="retry-plot-title retry-plot-desc">
-                <title id="retry-plot-title">剩余步骤反复循环，进度未持续改善</title>
-                <desc id="retry-plot-desc">原理示意。restid 在 4、5 与 5 之间反复切换，又回到 4、5；每次进度增长后再次回退，未形成持续改善。图中只画出两个循环以说明模式，不表示实际重试阈值为二。循环次数达到待标定阈值 N r 时触发介入。</desc>
-                <defs><marker id="retry-time-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#8b9bae" stroke-width="1.5"/></marker></defs>
-                <style>
-                  .retry-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; font-size: 21px; }
-                  .retry-muted { fill: #626b77; font-size: 18px; }
-                  .retry-state { font-family: Menlo, Consolas, monospace; font-size: 22px; fill: #2458a6; }
-                </style>
-                <g class="retry-text">
-                  <text class="retry-muted" x="2" y="25">restid</text>
-                  <g class="retry-state" text-anchor="middle"><text x="80" y="66">{4,5}</text><text x="200" y="66">{5}</text><text x="320" y="66">{4,5}</text><text x="440" y="66">{5}</text><text x="560" y="66">{4,5}</text><text x="628" y="66">…</text></g>
-                  <g stroke="#8b9bae" stroke-width="1.5" fill="none" marker-end="url(#retry-time-arrow)"><path d="M124 58H166"/><path d="M233 58H274"/><path d="M364 58H406"/><path d="M473 58H514"/></g>
-                  <path d="M80 78V87H320V78M320 78V87H560V78" fill="none" stroke="#b7c9e0" stroke-width="1.3"/>
-                  <text class="retry-muted" x="173" y="108">loop 1</text><text class="retry-muted" x="413" y="108">loop 2</text>
-                  <text class="retry-muted" x="46" y="125">预测进度</text>
-                  <path d="M46 139V261H632" stroke="#aab7c6" stroke-width="1.5" fill="none"/>
-                  <path d="M70 240L137 212L200 168L315 168L320 240L377 212L440 168L555 168L560 240L610 220" stroke="#2458a6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                  <circle cx="320" cy="240" r="5" fill="#ad622c"/><circle cx="560" cy="240" r="5" fill="#ad622c"/>
-                  <text class="retry-muted" x="46" y="289">过去</text><text class="retry-muted" x="535" y="289">当前时刻 t</text>
-                </g>
-              </svg>
-              <figcaption>循环次数达到 N<sub>r</sub> → 触发介入</figcaption>
-            </figure>
-          </section>
-        </div>
-
-        <section class="goal trigger-conclusion" aria-label="保留自主恢复机会">
-          <span class="goal-label">判定原则</span><p>保留自主恢复窗口；恢复推进则继续执行，停滞或重试超限再介入。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 13 页">13</span>
-        </footer>
-      </article>
-      <article class="slide chapter-slide" id="slide-14" data-title="介入动作方案设计" aria-labelledby="action-section-title" hidden>
-        <div class="chapter-content"><h1 id="action-section-title">介入动作方案设计</h1></div>
-        <footer class="footer"><span class="page-number" aria-label="第 14 页">14</span></footer>
-      </article>
-
-      <article class="slide" id="slide-15" data-title="动作条件 JEPA 的训练" aria-labelledby="jepa-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">介入动作 · 未来表征预测</span><span>EVO-Inter</span></div>
-          <h1 id="jepa-title">动作条件 JEPA 的训练</h1>
-          <p class="jepa-intro">以当前 latent 和动作为条件，<strong>预测未来 latent</strong>，再由进度模型评估动作结果。</p>
-        </header>
-
-        <div class="jepa-overview">
-          <figure class="jepa-sequence">
-            <svg viewBox="0 0 1416 112" role="img" aria-labelledby="jepa-sequence-title jepa-sequence-desc">
-              <title id="jepa-sequence-title">状态与动作训练序列，以及对应的视觉 latent</title>
-              <desc id="jepa-sequence-desc">训练轨迹为 s1 经动作 a1 到 s2，再经 a2 到 s3，再经 a3 到 s4，再经 a4 到 s5。各时刻的三视角观测由相同的视觉编码器和历史融合模块得到 z1 至 z5。每个 zi 只融合截至 i 时刻的观测。</desc>
-              <defs><marker id="jepa-sequence-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#8196b0" stroke-width="1.5"/></marker></defs>
-              <text x="0" y="27" fill="#2458a6" font-size="19" font-family="PingFang SC, Microsoft YaHei, sans-serif">训练轨迹</text>
-              <g font-family="Times New Roman, serif" font-style="italic" font-size="34" fill="#17263b" text-anchor="middle"><text x="180" y="37">s₁</text><text x="475" y="37">s₂</text><text x="770" y="37">s₃</text><text x="1065" y="37">s₄</text><text x="1360" y="37">s₅</text></g>
-              <g stroke="#8196b0" stroke-width="1.6" fill="none" marker-end="url(#jepa-sequence-arrow)"><path d="M217 27H435"/><path d="M512 27H730"/><path d="M807 27H1025"/><path d="M1102 27H1320"/></g>
-              <g fill="#fffefa"><rect x="296" y="6" width="60" height="35"/><rect x="591" y="6" width="60" height="35"/><rect x="886" y="6" width="60" height="35"/><rect x="1181" y="6" width="60" height="35"/></g>
-              <g font-family="Times New Roman, serif" font-style="italic" font-size="28" fill="#626b77" text-anchor="middle"><text x="327" y="34">a₁</text><text x="622" y="34">a₂</text><text x="917" y="34">a₃</text><text x="1212" y="34">a₄</text></g>
-              <g stroke="#8196b0" stroke-width="1.4" fill="none" marker-end="url(#jepa-sequence-arrow)"><path d="M180 47V70"/><path d="M475 47V70"/><path d="M770 47V70"/><path d="M1065 47V70"/><path d="M1360 47V70"/></g>
-              <text x="0" y="98" fill="#626b77" font-size="19" font-family="PingFang SC, Microsoft YaHei, sans-serif">视觉表征</text>
-              <g font-family="Times New Roman, serif" font-style="italic" font-size="32" fill="#2458a6" text-anchor="middle"><text x="180" y="101">z₁</text><text x="475" y="101">z₂</text><text x="770" y="101">z₃</text><text x="1065" y="101">z₄</text><text x="1360" y="101">z₅</text></g>
-            </svg>
-            <figcaption>每个 s<sub>i</sub> 为三视角观测；z<sub>i</sub> 由同一视觉编码器与历史融合模块得到，包含截至 i 时刻的信息。</figcaption>
-          </figure>
-
-          <figure class="jepa-model">
-            <svg viewBox="0 0 1416 246" role="img" aria-labelledby="jepa-model-title jepa-model-desc">
-              <title id="jepa-model-title">动作条件 latent 预测与进度评分</title>
-              <desc id="jepa-model-desc">当前 zi 和执行动作 ai 输入动作条件预测器 F，得到预测的下一时刻 latent。训练时将预测 latent 与真实后继观测编码得到的 zi+1 对齐；真实后继仅作为训练目标。预测 latent 随后与子任务状态一起输入我们的 VLM，输出预测进度。VLM 以已有进度标签监督，预测 latent 需与其视觉输入空间一致。</desc>
-              <defs><marker id="jepa-model-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker></defs>
-              <style>
-                .jepa-svg-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
-                .jepa-svg-label { font-size: 23px; font-weight: 500; }
-                .jepa-svg-small { font-size: 18px; fill: #626b77; }
-                .jepa-svg-symbol { font-family: "Times New Roman", serif; font-style: italic; font-size: 31px; }
-                .jepa-svg-arrow { stroke: #2458a6; stroke-width: 2; fill: none; marker-end: url(#jepa-model-arrow); }
-              </style>
-              <g class="jepa-svg-text" text-anchor="middle">
-                <rect x="1" y="136" width="210" height="70" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
-                <text class="jepa-svg-label" x="106" y="163">当前 latent</text><text class="jepa-svg-symbol" x="106" y="194">z<tspan baseline-shift="sub" font-size="19">i</tspan></text>
-                <rect x="310" y="12" width="256" height="60" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
-                <text class="jepa-svg-label" x="438" y="49">执行动作 a<tspan baseline-shift="sub" font-size="16">i</tspan></text>
-                <rect x="310" y="126" width="256" height="90" rx="4" fill="#2458a6"/>
-                <text x="438" y="164" font-size="24" fill="#fffefa">动作条件预测器</text><text class="jepa-svg-symbol" x="438" y="199" fill="#fffefa">F(z<tspan baseline-shift="sub" font-size="18">i</tspan><tspan baseline-shift="baseline">, a</tspan><tspan baseline-shift="sub" font-size="18">i</tspan><tspan baseline-shift="baseline">)</tspan></text>
-                <rect x="668" y="136" width="214" height="70" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-                <text class="jepa-svg-label" x="775" y="163">预测 latent</text><text class="jepa-svg-symbol" x="775" y="194" fill="#2458a6">ẑ<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
-                <rect x="668" y="12" width="214" height="70" rx="4" fill="#fffefa" stroke="#b9c5d3" stroke-width="1.5"/>
-                <text class="jepa-svg-label" x="775" y="40">真实后继 latent</text><text class="jepa-svg-symbol" x="775" y="70">z<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
-                <rect x="982" y="136" width="232" height="70" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-                <text class="jepa-svg-label" x="1098" y="165">我们的 VLM</text><text class="jepa-svg-small" x="1098" y="193">结合子任务状态预测进度</text>
-                <text class="jepa-svg-small" x="1355" y="143">预测进度</text><text class="jepa-svg-symbol" x="1355" y="187" fill="#2458a6">p̂<tspan baseline-shift="sub" font-size="19">i+1</tspan></text>
+        <figure class="annotation-pipeline" aria-label="视频分段标注与原视频帧对齐流程">
+          <svg viewBox="0 0 1416 80" role="img" aria-labelledby="annotation-flow-title annotation-flow-desc">
+            <title id="annotation-flow-title">原始视频经 Astra 标注后对齐到原视频帧</title>
+            <desc id="annotation-flow-desc">提供 30 FPS 原始视频和子任务清单，以 5 FPS 采样视频供 Astra 标注子任务及其起止时间，再将分段结果对齐到原视频帧索引。</desc>
+            <defs><marker id="annotation-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker></defs>
+            <g font-family="PingFang SC, Microsoft YaHei, sans-serif">
+              <g fill="#17263b" font-size="26" font-weight="600">
+                <text x="0" y="29">原始视频 · 30 FPS</text>
+                <text x="501" y="29" fill="#2458a6">Astra 标注 · 5 FPS</text>
+                <text x="1030" y="29">对齐原视频帧</text>
               </g>
-              <path class="jepa-svg-arrow" d="M211 171H305"/><path class="jepa-svg-arrow" d="M438 72V122"/><path class="jepa-svg-arrow" d="M566 171H663"/><path class="jepa-svg-arrow" d="M882 171H977"/><path class="jepa-svg-arrow" d="M1214 171H1290"/>
-              <path d="M775 83V134" stroke="#ad622c" stroke-width="2" stroke-dasharray="5 4"/>
-              <text x="795" y="112" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#ad622c">训练时对齐</text>
-            </svg>
-
-            <div class="jepa-mobile">
-              <h2>动作条件预测</h2>
-              <p class="jepa-inputs">当前 latent z<sub>i</sub>（含视觉历史） + 执行动作 a<sub>i</sub></p>
-              <p class="jepa-down" aria-hidden="true">↓</p><p class="jepa-node">动作条件预测器 F</p>
-              <p class="jepa-down" aria-hidden="true">↓</p><p class="jepa-node">预测未来 latent ẑ<sub>i+1</sub></p>
-              <p class="jepa-target">训练目标：真实后继观测编码得到的 z<sub>i+1</sub>。</p>
-              <div class="jepa-score"><h2>进度评分</h2><p>预测 latent + 子任务状态 → 我们的 VLM → 预测进度 p̂<sub>i+1</sub></p></div>
-            </div>
-          </figure>
-        </div>
-
-        <section class="jepa-training" aria-labelledby="jepa-loss-title">
-          <div class="jepa-loss-row">
-            <h2 id="jepa-loss-title">拟议训练目标</h2>
-            <math display="block" aria-label="训练损失为未来 latent 预测误差加上加权的 SIGReg 表征正则"><mrow><mi mathvariant="script">L</mi><mo>=</mo><msubsup><mrow><mo>‖</mo><msub><mover accent="true"><mi>z</mi><mo>^</mo></mover><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>z</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>‖</mo></mrow><mn>2</mn><mn>2</mn></msubsup><mo>+</mo><mi>λ</mi><msub><mi mathvariant="script">L</mi><mtext>SIGReg</mtext></msub><mo>(</mo><mi>Z</mi><mo>)</mo></mrow></math>
-          </div>
-          <p>SIGReg 约束批次表征分布；VLM 用第 12 页的进度标签监督，预测 latent 需与其视觉输入空间一致。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 15 页">15</span>
-        </footer>
-      </article>
-      <article class="slide" id="slide-16" data-title="恢复动作的生成与选择" aria-labelledby="candidate-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">介入动作 · 生成与选择</span><span>EVO-Inter</span></div>
-          <h1 id="candidate-title">恢复动作的生成与选择</h1>
-          <p class="candidate-intro">VLA 局部采样生成候选，经 JEPA 预测与我们的 VLM 评分，选择<strong>预测进度 P 最大的动作</strong>。</p>
-        </header>
-
-        <div class="candidate-body">
-          <figure class="candidate-flow">
-            <svg class="candidate-desktop" viewBox="0 0 1416 350" role="img" aria-labelledby="candidate-flow-title candidate-flow-desc">
-              <title id="candidate-flow-title">VLA 局部采样、JEPA 预测、VLM 评分与最大进度动作选择</title>
-              <desc id="candidate-flow-desc">已触发介入。VLA 根据当前观测、任务指令和历史信息提出基准动作，围绕该动作局部采样并保留原提议，得到 K 个候选。每个候选动作与融合视觉历史的当前 latent 一起输入 JEPA，预测对应的未来 latent。将各预测 latent 与当前子任务状态输入我们的 VLM，得到一一对应的进度分数 P1 至 PK。选择分数最大的候选动作作为恢复动作执行。</desc>
-              <defs><marker id="candidate-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker></defs>
-              <style>
-                .candidate-svg-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
-                .candidate-svg-heading { font-size: 27px; font-weight: 600; }
-                .candidate-svg-label { font-size: 22px; font-weight: 500; }
-                .candidate-svg-small { font-size: 18px; fill: #626b77; }
-                .candidate-svg-blue { fill: #2458a6; }
-                .candidate-svg-symbol { font-family: "Times New Roman", serif; font-style: italic; font-size: 29px; }
-                .candidate-svg-arrow { stroke: #2458a6; stroke-width: 2; fill: none; marker-end: url(#candidate-arrow); }
-              </style>
-              <g class="candidate-svg-text" text-anchor="middle">
-                <text class="candidate-svg-small candidate-svg-blue" x="93" y="31">已触发介入</text>
-                <text class="candidate-svg-small" x="93" y="63">观测 · 指令 · 历史</text>
-                <path class="candidate-svg-arrow" d="M93 79V120"/>
-                <rect x="1" y="125" width="184" height="100" rx="4" fill="#2458a6"/>
-                <text x="93" y="169" font-size="34" font-weight="600" fill="#fffefa">VLA</text>
-                <text x="93" y="204" font-size="19" fill="#fffefa">提出基准动作</text>
-                <path class="candidate-svg-arrow" d="M185 175H262"/>
-                <text class="candidate-svg-symbol candidate-svg-blue" x="224" y="150">a<tspan baseline-shift="super" font-size="16">(0)</tspan></text>
-
-                <rect x="267" y="125" width="222" height="100" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-                <text class="candidate-svg-heading" x="378" y="169">局部采样</text>
-                <text class="candidate-svg-small" x="378" y="204">小幅扰动 · 保留原提议</text>
-                <path class="candidate-svg-arrow" d="M489 175H620"/>
-                <text class="candidate-svg-small" x="555" y="147">K 个候选动作</text>
-                <text class="candidate-svg-symbol candidate-svg-blue" x="555" y="212">{a<tspan baseline-shift="super" font-size="16">(k)</tspan><tspan baseline-shift="baseline">}</tspan></text>
-
-                <text class="candidate-svg-label" x="728" y="31">当前 latent z<tspan baseline-shift="sub" font-size="15">t</tspan></text>
-                <text class="candidate-svg-small" x="728" y="63">已融合视觉历史</text>
-                <path class="candidate-svg-arrow" d="M728 79V120"/>
-                <rect x="625" y="125" width="205" height="100" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-                <text class="candidate-svg-heading" x="728" y="169">JEPA</text>
-                <text class="candidate-svg-small" x="728" y="204">逐个预测动作结果</text>
-                <path class="candidate-svg-arrow" d="M830 175H968"/>
-                <text class="candidate-svg-small" x="899" y="147">K 个未来 latent</text>
-                <text class="candidate-svg-symbol candidate-svg-blue" x="899" y="212">{ẑ<tspan baseline-shift="super" font-size="16">(k)</tspan><tspan baseline-shift="baseline">}</tspan></text>
-
-                <text class="candidate-svg-label" x="1078" y="31">当前子任务状态</text>
-                <text class="candidate-svg-small" x="1078" y="63">nowid / finishid / restid</text>
-                <path class="candidate-svg-arrow" d="M1078 79V120"/>
-                <rect x="973" y="125" width="210" height="100" rx="4" fill="#2458a6"/>
-                <text x="1078" y="169" font-size="27" font-weight="600" fill="#fffefa">我们的 VLM</text>
-                <text x="1078" y="204" font-size="19" fill="#fffefa">预测任务进度</text>
-                <path class="candidate-svg-arrow" d="M1183 175H1242"/>
-
-                <text class="candidate-svg-small candidate-svg-blue" x="1327" y="89">K 个进度分数</text>
-                <g class="candidate-svg-symbol candidate-svg-blue">
-                  <text x="1313" y="133">P<tspan baseline-shift="super" font-size="16">(1)</tspan></text>
-                  <text x="1313" y="172">P<tspan baseline-shift="super" font-size="16">(2)</tspan></text>
-                  <text x="1313" y="204">⋮</text>
-                  <text x="1313" y="244">P<tspan baseline-shift="super" font-size="16">(K)</tspan></text>
-                </g>
-                <path d="M1360 111H1377V247H1360" fill="none" stroke="#7e9fc9" stroke-width="1.5"/>
-                <path class="candidate-svg-arrow" d="M1377 179H1405V272H1107V295"/>
-
-                <text class="candidate-svg-small" x="1" y="309" text-anchor="start">候选动作、预测 latent 与 P 分数一一对应</text>
-                <rect x="797" y="299" width="618" height="48" rx="4" fill="#eef3fa" stroke="#7e9fc9" stroke-width="1.5"/>
-                <text x="1106" y="332" font-size="24" font-weight="500" fill="#2458a6">取最大的 P → 执行对应候选动作 a<tspan baseline-shift="super" font-size="15">(k*)</tspan></text>
+              <g fill="#626b77" font-size="20">
+                <text x="0" y="64">完整轨迹与子任务清单</text>
+                <text x="501" y="64">标注子任务与起止时间</text>
+                <text x="1030" y="64">保留状态标签与帧区间</text>
               </g>
-            </svg>
-
-            <svg class="candidate-mobile" viewBox="0 0 380 1010" role="img" aria-labelledby="candidate-vertical-title candidate-vertical-desc">
-              <title id="candidate-vertical-title">恢复动作生成与选择的纵向流程图</title>
-              <desc id="candidate-vertical-desc">触发介入后，当前观测、指令与历史输入 VLA。第一步，VLA 提出基准动作，局部采样得到 K 个候选并保留原提议。第二步，各候选动作和融合视觉历史的当前 latent 输入 JEPA，得到 K 个未来 latent。第三步，各未来 latent 和当前 nowid、finishid、restid 输入我们的 VLM，输出一一对应的进度分数。取最大的 P，执行对应的候选动作作为恢复动作。</desc>
-              <defs><marker id="candidate-vertical-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.6"/></marker></defs>
-              <style>
-                .candidate-vertical-text { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; fill: #17263b; }
-                .candidate-vertical-title { font-size: 21px; font-weight: 600; fill: #2458a6; }
-                .candidate-vertical-small { font-size: 16px; fill: #626b77; }
-                .candidate-vertical-symbol { font-family: "Times New Roman", serif; font-style: italic; font-size: 26px; fill: #2458a6; }
-                .candidate-vertical-node { fill: #eef3fa; stroke: #7e9fc9; stroke-width: 1.3; }
-                .candidate-vertical-input { fill: #fffefa; stroke: #b9c5d3; stroke-width: 1.3; }
-                .candidate-vertical-link { stroke: #2458a6; stroke-width: 1.8; fill: none; marker-end: url(#candidate-vertical-arrow); }
-              </style>
-              <g class="candidate-vertical-text" text-anchor="middle">
-                <rect class="candidate-vertical-input" x="28" y="1" width="324" height="60" rx="5"/>
-                <text x="190" y="27" font-size="19" fill="#2458a6">已触发介入</text>
-                <text class="candidate-vertical-small" x="190" y="50">当前观测 · 任务指令 · 历史信息</text>
-                <path class="candidate-vertical-link" d="M190 62V91"/>
-
-                <rect class="candidate-vertical-node" x="28" y="96" width="324" height="114" rx="5"/>
-                <text class="candidate-vertical-title" x="190" y="127">01 · VLA 局部采样</text>
-                <text x="96" y="170" font-size="24" font-weight="500">VLA</text>
-                <path class="candidate-vertical-link" d="M132 163H218"/>
-                <text class="candidate-vertical-symbol" x="175" y="153" font-size="20">a<tspan baseline-shift="super" font-size="12">(0)</tspan></text>
-                <text x="272" y="170" font-size="21">局部采样</text>
-                <text class="candidate-vertical-small" x="190" y="197">小幅扰动 · 保留原提议</text>
-                <path class="candidate-vertical-link" d="M190 211V240"/>
-
-                <rect class="candidate-vertical-input" x="28" y="246" width="324" height="76" rx="5"/>
-                <text class="candidate-vertical-small" x="190" y="273">K 个候选动作</text>
-                <g class="candidate-vertical-symbol">
-                  <text x="76" y="307">a<tspan baseline-shift="super" font-size="14">(1)</tspan></text>
-                  <text x="151" y="307">a<tspan baseline-shift="super" font-size="14">(2)</tspan></text>
-                  <text x="220" y="302">…</text>
-                  <text x="295" y="307">a<tspan baseline-shift="super" font-size="14">(K)</tspan></text>
-                </g>
-                <path class="candidate-vertical-link" d="M190 323V347H275V370"/>
-
-                <rect class="candidate-vertical-input" x="1" y="379" width="140" height="81" rx="5"/>
-                <text x="71" y="405" font-size="17">当前 latent</text>
-                <text class="candidate-vertical-symbol" x="71" y="433">z<tspan baseline-shift="sub" font-size="15">t</tspan></text>
-                <text x="71" y="450" font-size="13" fill="#626b77">已融合视觉历史</text>
-                <path class="candidate-vertical-link" d="M142 419H165"/>
-                <rect class="candidate-vertical-node" x="170" y="375" width="209" height="88" rx="5"/>
-                <text class="candidate-vertical-title" x="275" y="410">02 · JEPA</text>
-                <text x="275" y="443" font-size="18">预测各动作的结果</text>
-                <path class="candidate-vertical-link" d="M275 464V489H190V508"/>
-
-                <rect class="candidate-vertical-input" x="28" y="513" width="324" height="76" rx="5"/>
-                <text class="candidate-vertical-small" x="190" y="540">K 个未来 latent</text>
-                <g class="candidate-vertical-symbol">
-                  <text x="76" y="574">ẑ<tspan baseline-shift="super" font-size="14">(1)</tspan></text>
-                  <text x="151" y="574">ẑ<tspan baseline-shift="super" font-size="14">(2)</tspan></text>
-                  <text x="220" y="569">…</text>
-                  <text x="295" y="574">ẑ<tspan baseline-shift="super" font-size="14">(K)</tspan></text>
-                </g>
-                <path class="candidate-vertical-link" d="M190 590V621H275V650"/>
-
-                <rect class="candidate-vertical-input" x="1" y="655" width="140" height="90" rx="5"/>
-                <text x="71" y="680" font-size="16">当前子任务状态</text>
-                <text x="71" y="706" font-size="14" fill="#626b77">nowid / finishid</text>
-                <text x="71" y="729" font-size="14" fill="#626b77">restid</text>
-                <path class="candidate-vertical-link" d="M142 700H165"/>
-                <rect x="170" y="655" width="209" height="90" rx="5" fill="#2458a6"/>
-                <text x="275" y="691" font-size="21" font-weight="600" fill="#fffefa">03 · 我们的 VLM</text>
-                <text x="275" y="724" font-size="18" fill="#fffefa">预测任务进度</text>
-                <path class="candidate-vertical-link" d="M275 746V771H190V792"/>
-
-                <rect class="candidate-vertical-input" x="28" y="797" width="324" height="80" rx="5"/>
-                <text class="candidate-vertical-small" x="190" y="824">与候选一一对应的进度分数</text>
-                <g class="candidate-vertical-symbol">
-                  <text x="76" y="859">P<tspan baseline-shift="super" font-size="14">(1)</tspan></text>
-                  <text x="151" y="859">P<tspan baseline-shift="super" font-size="14">(2)</tspan></text>
-                  <text x="220" y="854">…</text>
-                  <text x="295" y="859">P<tspan baseline-shift="super" font-size="14">(K)</tspan></text>
-                </g>
-                <path class="candidate-vertical-link" d="M190 878V904"/>
-
-                <rect class="candidate-vertical-node" x="28" y="909" width="324" height="91" rx="5"/>
-                <text x="190" y="946" font-size="23" font-weight="600" fill="#2458a6">选取最大的 P</text>
-                <text x="190" y="980" font-size="20">执行对应候选动作 a<tspan baseline-shift="super" font-size="13">(k*)</tspan></text>
-              </g>
-            </svg>
-          </figure>
-
-          <div class="candidate-equations">
-            <section class="candidate-equation" aria-labelledby="candidate-sampling-title">
-              <h2 id="candidate-sampling-title">局部采样</h2>
-              <math display="block" aria-label="候选动作等于 VLA 基准动作加采样扰动，扰动范数不超过采样半径 rho"><mrow><msup><mi>a</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>=</mo><msup><mi>a</mi><mrow><mo>(</mo><mn>0</mn><mo>)</mo></mrow></msup><mo>+</mo><msup><mi>ε</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>,</mo><mspace width="0.5em"/><mo>‖</mo><msup><mi>ε</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>‖</mo><mo>≤</mo><mi>ρ</mi></mrow></math>
-            </section>
-            <section class="candidate-equation" aria-labelledby="candidate-select-title">
-              <h2 id="candidate-select-title">动作选择</h2>
-              <math display="block" aria-label="选择进度分数最大的候选索引 k 星，并执行该索引对应的恢复动作"><mrow><msup><mi>k</mi><mo>*</mo></msup><mo>=</mo><munder><mo movablelimits="false">arg max</mo><mi>k</mi></munder><msup><mi>P</mi><mrow><mo>(</mo><mi>k</mi><mo>)</mo></mrow></msup><mo>,</mo><mspace width="0.5em"/><msub><mi>a</mi><mtext>rec</mtext></msub><mo>=</mo><msup><mi>a</mi><mrow><mo>(</mo><msup><mi>k</mi><mo>*</mo></msup><mo>)</mo></mrow></msup></mrow></math>
-            </section>
-          </div>
-          <p class="candidate-sampling-note">在连续动作维度内采样；ρ 为采样半径，P<sup>(k)</sup> 为第 k 个候选对应的预测进度。</p>
-        </div>
-
-        <section class="goal candidate-conclusion" aria-label="局部采样的待验证假设">
-          <span class="goal-label">待验证假设</span><p>有效恢复动作位于 VLA 提议动作附近，局部采样能够覆盖这些动作。</p>
-        </section>
-        <footer class="footer">
-          <span class="page-number" aria-label="第 16 页">16</span>
-        </footer>
-      </article>
-      <article class="slide" id="slide-17" data-title="全局架构：从自主执行到自动恢复" aria-labelledby="architecture-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">方案总览 · 在线执行闭环</span><span>EVO-Inter</span></div>
-          <h1 id="architecture-title">从自主执行到自动恢复</h1>
-          <p class="architecture-intro">独立 VLA 提供动作；我们的 VLM 判断状态与进度，触发介入后结合 JEPA 选出<strong>预测进度最大的恢复动作</strong>。</p>
-        </header>
-        <figure class="architecture-flow">
-          <svg class="architecture-desktop" viewBox="0 0 1416 535" role="img" aria-labelledby="architecture-desktop-title architecture-desktop-desc">
-            <title id="architecture-desktop-title">独立 VLA、VLM 与 JEPA 构成自动介入闭环</title>
-            <desc id="architecture-desktop-desc">当前三视角观测与任务指令输入独立 VLA，生成基准动作。视觉历史与当前观测经编码和时序融合形成当前 latent z_t，与子任务状态输入VLM，得到状态与进度。根据 restid 和进度历史，在持续停滞或多次重试且无持续改善时触发介入；未触发时直接执行 VLA 动作。触发后围绕 VLA 提议局部采样并保留原动作，各候选与当前 z_t 输入JEPA，得到未来 latent。未来 latent 与子任务状态输入同一个 VLM，得到各候选进度 P，执行 P 最大的候选动作。执行后更新观测并再次判断。输出包含任务进度预测 p̂，以及示例状态：当前阶段拿起螺栓，已完成拿起螺丝，未完成插入螺丝与放置装配件。</desc>
-            <defs>
-              <marker id="architecture-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker>
-              <marker id="architecture-control" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#ad622c" stroke-width="1.5"/></marker>
-              <marker id="architecture-feedback" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#8493a4" stroke-width="1.5"/></marker>
-              <style>
-                .ga-text { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #17263b; }
-                .ga-title { font-size: 25px; font-weight: 600; }
-                .ga-small { font-size: 18px; fill: #626b77; }
-                .ga-link { fill: none; stroke: #2458a6; stroke-width: 2; marker-end: url(#architecture-arrow); }
-                .ga-control { fill: none; stroke: #ad622c; stroke-width: 2; stroke-dasharray: 6 4; marker-end: url(#architecture-control); }
-                .ga-node { fill: #fffefa; stroke: #aebed1; stroke-width: 1.5; }
-                .ga-symbol { font-family: 'Times New Roman', serif; font-size: 25px; font-style: italic; }
-              </style>
-            </defs>
-            <rect x="236" y="350" width="991" height="136" rx="7" fill="#eef3fa"/>
-            <g class="ga-text">
-              <!-- Solid paths carry observations/actions; dashed brown paths control the action route. -->
-              <path class="ga-link" d="M195 232H245"/>
-              <path class="ga-link" d="M218 232V68H245"/>
-              <circle cx="218" cy="232" r="3.5" fill="#2458a6"/>
-              <path class="ga-link" d="M455 68H1095"/>
-              <path class="ga-link" d="M480 68V325H222V431H245"/>
-              <circle cx="480" cy="68" r="3.5" fill="#2458a6"/>
-              <path class="ga-link" d="M455 232H472C472 218 488 218 488 232H510"/>
-              <path class="ga-link" d="M617 171V182"/>
-              <path class="ga-link" d="M720 232H755"/>
-              <path class="ga-control" d="M1105 218H1150V101"/>
-              <path class="ga-control" d="M930 310V350"/>
-              <path class="ga-link" d="M1200 68H1330V192"/>
-              <path class="ga-link" d="M455 431H510"/>
-              <path class="ga-link" d="M720 431H775"/>
-              <path class="ga-link" d="M985 431H1030"/>
-              <path class="ga-link" d="M1215 431H1330V307"/>
-              <path d="M1405 248H1413V525H97V284" fill="none" stroke="#8493a4" stroke-width="1.7" stroke-dasharray="5 5" marker-end="url(#architecture-feedback)"/>
-
-              <rect class="ga-node" x="1" y="185" width="194" height="95" rx="5"/>
-              <text class="ga-title" x="98" y="224" text-anchor="middle">当前观测</text>
-              <text x="98" y="256" text-anchor="middle" font-size="16" fill="#626b77">三视角图像 · 任务指令</text>
-              <rect x="250" y="28" width="205" height="80" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.5"/>
-              <text class="ga-title" x="352" y="62" text-anchor="middle">独立 VLA</text>
-              <text class="ga-small" x="352" y="89" text-anchor="middle">生成基准动作</text>
-              <text x="655" y="54" font-size="20" fill="#2458a6">VLA 提议动作 a<tspan baseline-shift="super" font-size="13">(0)</tspan></text>
-              <text class="ga-symbol" x="489" y="132" fill="#2458a6">a<tspan baseline-shift="super" font-size="15">(0)</tspan></text>
-              <rect class="ga-node" x="250" y="185" width="205" height="95" rx="5"/>
-              <text x="352" y="221" text-anchor="middle" font-size="20" font-weight="600">视觉编码 · 时序融合</text>
-              <text class="ga-small" x="352" y="255" text-anchor="middle">历史 + 当前 → z<tspan baseline-shift="sub" font-size="13">t</tspan></text>
-              <text class="ga-small" x="617" y="160" text-anchor="middle">子任务状态</text>
-              <rect x="515" y="185" width="205" height="95" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(690 186)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="ga-title" x="617" y="224" text-anchor="middle" fill="#fffefa">VLM</text>
-              <text x="617" y="255" text-anchor="middle" font-size="19" fill="#fffefa">预测状态与进度</text>
-
-              <rect x="760" y="152" width="345" height="158" rx="5" fill="#faf4ec" stroke="#d0a57f" stroke-width="1.5"/>
-              <text x="782" y="184" font-size="21">当前阶段：拿起螺栓</text>
-              <text x="782" y="217" font-size="21">已完成：拿起螺丝</text>
-              <text x="782" y="250" font-size="21">未完成：插入螺丝、放置装配件</text>
-              <text x="782" y="283" font-size="21">任务进度预测：<tspan font-family="Times New Roman, serif" font-style="italic" font-size="25">p̂</tspan></text>
-              <rect x="1100" y="38" width="100" height="60" rx="4" fill="#fffefa" stroke="#aebed1" stroke-width="1.5"/>
-              <text x="1150" y="76" text-anchor="middle" font-size="22" font-weight="500">直接执行</text>
-              <text x="1159" y="143" font-size="18" fill="#ad622c">未触发</text>
-              <text x="944" y="335" font-size="18" fill="#ad622c">触发介入</text>
-
-              <text x="250" y="375" font-size="18" fill="#2458a6">候选动作评估 · 保留 VLA 原提议</text>
-              <text x="882" y="375" text-anchor="middle" font-size="17" fill="#2458a6">与上方 VLM 共享参数</text>
-              <rect class="ga-node" x="250" y="390" width="205" height="85" rx="5"/>
-              <text class="ga-title" x="352" y="424" text-anchor="middle">局部采样</text>
-              <text class="ga-small" x="352" y="454" text-anchor="middle">生成 K 个候选动作</text>
-              <text class="ga-symbol" x="482" y="416" text-anchor="middle">a<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <rect x="515" y="390" width="205" height="85" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(690 391)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="ga-title" x="617" y="424" text-anchor="middle" fill="#fffefa">JEPA</text>
-              <text class="ga-symbol" x="617" y="458" text-anchor="middle" fill="#fffefa">z<tspan baseline-shift="sub" font-size="15">t</tspan> + a<tspan baseline-shift="super" font-size="14">(k)</tspan> → ẑ<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <text class="ga-symbol" x="747" y="416" text-anchor="middle">ẑ<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <rect x="780" y="390" width="205" height="85" rx="5" fill="#2458a6"/>
-              <text class="ga-title" x="882" y="424" text-anchor="middle" fill="#fffefa">VLM</text>
-              <text x="882" y="454" text-anchor="middle" font-size="18" fill="#fffefa">预测状态与进度</text>
-              <text class="ga-symbol" x="1010" y="416" text-anchor="middle">P<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              <rect class="ga-node" x="1035" y="390" width="180" height="85" rx="5"/>
-              <g transform="translate(1047 417)" fill="#2458a6" font-family="Times New Roman, serif" font-size="23" aria-label="k 星等于使预测进度 P 最大的候选索引">
-                <text x="0" y="0" font-style="italic" text-anchor="start">k<tspan baseline-shift="super" font-size="14">*</tspan></text>
-                <text x="27" y="0" text-anchor="start">=</text>
-                <text x="46" y="0" font-size="22" text-anchor="start">arg max</text>
-                <text x="80" y="14" font-size="14" font-style="italic" text-anchor="middle">k</text>
-                <text x="123" y="0" font-style="italic" text-anchor="start">P<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              </g>
-              <text class="ga-symbol" x="1125" y="458" text-anchor="middle">a<tspan baseline-shift="sub" font-size="15">rec</tspan> = a<tspan baseline-shift="super" font-size="14">(k*)</tspan></text>
-              <text class="ga-small" x="1294" y="371" text-anchor="middle">恢复动作</text>
-
-              <rect x="1245" y="197" width="160" height="105" rx="5" fill="#17263b"/>
-              <text class="ga-title" x="1325" y="242" text-anchor="middle" fill="#fffefa">机器人执行</text>
-              <text x="1325" y="274" text-anchor="middle" font-size="18" fill="#fffefa">更新环境状态</text>
-              <text x="590" y="516" font-size="18" fill="#626b77">执行后更新观测，再次判断是否介入</text>
             </g>
+            <g stroke="#2458a6" stroke-width="2" fill="none" marker-end="url(#annotation-arrow)"><path d="M335 34H455"/><path d="M863 34H984"/></g>
           </svg>
-          <svg class="architecture-mobile" viewBox="0 0 420 1350" role="img" aria-labelledby="architecture-mobile-title architecture-mobile-desc">
-            <title id="architecture-mobile-title">全局架构的竖向流程图</title>
-            <desc id="architecture-mobile-desc">独立 VLA 生成基准动作，融合视觉历史的 VLM 预测状态与进度。介入判定保留自主恢复窗口，持续停滞或重试超限才进入局部采样、JEPA 预测、同一 VLM 评分和最大进度候选选择；否则直接执行 VLA 动作。两条路径汇入机器人执行，更新观测，形成闭环。输出包含任务进度预测 p̂，以及示例状态：当前阶段拿起螺栓，已完成拿起螺丝，未完成插入螺丝与放置装配件。</desc>
-            <defs>
-              <marker id="architecture-mobile-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#2458a6" stroke-width="1.5"/></marker>
-              <marker id="architecture-mobile-control" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#ad622c" stroke-width="1.5"/></marker>
-              <marker id="architecture-mobile-feedback" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L8 5L1 9" fill="none" stroke="#8493a4" stroke-width="1.5"/></marker>
-              <style>
-                .gam-text { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; fill: #17263b; text-anchor: middle; }
-                .gam-title { font-size: 22px; font-weight: 600; }
-                .gam-small { font-size: 16px; fill: #626b77; }
-                .gam-link { fill: none; stroke: #2458a6; stroke-width: 2; marker-end: url(#architecture-mobile-arrow); }
-                .gam-control { fill: none; stroke: #ad622c; stroke-width: 2; stroke-dasharray: 5 4; marker-end: url(#architecture-mobile-control); }
-                .gam-node { fill: #fffefa; stroke: #aebed1; stroke-width: 1.3; }
-              </style>
-            </defs>
-            <g class="gam-text">
-              <path class="gam-link" d="M210 80V102H105V121"/>
-              <path class="gam-link" d="M210 102H315V121"/>
-              <path class="gam-link" d="M315 206V252"/>
-              <path class="gam-link" d="M315 352V395"/>
-              <path class="gam-link" d="M105 206V466"/>
-              <path class="gam-link" d="M105 350H123V615H155V630"/>
-              <circle cx="105" cy="350" r="3.2" fill="#2458a6"/>
-              <path class="gam-control" d="M135 497H131C131 486 115 486 115 497H112"/>
-              <path class="gam-control" d="M265 592V630"/>
-              <path class="gam-link" d="M25 510H8V1265H81"/>
-              <path class="gam-link" d="M210 720V755H279V790"/>
-              <path class="gam-link" d="M117 839H153"/>
-              <path class="gam-link" d="M279 884V946"/>
-              <path class="gam-link" d="M117 996H153"/>
-              <path class="gam-link" d="M279 1038V1070H210V1110"/>
-              <path class="gam-link" d="M210 1198V1222"/>
-              <path d="M335 1265H411V45H399" fill="none" stroke="#8493a4" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#architecture-mobile-feedback)"/>
-
-              <rect class="gam-node" x="25" y="10" width="370" height="70" rx="5"/>
-              <text class="gam-title" x="210" y="39">当前观测 + 任务指令</text>
-              <text class="gam-small" x="210" y="65">三视角图像</text>
-              <rect x="25" y="126" width="160" height="80" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.3"/>
-              <text class="gam-title" x="105" y="159">独立 VLA</text>
-              <text class="gam-small" x="105" y="187">生成基准动作</text>
-              <rect class="gam-node" x="235" y="126" width="160" height="80" rx="5"/>
-              <text x="315" y="159" font-size="21" font-weight="600">编码 · 时序融合</text>
-              <text class="gam-small" x="315" y="187">历史 + 当前 → z<tspan baseline-shift="sub" font-size="12">t</tspan></text>
-              <rect x="235" y="256" width="160" height="96" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(366 257)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="gam-title" x="315" y="290" fill="#fffefa">VLM</text>
-              <text x="315" y="316" font-size="16" fill="#fffefa">输入 z<tspan baseline-shift="sub" font-size="11">t</tspan> + 子任务状态</text>
-              <text x="315" y="340" font-size="16" fill="#fffefa">预测状态与进度</text>
-              <text x="105" y="244" font-size="18" fill="#2458a6">基准动作 a<tspan baseline-shift="super" font-size="12">(0)</tspan></text>
-
-              <rect x="135" y="400" width="260" height="192" rx="5" fill="#faf4ec" stroke="#d0a57f" stroke-width="1.3"/>
-              <text x="146" y="438" text-anchor="start" font-size="17">当前阶段：拿起螺栓</text>
-              <text x="146" y="476" text-anchor="start" font-size="17">已完成：拿起螺丝</text>
-              <text x="146" y="514" text-anchor="start" font-size="17">未完成：插入螺丝、放置装配件</text>
-              <text x="146" y="552" text-anchor="start" font-size="17">任务进度预测：<tspan font-family="Times New Roman, serif" font-style="italic" font-size="21">p̂</tspan></text>
-              <rect class="gam-node" x="25" y="470" width="85" height="76" rx="5"/>
-              <text x="67" y="501" font-size="17">未触发</text>
-              <text x="67" y="526" font-size="17">直接执行</text>
-              <text x="308" y="622" font-size="17" fill="#ad622c">触发介入</text>
-
-              <rect x="75" y="635" width="250" height="85" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.3"/>
-              <text class="gam-title" x="200" y="667">局部采样</text>
-              <text x="200" y="692" font-size="17">围绕 VLA 动作生成 K 个候选</text>
-              <text class="gam-small" x="200" y="713">保留原提议</text>
-              <text x="312" y="760" font-size="19" fill="#2458a6">a<tspan baseline-shift="super" font-size="12">(k)</tspan></text>
-              <rect class="gam-node" x="25" y="798" width="92" height="80" rx="5"/>
-              <text x="71" y="827" font-size="17">当前 z<tspan baseline-shift="sub" font-size="12">t</tspan></text>
-              <text x="71" y="853" font-size="14" fill="#626b77">已融合历史</text>
-              <rect x="158" y="795" width="237" height="89" rx="5" fill="#2458a6"/>
-              <g class="architecture-training-badge" transform="translate(366 796)" role="img" aria-label="参与训练">
-                <title>参与训练</title>
-                <circle cx="14" cy="14" r="15" fill="#fff3db" stroke="#fffefa" stroke-width="1.5"/>
-                <g transform="translate(2 0)">
-                  <path d="M14 1C15 8 22 10 22 17C22 23 17.5 27 12 27C6.5 27 2 23 2 17C2 13 4 9 8 6C7.8 11 10 13 11 13C15 10 10 7 14 1Z" fill="#ed7927"/>
-                  <path d="M12 14C12.8 18 16 19 16 22C16 24.4 14.2 26 12 26C9.5 26 8 24.3 8 22C8 19 10.6 17.8 12 14Z" fill="#ffd36a"/>
-                </g>
-              </g>
-              <text class="gam-title" x="277" y="831" fill="#fffefa">JEPA</text>
-              <text x="277" y="863" font-size="18" fill="#fffefa">预测各动作的未来 latent</text>
-              <text x="329" y="922" font-size="21" fill="#2458a6">ẑ<tspan baseline-shift="super" font-size="13">(k)</tspan></text>
-
-              <rect class="gam-node" x="25" y="955" width="92" height="80" rx="5"/>
-              <text x="71" y="986" font-size="16">子任务</text>
-              <text x="71" y="1010" font-size="16">状态</text>
-              <rect x="158" y="951" width="237" height="87" rx="5" fill="#2458a6"/>
-              <text class="gam-title" x="277" y="986" fill="#fffefa">VLM</text>
-              <text x="277" y="1017" font-size="17" fill="#fffefa">共享参数 · 预测状态与进度</text>
-              <text x="290" y="1098" font-size="18" fill="#2458a6">P<tspan baseline-shift="super" font-size="12">(1)</tspan> … P<tspan baseline-shift="super" font-size="12">(K)</tspan></text>
-              <rect x="75" y="1115" width="250" height="83" rx="5" fill="#eef3fa" stroke="#86a4d0" stroke-width="1.3"/>
-              <g transform="translate(122 1147)" fill="#2458a6" font-family="Times New Roman, serif" font-size="23" aria-label="k 星等于使预测进度 P 最大的候选索引">
-                <text x="0" y="0" font-style="italic" text-anchor="start">k<tspan baseline-shift="super" font-size="14">*</tspan></text>
-                <text x="27" y="0" text-anchor="start">=</text>
-                <text x="46" y="0" font-size="22" text-anchor="start">arg max</text>
-                <text x="80" y="14" font-size="14" font-style="italic" text-anchor="middle">k</text>
-                <text x="123" y="0" font-style="italic" text-anchor="start">P<tspan baseline-shift="super" font-size="14">(k)</tspan></text>
-              </g>
-              <text x="200" y="1183" font-family="Times New Roman, serif" font-size="24" font-style="italic">a<tspan baseline-shift="sub" font-size="14">rec</tspan> = a<tspan baseline-shift="super" font-size="14">(k*)</tspan></text>
-              <rect x="85" y="1227" width="250" height="78" rx="5" fill="#17263b"/>
-              <text class="gam-title" x="210" y="1261" fill="#fffefa">机器人执行</text>
-              <text x="210" y="1289" font-size="17" fill="#fffefa">更新环境状态</text>
-              <text x="210" y="1339" font-size="16" fill="#626b77">执行后更新观测，再次判断是否介入 ↗</text>
-            </g>
-          </svg>
+          <ol class="annotation-pipeline-mobile">
+            <li><strong>原始视频 · 30 FPS</strong><span>完整轨迹与子任务清单</span></li>
+            <li><strong>Astra 标注 · 5 FPS</strong><span>标注子任务与起止时间</span></li>
+            <li><strong>对齐原视频帧</strong><span>保留状态标签与帧区间</span></li>
+          </ol>
         </figure>
+
+        <figure class="annotation-example" aria-labelledby="annotation-example-title">
+          <h2 id="annotation-example-title">螺钉装配 · 分段标签示例</h2>
+          <table class="annotation-table" aria-label="四个子任务的状态字段与时间边界" aria-describedby="annotation-table-note">
+            <colgroup><col class="annotation-name-column"><col class="annotation-now-column"><col class="annotation-finish-column"><col class="annotation-rest-column"><col class="annotation-time-column"><col class="annotation-frame-column"></colgroup>
+            <thead><tr><th scope="col">子任务</th><th scope="col">nowid</th><th scope="col" class="annotation-derived">finishid*</th><th scope="col">restid</th><th scope="col">5 FPS 时间 / s</th><th scope="col">30 FPS 原帧</th></tr></thead>
+            <tbody>
+              <tr><td data-label="子任务">拿起螺钉</td><td data-label="nowid" class="annotation-id">2</td><td data-label="finishid*" class="annotation-derived">∅</td><td data-label="restid">1,3,4</td><td data-label="5 FPS 时间 / s">25.2–30.0</td><td data-label="30 FPS 原帧">756–905</td></tr>
+              <tr><td data-label="子任务">拿起套筒</td><td data-label="nowid" class="annotation-id">1</td><td data-label="finishid*" class="annotation-derived">2</td><td data-label="restid">3,4</td><td data-label="5 FPS 时间 / s">30.2–32.4</td><td data-label="30 FPS 原帧">906–977</td></tr>
+              <tr><td data-label="子任务">将螺钉和套筒对齐并插入</td><td data-label="nowid" class="annotation-id">3</td><td data-label="finishid*" class="annotation-derived">1,2</td><td data-label="restid">4</td><td data-label="5 FPS 时间 / s">32.6–37.2</td><td data-label="30 FPS 原帧">978–1121</td></tr>
+              <tr><td data-label="子任务">将装配好的组件放入盒子</td><td data-label="nowid" class="annotation-id">4</td><td data-label="finishid*" class="annotation-derived">1,2,3</td><td data-label="restid">∅</td><td data-label="5 FPS 时间 / s">37.4–39.4</td><td data-label="30 FPS 原帧">1122–1187</td></tr>
+            </tbody>
+          </table>
+          <figcaption id="annotation-table-note"><span>* finishid 由全部步骤扣除 nowid 与 restid 后补全；∅ 表示空集合。</span><span>时间为采样点时间，原帧区间含首尾。</span></figcaption>
+        </figure>
+
+        <section class="goal annotation-conclusion" aria-label="分段标签的用途">
+          <span class="goal-label">标签用途</span><p>为逐帧状态监督与连续进度计算提供子任务边界。</p>
+        </section>
         <footer class="footer">
-          <span class="page-number" aria-label="第 17 页">17</span>
+          <span class="page-number" aria-label="第 4 页">04</span>
         </footer>
       </article>
+      <article class="slide vlm-training-slide" id="slide-5" data-title="图像事实与任务要求的联合监督" aria-labelledby="state-prediction-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">基本方案 · VLM 训练输入与监督</span><span>EVO-Inter</span></div>
+          <h1 id="state-prediction-title">图像事实与任务要求的联合监督</h1>
+          <p class="state-intro">意图与记忆<strong>对齐图像</strong>，进度与预期阶段<strong>对齐任务 prompt</strong>。</p>
+        </header>
+        <div class="vlm-supervision-flow" aria-label="图像、可选记忆和任务指令输入 VLM，输出按图像与任务分别监督">
+          <section class="vlm-shared-input" aria-label="训练输入">
+            <h2>图像 + 记忆 + prompt</h2>
+            <p>三视角：当前图像与短期历史</p>
+            <p>长期记忆可选：有／无／少量错误</p>
+          </section>
+          <span class="vlm-connector" aria-hidden="true">→</span>
+          <div class="vlm-core">VLM</div>
+          <span class="vlm-connector" aria-hidden="true">→</span>
+          <div class="vlm-supervision-targets">
+            <section aria-label="四类样本的意图和长期记忆均与图像一致">
+              <p class="vlm-target-basis">依据图像监督</p>
+              <h2>意图与长期记忆</h2>
+              <p class="vlm-target-detail">四类样本均保留这两项监督</p>
+            </section>
+            <section class="vlm-task-target" aria-label="进度和预期阶段以任务指令为参照，监督方式随样本调整">
+              <p class="vlm-target-basis">依据任务 prompt 监督</p>
+              <h2>进度与预期阶段</h2>
+              <p class="vlm-target-detail">pₜ 与 expect-set，按下表调整</p>
+            </section>
+          </div>
+        </div>
+        <figure class="vlm-samples" aria-label="四类训练样本的输入变化、监督与目的">
+          <table class="vlm-sample-table" aria-describedby="vlm-sample-note">
+            <colgroup><col><col><col><col><col></colgroup>
+            <thead><tr><th scope="col">训练样本</th><th scope="col">任务 prompt</th><th scope="col">进度 pₜ 监督</th><th scope="col">预期阶段 expect-set</th><th scope="col">训练目的</th></tr></thead>
+            <tbody>
+              <tr>
+                <th scope="row"><span class="vlm-sample-number">01</span>正常匹配</th>
+                <td data-label="任务 prompt"><div>与图像匹配</div></td>
+                <td data-label="进度 pₜ"><div>当前任务的有效进度</div></td>
+                <td data-label="expect-set"><div>按任务要求监督</div></td>
+                <td data-label="训练目的" class="vlm-purpose"><div>依据短期观测<br>预测任务进度</div></td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="vlm-sample-number">02</span>指令错配</th>
+                <td data-label="任务 prompt"><div><strong>与图像错配</strong></div></td>
+                <td data-label="进度 pₜ"><div><strong>保留共享前置进度</strong><small>没有共享前置则为 0</small></div></td>
+                <td data-label="expect-set"><div>仍按任务要求监督</div></td>
+                <td data-label="训练目的" class="vlm-purpose"><div>识别实际阶段<br>区分行为与任务要求</div></td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="vlm-sample-number">03</span>时序异常</th>
+                <td data-label="任务 prompt"><div>与图像匹配</div></td>
+                <td data-label="进度 pₜ"><div>计算有效进度<small>仅在时序正常时增加</small></div></td>
+                <td data-label="expect-set"><div>与实际阶段 nowid<br><strong>不一致</strong></div></td>
+                <td data-label="训练目的" class="vlm-purpose"><div>学习阶段的前置依赖</div></td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="vlm-sample-number">04</span>无任务指令</th>
+                <td data-label="任务 prompt"><div><strong>不提供</strong></div></td>
+                <td data-label="进度 pₜ"><div><strong>不监督</strong></div></td>
+                <td data-label="expect-set"><div>无监督目标</div></td>
+                <td data-label="训练目的" class="vlm-purpose"><div>防止意图照抄 prompt</div></td>
+              </tr>
+            </tbody>
+          </table>
+          <figcaption id="vlm-sample-note">expect-set：任务要求的预期阶段集合。nowid：实际执行阶段。意图 intention 始终依据图像监督。</figcaption>
+        </figure>
+        <footer class="footer"><span class="page-number" aria-label="第 5 页">05</span></footer>
+      </article>
+      <article class="slide vlm-example-slide" id="slide-6" data-title="正常匹配的输入输出示例" aria-labelledby="vlm-example-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">训练样例 · 正常匹配</span><span>EVO-Inter</span></div>
+          <h1 id="vlm-example-title">螺钉装配的输入与输出</h1>
+        </header>
+        <div class="vlm-example-stages" aria-label="本例的四个任务阶段">
+          <span>拿起套筒</span><span>拿起螺钉</span><strong>将螺钉和套筒对齐并插入</strong><span>将装配好的组件放入盒子</span>
+        </div>
+        <div class="vlm-example-layout">
+          <section class="vlm-example-column" aria-labelledby="vlm-example-input-title">
+            <h2 id="vlm-example-input-title">输入 VLM</h2>
+            <section class="vlm-example-item vlm-example-prompt">
+              <h3>任务 prompt</h3>
+              <p>将螺丝插入螺栓中</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>三视角图像（内容示意）</h3>
+              <p>短期历史：先后拿起套筒和螺钉。<br>当前观测：夹爪持有两者，正对齐并插入。</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>长期记忆（上一状态）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>拿起螺钉</dd></div>
+                <div><dt>已完成</dt><dd>拿起套筒</dd></div>
+                <div><dt>待执行</dt><dd>对齐并插入、组件入盒</dd></div>
+              </dl>
+            </section>
+          </section>
+          <section class="vlm-example-column" aria-labelledby="vlm-example-output-title">
+            <h2 id="vlm-example-output-title">输出 / 监督目标</h2>
+            <section class="vlm-example-item">
+              <h3>实际意图 intention</h3>
+              <p>将螺丝插入螺栓中</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>更新后的长期记忆（依据图像）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>将螺钉和套筒对齐并插入</dd></div>
+                <div><dt>已完成</dt><dd>拿起套筒、拿起螺钉</dd></div>
+                <div><dt>待执行</dt><dd>将装配好的组件放入盒子</dd></div>
+              </dl>
+            </section>
+            <div class="vlm-example-task" aria-label="依据任务 prompt 的进度和预期阶段监督">
+              <section>
+                <h3>有效任务进度（示意）</h3>
+                <p class="vlm-example-value">pₜ = 0.60</p>
+              </section>
+              <section>
+                <h3>预期阶段 expect-set</h3>
+                <p class="vlm-example-stage-value">将螺钉和套筒对齐并插入</p>
+              </section>
+            </div>
+          </section>
+        </div>
+        <footer class="footer"><span class="page-number" aria-label="第 6 页">06</span></footer>
+      </article>
+      <article class="slide vlm-example-slide" id="slide-7" data-title="指令错配的输入输出示例" aria-labelledby="vlm-example-7-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">训练样例 · 指令错配</span><span>EVO-Inter</span></div>
+          <h1 id="vlm-example-7-title">指令错配的输入与输出</h1>
+        </header>
+        <div class="vlm-example-stages" aria-label="指令任务、观测任务与共享前置阶段">
+          <span>指令任务：拿起水杯</span><span>观测任务：螺钉装配</span><strong>无共享前置阶段</strong>
+        </div>
+        <div class="vlm-example-layout">
+          <section class="vlm-example-column" aria-labelledby="vlm-example-7-input-title">
+            <h2 id="vlm-example-7-input-title">输入 VLM</h2>
+            <section class="vlm-example-item vlm-example-prompt">
+              <h3>任务 prompt</h3>
+              <p class="vlm-example-mismatch">拿起水杯</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>三视角图像（内容示意）</h3>
+              <p>短期历史：先后拿起套筒和螺钉。<br>当前观测：夹爪持有两者，正对齐并插入。</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>长期记忆（上一状态）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>拿起螺钉</dd></div>
+                <div><dt>已完成</dt><dd>拿起套筒</dd></div>
+                <div><dt>待执行</dt><dd>对齐并插入、组件入盒</dd></div>
+              </dl>
+            </section>
+          </section>
+          <section class="vlm-example-column" aria-labelledby="vlm-example-7-output-title">
+            <h2 id="vlm-example-7-output-title">输出 / 监督目标</h2>
+            <section class="vlm-example-item">
+              <h3>实际意图 intention</h3>
+              <p class="vlm-example-mismatch">将螺丝插入螺栓中</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>更新后的长期记忆（依据图像）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>将螺钉和套筒对齐并插入</dd></div>
+                <div><dt>已完成</dt><dd>拿起套筒、拿起螺钉</dd></div>
+                <div><dt>待执行</dt><dd>将装配好的组件放入盒子</dd></div>
+              </dl>
+            </section>
+            <div class="vlm-example-task" aria-label="依据任务 prompt 的进度和预期阶段监督">
+              <section>
+                <h3>有效任务进度</h3>
+                <p class="vlm-example-value">pₜ = 0</p>
+              </section>
+              <section>
+                <h3>预期阶段 expect-set</h3>
+                <p class="vlm-example-stage-value">拿起水杯</p>
+              </section>
+            </div>
+          </section>
+        </div>
+        <footer class="footer"><span class="page-number" aria-label="第 7 页">07</span></footer>
+      </article>
+      <article class="slide vlm-example-slide" id="slide-8" data-title="时序异常的输入输出示例" aria-labelledby="vlm-example-8-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">训练样例 · 时序异常</span><span>EVO-Inter</span></div>
+          <h1 id="vlm-example-8-title">时序异常的输入与输出</h1>
+        </header>
+        <div class="vlm-example-stages" aria-label="本例的四个任务阶段">
+          <span>拿起物品</span><span>打开盒盖</span><strong>将物品放入盒子</strong><span>合上盒盖</span>
+        </div>
+        <div class="vlm-example-layout">
+          <section class="vlm-example-column" aria-labelledby="vlm-example-8-input-title">
+            <h2 id="vlm-example-8-input-title">输入 VLM</h2>
+            <section class="vlm-example-item vlm-example-prompt">
+              <h3>任务 prompt</h3>
+              <p>将物品收进盒子并合上盒盖。</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>三视角图像（内容示意）</h3>
+              <p>短期历史：已拿起物品，盒盖始终关闭。<br>当前观测：盒盖未开，正尝试把物品放入盒子。</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>长期记忆（上一状态）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>拿起物品</dd></div>
+                <div><dt>已完成</dt><dd>无</dd></div>
+                <div><dt>待执行</dt><dd>打开盒盖、放入物品、合上盒盖</dd></div>
+              </dl>
+            </section>
+          </section>
+          <section class="vlm-example-column" aria-labelledby="vlm-example-8-output-title">
+            <h2 id="vlm-example-8-output-title">输出 / 监督目标</h2>
+            <section class="vlm-example-item">
+              <h3>实际意图 intention</h3>
+              <p>将物品收进盒子并合上盒盖</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>更新后的长期记忆（依据图像）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>尝试将物品放入盒子</dd></div>
+                <div><dt>已完成</dt><dd>拿起物品</dd></div>
+                <div><dt>待执行</dt><dd>打开盒盖、合上盒盖</dd></div>
+              </dl>
+            </section>
+            <div class="vlm-example-task" aria-label="依据任务 prompt 的进度和预期阶段监督">
+              <section>
+                <h3>有效进度（不变，示意）</h3>
+                <p class="vlm-example-value">pₜ = 0.25</p>
+              </section>
+              <section>
+                <h3>预期阶段 expect-set</h3>
+                <p class="vlm-example-stage-value">打开盒盖</p>
+              </section>
+            </div>
+          </section>
+        </div>
+        <footer class="footer"><span class="page-number" aria-label="第 8 页">08</span></footer>
+      </article>
+      <article class="slide vlm-example-slide" id="slide-9" data-title="无任务指令的输入输出示例" aria-labelledby="vlm-example-9-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">训练样例 · 无任务指令</span><span>EVO-Inter</span></div>
+          <h1 id="vlm-example-9-title">无任务指令的输入与输出：依据图片推理当前状态</h1>
+        </header>
+        <div class="vlm-example-stages" aria-label="本例的四个任务阶段">
+          <span>拿起套筒</span><span>拿起螺钉</span><strong>将螺钉和套筒对齐并插入</strong><span>将装配好的组件放入盒子</span>
+        </div>
+        <div class="vlm-example-layout">
+          <section class="vlm-example-column" aria-labelledby="vlm-example-9-input-title">
+            <h2 id="vlm-example-9-input-title">输入 VLM</h2>
+            <section class="vlm-example-item vlm-example-prompt">
+              <h3>任务 prompt</h3>
+              <p>不提供</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>三视角图像（内容示意）</h3>
+              <p>短期历史：先后拿起套筒和螺钉。<br>当前观测：夹爪持有两者，正对齐并插入。</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>长期记忆（上一状态）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>拿起螺钉</dd></div>
+                <div><dt>已完成</dt><dd>拿起套筒</dd></div>
+                <div><dt>待执行</dt><dd>对齐并插入、组件入盒</dd></div>
+              </dl>
+            </section>
+          </section>
+          <section class="vlm-example-column" aria-labelledby="vlm-example-9-output-title">
+            <h2 id="vlm-example-9-output-title">输出 / 监督目标</h2>
+            <section class="vlm-example-item">
+              <h3>实际意图 intention</h3>
+              <p>将螺丝插入螺栓中</p>
+            </section>
+            <section class="vlm-example-item">
+              <h3>更新后的长期记忆（依据图像）</h3>
+              <dl class="vlm-example-memory">
+                <div><dt>正在执行</dt><dd>将螺钉和套筒对齐并插入</dd></div>
+                <div><dt>已完成</dt><dd>拿起套筒、拿起螺钉</dd></div>
+                <div><dt>待执行</dt><dd>将装配好的组件放入盒子</dd></div>
+              </dl>
+            </section>
+            <div class="vlm-example-task" aria-label="未提供任务指令，进度和预期阶段不设监督目标">
+              <section>
+                <h3>任务进度监督</h3>
+                <p class="vlm-example-value">不监督</p>
+              </section>
+              <section>
+                <h3>预期阶段 expect-set</h3>
+                <p class="vlm-example-stage-value">无监督目标</p>
+              </section>
+            </div>
+          </section>
+        </div>
+        <footer class="footer"><span class="page-number" aria-label="第 9 页">09</span></footer>
+      </article>
+      <article class="slide" id="slide-10" data-title="三类需要介入的异常" aria-labelledby="modal-summary-title" hidden>
+        <header>
+          <div class="eyebrow"><span class="section-name">介入时机 · 核心异常模态</span><span>EVO-Inter</span></div>
+          <h1 id="modal-summary-title">三类需要介入的异常</h1>
+          <p class="trigger-intro">结合<strong>任务进度、阶段状态与实际意图</strong>，判断当前执行是否偏离任务要求。</p>
+        </header>
+        <div class="modal-grid modal-grid-three modal-summary">
+          <section class="modal-case" aria-labelledby="stagnation-summary-title">
+            <div class="modal-heading"><span>01</span><h2 id="stagnation-summary-title">停滞<small>stagnation</small></h2></div>
+            <p class="modal-definition">持续执行任务相关动作，<br>但长时间没有有效进展。</p>
+            <p class="modal-signal"><small>观察信号</small>pₜ 长时间<br>无有效增长</p>
+            <div class="modal-example"><h3>例子</h3><p>对齐前反复小范围抖动。</p></div>
+          </section>
+          <section class="modal-case" aria-labelledby="causal-summary-title">
+            <div class="modal-heading"><span>02</span><h2 id="causal-summary-title">时序错误<small>causal</small></h2></div>
+            <p class="modal-definition">正在执行的阶段，<br>其前置任务尚未完成。</p>
+            <p class="modal-signal"><small>观察信号</small>实际阶段 nowid<br>与 expect-set 不一致</p>
+            <div class="modal-example"><h3>例子</h3><p>未开箱就尝试放入物品。</p></div>
+          </section>
+          <section class="modal-case" aria-labelledby="intention-summary-title">
+            <div class="modal-heading"><span>03</span><h2 id="intention-summary-title">意图错误<small>intention</small></h2></div>
+            <p class="modal-definition">实际执行的目标，<br>偏离任务指令的要求。</p>
+            <p class="modal-signal"><small>观察信号</small>预测意图<br>与任务 prompt 不匹配</p>
+            <div class="modal-example"><h3>例子</h3><p>要求拿杯子，却在叠衣服。</p></div>
+          </section>
+        </div>
+        <section class="goal modal-conclusion"><span class="goal-label">判定依据</span><p>停滞结合历史判断，时序与意图结合任务要求判断。</p></section>
+        <footer class="footer"><span class="page-number" aria-label="第 10 页">10</span></footer>
+      </article>
+
     </div>
     <div class="toolbar" aria-label="演示控制">
       <button type="button" id="previous-slide" aria-label="上一页">上一页</button>
-      <span id="page-status" role="status" aria-live="polite">1 / 17</span>
+      <span id="page-status" role="status" aria-live="polite">1 / 10</span>
       <button type="button" id="next-slide" aria-label="下一页">下一页</button>
       <button type="button" id="fullscreen">全屏演示</button>
       <span id="display-status" role="status" aria-live="polite"></span>
@@ -1924,82 +1105,36 @@
     Also checked the user's local draft: paper_read/CVPRpaper_search/report/tmpabstract.md.
     Automatic intervention timing and action generation are proposed research directions,
     not completed capabilities or measured results of this project.
-    Slide 4: UniIntervene is the formal paper name corresponding to the user's
-    Unintervention.md notes. Equation 5 and the risk-head distinction follow §3.3:
-    https://arxiv.org/html/2606.12372v1#S3.SS3
-    The three value curves are constructed illustrations, not observed trajectories.
-    They illustrate trend patterns without claiming a guaranteed intervention outcome.
-    Slide 5 original media supplied by the user:
-    /Users/hongru/paper_project/InterventionPresentaion/ACC指标.mp4
-    /Users/hongru/paper_project/InterventionPresentaion/仅看进度条不能判定异常恢复.mp4
-    The original copies are retained unchanged in assets/videos. At the user's
-    request, acc-failure-190-200.mp4 keeps only the bottom 1920x1080 region
-    (x=0, y=1080) of the 1920x2160 ACC montage, including episode #000003's
-    robot views and curves, at original timestamps [190,200), a ten-second
-    excerpt from 3:10 to 3:20. The threshold
-    is not calibrated; do not describe its peaks as calibrated alarms.
-    progress-recovery-3-9.mp4 contains original timestamps [3,9), a six-second
-    excerpt. The clip shows progress falling and rising again; the original
-    completion at 10.4 seconds is outside this excerpt. The progress values
-    are displayed estimates, not new ground-truth measurements. Posters are
-    extracted at the start of the trimmed ACC video (190 s in the original)
-    and 3 s of the trimmed recovery
-    clip (6 s in the original), respectively. Full-size links use edited videos.
-    Slide 7: UniIntervene §3.4 selects a high-value future state paired with a
-    similar historical failure context. Retrieval provides a goal; the recovery
-    policy generates new corrective actions by conditioning on the current
-    observation, instruction and selected goal. It is trained with behavior
-    cloning on failure-to-goal segments, rather than replaying a retrieved action
-    sequence. Appendix F.1 describes mining fixed-span value-improvement
-    segments, with a minimum value rise and a sufficiently high starting value,
-    then sampling by progress bin with an episode cap. The slide shows the
-    user's requested explanation: select a segment with a substantial value
-    increase from training rollouts and store its start-to-goal state pair.
-    The curve in assets/diagrams/memory-value-segment.svg reuses the exact
-    near-vertical-drop path from slide 4; its rising suffix is highlighted as
-    a reference segment. It is schematic, not a measured training trajectory
-    or a claim that every memory entry must follow a drop. The start is used
-    as the retrieval key and the high-value endpoint as the recovery target.
-    Source for construction: https://arxiv.org/html/2606.12372v1 (Appendix F.1).
-    The coverage limitation follows the paper's discussion in §6:
-    https://arxiv.org/html/2606.12372v1#S6
-    Slide 11 uses six actual frames sampled at exactly 3, 4, 5, 6, 7 and 8
-    seconds (source frame indices 15, 20, 25, 30, 35 and 40) from:
-    /Users/hongru/paper_project/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation-recover_top/chunk-000/mainscope/5FPS/file-000.mp4
-    JPEG assets in assets/history preserve the complete 640x480 source images.
-    The two-row grid reads left to right, then top to bottom. This single-view
-    example illustrates temporal fusion; it does not stand for three different
-    camera views. The pre-existing state transition fields are an independent
-    illustration, not ground-truth labels for these six frames.
-    Slide 11 illustrates the user's proposed supervised VLM, not a completed
-    experiment or a component claimed by UniIntervene. Inputs at t are three-view
-    image embeddings that fuse historical visual information with current visual
-    features, plus the current nowid/finishid/restid. Temporal fusion is shown
-    schematically without prescribing an architecture or history window.
-    Temporal context is motivated by perceptual aliasing: after an object is
-    placed in a drawer and the drawer is closed, the visible scene can resemble
-    the initial state. History provides evidence of the completed placement,
-    helping prevent an erroneous progress reset. This is a motivating example,
-    not a measured result or a claim that the sampled frames show a drawer task.
-    Supervision is the
-    next sampled timestep's nowid/finishid/restid and progress, written p(t+1)
-    for temporal consistency. The example is a subtask boundary; adjacent samples
-    need not switch subtasks. Step names explain the IDs and are not extra model
-    outputs. Empty finishid is displayed as an empty-set symbol. The example
-    follows the user's screw (2) then socket (1) order and assumes no steps are
-    complete before step 2. No unannotated progress number is supplied.
-    Slide 10 uses the five subtask records supplied by the user. Names, nowid,
-    restid, sampled start/end times and original start/end frame indices are
-    preserved. The finishid column is derived, not an extra observed Astra
-    output: it is the complement of current and remaining IDs within {1,2,3,4,5}.
-    The example follows the actual 2,1,3,4,5 execution order. An empty string in
+    Slide 5 follows the user's revised training-supervision matrix:
+    assets/reference/vlm-training-supervision-reference.png
+    The source image was supplied as codex-clipboard-4c1ccaea-8741-48a4-ba27-cfa992914f5e.png.
+    All four sample types include short visual history. The three-camera
+    current/history observation setup follows the user's existing VLM design.
+    Input long-term memory is optional: present, absent, or containing a small
+    number of errors. In every type, intention and output long-term memory
+    are supervised against the observed images, not the desired task answer.
+    Progress p_t and expect-set are referenced to the task prompt. With a
+    mismatched prompt, progress retains only shared prerequisite progress,
+    or zero if there is none. With a temporal-order error, effective progress
+    must be calculated and only grows for valid ordering; expect-set differs
+    from the actually executed stage nowid. Without a task prompt, p_t has no
+    supervision and expect-set has no target; image-grounded targets remain.
+    The mismatch examples also supervise recognition of the actual stage.
+    These are training objectives, not measured model capabilities.
+    Slide 4 adapts the five original records to the current four-stage scheme:
+    alignment and insertion are merged into stage 3, spanning sampled times
+    32.6–37.2 s and inclusive original frames 978–1121. Box placement becomes
+    stage 4; all other time and frame boundaries are preserved. The finishid
+    column is derived, not an extra observed Astra output: it is the complement
+    of current and remaining IDs within {1,2,3,4}.
+    The example follows the actual 2,1,3,4 execution order. An empty string in
     the source is displayed as an empty-set symbol. Sample timestamps identify
     5 FPS samples, while original 30 FPS frame ranges include both endpoints;
     e.g. sampled time 30.0 s corresponds to a final six-frame group ending at
     frame 905, so its original end index must not be replaced by 30.0 * 30.
     This page describes the user's annotation approach and supplied example;
     it does not claim a newly executed Astra annotation run or progress labels.
-    Slide 12 sources:
+    Slide 3 sources:
     /Users/hongru/paper_read/CVPRpaper_search/report/ProcVLM.md, step 4.
     /Users/hongru/paper_project/Evo-Inter/scripts/video_to_delta.py
     /Users/hongru/paper_project/Evo-Inter/scripts/delta_to_progress.py
@@ -2017,12 +1152,12 @@
     predictions. All 1,074 saved rows are used without smoothing or resampling:
     /Users/hongru/paper_project/RW-RL-Dataset/outputs/four_stage_progress_20261001/file-001-episode-5-progress.txt
     Frame 3227 (21.566667 s): 0.812365639; frame 3228 (21.6 s): 0.243103086.
-    This four-stage example merges alignment and insertion, unlike the five-stage
-    segmentation example on slide 10. Stage spans are read from the saved per-frame
+    This four-stage example merges alignment and insertion, matching the four-stage
+    segmentation example on slide 4. Stage spans are read from the saved per-frame
     descriptions. The complete original overview is preserved unchanged at
     assets/progress/sampled-progress.png, copied from the user's supplied path:
     /Users/hongru/paper_project/RW-RL-Dataset/outputs/four_stage_progress_20261001/sampled_progress.png
-    Slide 12 additionally compares those unchanged labels with an analytical
+    Slide 3 additionally compares those unchanged labels with an analytical
     linear-time baseline p_time(t) = (t - t_start) / (t_end - t_start), using
     the same 1,074 timestamps and episode duration of 35.766667 seconds.
     The lower curve is a constructed labeling baseline, not a measured model
@@ -2031,80 +1166,41 @@
     allocation alone is also nonnegative; the reintroduced-step deduction
     is what makes the upper labeling method explicitly support rollback.
     Reproduction: presentation/assets/progress/render_time_comparison.py.
-    Slide 13 illustrates the user's proposed online intervention rules; the curves
-    and restid sequences are schematic and do not represent measured results.
-    Stagnation requires unchanged remaining tasks and insufficient predicted
-    progress over a duration threshold T_s. Retry detection counts returns in
-    the remaining-task state sequence while progress fails to improve durably.
-    N_r is a task-calibrated retry threshold, not the two cycles drawn. Progress
-    trends supplement restid so a long but advancing subtask is not automatically
-    counted as stagnant. The observation window leaves time for autonomous
-    recovery. These are proposed heuristics, not proof of irrecoverability.
-    No durations, retry counts or progress tolerances are claimed as calibrated.
-    Slide 15 is the user's proposed action-conditioned latent model. Each s_i is
-    a three-view observation, and z_i encodes observations up to i with shared
-    visual and history-fusion modules. The data sequence supplies transitions
-    (z_i, a_i, z_(i+1)); a_i is the executed action or aligned action chunk.
-    Predicted future latents are matched to latents from actual successors in
-    training. Actual future observations are not predictor inputs at deployment.
-    The proposed objective combines latent prediction error with SIGReg on
-    batches of learned representations Z. This is an action-conditioned
-    extension inspired by LeJEPA, not a claim that the original image-based
-    LeJEPA architecture already implements this robotics model.
-    Primary sources checked:
-    https://arxiv.org/abs/2511.08544
-    https://github.com/galilai-group/lejepa
-    LeJEPA combines JEPA predictive learning with isotropic-Gaussian embedding
-    regularization. The slide does not prescribe a teacher/EMA/stop-gradient
-    branch. As clarified by the user, progress scores are produced by our VLM,
-    supervised with the progress labels on slide 12. Predicted visual latents
-    and subtask state are its inputs; latent prediction loss is not the score.
-    This scoring use of the VLM must keep representation format and prediction
-    horizon aligned with the progress-label definition. Compatibility and
-    accuracy on imagined states remain to be validated.
-    Slide 16 shows the user's proposed recovery-action generation and selection.
-    Only VLA-centered local sampling is used. The original VLA proposal remains
-    in the candidate pool; no separate learned recovery policy is included.
-    The equation illustrates bounded perturbations in continuous coordinates.
-    Norm/coordinate scaling, sampling distribution, candidate count K, radius
-    rho and discrete-action handling are not specified. Each candidate may be
-    an action or an aligned action chunk, consistent with slide 15's predictor.
-    Pool indices enumerate K candidates, including the retained VLA proposal.
-    JEPA receives the current latent with causal visual history and candidate
-    action k, then predicts that candidate's future latent. Our VLM receives
-    each predicted latent and the shared current subtask state, producing the
-    corresponding progress score P^(k). P is an output score here, not a
-    separate scoring-model box. Select k* = argmax_k P^(k), then execute the
-    existing candidate a^(k*) as the recovery action; no action is generated
-    from the scalar score. The diagram omits unrelated VLM output fields.
-    A useful recovery action lying near the VLA proposal remains a research
-    hypothesis, not an optimality guarantee. No numerical scores or successful
-    recovery results are claimed.
-    Slide 17 summarizes the proposed online closed loop. VLA is an independent
-    action model; the two blue VLM boxes denote the same trained model reused
-    for status/progress inference and for scoring JEPA-predicted future latents.
-    Temporal fusion uses only past and current observations. JEPA is conditioned
-    on the current fused latent and each candidate action; it predicts future
-    latents, not actions. The VLM maps those latents and subtask state to progress
-    scores; the candidate with the largest predicted score is selected.
-    Brown dashed arrows denote the intervention decision, not observation data.
-    Unchanged restid must coincide with insufficient progress for duration T_s;
-    repeated restid loops must coincide with no sustained progress at count N_r.
-    The window permits autonomous recovery; these are proposed trigger heuristics.
-    Normal execution and recovery both feed observations back into the next cycle.
-    No separate learned recovery policy or separate progress-scoring model is added.
-    Model output timing is described as status/progress inference here; the precise
-    forecast horizon must match the training labels and JEPA prediction horizon.
-    Slide 8 is the title-only section divider requested by the user.
-    Slide 9 duplicates the overview on slide 17 immediately after the divider;
-    model content is identical, and SVG/ARIA IDs are namespaced for this copy.
-    Slide 5's added crop is taken from frame index 179 (the last frame) of
-    progress-recovery-3-9.mp4, corresponding to original timestamp 8.966667 s.
-    The 808x196 crop at (24,742) preserves the video's curve and its on-frame
-    Progress 67.1% / Frame 269 labels. It is a screenshot, not a redrawn plot.
-    Slide 2 is a section cover titled Related Work / 现有介入时机判定.
-    Slide 6 is a section cover titled Related Work / 介入动作生成.
-    Slide 14 is the title-only section divider 介入动作方案设计.
+    Slide 6 is a constructed normal-match training example for slide 5.
+    Both objects are held and the robot is aligning/inserting them. Previous
+    memory has nowid={2}, finishid={1}, restid={3,4}; the image-grounded update
+    has nowid={3}, finishid={1,2}, restid={4}. The task's currently eligible
+    stage is expect-set={3}, not a prediction of the subsequent box stage.
+    The intent string preserves the user's supplied unified target.intent.
+    Image contents are described in text, not presented as a real observation.
+    The progress value 0.60 is illustrative, not a calculated sample label or
+    a measured model prediction. Actual training uses offline progress labels.
+    Slides 7-9 are constructed examples for rows 2-4 of slide 5, using
+    the same layout as slide 6. Named stages replace numeric identifiers.
+    Slide 7 requests picking up a water cup while retaining the assembly
+    observations, intent and memory. The prompt and actual intention are
+    highlighted in red. There is no shared prerequisite, so progress toward
+    the requested task is zero. The expected stage is picking up the cup.
+    Slide 8 uses a box-storage task with a lid-opening prerequisite. The
+    robot attempts insertion before opening the lid; actual attempt and
+    expected lid opening differ. The illustrative progress remains 0.25,
+    representing previously earned valid pickup progress, with no increment
+    for the invalid insertion attempt. These are not measured labels.
+    Slide 9 omits the task prompt while keeping visual observations and
+    prior memory. Image-grounded intention and memory retain supervision.
+    Progress is not supervised; expect-set has no supervision target. These
+    indicate loss masking, not a target progress of zero or an empty stage.
+    The stage strips describe the examples and are not extra model inputs.
+    Slide 10 summarizes the user's three selected intervention categories:
+    stagnation, temporal-order error and intention mismatch. Definitions and
+    example cases follow the user's comments and:
+    /Users/hongru/paper_read/CVPRpaper_search/介入时机与benchmark/benchmark-design.md
+    Stagnation requires persistent ineffective task-related behavior. Causal
+    concerns unmet stage prerequisites. Intention compares the observed
+    executed goal with the task instruction. The progress, nowid/expect-set
+    and intention/prompt comparisons are proposed signals for a downstream
+    intervention judge, not fixed triggers or measured detection results.
+    Slide 2 is the title-only section divider requested by the user.
     Slide 1 includes the EVO-RL architecture image supplied by the user:
     codex-clipboard-a2b7f357-e170-4e0f-9075-05adead6290c.png.
     The original 1394x744 bitmap is copied unchanged into assets/reference.

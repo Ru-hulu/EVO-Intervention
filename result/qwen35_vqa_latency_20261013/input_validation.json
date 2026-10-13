@@ -1,0 +1,73 @@
+{
+  "validation": "passed",
+  "prompt_words": 98,
+  "identical_inputs_for_both_models": true,
+  "models": [
+    {
+      "model": "2B",
+      "input_tokens": 5562,
+      "image_tokens": 5400,
+      "grid_first": [
+        1,
+        30,
+        40
+      ],
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          5562
+        ],
+        "attention_mask": [
+          1,
+          5562
+        ],
+        "mm_token_type_ids": [
+          1,
+          5562
+        ],
+        "pixel_values": [
+          21600,
+          1536
+        ],
+        "image_grid_thw": [
+          18,
+          3
+        ]
+      },
+      "thinking_disabled_template_tail": "th no introduction, numbered list, or reasoning.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    },
+    {
+      "model": "4B",
+      "input_tokens": 5562,
+      "image_tokens": 5400,
+      "grid_first": [
+        1,
+        30,
+        40
+      ],
+      "tensor_shapes": {
+        "input_ids": [
+          1,
+          5562
+        ],
+        "attention_mask": [
+          1,
+          5562
+        ],
+        "mm_token_type_ids": [
+          1,
+          5562
+        ],
+        "pixel_values": [
+          21600,
+          1536
+        ],
+        "image_grid_thw": [
+          18,
+          3
+        ]
+      },
+      "thinking_disabled_template_tail": "th no introduction, numbered list, or reasoning.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    }
+  ]
+}

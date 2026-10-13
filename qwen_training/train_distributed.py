@@ -14,9 +14,9 @@ from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader, Sampler
 
 from qwen_training.dataloader import build_dataloaders
-from qwen_training.dataset import augment_training_images, collate_fn
+from qwen_training.dataset import augment_training_images, collate_fn, prepare_training_batch
 from qwen_training.model import QwenProgressModel
-from qwen_training.prompts import build_messages
+from qwen_training.prompts import INPUT_COMBINATIONS, MISMATCHED_PROMPTS
 
 
 class GlobalBatchSampler(Sampler):
@@ -54,27 +54,36 @@ class GlobalBatchSampler(Sampler):
         return len(self.batch_sizes)
 
 
-def add_metrics(totals, outputs, targets):
-    # 累计 CE 总和、token 数、平方误差总和、绝对误差总和、样本数。
-    count = len(targets)
-    totals += torch.stack((
+def add_metrics(totals, outputs, targets, combination_ids):
+    # CE token 数、Pt 有效样本数、总样本数分别累计，隐藏 prompt 不稀释 MSE。
+    expected = targets["progress"].to(outputs.progress)
+    valid = targets["progress_mask"].to(device=expected.device)
+    totals[:6] += torch.stack((
         outputs.text_loss.detach().double() * outputs.text_tokens,
         outputs.text_tokens.double(),
-        outputs.progress_loss.detach().double() * count,
-        (outputs.progress.detach() - targets.to(outputs.progress)).abs().double().sum(),
-        totals.new_tensor(count),
+        outputs.progress_loss.detach().double() * outputs.progress_count,
+        (outputs.progress.detach()[valid] - expected[valid]).abs().double().sum(),
+        outputs.progress_count.double(),
+        totals.new_tensor(len(expected)),
     ))
+    totals[6:] += torch.bincount(torch.tensor(combination_ids, device=totals.device),
+                                minlength=len(INPUT_COMBINATIONS))
 
 
 def collect_metrics(totals, args):
     totals = totals.clone()
     dist.all_reduce(totals)
-    text_sum, token_count, squared_error, absolute_error, count = totals.tolist()
-    text_loss, progress_loss = text_sum / token_count, squared_error / count
+    text_sum, token_count, squared_error, absolute_error, progress_count, count = totals[:6].tolist()
+    text_loss, progress_loss = text_sum / max(token_count, 1), squared_error / max(progress_count, 1)
     return {
         "loss": args.text_loss_weight * text_loss + args.progress_loss_weight * progress_loss,
         "text_ce": text_loss, "progress_mse": progress_loss,
-        "progress_mae": absolute_error / count, "samples": int(count),
+        "progress_mae": absolute_error / max(progress_count, 1), "samples": int(count),
+        "progress_samples": int(progress_count),
+        "input_combination_counts": {
+            f"{mode}_{'memory' if keep else 'no_memory'}": int(n)
+            for (mode, keep, _), n in zip(INPUT_COMBINATIONS, totals[6:].tolist(), strict=True)
+        },
     }
 
 
@@ -97,19 +106,19 @@ def phase_batches(loader):
 @torch.no_grad()
 def evaluate(model, loader, args, rank, device):
     model.eval()
-    totals = torch.zeros(5, dtype=torch.float64, device=device)
+    totals = torch.zeros(6 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
     for batch_index, (inputs, targets) in enumerate(phase_batches(loader)):
         if args.gpu_image_processing:
             inputs["images"] = inputs["images"].to(device, non_blocking=True)
         # 每轮使用同一批验证视频、同一提示词；不做图像增强或类别重采样。
-        messages = build_messages(
-            inputs["input_states"], state_drop_probability=0.3,
+        targets = prepare_training_batch(
+            inputs, mismatched_prompts=args.mismatched_prompts,
             seed=args.seed + 1_000_000 + batch_index * dist.get_world_size() + rank,
         )
         with torch.autocast("cuda", dtype=torch.bfloat16):
             visual = model.encode_history(inputs["images"], inputs["frame_mask"])
-            outputs = model(messages=messages, **visual, **targets)
-        add_metrics(totals, outputs, targets["progress"])
+            outputs = model(messages=inputs["messages"], **visual, **targets)
+        add_metrics(totals, outputs, targets, inputs["combination_ids"])
     result = collect_metrics(totals, args)
     model.train()
     model.qwen.model.visual.eval()
@@ -143,6 +152,8 @@ def main():
     parser.add_argument("--lora-alpha", type=int, default=32)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--mismatched-prompts", nargs="+", default=list(MISMATCHED_PROMPTS),
+                        help="与实际装配任务语义不同的负任务提示词")
     parser.add_argument("--log-every", type=int, default=50)
     parser.add_argument("--resume", help="恢复本入口在 epoch 末尾保存的检查点")
     args = parser.parse_args()
@@ -151,6 +162,7 @@ def main():
         for key, value in checkpoint["config"].items():
             if key not in {"epochs", "save_epochs", "output_dir", "resume", "num_workers", "prefetch_factor", "log_every"}:
                 setattr(args, key, value)
+    args.input_combinations = INPUT_COMBINATIONS
 
     if args.require_fast_kernels:
         from transformers.models.qwen3_5.modeling_qwen3_5 import is_fast_path_available
@@ -251,12 +263,12 @@ def main():
     for epoch in range(start_epoch, args.epochs):
         record_phase("before_train", epoch + 1)
         sampler.epoch = epoch
-        epoch_totals = torch.zeros(5, dtype=torch.float64, device=device)
+        epoch_totals = torch.zeros(6 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
         window_totals = torch.zeros_like(epoch_totals)
         epoch_started = window_started = perf_counter()
         for batch_index, (inputs, targets) in enumerate(phase_batches(train_loader)):
             seed = args.seed + step * world_size + rank
-            messages = build_messages(inputs["input_states"], state_drop_probability=0.3, seed=seed)
+            targets = prepare_training_batch(inputs, seed, mismatched_prompts=args.mismatched_prompts)
             if args.gpu_image_processing:
                 inputs["images"] = inputs["images"].to(device, non_blocking=True)
             inputs["images"] = augment_training_images(inputs["images"], inputs["state_pairs"], seed)
@@ -264,18 +276,18 @@ def main():
             with torch.autocast("cuda", dtype=torch.bfloat16):
                 with torch.no_grad():
                     visual = model.encode_history(inputs["images"], inputs["frame_mask"])
-                outputs = distributed_model(messages=messages, **visual, **targets)
-                count = len(targets["progress"])
-                denominators = torch.stack((outputs.text_tokens.double(), window_totals.new_tensor(count)))
+                outputs = distributed_model(messages=inputs["messages"], **visual, **targets)
+                denominators = torch.stack((outputs.text_tokens.double(), outputs.progress_count.double()))
                 dist.all_reduce(denominators)
                 # DDP 对卡取平均，乘 world_size 抵消；CE 按 token，MSE 按样本加权。
                 loss = world_size * (
-                    args.text_loss_weight * outputs.text_loss * outputs.text_tokens / denominators[0]
-                    + args.progress_loss_weight * outputs.progress_loss * count / denominators[1]
+                    args.text_loss_weight * outputs.text_loss * outputs.text_tokens / denominators[0].clamp_min(1)
+                    + args.progress_loss_weight * outputs.progress_loss * outputs.progress_count
+                    / denominators[1].clamp_min(1)
                 )
             loss.backward()
-            add_metrics(window_totals, outputs, targets["progress"])
-            add_metrics(epoch_totals, outputs, targets["progress"])
+            add_metrics(window_totals, outputs, targets, inputs["combination_ids"])
+            add_metrics(epoch_totals, outputs, targets, inputs["combination_ids"])
             del outputs, visual, loss
             torch.nn.utils.clip_grad_norm_(parameters, 1.0, error_if_nonfinite=True)
             optimizer.step()

@@ -1,0 +1,312 @@
+{
+  "completed_at": "2026-10-13T12:11:00.457113+00:00",
+  "status": "completed",
+  "validation": "5 measured runs and 2 warmups per model; identical inputs and same GPU; all additive stage timings sum to measured end-to-end time; GPU snapshots show only the benchmark on GPU 2.",
+  "configuration": {
+    "dtype": "bfloat16",
+    "enable_thinking": false,
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "batch_size": 1,
+    "warmups": 2,
+    "runs": 5,
+    "attention": "sdpa",
+    "torch_compile": false,
+    "image_processor_device": "cpu",
+    "input_manifest": "input_manifest.json"
+  },
+  "input": {
+    "image_count": 18,
+    "image_resolution": [
+      640,
+      480
+    ],
+    "prompt_word_count": 98,
+    "total_tokens": 5562,
+    "visual_tokens": 5400
+  },
+  "gpu": "NVIDIA A100-PCIE-40GB",
+  "gpu_index": 2,
+  "models": {
+    "2B": {
+      "timings_ms": {
+        "image_read_decode_ms": {
+          "mean": 227.6098746806383,
+          "median": 228.9975369349122,
+          "min": 214.85412027686834,
+          "max": 234.7935251891613,
+          "p95": 233.9707389473915
+        },
+        "image_preprocess_ms": {
+          "mean": 218.6685706488788,
+          "median": 218.36936986073852,
+          "min": 214.59486801177263,
+          "max": 223.107123747468,
+          "p95": 222.54548817873
+        },
+        "prompt_tokenize_pack_ms": {
+          "mean": 29.342220723628998,
+          "median": 29.649020172655582,
+          "min": 28.329298831522465,
+          "max": 30.176740139722824,
+          "p95": 30.092204175889492
+        },
+        "input_metadata_ms": {
+          "mean": 0.32233139500021935,
+          "median": 0.2098027616739273,
+          "min": 0.17795618623495102,
+          "max": 0.5548191256821156,
+          "p95": 0.5390629172325134
+        },
+        "host_to_device_ms": {
+          "mean": 48.36720824241638,
+          "median": 47.90217708796263,
+          "min": 46.579663176089525,
+          "max": 50.29801186174154,
+          "p95": 50.23699849843979
+        },
+        "generation_setup_gap_ms": {
+          "mean": 0.013465248048305511,
+          "median": 0.008939765393733978,
+          "min": 0.008938834071159363,
+          "max": 0.030450988560914993,
+          "p95": 0.0263722613453865
+        },
+        "ttft_generation_ms": {
+          "mean": 434.954268950969,
+          "median": 431.4358327537775,
+          "min": 418.6674510128796,
+          "max": 454.03926400467753,
+          "p95": 451.25293219462037
+        },
+        "ttft_end_to_end_ms": {
+          "mean": 959.27793988958,
+          "median": 966.2621789611876,
+          "min": 923.7109622918069,
+          "max": 983.7018260732293,
+          "p95": 980.5840554647148
+        },
+        "decode_after_first_token_ms": {
+          "mean": 4972.0491183921695,
+          "median": 5031.098578125238,
+          "min": 4739.917439874262,
+          "max": 5081.985211931169,
+          "p95": 5081.674055196345
+        },
+        "output_to_text_ms": {
+          "mean": 0.34931814298033714,
+          "median": 0.2740570344030857,
+          "min": 0.24248892441391945,
+          "max": 0.6771814078092575,
+          "p95": 0.6013615988194942
+        },
+        "generation_total_ms": {
+          "mean": 5407.0033873431385,
+          "median": 5461.619770154357,
+          "min": 5193.956703878939,
+          "max": 5522.092816885561,
+          "p95": 5520.047305710614
+        },
+        "end_to_end_ms": {
+          "mean": 5931.67637642473,
+          "median": 5985.955118201673,
+          "min": 5723.917348310351,
+          "max": 6050.775366369635,
+          "p95": 6050.007112324238
+        },
+        "vision_encoder_cuda_ms": {
+          "mean": 272.5769245147705,
+          "median": 269.5454752445221,
+          "min": 254.40050864219666,
+          "max": 290.5456681251526,
+          "p95": 288.2246683359146
+        },
+        "visual_merger_cuda_ms": {
+          "mean": 1.635532760620117,
+          "median": 1.4796799421310425,
+          "min": 1.4295040369033813,
+          "max": 2.333695888519287,
+          "p95": 2.1665791034698483
+        },
+        "language_prefill_cuda_ms": {
+          "mean": 133.84335327148438,
+          "median": 133.5203857421875,
+          "min": 132.23423767089844,
+          "max": 135.75885009765625,
+          "p95": 135.51308898925782
+        },
+        "first_lm_head_cuda_ms": {
+          "mean": 0.7276543974876404,
+          "median": 0.7280640006065369,
+          "min": 0.7260159850120544,
+          "max": 0.7290880084037781,
+          "p95": 0.7290880084037781
+        },
+        "first_forward_cuda_ms": {
+          "mean": 411.129248046875,
+          "median": 407.5704345703125,
+          "min": 393.0337219238281,
+          "max": 431.7368469238281,
+          "p95": 428.7781005859375
+        },
+        "ttft_other_ms": {
+          "mean": 26.17080400660634,
+          "median": 25.78799155727029,
+          "min": 24.672985892742872,
+          "max": 27.593773677945137,
+          "p95": 27.576958511024714
+        }
+      },
+      "output_tokens": 84,
+      "mean_decode_tokens_per_second": 16.704845994858257,
+      "model_load_seconds": 6.612944014836103,
+      "processor_load_seconds": 4.4079023422673345,
+      "first_warmup_seconds": 9.04900778317824,
+      "peak_allocated_gib": 4.97537899017334
+    },
+    "4B": {
+      "timings_ms": {
+        "image_read_decode_ms": {
+          "mean": 215.4640294611454,
+          "median": 215.87072871625423,
+          "min": 212.69211312755942,
+          "max": 216.90689399838448,
+          "p95": 216.7253067716956
+        },
+        "image_preprocess_ms": {
+          "mean": 228.91428638249636,
+          "median": 221.63403080776334,
+          "min": 219.73239397630095,
+          "max": 256.5376288257539,
+          "p95": 250.5275354720652
+        },
+        "prompt_tokenize_pack_ms": {
+          "mean": 36.710195895284414,
+          "median": 35.49054404720664,
+          "min": 33.27992698177695,
+          "max": 42.25872224196792,
+          "p95": 41.40922902151942
+        },
+        "input_metadata_ms": {
+          "mean": 0.703385379165411,
+          "median": 0.6777388043701649,
+          "min": 0.6467299535870552,
+          "max": 0.7847370579838753,
+          "p95": 0.7763559930026531
+        },
+        "host_to_device_ms": {
+          "mean": 46.204307582229376,
+          "median": 45.27977714315057,
+          "min": 44.939231127500534,
+          "max": 49.83398597687483,
+          "p95": 49.052937142550945
+        },
+        "generation_setup_gap_ms": {
+          "mean": 0.010559987276792526,
+          "median": 0.009498093277215958,
+          "min": 0.008938834071159363,
+          "max": 0.014807097613811493,
+          "p95": 0.013913027942180634
+        },
+        "ttft_generation_ms": {
+          "mean": 611.2616464495659,
+          "median": 614.032780751586,
+          "min": 597.0348101109266,
+          "max": 624.8444900847971,
+          "p95": 624.0594740957022
+        },
+        "ttft_end_to_end_ms": {
+          "mean": 1139.2684111371636,
+          "median": 1128.9705666713417,
+          "min": 1112.4433260411024,
+          "max": 1186.3627759739757,
+          "p95": 1178.4791483543813
+        },
+        "decode_after_first_token_ms": {
+          "mean": 4184.479926712811,
+          "median": 4176.9196363165975,
+          "min": 4138.052965048701,
+          "max": 4228.050995152444,
+          "p95": 4223.9093513228
+        },
+        "output_to_text_ms": {
+          "mean": 0.38915546610951424,
+          "median": 0.2799239009618759,
+          "min": 0.26260269805788994,
+          "max": 0.6914292462170124,
+          "p95": 0.640528742223978
+        },
+        "generation_total_ms": {
+          "mean": 4795.741573162377,
+          "median": 4792.952671181411,
+          "min": 4762.897455133498,
+          "max": 4827.527736313641,
+          "p95": 4822.897706273943
+        },
+        "end_to_end_ms": {
+          "mean": 5324.137493316084,
+          "median": 5324.695664923638,
+          "min": 5306.152805685997,
+          "max": 5340.931247919798,
+          "p95": 5338.675989210606
+        },
+        "vision_encoder_cuda_ms": {
+          "mean": 271.37023959159853,
+          "median": 273.9701614379883,
+          "min": 257.82989835739136,
+          "max": 281.954305768013,
+          "p95": 281.47650756835935
+        },
+        "visual_merger_cuda_ms": {
+          "mean": 1.7512447834014893,
+          "median": 1.6424959897994995,
+          "min": 1.6128000020980835,
+          "max": 2.1493759155273438,
+          "p95": 2.0633599281311032
+        },
+        "language_prefill_cuda_ms": {
+          "mean": 310.9421020507813,
+          "median": 309.5920715332031,
+          "min": 307.12933349609375,
+          "max": 318.8643798828125,
+          "p95": 317.4500305175781
+        },
+        "first_lm_head_cuda_ms": {
+          "mean": 0.90316801071167,
+          "median": 0.9021440148353577,
+          "min": 0.9000959992408752,
+          "max": 0.9093120098114014,
+          "p95": 0.9078784108161926
+        },
+        "first_forward_cuda_ms": {
+          "mean": 587.412255859375,
+          "median": 591.805419921875,
+          "min": 574.3390502929688,
+          "max": 598.6027221679688,
+          "p95": 598.2168823242188
+        },
+        "ttft_other_ms": {
+          "mean": 26.294892013072968,
+          "median": 26.100235249847174,
+          "min": 24.790838703513145,
+          "max": 28.95842883363366,
+          "p95": 28.53098803460598
+        }
+      },
+      "output_tokens": 53,
+      "mean_decode_tokens_per_second": 12.427552897322919,
+      "model_load_seconds": 7.251018955837935,
+      "processor_load_seconds": 4.197050966322422,
+      "first_warmup_seconds": 25.93886450631544,
+      "peak_allocated_gib": 9.518540859222412
+    }
+  },
+  "notes": [
+    "Native Hugging Face Transformers generate, SDPA + installed FLA / causal-conv1d; no vLLM or torch.compile.",
+    "GPU 2 was exclusive to each benchmark process. Other GPU jobs remained active and shared host CPU/storage.",
+    "18 separate images, not native video temporal compression.",
+    "Output lengths differ; compare TTFT and decode tokens/second as well as completed-answer latency.",
+    "Model and processor loading, image extraction and warmups are separate from steady-state latency.",
+    "Measurements cover one VQA input and five repeated runs, not a multi-task accuracy benchmark."
+  ]
+}

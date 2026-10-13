@@ -12,9 +12,9 @@ import torch
 from peft import get_peft_model_state_dict, set_peft_model_state_dict
 
 from qwen_training.dataloader import build_dataloaders
-from qwen_training.dataset import augment_training_images
+from qwen_training.dataset import augment_training_images, prepare_training_batch
 from qwen_training.model import QwenProgressModel
-from qwen_training.prompts import build_messages
+from qwen_training.prompts import INPUT_COMBINATIONS, MISMATCHED_PROMPTS
 
 
 def main():
@@ -35,6 +35,8 @@ def main():
     parser.add_argument("--lora-alpha", type=int, default=32)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--mismatched-prompts", nargs="+", default=list(MISMATCHED_PROMPTS),
+                        help="与实际装配任务语义不同的负任务提示词")
     parser.add_argument("--log-every", type=int, default=1)
     parser.add_argument("--save-every", type=int, default=10)
     parser.add_argument("--device", choices=["cpu", "cuda"],
@@ -52,6 +54,8 @@ def main():
             setattr(args, key, checkpoint["config"][key])
         # 旧检查点的文本权重固定为 1；恢复时延续原损失尺度。
         args.text_loss_weight = checkpoint["config"].get("text_loss_weight", 1.0)
+        args.mismatched_prompts = checkpoint["config"].get("mismatched_prompts", args.mismatched_prompts)
+    args.input_combinations = INPUT_COMBINATIONS
     if not args.model_path or not args.index_files:
         parser.error("首次训练需要 --model-path 和 --index-files；恢复训练使用 --resume")
     if args.lora_rank < 1:
@@ -105,9 +109,9 @@ def main():
             if batch_index < completed_batches:
                 batch_started = perf_counter()
                 continue
-            # 每次取样按 70% / 30% 保留或隐藏上一状态；与 worker 数无关，可按 step 重建。
-            inputs["messages"] = build_messages(
-                inputs["input_states"], state_drop_probability=0.3, seed=args.seed + step,
+            # 六种 prompt/记忆组合联合采样，当前状态标签始终对应真实观测。
+            targets = prepare_training_batch(
+                inputs, seed=args.seed + step, mismatched_prompts=args.mismatched_prompts,
             )
             # 18 张图共享轻量增强，恢复到同一步时参数相同。
             inputs["images"] = augment_training_images(

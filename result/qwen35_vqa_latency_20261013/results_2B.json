@@ -1,0 +1,1144 @@
+{
+  "model_size": "2B",
+  "model_path": "/data/evo-inter/models/Qwen3.5-2B",
+  "gpu_index": 2,
+  "gpu_uuid": "GPU-889c5b4a-1c50-0705-53ae-8bca8c9237a9",
+  "settings": {
+    "dtype": "bfloat16",
+    "enable_thinking": false,
+    "max_new_tokens": 128,
+    "do_sample": false,
+    "batch_size": 1,
+    "warmups": 2,
+    "runs": 5,
+    "attention": "sdpa",
+    "torch_compile": false,
+    "image_processor_device": "cpu",
+    "input_manifest": "input_manifest.json"
+  },
+  "versions": {
+    "python": "3.10.22 (main, Oct  3 2026, 01:32:06) [Clang 22.1.3 ]",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "cuda": "12.8",
+    "flash-linear-attention": "0.5.2",
+    "causal-conv1d": "1.7.0",
+    "flash-attn": null,
+    "triton": "3.6.0"
+  },
+  "gpu_before_load": {
+    "gpus": "index, uuid, name, memory.total [MiB], memory.used [MiB], utilization.gpu [%], driver_version\n0, GPU-7cf325fb-8879-f842-51da-b27bdf04ec93, NVIDIA A100-PCIE-40GB, 40960 MiB, 35845 MiB, 64 %, 570.133.20\n1, GPU-cb591432-1cba-9701-0191-caeb38577186, NVIDIA A100-PCIE-40GB, 40960 MiB, 35845 MiB, 77 %, 570.133.20\n2, GPU-889c5b4a-1c50-0705-53ae-8bca8c9237a9, NVIDIA A100-PCIE-40GB, 40960 MiB, 4 MiB, 0 %, 570.133.20\n3, GPU-f5e38841-74b9-9f12-1250-27839e346fde, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 0 %, 570.133.20\n4, GPU-0f3b5849-6482-0f5a-afe4-f2105b3c1f19, NVIDIA A100-PCIE-40GB, 40960 MiB, 36023 MiB, 70 %, 570.133.20\n5, GPU-42d4e16a-3f6a-9a42-9393-0777ed6a6785, NVIDIA A100-PCIE-40GB, 40960 MiB, 36023 MiB, 62 %, 570.133.20\n6, GPU-6d1ecc37-6d4b-8227-5adb-fbaa9306d45f, NVIDIA A100-PCIE-40GB, 40960 MiB, 38523 MiB, 96 %, 570.133.20\n7, GPU-2aa83999-8e1c-6adb-1a39-5dc5824a28e1, NVIDIA A100-PCIE-40GB, 40960 MiB, 38523 MiB, 94 %, 570.133.20",
+    "processes": "gpu_uuid, pid, process_name, used_gpu_memory [MiB]\nGPU-7cf325fb-8879-f842-51da-b27bdf04ec93, 3874766, /data/envs/umm-sft-server/bin/python, 35832 MiB\nGPU-cb591432-1cba-9701-0191-caeb38577186, 3874767, /data/envs/umm-sft-server/bin/python, 35832 MiB\nGPU-0f3b5849-6482-0f5a-afe4-f2105b3c1f19, 3862853, /data/envs/umm-sft-server/bin/python, 36010 MiB\nGPU-42d4e16a-3f6a-9a42-9393-0777ed6a6785, 3862854, /data/envs/umm-sft-server/bin/python, 36010 MiB\nGPU-6d1ecc37-6d4b-8227-5adb-fbaa9306d45f, 3884205, /data/envs/umm-sft-server/bin/python, 38510 MiB\nGPU-2aa83999-8e1c-6adb-1a39-5dc5824a28e1, 3884206, /data/envs/umm-sft-server/bin/python, 38510 MiB"
+  },
+  "imports_seconds": 11.372038471978158,
+  "source_config": {
+    "architectures": [
+      "Qwen3_5ForConditionalGeneration"
+    ],
+    "image_token_id": 248056,
+    "model_type": "qwen3_5",
+    "text_config": {
+      "attention_bias": false,
+      "attention_dropout": 0.0,
+      "attn_output_gate": true,
+      "dtype": "bfloat16",
+      "eos_token_id": 248044,
+      "full_attention_interval": 4,
+      "head_dim": 256,
+      "hidden_act": "silu",
+      "hidden_size": 2048,
+      "initializer_range": 0.02,
+      "intermediate_size": 6144,
+      "layer_types": [
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention",
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention",
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention",
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention",
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention",
+        "linear_attention",
+        "linear_attention",
+        "linear_attention",
+        "full_attention"
+      ],
+      "linear_conv_kernel_dim": 4,
+      "linear_key_head_dim": 128,
+      "linear_num_key_heads": 16,
+      "linear_num_value_heads": 16,
+      "linear_value_head_dim": 128,
+      "max_position_embeddings": 262144,
+      "mlp_only_layers": [],
+      "model_type": "qwen3_5_text",
+      "mtp_num_hidden_layers": 1,
+      "mtp_use_dedicated_embeddings": false,
+      "num_attention_heads": 8,
+      "num_hidden_layers": 24,
+      "num_key_value_heads": 2,
+      "rms_norm_eps": 1e-06,
+      "tie_word_embeddings": true,
+      "use_cache": true,
+      "vocab_size": 248320,
+      "mamba_ssm_dtype": "float32",
+      "rope_parameters": {
+        "mrope_interleaved": true,
+        "mrope_section": [
+          11,
+          11,
+          10
+        ],
+        "rope_type": "default",
+        "rope_theta": 10000000,
+        "partial_rotary_factor": 0.25
+      }
+    },
+    "tie_word_embeddings": true,
+    "transformers_version": "4.57.0.dev0",
+    "video_token_id": 248057,
+    "vision_config": {
+      "deepstack_visual_indexes": [],
+      "depth": 24,
+      "hidden_act": "gelu_pytorch_tanh",
+      "hidden_size": 1024,
+      "in_channels": 3,
+      "initializer_range": 0.02,
+      "intermediate_size": 4096,
+      "model_type": "qwen3_5",
+      "num_heads": 16,
+      "num_position_embeddings": 2304,
+      "out_hidden_size": 2048,
+      "patch_size": 16,
+      "spatial_merge_size": 2,
+      "temporal_patch_size": 2
+    },
+    "vision_end_token_id": 248054,
+    "vision_start_token_id": 248053
+  },
+  "gated_deltanet_fast_path_available": true,
+  "processor_load_seconds": 4.4079023422673345,
+  "model_load_seconds": 6.612944014836103,
+  "model_parameters": 2213241664,
+  "device": "NVIDIA A100-PCIE-40GB",
+  "warmups": [
+    {
+      "run": 1,
+      "warmup": true,
+      "timings": {
+        "image_read_decode_ms": 222.9487239383161,
+        "image_preprocess_ms": 231.35928995907307,
+        "prompt_tokenize_pack_ms": 85.70698136463761,
+        "input_metadata_ms": 2.0158980041742325,
+        "host_to_device_ms": 48.49331360310316,
+        "generation_setup_gap_ms": 0.02318713814020157,
+        "ttft_generation_ms": 3661.9391082786024,
+        "ttft_end_to_end_ms": 4252.486502286047,
+        "decode_after_first_token_ms": 4794.302003923804,
+        "output_to_text_ms": 2.2192769683897495,
+        "generation_total_ms": 8456.241112202406,
+        "end_to_end_ms": 9049.00778317824
+      },
+      "output_tokens": 84,
+      "tokens_after_first": 83,
+      "decode_tokens_per_second": 17.312217697606503,
+      "stopped_on_eos": true,
+      "answer": "The robot first picks up the headphones from the desk, then places them back down on a stand. Next, it lifts the laptop and moves it to a new position on the desk. Finally, it closes the laptop and sets it upright on a black stand. The final state shows the headphones on a stand, the laptop closed and standing on a black base, and the bookshelf still holding its books.\n",
+      "input_total_tokens": 5562,
+      "input_image_tokens": 5400,
+      "image_grid_thw": [
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ]
+      ],
+      "peak_allocated_gib": 4.97537899017334,
+      "peak_reserved_gib": 5.52734375
+    },
+    {
+      "run": 2,
+      "warmup": true,
+      "timings": {
+        "image_read_decode_ms": 220.24167608469725,
+        "image_preprocess_ms": 273.52833608165383,
+        "prompt_tokenize_pack_ms": 29.397031757980585,
+        "input_metadata_ms": 0.21706614643335342,
+        "host_to_device_ms": 44.913250021636486,
+        "generation_setup_gap_ms": 0.008659902960062027,
+        "ttft_generation_ms": 415.7095327973366,
+        "ttft_end_to_end_ms": 984.0155527926981,
+        "decode_after_first_token_ms": 4716.915912926197,
+        "output_to_text_ms": 0.2681910991668701,
+        "generation_total_ms": 5132.625445723534,
+        "end_to_end_ms": 5701.199656818062
+      },
+      "output_tokens": 84,
+      "tokens_after_first": 83,
+      "decode_tokens_per_second": 17.596243293747825,
+      "stopped_on_eos": true,
+      "answer": "The robot first picks up the headphones from the desk, then places them back down on a stand. Next, it lifts the laptop and moves it to a new position on the desk. Finally, it closes the laptop and sets it upright on a black stand. The final state shows the headphones on a stand, the laptop closed and standing on a black base, and the bookshelf still holding its books.\n",
+      "input_total_tokens": 5562,
+      "input_image_tokens": 5400,
+      "image_grid_thw": [
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ]
+      ],
+      "peak_allocated_gib": 4.97537899017334,
+      "peak_reserved_gib": 5.52734375
+    }
+  ],
+  "runs": [
+    {
+      "run": 1,
+      "warmup": false,
+      "timings": {
+        "image_read_decode_ms": 214.85412027686834,
+        "image_preprocess_ms": 214.59486801177263,
+        "prompt_tokenize_pack_ms": 28.329298831522465,
+        "input_metadata_ms": 0.19304081797599792,
+        "host_to_device_ms": 47.06324404105544,
+        "generation_setup_gap_ms": 0.00893929973244667,
+        "ttft_generation_ms": 418.6674510128796,
+        "ttft_end_to_end_ms": 923.7109622918069,
+        "decode_after_first_token_ms": 4926.81493377313,
+        "output_to_text_ms": 0.2740570344030857,
+        "generation_total_ms": 5345.48238478601,
+        "end_to_end_ms": 5850.79995309934,
+        "vision_encoder_cuda_ms": 254.40050864219666,
+        "visual_merger_cuda_ms": 1.4981119632720947,
+        "language_prefill_cuda_ms": 134.53004455566406,
+        "first_lm_head_cuda_ms": 0.7290880084037781,
+        "first_forward_cuda_ms": 393.0337219238281,
+        "ttft_other_ms": 27.50969784334302
+      },
+      "output_tokens": 84,
+      "tokens_after_first": 83,
+      "decode_tokens_per_second": 16.84658366829209,
+      "stopped_on_eos": true,
+      "answer": "The robot first picks up the headphones from the desk, then places them back down on a stand. Next, it lifts the laptop and moves it to a new position on the desk. Finally, it closes the laptop and sets it upright on a black stand. The final state shows the headphones on a stand, the laptop closed and standing on a black base, and the bookshelf still holding its books.\n",
+      "input_total_tokens": 5562,
+      "input_image_tokens": 5400,
+      "image_grid_thw": [
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ]
+      ],
+      "peak_allocated_gib": 4.97537899017334,
+      "peak_reserved_gib": 5.52734375
+    },
+    {
+      "run": 2,
+      "warmup": false,
+      "timings": {
+        "image_read_decode_ms": 234.7935251891613,
+        "image_preprocess_ms": 216.97254572063684,
+        "prompt_tokenize_pack_ms": 29.754060320556164,
+        "input_metadata_ms": 0.2098027616739273,
+        "host_to_device_ms": 47.90217708796263,
+        "generation_setup_gap_ms": 0.030450988560914993,
+        "ttft_generation_ms": 454.03926400467753,
+        "ttft_end_to_end_ms": 983.7018260732293,
+        "decode_after_first_token_ms": 4739.917439874262,
+        "output_to_text_ms": 0.2980823628604412,
+        "generation_total_ms": 5193.956703878939,
+        "end_to_end_ms": 5723.917348310351,
+        "vision_encoder_cuda_ms": 290.5456681251526,
+        "visual_merger_cuda_ms": 2.333695888519287,
+        "language_prefill_cuda_ms": 135.75885009765625,
+        "first_lm_head_cuda_ms": 0.7280640006065369,
+        "first_forward_cuda_ms": 431.7368469238281,
+        "ttft_other_ms": 24.672985892742872
+      },
+      "output_tokens": 84,
+      "tokens_after_first": 83,
+      "decode_tokens_per_second": 17.510853522841483,
+      "stopped_on_eos": true,
+      "answer": "The robot first picks up the headphones from the desk, then places them back down on a stand. Next, it lifts the laptop and moves it to a new position on the desk. Finally, it closes the laptop and sets it upright on a black stand. The final state shows the headphones on a stand, the laptop closed and standing on a black base, and the bookshelf still holding its books.\n",
+      "input_total_tokens": 5562,
+      "input_image_tokens": 5400,
+      "image_grid_thw": [
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ]
+      ],
+      "peak_allocated_gib": 4.97537899017334,
+      "peak_reserved_gib": 5.52734375
+    },
+    {
+      "run": 3,
+      "warmup": false,
+      "timings": {
+        "image_read_decode_ms": 228.9975369349122,
+        "image_preprocess_ms": 218.36936986073852,
+        "prompt_tokenize_pack_ms": 29.649020172655582,
+        "input_metadata_ms": 0.4760380834341049,
+        "host_to_device_ms": 46.579663176089525,
+        "generation_setup_gap_ms": 0.008938834071159363,
+        "ttft_generation_ms": 430.52119202911854,
+        "ttft_end_to_end_ms": 954.6017590910196,
+        "decode_after_first_token_ms": 5031.098578125238,
+        "output_to_text_ms": 0.25478098541498184,
+        "generation_total_ms": 5461.619770154357,
+        "end_to_end_ms": 5985.955118201673,
+        "vision_encoder_cuda_ms": 269.5454752445221,
+        "visual_merger_cuda_ms": 1.4366719722747803,
+        "language_prefill_cuda_ms": 133.5203857421875,
+        "first_lm_head_cuda_ms": 0.7290880084037781,
+        "first_forward_cuda_ms": 407.5704345703125,
+        "ttft_other_ms": 25.289571061730385
+      },
+      "output_tokens": 84,
+      "tokens_after_first": 83,
+      "decode_tokens_per_second": 16.497390919922836,
+      "stopped_on_eos": true,
+      "answer": "The robot first picks up the headphones from the desk, then places them back down on a stand. Next, it lifts the laptop and moves it to a new position on the desk. Finally, it closes the laptop and sets it upright on a black stand. The final state shows the headphones on a stand, the laptop closed and standing on a black base, and the bookshelf still holding its books.\n",
+      "input_total_tokens": 5562,
+      "input_image_tokens": 5400,
+      "image_grid_thw": [
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ]
+      ],
+      "peak_allocated_gib": 4.97537899017334,
+      "peak_reserved_gib": 5.52734375
+    },
+    {
+      "run": 4,
+      "warmup": false,
+      "timings": {
+        "image_read_decode_ms": 228.72459702193737,
+        "image_preprocess_ms": 220.29894590377808,
+        "prompt_tokenize_pack_ms": 28.801984153687954,
+        "input_metadata_ms": 0.17795618623495102,
+        "host_to_device_ms": 49.99294504523277,
+        "generation_setup_gap_ms": 0.008939765393733978,
+        "ttft_generation_ms": 440.1076049543917,
+        "ttft_end_to_end_ms": 968.1129730306566,
+        "decode_after_first_token_ms": 5081.985211931169,
+        "output_to_text_ms": 0.6771814078092575,
+        "generation_total_ms": 5522.092816885561,
+        "end_to_end_ms": 6050.775366369635,
+        "vision_encoder_cuda_ms": 278.9406691789627,
+        "visual_merger_cuda_ms": 1.4796799421310425,
+        "language_prefill_cuda_ms": 133.17324829101562,
+        "first_lm_head_cuda_ms": 0.7260159850120544,
+        "first_forward_cuda_ms": 416.943115234375,
+        "ttft_other_ms": 25.78799155727029
+      },
+      "output_tokens": 84,
+      "tokens_after_first": 83,
+      "decode_tokens_per_second": 16.33220022072039,
+      "stopped_on_eos": true,
+      "answer": "The robot first picks up the headphones from the desk, then places them back down on a stand. Next, it lifts the laptop and moves it to a new position on the desk. Finally, it closes the laptop and sets it upright on a black stand. The final state shows the headphones on a stand, the laptop closed and standing on a black base, and the bookshelf still holding its books.\n",
+      "input_total_tokens": 5562,
+      "input_image_tokens": 5400,
+      "image_grid_thw": [
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ]
+      ],
+      "peak_allocated_gib": 4.97537899017334,
+      "peak_reserved_gib": 5.52734375
+    },
+    {
+      "run": 5,
+      "warmup": false,
+      "timings": {
+        "image_read_decode_ms": 230.67959398031235,
+        "image_preprocess_ms": 223.107123747468,
+        "prompt_tokenize_pack_ms": 30.176740139722824,
+        "input_metadata_ms": 0.5548191256821156,
+        "host_to_device_ms": 50.29801186174154,
+        "generation_setup_gap_ms": 0.010057352483272552,
+        "ttft_generation_ms": 431.4358327537775,
+        "ttft_end_to_end_ms": 966.2621789611876,
+        "decode_after_first_token_ms": 5080.429428257048,
+        "output_to_text_ms": 0.24248892441391945,
+        "generation_total_ms": 5511.865261010826,
+        "end_to_end_ms": 6046.93409614265,
+        "vision_encoder_cuda_ms": 269.4523013830185,
+        "visual_merger_cuda_ms": 1.4295040369033813,
+        "language_prefill_cuda_ms": 132.23423767089844,
+        "first_lm_head_cuda_ms": 0.7260159850120544,
+        "first_forward_cuda_ms": 406.36212158203125,
+        "ttft_other_ms": 27.593773677945137
+      },
+      "output_tokens": 84,
+      "tokens_after_first": 83,
+      "decode_tokens_per_second": 16.33720164251449,
+      "stopped_on_eos": true,
+      "answer": "The robot first picks up the headphones from the desk, then places them back down on a stand. Next, it lifts the laptop and moves it to a new position on the desk. Finally, it closes the laptop and sets it upright on a black stand. The final state shows the headphones on a stand, the laptop closed and standing on a black base, and the bookshelf still holding its books.\n",
+      "input_total_tokens": 5562,
+      "input_image_tokens": 5400,
+      "image_grid_thw": [
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ],
+        [
+          1,
+          30,
+          40
+        ]
+      ],
+      "peak_allocated_gib": 4.97537899017334,
+      "peak_reserved_gib": 5.52734375
+    }
+  ],
+  "summary": {
+    "image_read_decode_ms": {
+      "mean": 227.6098746806383,
+      "median": 228.9975369349122,
+      "min": 214.85412027686834,
+      "max": 234.7935251891613,
+      "p95": 233.9707389473915
+    },
+    "image_preprocess_ms": {
+      "mean": 218.6685706488788,
+      "median": 218.36936986073852,
+      "min": 214.59486801177263,
+      "max": 223.107123747468,
+      "p95": 222.54548817873
+    },
+    "prompt_tokenize_pack_ms": {
+      "mean": 29.342220723628998,
+      "median": 29.649020172655582,
+      "min": 28.329298831522465,
+      "max": 30.176740139722824,
+      "p95": 30.092204175889492
+    },
+    "input_metadata_ms": {
+      "mean": 0.32233139500021935,
+      "median": 0.2098027616739273,
+      "min": 0.17795618623495102,
+      "max": 0.5548191256821156,
+      "p95": 0.5390629172325134
+    },
+    "host_to_device_ms": {
+      "mean": 48.36720824241638,
+      "median": 47.90217708796263,
+      "min": 46.579663176089525,
+      "max": 50.29801186174154,
+      "p95": 50.23699849843979
+    },
+    "generation_setup_gap_ms": {
+      "mean": 0.013465248048305511,
+      "median": 0.008939765393733978,
+      "min": 0.008938834071159363,
+      "max": 0.030450988560914993,
+      "p95": 0.0263722613453865
+    },
+    "ttft_generation_ms": {
+      "mean": 434.954268950969,
+      "median": 431.4358327537775,
+      "min": 418.6674510128796,
+      "max": 454.03926400467753,
+      "p95": 451.25293219462037
+    },
+    "ttft_end_to_end_ms": {
+      "mean": 959.27793988958,
+      "median": 966.2621789611876,
+      "min": 923.7109622918069,
+      "max": 983.7018260732293,
+      "p95": 980.5840554647148
+    },
+    "decode_after_first_token_ms": {
+      "mean": 4972.0491183921695,
+      "median": 5031.098578125238,
+      "min": 4739.917439874262,
+      "max": 5081.985211931169,
+      "p95": 5081.674055196345
+    },
+    "output_to_text_ms": {
+      "mean": 0.34931814298033714,
+      "median": 0.2740570344030857,
+      "min": 0.24248892441391945,
+      "max": 0.6771814078092575,
+      "p95": 0.6013615988194942
+    },
+    "generation_total_ms": {
+      "mean": 5407.0033873431385,
+      "median": 5461.619770154357,
+      "min": 5193.956703878939,
+      "max": 5522.092816885561,
+      "p95": 5520.047305710614
+    },
+    "end_to_end_ms": {
+      "mean": 5931.67637642473,
+      "median": 5985.955118201673,
+      "min": 5723.917348310351,
+      "max": 6050.775366369635,
+      "p95": 6050.007112324238
+    },
+    "vision_encoder_cuda_ms": {
+      "mean": 272.5769245147705,
+      "median": 269.5454752445221,
+      "min": 254.40050864219666,
+      "max": 290.5456681251526,
+      "p95": 288.2246683359146
+    },
+    "visual_merger_cuda_ms": {
+      "mean": 1.635532760620117,
+      "median": 1.4796799421310425,
+      "min": 1.4295040369033813,
+      "max": 2.333695888519287,
+      "p95": 2.1665791034698483
+    },
+    "language_prefill_cuda_ms": {
+      "mean": 133.84335327148438,
+      "median": 133.5203857421875,
+      "min": 132.23423767089844,
+      "max": 135.75885009765625,
+      "p95": 135.51308898925782
+    },
+    "first_lm_head_cuda_ms": {
+      "mean": 0.7276543974876404,
+      "median": 0.7280640006065369,
+      "min": 0.7260159850120544,
+      "max": 0.7290880084037781,
+      "p95": 0.7290880084037781
+    },
+    "first_forward_cuda_ms": {
+      "mean": 411.129248046875,
+      "median": 407.5704345703125,
+      "min": 393.0337219238281,
+      "max": 431.7368469238281,
+      "p95": 428.7781005859375
+    },
+    "ttft_other_ms": {
+      "mean": 26.17080400660634,
+      "median": 25.78799155727029,
+      "min": 24.672985892742872,
+      "max": 27.593773677945137,
+      "p95": 27.576958511024714
+    }
+  },
+  "gpu_after_runs": {
+    "gpus": "index, uuid, name, memory.total [MiB], memory.used [MiB], utilization.gpu [%], driver_version\n0, GPU-7cf325fb-8879-f842-51da-b27bdf04ec93, NVIDIA A100-PCIE-40GB, 40960 MiB, 35845 MiB, 49 %, 570.133.20\n1, GPU-cb591432-1cba-9701-0191-caeb38577186, NVIDIA A100-PCIE-40GB, 40960 MiB, 35845 MiB, 49 %, 570.133.20\n2, GPU-889c5b4a-1c50-0705-53ae-8bca8c9237a9, NVIDIA A100-PCIE-40GB, 40960 MiB, 6179 MiB, 21 %, 570.133.20\n3, GPU-f5e38841-74b9-9f12-1250-27839e346fde, NVIDIA A100-PCIE-40GB, 40960 MiB, 0 MiB, 0 %, 570.133.20\n4, GPU-0f3b5849-6482-0f5a-afe4-f2105b3c1f19, NVIDIA A100-PCIE-40GB, 40960 MiB, 36023 MiB, 63 %, 570.133.20\n5, GPU-42d4e16a-3f6a-9a42-9393-0777ed6a6785, NVIDIA A100-PCIE-40GB, 40960 MiB, 36023 MiB, 64 %, 570.133.20\n6, GPU-6d1ecc37-6d4b-8227-5adb-fbaa9306d45f, NVIDIA A100-PCIE-40GB, 40960 MiB, 38523 MiB, 96 %, 570.133.20\n7, GPU-2aa83999-8e1c-6adb-1a39-5dc5824a28e1, NVIDIA A100-PCIE-40GB, 40960 MiB, 38523 MiB, 96 %, 570.133.20",
+    "processes": "gpu_uuid, pid, process_name, used_gpu_memory [MiB]\nGPU-7cf325fb-8879-f842-51da-b27bdf04ec93, 3874766, /data/envs/umm-sft-server/bin/python, 35832 MiB\nGPU-cb591432-1cba-9701-0191-caeb38577186, 3874767, /data/envs/umm-sft-server/bin/python, 35832 MiB\nGPU-889c5b4a-1c50-0705-53ae-8bca8c9237a9, 3888445, /data/evo-inter/.venv/bin/python, 6170 MiB\nGPU-0f3b5849-6482-0f5a-afe4-f2105b3c1f19, 3862853, /data/envs/umm-sft-server/bin/python, 36010 MiB\nGPU-42d4e16a-3f6a-9a42-9393-0777ed6a6785, 3862854, /data/envs/umm-sft-server/bin/python, 36010 MiB\nGPU-6d1ecc37-6d4b-8227-5adb-fbaa9306d45f, 3884205, /data/envs/umm-sft-server/bin/python, 38510 MiB\nGPU-2aa83999-8e1c-6adb-1a39-5dc5824a28e1, 3884206, /data/envs/umm-sft-server/bin/python, 38510 MiB"
+  },
+  "notes": [
+    "All requests reopen and decode the same 18 PNGs; OS disk cache is warm.",
+    "Model load, tokenizer load, imports, video extraction and warmups are excluded from steady-state request latency.",
+    "End-to-end and TTFT are wall-clock time; named CUDA spans measure first-forward module time with CUDA events.",
+    "vision_encoder_cuda_ms excludes the separately reported visual merger; first_forward_cuda_ms is inclusive.",
+    "ttft_other_ms is TTFT minus the four non-overlapping CUDA module spans and includes generation setup, embedding/scatter/position work and Python/token-selection/streaming overhead.",
+    "decode_after_first_token_ms covers tokens 2..N plus generation finalization; output length is reported separately.",
+    "The lightweight streamer timestamps token delivery but does not print during timed generation.",
+    "GPU is reserved by visibility for this process only; this script does not stop or alter other jobs."
+  ]
+}

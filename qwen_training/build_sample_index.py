@@ -6,7 +6,7 @@ python -m qwen_training.build_sample_index --dataset-root /root/dataset/数据�
 标注放在 dataset-root/labels，输出放在 dataset-root/samples。
 JSON 的 30FPS 起止帧均包含端点；计算区间时转换为左闭右开。
 索引中的帧编号从 0 开始，空白前缀为 null，frame_mask 为 [3,6]。
-仅 nowid 变化的跨阶段样本扩充：原有 k 条共享偏移窗口，再加 k 条区间内独立随机窗口。
+按原四类方案选取当前时刻与先前记忆时刻；视觉窗口统一为 1 秒间隔的六帧。
 """
 
 import argparse
@@ -20,7 +20,7 @@ from pathlib import Path
 import random
 
 from qwen_training.delta_to_progress import delta_to_progress
-from qwen_training.prompts import TASK_INTENT
+from qwen_training.prompts import TASK_INTENT, TASK_PROMPT, expected_stages
 
 
 CAMERAS = {
@@ -35,6 +35,12 @@ def state_of(subtask, task_ids):
     now = int(subtask["nowid"])
     rest = sorted(int(x) for x in subtask["restid"].split(",") if x.strip())
     return {"nowid": now, "restid": rest, "finishid": sorted(task_ids - {now} - set(rest))}
+
+
+def history_frames(current_frame, episode_start, fps=30):
+    """五帧历史 + 当前帧，间隔一秒；不跨 episode，历史不足时加无效占位。"""
+    return tuple(frame if frame >= episode_start else None
+                 for frame in range(current_frame - 5 * fps, current_frame + 1, fps))
 
 
 def candidate_windows(starts, width):
@@ -200,6 +206,9 @@ def build_index(dataset_root, delta_dir, seed=0):
                             changed = input_state["nowid"] != target_state["nowid"]
                             if changed != (kind == "cross_stage_changed"):
                                 raise ValueError(f"样本类型与状态不符：{label_path.name} {frames}")
+                            # 长期记忆保留原先的真实观测时刻；它不必等于短期图像的 t-1s。
+                            memory_frame = frames[-2] if frames[-2] is not None else frames[-1]
+                            frames = history_frames(frames[-1], starts[0])
                             mask = [frame is not None for frame in frames]
                             record = {
                                 "sample_id": f"{dataset_root.name}/{sum(counts.values()):07d}",
@@ -208,10 +217,13 @@ def build_index(dataset_root, delta_dir, seed=0):
                                 "sample_type": kind, "group": group,
                                 "sampling_method": "independent_intervals" if augmented else "shared_offset",
                                 "video_paths": videos, "frame_indices": frames,
+                                "history_interval_seconds": 1.0, "episode_start_frame": starts[0],
+                                "input_state_frame": memory_frame, "task_prompt": TASK_PROMPT,
                                 "frame_mask": [mask, mask, mask], "input_state": input_state,
                                 "target": {
                                     **target_state, "intent": TASK_INTENT,
                                     "progress": round(progress[frames[-1]], 8),
+                                    "expect_set": expected_stages(target_state),
                                 },
                             }
                             output.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
@@ -226,9 +238,12 @@ def build_index(dataset_root, delta_dir, seed=0):
         "settings": {
             "task_intent": TASK_INTENT,
             "seed": seed, "fps": 30, "num_frames": 6, "camera_order": list(CAMERAS),
+            "history_interval_seconds": 1.0,
+            "memory_timestamp": "input_state_frame，来自原采样方案的先前真实观测",
+            "sample_type_semantics": "先前记忆/当前时刻的采样来源，不表示固定视觉窗口完全位于单一阶段",
             "frame_index_base": 0, "padding_frame": None, "frame_mask_shape": [3, 6],
             "boundary_margin_seconds": 0.2, "cross_boundary_extra_seconds": 0.4,
-            "time_rounding": "原窗口共享偏移后取区间内最近整数帧；补充窗口在各区间整数帧中独立随机选取",
+            "time_rounding": "原方案选取当前/记忆时刻；实际视觉帧固定为当前帧前每隔 30 帧取一帧",
             "short_within_stage": "不放回；普通最多 15 个 / 特殊每组最多 10 个，候选不足时取全部，不补足",
             "cross_stage": "变更样本保留原有 k 条（k<=30），再补 k 条各区间独立随机且不重复的窗口；不变样本每组最多 15",
             "augmentation": "仅 cross_stage_changed；随机种子 seed+1；唯一组合不足时取尽，不补重复窗口",

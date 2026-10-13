@@ -9,7 +9,9 @@ import torch
 from torch.utils.data import Dataset
 from torchvision.transforms import functional as TF
 
-from qwen_training.prompts import build_messages, describe_target
+from qwen_training.prompts import (
+    MISMATCHED_PROMPTS, TASK_INTENT, TASK_PROMPT, build_messages, build_training_examples, describe_target,
+)
 
 
 AUGMENTED_PAIRS = {(3, 1), (3, 2), (1, 2), (2, 1)}
@@ -67,12 +69,17 @@ class VLMProgressDataset(Dataset):
             blank = torch.zeros_like(decoded[indices[-1]])
             images.append(torch.stack([blank if i is None else decoded[i] for i in indices]))
 
+        target = {"intent": TASK_INTENT, **sample["target"]}
+        default_prompt = TASK_PROMPT if target["intent"] == TASK_INTENT else target["intent"]
+        target["task_prompt"] = sample.get("task_prompt", target.get("task_prompt", default_prompt))
+        if "mismatched_prompts" in sample:
+            target["mismatched_prompts"] = sample["mismatched_prompts"]
         return {
             "sample_id": sample["sample_id"],
             "images": torch.stack(images),  # CPU uint8 [3,6,3,H,W]：视角、时间、RGB、高、宽。
             "frame_mask": torch.tensor(sample["frame_mask"], dtype=torch.bool),  # [3,6]。
-            "input_state": sample["input_state"],  # 倒数第二个采样时刻的状态。
-            "target": sample["target"],  # 最后一个采样时刻的状态及已计算的 progress。
+            "input_state": sample["input_state"],  # 先前真实观测的状态，新索引用 input_state_frame 标记时刻。
+            "target": target,  # 最后一个采样时刻的真实状态，供联合采样构造监督。
         }
 
 
@@ -107,6 +114,7 @@ def collate_fn(samples):
         "messages": build_messages(states),
         # 仅训练端使用的元数据，不传给 VLM；便于隐藏上一状态及按类别增强。
         "input_states": states,
+        "target_states": [sample["target"] for sample in samples],
         "state_pairs": [(sample["input_state"]["nowid"], sample["target"]["nowid"])
                         for sample in samples],
     }
@@ -115,3 +123,16 @@ def collate_fn(samples):
         "progress": torch.tensor([sample["target"]["progress"] for sample in samples], dtype=torch.float32),
     }
     return inputs, targets
+
+
+def prepare_training_batch(inputs, seed, mismatched_prompts=MISMATCHED_PROMPTS):
+    """在主进程构造联合输入与监督；不修改原始索引和正确记忆。"""
+    examples = build_training_examples(inputs["input_states"], inputs["target_states"],
+                                       seed=seed, mismatched_prompts=mismatched_prompts)
+    inputs["messages"] = examples["messages"]
+    inputs["combination_ids"] = examples["combination_ids"]
+    return {
+        "responses": examples["responses"],
+        "progress": torch.tensor(examples["progress"], dtype=torch.float32),
+        "progress_mask": torch.tensor(examples["progress_mask"], dtype=torch.bool),
+    }

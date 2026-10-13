@@ -12,6 +12,7 @@ from torch import nn
 from torch.nn import functional as F
 from transformers import AutoImageProcessor, AutoTokenizer, Qwen3_5ForConditionalGeneration
 
+from qwen_training.losses import masked_progress_mse
 from qwen_training.vision_encoder import encode_history, encode_three_views
 
 
@@ -157,8 +158,9 @@ class QwenProgressModel(nn.Module):
             ])
         return batch
 
-    def forward(self, messages, visual_features, visual_mask=None, responses=None, progress=None):
-        """responses 为意图和状态文本；progress 为 [B] 浮点标签。都不传时只预测进度。"""
+    def forward(self, messages, visual_features, visual_mask=None, responses=None, progress=None,
+                progress_mask=None):
+        """文本监督意图、状态及有效的 expect-set；progress_mask 屏蔽无 prompt 的 Pt。"""
         batch = self.build_inputs(messages, visual_features, visual_mask, responses)
         labels = batch.pop("labels", None)
         # 直接取主干最终输出，不收集前面各层；保留 LoRA 与适配层的梯度。
@@ -171,7 +173,7 @@ class QwenProgressModel(nn.Module):
         prediction = self.progress_head(hidden_states, input_mask)
 
         text_loss = progress_loss = loss = None
-        text_tokens = None
+        text_tokens = progress_count = None
         if labels is not None:
             # 用前一个位置预测下一个答案 token；只计算受监督位置的词表 logits。
             answer_mask = labels[:, 1:].ne(-100)
@@ -180,17 +182,18 @@ class QwenProgressModel(nn.Module):
             text_loss = F.cross_entropy(logits.float(), labels[:, 1:][answer_mask])
             loss = self.text_loss_weight * text_loss
         if progress is not None:
-            progress_loss = F.mse_loss(prediction, progress.to(prediction))
+            progress_loss, progress_count = masked_progress_mse(prediction, progress, progress_mask)
             weighted_loss = self.progress_loss_weight * progress_loss
             loss = weighted_loss if loss is None else loss + weighted_loss
         return SimpleNamespace(
             loss=loss, text_loss=text_loss, progress_loss=progress_loss, progress=prediction,
             text_tokens=text_tokens,
+            progress_count=progress_count,
         )
 
     @torch.inference_mode()
-    def generate(self, messages, visual_features, visual_mask=None, max_new_tokens=128):
-        """返回 {responses: 意图和阶段文本字符串列表, progress: [B] 回归值}。"""
+    def generate(self, messages, visual_features, visual_mask=None, max_new_tokens=256):
+        """返回 {responses: 意图、阶段及 expect-set 文本, progress: [B] 回归值}。"""
         was_training = self.training
         visual_was_training = self.qwen.model.visual.training
         self.eval()

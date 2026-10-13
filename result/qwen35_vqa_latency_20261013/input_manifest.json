@@ -1,0 +1,158 @@
+{
+  "source_video": "/data/evo-inter/verification/qwen35_vqa_latency_20261013/video.mp4",
+  "source_video_sha256": "9d1aba3ca6c70e798db9166348c3f93022bfbda129f23d22fdbcbd672073488d",
+  "source_task": "store_laptop_and_headphones",
+  "source_fps": 25.0,
+  "source_frame_count": 480,
+  "image_count": 18,
+  "images": [
+    {
+      "path": "images/frame_00.png",
+      "source_frame": 0,
+      "time_seconds": 0.0,
+      "width": 640,
+      "height": 480,
+      "sha256": "2641bea126a6aaf3f606418f820c1136cde82071acfafd05858f98ee01e1d009"
+    },
+    {
+      "path": "images/frame_01.png",
+      "source_frame": 28,
+      "time_seconds": 1.12,
+      "width": 640,
+      "height": 480,
+      "sha256": "9cb1d46c9a700e6e59c9176894c49507e0117314e86ee8ae85d3f9d1ce4b0b06"
+    },
+    {
+      "path": "images/frame_02.png",
+      "source_frame": 56,
+      "time_seconds": 2.24,
+      "width": 640,
+      "height": 480,
+      "sha256": "f76cf3952f90b0597d754cceaf4779caa271a28ba1b86afd19eec5fe16672fc6"
+    },
+    {
+      "path": "images/frame_03.png",
+      "source_frame": 85,
+      "time_seconds": 3.4,
+      "width": 640,
+      "height": 480,
+      "sha256": "f09c5118dfc078951b0c6ee0c2afb75577f1441c5444b273f11d652946c6270e"
+    },
+    {
+      "path": "images/frame_04.png",
+      "source_frame": 113,
+      "time_seconds": 4.52,
+      "width": 640,
+      "height": 480,
+      "sha256": "2340f023990d463ba8e9965bf027362dd732da817273508ec762a41d3318be06"
+    },
+    {
+      "path": "images/frame_05.png",
+      "source_frame": 141,
+      "time_seconds": 5.64,
+      "width": 640,
+      "height": 480,
+      "sha256": "414fff57bf0775ef2269eab8f815877c41f85417f3b34d3c1bb5c8f1c1e204bb"
+    },
+    {
+      "path": "images/frame_06.png",
+      "source_frame": 169,
+      "time_seconds": 6.76,
+      "width": 640,
+      "height": 480,
+      "sha256": "b66ad2d3be91681909dc3cab0a9d521938dc5eacb40fb74dd6cc5464f264a280"
+    },
+    {
+      "path": "images/frame_07.png",
+      "source_frame": 197,
+      "time_seconds": 7.88,
+      "width": 640,
+      "height": 480,
+      "sha256": "02fd4a30e2e9a8ed0071b3ddd7128cdd4577798eb316760a87dd9e4251614f2c"
+    },
+    {
+      "path": "images/frame_08.png",
+      "source_frame": 225,
+      "time_seconds": 9.0,
+      "width": 640,
+      "height": 480,
+      "sha256": "d3c63c4752c7988e4dd0ebb93c63cf3b26dfbfaeb28fa29695e1067953df045d"
+    },
+    {
+      "path": "images/frame_09.png",
+      "source_frame": 254,
+      "time_seconds": 10.16,
+      "width": 640,
+      "height": 480,
+      "sha256": "132a8469ce520d0bbeaf7970ee7e541994b60f69451a4c0cecf6ab7e46392178"
+    },
+    {
+      "path": "images/frame_10.png",
+      "source_frame": 282,
+      "time_seconds": 11.28,
+      "width": 640,
+      "height": 480,
+      "sha256": "2a8b9d805d4950eaef301af0adb7512b0062eb105dca3eefd8d27bdc68bee29f"
+    },
+    {
+      "path": "images/frame_11.png",
+      "source_frame": 310,
+      "time_seconds": 12.4,
+      "width": 640,
+      "height": 480,
+      "sha256": "f9966bd3d0055b9c12d0ec18c36702239007507ec1fd6ef683f879d9931c1f3b"
+    },
+    {
+      "path": "images/frame_12.png",
+      "source_frame": 338,
+      "time_seconds": 13.52,
+      "width": 640,
+      "height": 480,
+      "sha256": "2a82bd6b7842b8db440608e3f09dfc4543000ccc90f2582083e325af1b0d4cf5"
+    },
+    {
+      "path": "images/frame_13.png",
+      "source_frame": 366,
+      "time_seconds": 14.64,
+      "width": 640,
+      "height": 480,
+      "sha256": "04ae08cbce16ff44c604815231e63350edfbcd4f4be4cf570c1d1a378979a7cf"
+    },
+    {
+      "path": "images/frame_14.png",
+      "source_frame": 394,
+      "time_seconds": 15.76,
+      "width": 640,
+      "height": 480,
+      "sha256": "61f42ac0bac7cc0012f4618d489ba7438773a0e6ec32438ea053c776cbb39e34"
+    },
+    {
+      "path": "images/frame_15.png",
+      "source_frame": 423,
+      "time_seconds": 16.92,
+      "width": 640,
+      "height": 480,
+      "sha256": "a1dffb2aa827834a2dd20ed1d691a68f0be7b5ef5fdf5dc3f31863a796850271"
+    },
+    {
+      "path": "images/frame_16.png",
+      "source_frame": 451,
+      "time_seconds": 18.04,
+      "width": 640,
+      "height": 480,
+      "sha256": "56a3d4f6a138a6b24aed57f41113f32a5fd530beb719a1f8d2d74a5b02a0e965"
+    },
+    {
+      "path": "images/frame_17.png",
+      "source_frame": 479,
+      "time_seconds": 19.16,
+      "width": 640,
+      "height": 480,
+      "sha256": "8b3c5190a175e1b46ed7574884052c7dc11f3f1d540de21fddc5b58e065bc141"
+    }
+  ],
+  "prompt": "You are given eighteen frames sampled in chronological order from a single robot manipulation video. Examine the whole sequence and answer this question: What actions does the robot perform, and what is the final visible state of the objects? Describe the main actions in the order they occur, identify the objects involved, and mention any clear evidence that an action finishes. Base your answer only on the images. Do not infer hidden events or invent objects. If a detail is unclear, state that briefly. Respond in English using three concise sentences, with no introduction, numbered list, or reasoning.",
+  "prompt_word_count": 98,
+  "input_mode": "18 separate image items in temporal order; not the video API",
+  "video_decode_and_frame_export_seconds": 3.542439829092473
+}
