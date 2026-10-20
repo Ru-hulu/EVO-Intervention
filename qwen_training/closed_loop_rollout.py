@@ -15,7 +15,7 @@ import time
 from qwen_training.build_sample_index import state_of
 from qwen_training.delta_to_progress import delta_to_progress
 from qwen_training.evaluation_metrics import parse_response
-from qwen_training.prompts import TASK_INTENT, build_messages, describe_target
+from qwen_training.prompts import TASK_INTENT, build_messages, describe_target, expected_stages
 
 
 STATE_KEYS = ("nowid", "finishid", "restid")
@@ -115,6 +115,7 @@ def prepare(args, config):
                          video_paths=paths, input_state=states[0], target=target_at(frame)))
     truth = [dict(frame_index=i, time_seconds=(i-start)/30, source_time_seconds=i/30, **target_at(i)) for i in range(start, end+1)]
     metadata = dict(dataset=root.name, video_id=args.video_id, task_index=args.task_index, episode=args.episode,
+                    progress_format=config.get("progress_format", "regression"),
                     frame_start=start, frame_end=end, source_fps=30, duration_seconds=(end-start+1)/30,
                     prediction_step_frames=args.step_frames, prediction_hz=30/args.step_frames,
                     observations_per_view=6, history_offsets_seconds=[-5,-4,-3,-2,-1,0],
@@ -203,11 +204,11 @@ def main():
                     prediction = model.generate(messages, **visual, max_new_tokens=args.max_new_tokens)
                 progress = float(prediction["progress"][0])
                 response = prediction["responses"][0]
-                if not math.isfinite(progress) or not 0 <= progress <= 1:
-                    raise ValueError("Invalid progress prediction")
+                progress_valid = math.isfinite(progress)
                 record = dict(meta, input_state=current_state, prompt=messages[0], response=response,
-                              predicted_progress=progress, parsed=parse_response(response),
-                              target_response=describe_target(meta["target"]), mode="closed_loop",
+                              predicted_progress=progress if progress_valid else None,
+                              progress_parse_valid=progress_valid, parsed=parse_response(response),
+                              target_response=describe_target(meta["target"], expected_stages(meta["target"])), mode="closed_loop",
                               input_state_source="initial_ground_truth" if index == 0 else "previous_prediction",
                               seconds=time.monotonic()-step_started)
                 output.write(json.dumps(record, ensure_ascii=False)+"\n")

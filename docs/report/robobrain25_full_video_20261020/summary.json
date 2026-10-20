@@ -1,0 +1,12 @@
+{
+  "points": 54,
+  "valid_points": 54,
+  "min_percent": 0.0,
+  "max_percent": 100.0,
+  "first_percent": 0.0,
+  "last_percent": 100.0,
+  "negative_differences": 14,
+  "mean_percent": 58.0537037037037,
+  "first_100_percent_time_s": 6.0,
+  "minimum_after_first_100_percent": 50.0
+}

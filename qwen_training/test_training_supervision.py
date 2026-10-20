@@ -1,4 +1,4 @@
-"""只覆盖联合采样、监督掩码和固定历史窗口的关键行为。"""
+"""覆盖联合采样、末尾进度文本和固定历史窗口的关键行为。"""
 
 import copy
 import unittest
@@ -8,11 +8,7 @@ from qwen_training.build_sample_index import history_frames
 from qwen_training.prompts import (
     INPUT_COMBINATIONS, TASK_INTENT, TASK_PROMPT, build_training_examples, describe_target, expected_stages,
 )
-
-try:
-    import torch
-except ImportError:
-    torch = None
+from qwen_training.progress_text import append_progress, parse_progress
 
 
 class SupervisionTests(unittest.TestCase):
@@ -29,15 +25,16 @@ class SupervisionTests(unittest.TestCase):
             rng.choice.side_effect = lambda candidates: candidates[0]
             result = build_training_examples([self.previous] * 6, [self.target] * 6)
             self.assertEqual(rng.choices.call_args.kwargs["weights"], [49, 14, 14, 3, 14, 6])
-        self.assertEqual(result["progress"], [0.6, 0.6, 0.0, 0.0, 0.6, 0.6])
-        self.assertEqual(result["progress_mask"], [True, True, True, True, False, False])
+        self.assertEqual([parse_progress(s) for s in result["responses"]], [0.6, 0.6, 0.0, 0.0, None, None])
         for i, (mode, memory, _) in enumerate(INPUT_COMBINATIONS):
             prompt = result["messages"][i][0]["content"]
             self.assertEqual("先前长期记忆：" in prompt, memory)
             self.assertEqual("目标任务：" in prompt, mode != "missing")
             self.assertEqual(TASK_PROMPT in prompt, mode == "matched")
-            self.assertTrue(result["responses"][i].startswith(describe_target(self.target)))
+            self.assertTrue(result["responses"][i].startswith(describe_target(self.target, include_progress=False)))
             self.assertEqual("expect-set：" in result["responses"][i], mode == "matched")
+            self.assertEqual("progress：" in result["responses"][i], mode != "missing")
+            self.assertEqual("progress：" in prompt, mode != "missing")
         # 缺失 prompt 和记忆时没有具体阶段名称泄漏；只有通用输出要求。
         self.assertNotIn("拿起套筒", result["messages"][5][0]["content"])
         self.assertEqual((self.previous, self.target), before)
@@ -62,7 +59,7 @@ class SupervisionTests(unittest.TestCase):
             result = build_training_examples([self.previous], [target])
         self.assertIn("expect-set：拉开抽屉。", result["responses"][0])
         self.assertNotIn("expect-set：将螺钉", result["responses"][0])
-        self.assertEqual(result["progress"], [0.0])
+        self.assertEqual(parse_progress(result["responses"][0]), 0.0)
 
     def test_seeded_sampling_and_causal_one_second_history(self):
         args = ([self.previous] * 100, [self.target] * 100)
@@ -71,26 +68,20 @@ class SupervisionTests(unittest.TestCase):
         self.assertEqual(history_frames(75, 30), (None, None, None, None, 45, 75))
 
 
-@unittest.skipIf(torch is None, "需要 PyTorch 才能检查进度梯度")
-class ProgressLossTests(unittest.TestCase):
-    def test_mask_excludes_targets_and_gradients(self):
-        from qwen_training.losses import masked_progress_mse
-        prediction = torch.tensor([0.8, 0.3, 0.9], requires_grad=True)
-        loss, count = masked_progress_mse(prediction, torch.tensor([0.6, 0.0, float("nan")]),
-                                         torch.tensor([True, True, False]))
-        self.assertEqual(count.item(), 2)
-        self.assertAlmostEqual(loss.item(), 0.065, places=6)
-        loss.backward()
-        torch.testing.assert_close(prediction.grad, torch.tensor([0.2, 0.3, 0.0]))
+class ProgressTextTests(unittest.TestCase):
+    def test_precision_bounds_and_optional_output(self):
+        for value, expected in [(0.0, 0.0), (0.6374, 0.637), (1.0, 1.0)]:
+            text = append_progress("任务状态。", value)
+            self.assertEqual(parse_progress(text), expected)
+            self.assertEqual(parse_progress(text.replace("：", ":") + "\n"), expected)
+        self.assertEqual(append_progress("任务状态。", None), "任务状态。")
 
-    def test_all_missing_prompt_keeps_zero_gradient_path(self):
-        from qwen_training.losses import masked_progress_mse
-        prediction = torch.tensor([0.2, 0.7], requires_grad=True)
-        loss, count = masked_progress_mse(prediction, torch.tensor([float("nan"), float("nan")]),
-                                         torch.tensor([False, False]))
-        self.assertEqual((loss.item(), count.item()), (0.0, 0))
-        loss.backward()
-        torch.testing.assert_close(prediction.grad, torch.zeros(2))
+    def test_invalid_truncated_or_duplicate_is_not_zero(self):
+        for text in ["", "任务有四个阶段", "progress：", "progress：0.6", "progress：1.001",
+                     "progress：-0.100", "progress：nan", "progress：0.600\n补充文字",
+                     "progress：0.300\nprogress：0.600"]:
+            with self.subTest(text=text):
+                self.assertIsNone(parse_progress(text))
 
 
 if __name__ == "__main__":

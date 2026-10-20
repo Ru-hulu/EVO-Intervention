@@ -1,0 +1,728 @@
+{
+  "checksums": [
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_01_episode_0002.hdf5",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_01_episode_0002_agentview_wrist.mp4",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_02_episode_0049.hdf5",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_02_episode_0049_agentview_wrist.mp4",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/metadata.json",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_01_episode_0023.hdf5",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_01_episode_0023_agentview_wrist.mp4",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_02_episode_0026.hdf5",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_02_episode_0026_agentview_wrist.mp4",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/metadata.json",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_01_episode_0016.hdf5",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_01_episode_0016_agentview_wrist.mp4",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_02_episode_0036.hdf5",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_02_episode_0036_agentview_wrist.mp4",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/metadata.json",
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/manifest.json",
+      "ok": true
+    },
+    {
+      "file": "MANIFEST.json",
+      "ok": true
+    },
+    {
+      "file": "README.md",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/01_build_tower/clip_01_Pi_05_run0_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/01_build_tower/clip_02_Pi_05_run0_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/02_classify_objects/clip_01_Pi_05_run2_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/02_classify_objects/clip_02_Pi_05_run0_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/03_fold_clothes/clip_01_Pi_05_run2_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/03_fold_clothes/clip_02_Pi_05_run0_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/04_put_bottles_into_dustbin/clip_01_Pi_05_run1_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/04_put_bottles_into_dustbin/clip_02_Pi_05_run0_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/05_stack_bowls/clip_01_Pi_05_run2_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/05_stack_bowls/clip_02_Pi_05_run1_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/06_store_laptop_and_headphones/clip_01_Pi_05_run2_episode5_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/06_store_laptop_and_headphones/clip_02_Pi_05_run0_episode4_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/07_pour_liquid_into_cup/clip_01_Pi_05_run2_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/07_pour_liquid_into_cup/clip_02_Pi_05_SF_run2_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/08_deposit_coin/clip_01_Liber_wam_run0_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/08_deposit_coin/clip_02_Liber_wam_run1_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/09_insert_key/clip_01_KAI_run2_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/09_insert_key/clip_02_KAI_run0_episode1_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/10_sweep_blocks/clip_01_VPP2_run2_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/10_sweep_blocks/clip_02_VPP2_run1_episode0_success.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/manifest.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023.hdf5",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023_preview_15fps.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026.hdf5",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026_preview_15fps.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/archive_members.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/metadata.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_01_episode_0000023.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_02_episode_0000026.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016.hdf5",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016_preview_15fps.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036.hdf5",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036_preview_15fps.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/archive_members.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/metadata.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_01_episode_0000016.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_02_episode_0000036.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022.hdf5",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022_preview_15fps.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035.hdf5",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035_preview_15fps.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/archive_members.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/metadata.json",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/source_video/RoboTwin_open_laptop_demo_01_episode_0000022.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/source_video/RoboTwin_open_laptop_demo_02_episode_0000035.mp4",
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/manifest.json",
+      "ok": true
+    },
+    {
+      "file": "VALIDATION.json",
+      "ok": true
+    },
+    {
+      "file": "index.html",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/01_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/02_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/03_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/04_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/05_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/06_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/07_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/08_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/09_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/10_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/11_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/12_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/13_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/14_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/15_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/16_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/17_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/18_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/19_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/20_RoboDojo.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/21_LIBERO.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/22_LIBERO.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/23_LIBERO.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/24_LIBERO.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/25_LIBERO.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/26_LIBERO.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/27_RoboTwin.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/28_RoboTwin.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/29_RoboTwin.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/30_RoboTwin.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/31_RoboTwin.jpg",
+      "ok": true
+    },
+    {
+      "file": "thumbnails/32_RoboTwin.jpg",
+      "ok": true
+    }
+  ],
+  "videos": [
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_01_episode_0002_agentview_wrist.mp4",
+      "decoded_frames": 122,
+      "fps": 20.0,
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_02_episode_0049_agentview_wrist.mp4",
+      "decoded_frames": 143,
+      "fps": 20.0,
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_01_episode_0023_agentview_wrist.mp4",
+      "decoded_frames": 228,
+      "fps": 20.0,
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_02_episode_0026_agentview_wrist.mp4",
+      "decoded_frames": 199,
+      "fps": 20.0,
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_01_episode_0016_agentview_wrist.mp4",
+      "decoded_frames": 202,
+      "fps": 20.0,
+      "ok": true
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_02_episode_0036_agentview_wrist.mp4",
+      "decoded_frames": 202,
+      "fps": 20.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/01_build_tower/clip_01_Pi_05_run0_episode0_success.mp4",
+      "decoded_frames": 717,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/01_build_tower/clip_02_Pi_05_run0_episode1_success.mp4",
+      "decoded_frames": 728,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/02_classify_objects/clip_01_Pi_05_run2_episode0_success.mp4",
+      "decoded_frames": 579,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/02_classify_objects/clip_02_Pi_05_run0_episode0_success.mp4",
+      "decoded_frames": 1071,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/03_fold_clothes/clip_01_Pi_05_run2_episode1_success.mp4",
+      "decoded_frames": 285,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/03_fold_clothes/clip_02_Pi_05_run0_episode1_success.mp4",
+      "decoded_frames": 297,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/04_put_bottles_into_dustbin/clip_01_Pi_05_run1_episode0_success.mp4",
+      "decoded_frames": 394,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/04_put_bottles_into_dustbin/clip_02_Pi_05_run0_episode1_success.mp4",
+      "decoded_frames": 315,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/05_stack_bowls/clip_01_Pi_05_run2_episode1_success.mp4",
+      "decoded_frames": 584,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/05_stack_bowls/clip_02_Pi_05_run1_episode1_success.mp4",
+      "decoded_frames": 571,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/06_store_laptop_and_headphones/clip_01_Pi_05_run2_episode5_success.mp4",
+      "decoded_frames": 463,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/06_store_laptop_and_headphones/clip_02_Pi_05_run0_episode4_success.mp4",
+      "decoded_frames": 662,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/07_pour_liquid_into_cup/clip_01_Pi_05_run2_episode0_success.mp4",
+      "decoded_frames": 203,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/07_pour_liquid_into_cup/clip_02_Pi_05_SF_run2_episode1_success.mp4",
+      "decoded_frames": 219,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/08_deposit_coin/clip_01_Liber_wam_run0_episode1_success.mp4",
+      "decoded_frames": 187,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/08_deposit_coin/clip_02_Liber_wam_run1_episode0_success.mp4",
+      "decoded_frames": 113,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/09_insert_key/clip_01_KAI_run2_episode0_success.mp4",
+      "decoded_frames": 293,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/09_insert_key/clip_02_KAI_run0_episode1_success.mp4",
+      "decoded_frames": 289,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/10_sweep_blocks/clip_01_VPP2_run2_episode0_success.mp4",
+      "decoded_frames": 519,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboDojo_success_rollouts/10_sweep_blocks/clip_02_VPP2_run1_episode0_success.mp4",
+      "decoded_frames": 656,
+      "fps": 25.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023_preview_15fps.mp4",
+      "decoded_frames": 156,
+      "fps": 15.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026_preview_15fps.mp4",
+      "decoded_frames": 139,
+      "fps": 15.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_01_episode_0000023.mp4",
+      "decoded_frames": 156,
+      "fps": 30.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_02_episode_0000026.mp4",
+      "decoded_frames": 139,
+      "fps": 30.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016_preview_15fps.mp4",
+      "decoded_frames": 241,
+      "fps": 15.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036_preview_15fps.mp4",
+      "decoded_frames": 216,
+      "fps": 15.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_01_episode_0000016.mp4",
+      "decoded_frames": 241,
+      "fps": 30.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_02_episode_0000036.mp4",
+      "decoded_frames": 216,
+      "fps": 30.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022_preview_15fps.mp4",
+      "decoded_frames": 257,
+      "fps": 15.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035_preview_15fps.mp4",
+      "decoded_frames": 157,
+      "fps": 15.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/source_video/RoboTwin_open_laptop_demo_01_episode_0000022.mp4",
+      "decoded_frames": 257,
+      "fps": 30.0,
+      "ok": true
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/source_video/RoboTwin_open_laptop_demo_02_episode_0000035.mp4",
+      "decoded_frames": 157,
+      "fps": 30.0,
+      "ok": true
+    }
+  ],
+  "hdf5": [
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_01_episode_0002.hdf5",
+      "datasets_read": 12
+    },
+    {
+      "file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_02_episode_0049.hdf5",
+      "datasets_read": 12
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_01_episode_0023.hdf5",
+      "datasets_read": 12
+    },
+    {
+      "file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_02_episode_0026.hdf5",
+      "datasets_read": 12
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_01_episode_0016.hdf5",
+      "datasets_read": 12
+    },
+    {
+      "file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_02_episode_0036.hdf5",
+      "datasets_read": 12
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023.hdf5",
+      "datasets_read": 31
+    },
+    {
+      "file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026.hdf5",
+      "datasets_read": 31
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016.hdf5",
+      "datasets_read": 31
+    },
+    {
+      "file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036.hdf5",
+      "datasets_read": 31
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022.hdf5",
+      "datasets_read": 31
+    },
+    {
+      "file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035.hdf5",
+      "datasets_read": 31
+    }
+  ],
+  "models": [
+    {
+      "name": "Robometer",
+      "shards": 2,
+      "bytes": 8900663842,
+      "headers_and_sizes_ok": true
+    },
+    {
+      "name": "ProgressLM",
+      "shards": 2,
+      "bytes": 8131668000,
+      "headers_and_sizes_ok": true
+    },
+    {
+      "name": "RoboBrain2.5",
+      "shards": 1,
+      "bytes": 9653631848,
+      "headers_and_sizes_ok": true
+    },
+    {
+      "name": "Robo-Dopamine-GRM-2.0-8B-Preview",
+      "shards": 2,
+      "bytes": 17534339552,
+      "headers_and_sizes_ok": true
+    }
+  ],
+  "elapsed_s": 2.076701395213604,
+  "inference_started": false
+}

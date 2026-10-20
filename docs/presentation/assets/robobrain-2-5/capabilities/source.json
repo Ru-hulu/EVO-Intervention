@@ -1,0 +1,44 @@
+{
+  "source_pdf": "/Users/hongru/paper_read/CVPRpaper_search/介入时机与benchmark/RoboBrain25.pdf",
+  "pdf_sha256": "b1593026b2c5e8ba23a8a1a3f36e283d520eeed6f5fa68fc43b98cb7d6b63c38",
+  "paper": "RoboBrain 2.5: Depth in Sight, Time in Mind.",
+  "arxiv": "2601.14352v1",
+  "images": [
+    {
+      "file": "spatial-referring.png",
+      "page": 29,
+      "figure": "Fig. 7, Handover Block, left example",
+      "crop_at_360dpi_xywh": [
+        531,
+        474,
+        663,
+        378
+      ],
+      "instruction": "Grasp the red block behind the cylindrical blue pen cup."
+    },
+    {
+      "file": "manipulation-trace.png",
+      "page": 29,
+      "figure": "Fig. 7, Handover Block, right example",
+      "crop_at_360dpi_xywh": [
+        1862,
+        474,
+        665,
+        378
+      ],
+      "instruction": "Pick the red block with the right arm and place it on the green area."
+    }
+  ],
+  "metrics": {
+    "page": 15,
+    "table": 3,
+    "model": "RoboBrain-2.5 (8B) NV",
+    "MSMU": 64.17,
+    "TraceSpatial Success (%)": 44,
+    "baseline": "Qwen3-VL-8B-Inst.",
+    "baseline_MSMU": 43.48,
+    "baseline_TraceSpatial Success (%)": 6
+  },
+  "scope": "Figure 7 is qualitative RoboTwin 2.0 spatial tracing. Table 3 metrics are separate benchmark evaluations; no per-image benchmark attribution or closed-loop motor-control claim.",
+  "extraction": "PDF page rendered directly with Poppler pdftoppm at 360 dpi and clipped to selected image panels. No generative edits, image overlays, or temporal sequencing."
+}

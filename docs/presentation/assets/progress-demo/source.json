@@ -1,0 +1,17 @@
+{
+  "source_video": "/Users/hongru/paper_project/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation-recover_top/chunk-000/mainscope/30FPS/file-020.mp4",
+  "source_video_sha256": "0aaf35ac291782422a54bbfcef8d49f11ff0176406e55880506c6fb82e08461c",
+  "source_predictions": "/Users/hongru/paper_project/RW-RL-Dataset/exp-result/qwen35_2b_validation_30hz_20261012/piperx-bolt-intentional-drop-reinsert-22ep-raw/file-020.json",
+  "source_predictions_sha256": "a70d39bc2ebe138d271959cfdf9186831c583cfd8d03c6571dce9a1de57c4412",
+  "checkpoint": "Qwen3.5-2B epoch-04, as identified by the source report",
+  "episode": 5,
+  "source_frame_start": 4380,
+  "source_frame_end_inclusive": 5291,
+  "frame_count": 912,
+  "fps": 30,
+  "clip_duration_seconds": 30.4,
+  "source_time_start_seconds": 146,
+  "clip": "file-020-ep05.mp4",
+  "alignment": "Clip frame i maps to source frame 4380+i and the corresponding prediction row. H.264 re-encode with no frame rate change. Curves use all 912 original values without smoothing. Video presentation time drives both curves and readouts.",
+  "scope": "Playback of precomputed progress predictions, not real-time inference. Confidence and VLA-frequency prediction are research targets; no confidence values are fabricated."
+}

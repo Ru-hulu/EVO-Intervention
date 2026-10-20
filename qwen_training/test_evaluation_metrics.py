@@ -59,6 +59,21 @@ class MetricsTests(unittest.TestCase):
         self.assertAlmostEqual(result["progress_rmse_pp"], (0.3 * 0.1**2)**0.5 * 100)
         self.assertAlmostEqual(result["weighted_sample_count"], 1)
 
+    def test_invalid_progress_is_counted_without_zero_imputation(self):
+        good, invalid = example(), example()
+        good["predicted_progress"] = 0.63
+        invalid.update(predicted_progress=None, progress_parse_valid=False)
+        result = measure([good, invalid])
+        self.assertEqual(result["progress_invalid_samples"], 1)
+        self.assertEqual(result["progress_parse_valid_rate"], 0.5)
+        self.assertAlmostEqual(result["progress_mae_pp"], 3)
+        self.assertEqual(result["progress_within_5pp"], 0.5)
+        result = measure([invalid])
+        self.assertIsNone(result["progress_mae_pp"])
+        self.assertEqual(result["progress_within_5pp"], 0)
+        self.assertEqual(result["full_state_accuracy"], 1)
+        json.dumps(result, allow_nan=False)
+
     def test_stage_confusion_and_set_order(self):
         row = example()
         predicted = copy.deepcopy(row["target"])

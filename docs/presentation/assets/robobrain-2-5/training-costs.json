@@ -1,0 +1,24 @@
+{
+  "source_pdf": "/Users/hongru/paper_read/CVPRpaper_search/介入时机与benchmark/RoboBrain25.pdf",
+  "pages": [
+    7,
+    10,
+    11,
+    12
+  ],
+  "section": "Sections 3, 3.3, 4; Table 1",
+  "primary_url": "https://arxiv.org/html/2601.14352v1#S4",
+  "training_scope": "Full-model Stage 1 and Stage 2 across general, spatial and temporal tasks, not only reward estimation",
+  "total_samples_approx": 12400000,
+  "stage_1_samples": 8300000,
+  "stage_2_samples": 4100000,
+  "value_estimation_training_samples": 3500000,
+  "nvidia_gpus_per_stage": 512,
+  "gpu_model": "Not specified in the paper beyond NVIDIA",
+  "wall_clock_hours_approx": null,
+  "duration_status": "Not reported in the original paper; proposed 4-7 hours unverified",
+  "stage_1_replay_in_stage_2": "15% according to Section 4.2; no processed-example total inferred",
+  "epochs_per_stage": 1,
+  "verified_on": "2026-10-16",
+  "source_pdf_sha256": "b1593026b2c5e8ba23a8a1a3f36e283d520eeed6f5fa68fc43b98cb7d6b63c38"
+}

@@ -11,6 +11,7 @@ from torchvision.transforms import functional as TF
 
 from qwen_training.prompts import (
     MISMATCHED_PROMPTS, TASK_INTENT, TASK_PROMPT, build_messages, build_training_examples, describe_target,
+    expected_stages,
 )
 
 
@@ -119,8 +120,7 @@ def collate_fn(samples):
                         for sample in samples],
     }
     targets = {
-        "responses": [describe_target(sample["target"]) for sample in samples],
-        "progress": torch.tensor([sample["target"]["progress"] for sample in samples], dtype=torch.float32),
+        "responses": [describe_target(sample["target"], expected_stages(sample["target"])) for sample in samples],
     }
     return inputs, targets
 
@@ -131,8 +131,4 @@ def prepare_training_batch(inputs, seed, mismatched_prompts=MISMATCHED_PROMPTS):
                                        seed=seed, mismatched_prompts=mismatched_prompts)
     inputs["messages"] = examples["messages"]
     inputs["combination_ids"] = examples["combination_ids"]
-    return {
-        "responses": examples["responses"],
-        "progress": torch.tensor(examples["progress"], dtype=torch.float32),
-        "progress_mask": torch.tensor(examples["progress_mask"], dtype=torch.bool),
-    }
+    return {"responses": examples["responses"]}

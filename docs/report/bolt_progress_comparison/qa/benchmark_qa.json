@@ -1,0 +1,184 @@
+{
+  "svg": 16,
+  "sections": 15,
+  "checks": 105,
+  "oldChecks": 7,
+  "duplicateIds": [],
+  "lazyVideos": true,
+  "fail": [],
+  "overflow": false,
+  "mobileOverflow": false,
+  "videoInfo": [
+    {
+      "src": "benchmark/results/media/robodojo__build_tower/query.mp4",
+      "width": 640,
+      "duration": 28.68
+    },
+    {
+      "src": "benchmark/results/media/robodojo__build_tower/reference.mp4",
+      "width": 640,
+      "duration": 29.12
+    },
+    {
+      "src": "benchmark/results/media/robodojo__classify_objects/query.mp4",
+      "width": 640,
+      "duration": 23.16
+    },
+    {
+      "src": "benchmark/results/media/robodojo__classify_objects/reference.mp4",
+      "width": 640,
+      "duration": 42.84
+    },
+    {
+      "src": "benchmark/results/media/robodojo__fold_clothes/query.mp4",
+      "width": 640,
+      "duration": 11.4
+    },
+    {
+      "src": "benchmark/results/media/robodojo__fold_clothes/reference.mp4",
+      "width": 640,
+      "duration": 11.88
+    },
+    {
+      "src": "benchmark/results/media/robodojo__put_bottles_into_dustbin/query.mp4",
+      "width": 640,
+      "duration": 15.76
+    },
+    {
+      "src": "benchmark/results/media/robodojo__put_bottles_into_dustbin/reference.mp4",
+      "width": 640,
+      "duration": 12.6
+    },
+    {
+      "src": "benchmark/results/media/robodojo__stack_bowls/query.mp4",
+      "width": 640,
+      "duration": 23.36
+    },
+    {
+      "src": "benchmark/results/media/robodojo__stack_bowls/reference.mp4",
+      "width": 640,
+      "duration": 22.84
+    },
+    {
+      "src": "benchmark/results/media/robodojo__store_laptop_and_headphones/query.mp4",
+      "width": 640,
+      "duration": 18.52
+    },
+    {
+      "src": "benchmark/results/media/robodojo__store_laptop_and_headphones/reference.mp4",
+      "width": 640,
+      "duration": 26.48
+    },
+    {
+      "src": "benchmark/results/media/robodojo__pour_liquid_into_cup/query.mp4",
+      "width": 640,
+      "duration": 8.12
+    },
+    {
+      "src": "benchmark/results/media/robodojo__pour_liquid_into_cup/reference.mp4",
+      "width": 640,
+      "duration": 8.76
+    },
+    {
+      "src": "benchmark/results/media/robodojo__deposit_coin/query.mp4",
+      "width": 640,
+      "duration": 7.48
+    },
+    {
+      "src": "benchmark/results/media/robodojo__deposit_coin/reference.mp4",
+      "width": 640,
+      "duration": 4.52
+    },
+    {
+      "src": "benchmark/results/media/robodojo__insert_key/query.mp4",
+      "width": 640,
+      "duration": 11.72
+    },
+    {
+      "src": "benchmark/results/media/robodojo__insert_key/reference.mp4",
+      "width": 640,
+      "duration": 11.56
+    },
+    {
+      "src": "benchmark/results/media/robodojo__sweep_blocks/query.mp4",
+      "width": 640,
+      "duration": 20.76
+    },
+    {
+      "src": "benchmark/results/media/robodojo__sweep_blocks/reference.mp4",
+      "width": 640,
+      "duration": 26.24
+    },
+    {
+      "src": "benchmark/results/media/libero__KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/query.mp4",
+      "width": 512,
+      "duration": 6.1
+    },
+    {
+      "src": "benchmark/results/media/libero__KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/reference.mp4",
+      "width": 512,
+      "duration": 7.15
+    },
+    {
+      "src": "benchmark/results/media/libero__KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/query.mp4",
+      "width": 512,
+      "duration": 11.4
+    },
+    {
+      "src": "benchmark/results/media/libero__KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/reference.mp4",
+      "width": 512,
+      "duration": 9.95
+    },
+    {
+      "src": "benchmark/results/media/libero__KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/query.mp4",
+      "width": 512,
+      "duration": 10.1
+    },
+    {
+      "src": "benchmark/results/media/libero__KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/reference.mp4",
+      "width": 512,
+      "duration": 10.1
+    },
+    {
+      "src": "benchmark/results/media/robotwin__place_dual_shoes/query.mp4",
+      "width": 320,
+      "duration": 16.066667
+    },
+    {
+      "src": "benchmark/results/media/robotwin__place_dual_shoes/reference.mp4",
+      "width": 320,
+      "duration": 14.4
+    },
+    {
+      "src": "benchmark/results/media/robotwin__open_laptop/query.mp4",
+      "width": 320,
+      "duration": 17.133333
+    },
+    {
+      "src": "benchmark/results/media/robotwin__open_laptop/reference.mp4",
+      "width": 320,
+      "duration": 10.466667
+    }
+  ],
+  "playResult": true,
+  "errors": [],
+  "media_stream_aborts": [
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robodojo__build_tower/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robodojo__build_tower/query.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robodojo__classify_objects/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robodojo__classify_objects/query.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robodojo__store_laptop_and_headphones/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robodojo__sweep_blocks/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/libero__KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/libero__KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/query.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/libero__KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/query.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/libero__KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/libero__KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/query.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/libero__KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robotwin__place_dual_shoes/query.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robotwin__place_dual_shoes/reference.mp4: net::ERR_ABORTED",
+    "file:///Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/media/robotwin__open_laptop/query.mp4: net::ERR_ABORTED"
+  ],
+  "note": "Chrome may abort media range requests after metadata is loaded or playback is paused. All 30 videos have valid decoded dimensions and durations; sample playback and close-to-pause were verified.",
+  "status": "passed"
+}

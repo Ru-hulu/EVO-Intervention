@@ -1,0 +1,1454 @@
+{
+  "created_date": "2026-10-15",
+  "local_directory": "/Users/hongru/Desktop/Robot_Benchmark_Samples_2026-10-15",
+  "remote_directory": "/root/autodl-tmp/Robot_Benchmark_Samples_2026-10-15",
+  "trajectory_count": 32,
+  "task_count": 16,
+  "primary_preview_count": 32,
+  "additional_original_robotwin_video_count": 6,
+  "hdf5_file_count": 12,
+  "sampling": {
+    "RoboDojo": {
+      "seed": 2026101503,
+      "method": "Success-only. Six Pi_05 tasks with >=2 official successes each; retain the previously downloaded successful pour_liquid_into_cup episode and supplement it from another model; randomly sample three more distinct eligible base tasks and two successes from one eligible model per task."
+    },
+    "LIBERO": {
+      "seed": 2026101501,
+      "method": "Uniform random 3 task files from 130 official task files; 2 distinct random demos per task. All three sampled tasks belong to LIBERO-90."
+    },
+    "RoboTwin": {
+      "seed": 2026101502,
+      "method": "Uniform random 3 demo_clean task archives from the official dataset; 2 distinct random episodes per task."
+    }
+  },
+  "records": [
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "build_tower",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/01_build_tower/clip_01_Pi_05_run0_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/build_tower/Pi_05/arx_x5/0_ckpt_name=cotrain,action_type=joint/2026-06-30_19-25-41/episode_0000000_cam_head_success.mp4",
+      "label": "Pi_05 · run0 · 2026-06-30_19-25-41 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "717"
+          }
+        ],
+        "format": {
+          "duration": "28.680000",
+          "size": "1627992"
+        }
+      },
+      "duration_seconds": 28.68,
+      "sha256": "0482ef940af2aa54a2cca209a65a8b46ab1e9e3488b77efbcc0f5d425073d20b",
+      "thumbnail_file": "thumbnails/01_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "build_tower",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/01_build_tower/clip_02_Pi_05_run0_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/build_tower/Pi_05/arx_x5/0_ckpt_name=cotrain,action_type=joint/2026-06-30_19-25-41/episode_0000001_cam_head_success.mp4",
+      "label": "Pi_05 · run0 · 2026-06-30_19-25-41 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "728"
+          }
+        ],
+        "format": {
+          "duration": "29.120000",
+          "size": "1804351"
+        }
+      },
+      "duration_seconds": 29.12,
+      "sha256": "08725930bffe8d4c27b60e0d50500c3968028cff5179493f946b3b1a42c7d125",
+      "thumbnail_file": "thumbnails/02_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "classify_objects",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/02_classify_objects/clip_01_Pi_05_run2_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/classify_objects/Pi_05/arx_x5/2_ckpt_name=cotrain,action_type=joint/2026-07-01_01-55-45/episode_0000000_cam_head_success.mp4",
+      "label": "Pi_05 · run2 · 2026-07-01_01-55-45 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "579"
+          }
+        ],
+        "format": {
+          "duration": "23.160000",
+          "size": "1516553"
+        }
+      },
+      "duration_seconds": 23.16,
+      "sha256": "a857e11d9e1d2b373b426bcecb66c55351859673a387c18f7aa23604cbd79496",
+      "thumbnail_file": "thumbnails/03_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "classify_objects",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/02_classify_objects/clip_02_Pi_05_run0_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/classify_objects/Pi_05/arx_x5/0_ckpt_name=cotrain,action_type=joint/2026-06-30_17-54-41/episode_0000000_cam_head_success.mp4",
+      "label": "Pi_05 · run0 · 2026-06-30_17-54-41 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "1071"
+          }
+        ],
+        "format": {
+          "duration": "42.840000",
+          "size": "2244566"
+        }
+      },
+      "duration_seconds": 42.84,
+      "sha256": "be0d849bc9bb983e814d37a808da9602c50efd2d9cc674a0c403f69dfd10a8ba",
+      "thumbnail_file": "thumbnails/04_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "fold_clothes",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/03_fold_clothes/clip_01_Pi_05_run2_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/fold_clothes/Pi_05/arx_x5/2_ckpt_name=cotrain,action_type=joint/2026-07-01_07-04-23/episode_0000001_cam_head_success.mp4",
+      "label": "Pi_05 · run2 · 2026-07-01_07-04-23 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "285"
+          }
+        ],
+        "format": {
+          "duration": "11.400000",
+          "size": "789054"
+        }
+      },
+      "duration_seconds": 11.4,
+      "sha256": "43968438270b011a899e24dc455408bf0f34ae7caa27493f04bbda52c9696e5d",
+      "thumbnail_file": "thumbnails/05_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "fold_clothes",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/03_fold_clothes/clip_02_Pi_05_run0_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/fold_clothes/Pi_05/arx_x5/0_ckpt_name=cotrain,action_type=joint/2026-06-30_23-00-57/episode_0000001_cam_head_success.mp4",
+      "label": "Pi_05 · run0 · 2026-06-30_23-00-57 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "297"
+          }
+        ],
+        "format": {
+          "duration": "11.880000",
+          "size": "802242"
+        }
+      },
+      "duration_seconds": 11.88,
+      "sha256": "3bd8677f4798900088ad0394fd77a02223cf97895ee1c316193d7f14f041638b",
+      "thumbnail_file": "thumbnails/06_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "put_bottles_into_dustbin",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/04_put_bottles_into_dustbin/clip_01_Pi_05_run1_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/put_bottles_into_dustbin/Pi_05/arx_x5/1_ckpt_name=cotrain,action_type=joint/2026-07-01_04-42-30/episode_0000000_cam_head_success.mp4",
+      "label": "Pi_05 · run1 · 2026-07-01_04-42-30 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "394"
+          }
+        ],
+        "format": {
+          "duration": "15.760000",
+          "size": "1034807"
+        }
+      },
+      "duration_seconds": 15.76,
+      "sha256": "dcdfe651dea5dddfa3612755b151319061bc665ea4f213fd870321e70f163e17",
+      "thumbnail_file": "thumbnails/07_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "put_bottles_into_dustbin",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/04_put_bottles_into_dustbin/clip_02_Pi_05_run0_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/put_bottles_into_dustbin/Pi_05/arx_x5/0_ckpt_name=cotrain,action_type=joint/2026-06-30_20-21-38/episode_0000001_cam_head_success.mp4",
+      "label": "Pi_05 · run0 · 2026-06-30_20-21-38 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "315"
+          }
+        ],
+        "format": {
+          "duration": "12.600000",
+          "size": "839192"
+        }
+      },
+      "duration_seconds": 12.6,
+      "sha256": "4498f9a77361b45074810bbe19f8eec90363c17f18364e7c20b83a5f6756bdac",
+      "thumbnail_file": "thumbnails/08_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "stack_bowls",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/05_stack_bowls/clip_01_Pi_05_run2_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/stack_bowls/Pi_05/arx_x5/2_ckpt_name=cotrain,action_type=joint/2026-07-01_02-00-31/episode_0000001_cam_head_success.mp4",
+      "label": "Pi_05 · run2 · 2026-07-01_02-00-31 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "584"
+          }
+        ],
+        "format": {
+          "duration": "23.360000",
+          "size": "1148884"
+        }
+      },
+      "duration_seconds": 23.36,
+      "sha256": "b954c805e4f269ebf19edfdfee6654388e08dc5c0e72ac38ecefb50d40e8d09c",
+      "thumbnail_file": "thumbnails/09_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "stack_bowls",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/05_stack_bowls/clip_02_Pi_05_run1_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/stack_bowls/Pi_05/arx_x5/1_ckpt_name=cotrain,action_type=joint/2026-07-01_01-55-19/episode_0000001_cam_head_success.mp4",
+      "label": "Pi_05 · run1 · 2026-07-01_01-55-19 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "571"
+          }
+        ],
+        "format": {
+          "duration": "22.840000",
+          "size": "1101035"
+        }
+      },
+      "duration_seconds": 22.84,
+      "sha256": "4f24f773ba86c544ad522ca7948b44e013848a71c0be8367c119a82ce9f1773c",
+      "thumbnail_file": "thumbnails/10_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "store_laptop_and_headphones",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/06_store_laptop_and_headphones/clip_01_Pi_05_run2_episode5_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/store_laptop_and_headphones/Pi_05/arx_x5/2_ckpt_name=cotrain,action_type=joint/2026-07-01_07-01-01/episode_0000005_cam_head_success.mp4",
+      "label": "Pi_05 · run2 · 2026-07-01_07-01-01 · episode_5",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "463"
+          }
+        ],
+        "format": {
+          "duration": "18.520000",
+          "size": "1196587"
+        }
+      },
+      "duration_seconds": 18.52,
+      "sha256": "ee626f26317fb90ec621b7ea4ca902918b76b54daf0aa78388ed6c67b82e0bae",
+      "thumbnail_file": "thumbnails/11_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "store_laptop_and_headphones",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/06_store_laptop_and_headphones/clip_02_Pi_05_run0_episode4_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/store_laptop_and_headphones/Pi_05/arx_x5/0_ckpt_name=cotrain,action_type=joint/2026-06-30_22-49-04/episode_0000004_cam_head_success.mp4",
+      "label": "Pi_05 · run0 · 2026-06-30_22-49-04 · episode_4",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "662"
+          }
+        ],
+        "format": {
+          "duration": "26.480000",
+          "size": "1636473"
+        }
+      },
+      "duration_seconds": 26.48,
+      "sha256": "a5a9fe7dbaf3c482b0a110f1e4cd9ce512fa388d6bc0c61a7f7a4124f5270559",
+      "thumbnail_file": "thumbnails/12_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05",
+      "task": "pour_liquid_into_cup",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/07_pour_liquid_into_cup/clip_01_Pi_05_run2_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/pour_liquid_into_cup/Pi_05/arx_x5/2_ckpt_name=cotrain,action_type=joint/2026-07-01_06-49-41/episode_0000000_cam_head_success.mp4",
+      "label": "Pi_05 · run2 · 2026-07-01_06-49-41 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "203"
+          }
+        ],
+        "format": {
+          "duration": "8.120000",
+          "size": "328025"
+        }
+      },
+      "duration_seconds": 8.12,
+      "sha256": "deabb5737c7224c00d4cb9c72bd149dfc311d7843fab83cbda5980ba0dd51433",
+      "thumbnail_file": "thumbnails/13_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Pi_05_SF",
+      "task": "pour_liquid_into_cup",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/07_pour_liquid_into_cup/clip_02_Pi_05_SF_run2_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/pour_liquid_into_cup/Pi_05_SF/arx_x5/2_ckpt_name=pi05sf,action_type=joint/2026-07-01_06-36-57/episode_0000001_cam_head_success.mp4",
+      "label": "Pi_05_SF · run2 · 2026-07-01_06-36-57 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "219"
+          }
+        ],
+        "format": {
+          "duration": "8.760000",
+          "size": "386926"
+        }
+      },
+      "duration_seconds": 8.76,
+      "sha256": "37e1dd6439bd71b5f90ccdee80080d1185ceb671b1910db848b5c2c635562cf1",
+      "thumbnail_file": "thumbnails/14_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Liber_wam",
+      "task": "deposit_coin",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/08_deposit_coin/clip_01_Liber_wam_run0_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/deposit_coin/Liber_wam/arx_x5/0_ckpt_name=liber_low_level,action_type=joint/2026-09-15_02-16-13/episode_0000001_cam_head_success.mp4",
+      "label": "Liber_wam · run0 · 2026-09-15_02-16-13 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "187"
+          }
+        ],
+        "format": {
+          "duration": "7.480000",
+          "size": "415227"
+        }
+      },
+      "duration_seconds": 7.48,
+      "sha256": "6e03a8255806fc10e05714615f88913a0a7d6c47a2f2d461e6a76c52093f98ef",
+      "thumbnail_file": "thumbnails/15_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "Liber_wam",
+      "task": "deposit_coin",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/08_deposit_coin/clip_02_Liber_wam_run1_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/deposit_coin/Liber_wam/arx_x5/1_ckpt_name=liber_low_level,action_type=joint/2026-09-15_05-11-17/episode_0000000_cam_head_success.mp4",
+      "label": "Liber_wam · run1 · 2026-09-15_05-11-17 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "113"
+          }
+        ],
+        "format": {
+          "duration": "4.520000",
+          "size": "250797"
+        }
+      },
+      "duration_seconds": 4.52,
+      "sha256": "06785591a227705ccd0edd8707096baa2945f8a4c0783120c5438f19540cf0f7",
+      "thumbnail_file": "thumbnails/16_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "KAI",
+      "task": "insert_key",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/09_insert_key/clip_01_KAI_run2_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/insert_key/KAI/arx_x5/2_ckpt_name=KAI,action_type=joint/2026-09-23_23-21-44/episode_0000000_cam_head_success.mp4",
+      "label": "KAI · run2 · 2026-09-23_23-21-44 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "293"
+          }
+        ],
+        "format": {
+          "duration": "11.720000",
+          "size": "480782"
+        }
+      },
+      "duration_seconds": 11.72,
+      "sha256": "f4c2202b9e4fbb678b83e0bd52b2ed66a8122815de0c765f93a4b08d2c181c8c",
+      "thumbnail_file": "thumbnails/17_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "KAI",
+      "task": "insert_key",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/09_insert_key/clip_02_KAI_run0_episode1_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/insert_key/KAI/arx_x5/0_ckpt_name=KAI,action_type=joint/2026-09-24_02-36-05/episode_0000001_cam_head_success.mp4",
+      "label": "KAI · run0 · 2026-09-24_02-36-05 · episode_1",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "289"
+          }
+        ],
+        "format": {
+          "duration": "11.560000",
+          "size": "518880"
+        }
+      },
+      "duration_seconds": 11.56,
+      "sha256": "f8095d10737d3fb0f4e35a95e5e47ee31331bb0c28ad5f1665c6b863b6ee4fd4",
+      "thumbnail_file": "thumbnails/18_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "VPP2",
+      "task": "sweep_blocks",
+      "sample_number": 1,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/10_sweep_blocks/clip_01_VPP2_run2_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/sweep_blocks/VPP2/arx_x5/2_ckpt_name=joint2b_s100000,action_type=ee/2026-10-05_08-12-48/episode_0000000_cam_head_success.mp4",
+      "label": "VPP2 · run2 · 2026-10-05_08-12-48 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "519"
+          }
+        ],
+        "format": {
+          "duration": "20.760000",
+          "size": "1158244"
+        }
+      },
+      "duration_seconds": 20.76,
+      "sha256": "172fa46bc72d772bd5f5d324a8802851c7b6073d8786b9eda11a2445a5e45baf",
+      "thumbnail_file": "thumbnails/19_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "RoboDojo",
+      "data_kind": "policy_rollout",
+      "model": "VPP2",
+      "task": "sweep_blocks",
+      "sample_number": 2,
+      "outcome": "success",
+      "video_file": "RoboDojo_success_rollouts/10_sweep_blocks/clip_02_VPP2_run1_episode0_success.mp4",
+      "source_url": "https://media.luminis-sim.com/robodojo_eval_videos/sweep_blocks/VPP2/arx_x5/1_ckpt_name=joint2b_s100000,action_type=ee/2026-10-04_20-47-55/episode_0000000_cam_head_success.mp4",
+      "label": "VPP2 · run1 · 2026-10-04_20-47-55 · episode_0",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 640,
+            "height": 480,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "25/1",
+            "avg_frame_rate": "25/1",
+            "nb_frames": "656"
+          }
+        ],
+        "format": {
+          "duration": "26.240000",
+          "size": "1441226"
+        }
+      },
+      "duration_seconds": 26.24,
+      "sha256": "a75934ef3b3ffd9efb82612f1c0fbc67fb3ea87d5d0ddaaa70e7f3e3f0138929",
+      "thumbnail_file": "thumbnails/20_RoboDojo.jpg"
+    },
+    {
+      "benchmark": "LIBERO",
+      "data_kind": "expert_demonstration",
+      "suite": "libero_90",
+      "task": "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl",
+      "sample_number": 1,
+      "episode": 2,
+      "source_demo": "demo_2",
+      "source_url": "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/main/libero_90/KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo.hdf5",
+      "hdf5_file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_01_episode_0002.hdf5",
+      "frame_count": 122,
+      "observation_keys": [
+        "agentview_rgb",
+        "ee_ori",
+        "ee_pos",
+        "ee_states",
+        "eye_in_hand_rgb",
+        "gripper_states",
+        "joint_states"
+      ],
+      "data_frequency_hz": 20,
+      "image_convention": "opengl",
+      "language_instruction": "stack the middle black bowl on the back black bowl",
+      "last_reward": 1.0,
+      "last_done": true,
+      "outcome": "expert_demo",
+      "outcome_note": "Official demonstration dataset; original rewards and dones retained.",
+      "video_file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_01_episode_0002_agentview_wrist.mp4",
+      "views": "left: agentview_rgb; right: eye_in_hand_rgb",
+      "preview_note": "All original observations, at env_args control_freq=20 Hz. OpenGL images flipped vertically following official LIBERO VideoWriter.append_obs; views placed side by side, 2x display scaling. No time cropping or frame dropping.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 512,
+            "height": 256,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "20/1",
+            "avg_frame_rate": "20/1",
+            "nb_frames": "122"
+          }
+        ],
+        "format": {
+          "duration": "6.100000",
+          "size": "398440"
+        }
+      },
+      "duration_seconds": 6.1,
+      "sha256": "be2d309027a98eef7696b4d5453ff67b9e17d9bfa9522e7465d3b7a316503e62",
+      "thumbnail_file": "thumbnails/21_LIBERO.jpg"
+    },
+    {
+      "benchmark": "LIBERO",
+      "data_kind": "expert_demonstration",
+      "suite": "libero_90",
+      "task": "KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl",
+      "sample_number": 2,
+      "episode": 49,
+      "source_demo": "demo_49",
+      "source_url": "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/main/libero_90/KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo.hdf5",
+      "hdf5_file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_02_episode_0049.hdf5",
+      "frame_count": 143,
+      "observation_keys": [
+        "agentview_rgb",
+        "ee_ori",
+        "ee_pos",
+        "ee_states",
+        "eye_in_hand_rgb",
+        "gripper_states",
+        "joint_states"
+      ],
+      "data_frequency_hz": 20,
+      "image_convention": "opengl",
+      "language_instruction": "stack the middle black bowl on the back black bowl",
+      "last_reward": 1.0,
+      "last_done": true,
+      "outcome": "expert_demo",
+      "outcome_note": "Official demonstration dataset; original rewards and dones retained.",
+      "video_file": "LIBERO_demos/01_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl/LIBERO_KITCHEN_SCENE2_stack_the_middle_black_bowl_on_the_back_black_bowl_demo_02_episode_0049_agentview_wrist.mp4",
+      "views": "left: agentview_rgb; right: eye_in_hand_rgb",
+      "preview_note": "All original observations, at env_args control_freq=20 Hz. OpenGL images flipped vertically following official LIBERO VideoWriter.append_obs; views placed side by side, 2x display scaling. No time cropping or frame dropping.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 512,
+            "height": 256,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "20/1",
+            "avg_frame_rate": "20/1",
+            "nb_frames": "143"
+          }
+        ],
+        "format": {
+          "duration": "7.150000",
+          "size": "458955"
+        }
+      },
+      "duration_seconds": 7.15,
+      "sha256": "4550577a85b2a671b8862100baa9426ba703e8cca258416ea5b8a5b05cecb303",
+      "thumbnail_file": "thumbnails/22_LIBERO.jpg"
+    },
+    {
+      "benchmark": "LIBERO",
+      "data_kind": "expert_demonstration",
+      "suite": "libero_90",
+      "task": "KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove",
+      "sample_number": 1,
+      "episode": 23,
+      "source_demo": "demo_23",
+      "source_url": "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/main/libero_90/KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo.hdf5",
+      "hdf5_file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_01_episode_0023.hdf5",
+      "frame_count": 228,
+      "observation_keys": [
+        "agentview_rgb",
+        "ee_ori",
+        "ee_pos",
+        "ee_states",
+        "eye_in_hand_rgb",
+        "gripper_states",
+        "joint_states"
+      ],
+      "data_frequency_hz": 20,
+      "image_convention": "opengl",
+      "language_instruction": "put the right moka pot on the stove",
+      "last_reward": 1.0,
+      "last_done": true,
+      "outcome": "expert_demo",
+      "outcome_note": "Official demonstration dataset; original rewards and dones retained.",
+      "video_file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_01_episode_0023_agentview_wrist.mp4",
+      "views": "left: agentview_rgb; right: eye_in_hand_rgb",
+      "preview_note": "All original observations, at env_args control_freq=20 Hz. OpenGL images flipped vertically following official LIBERO VideoWriter.append_obs; views placed side by side, 2x display scaling. No time cropping or frame dropping.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 512,
+            "height": 256,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "20/1",
+            "avg_frame_rate": "20/1",
+            "nb_frames": "228"
+          }
+        ],
+        "format": {
+          "duration": "11.400000",
+          "size": "465278"
+        }
+      },
+      "duration_seconds": 11.4,
+      "sha256": "9450f00efc08796b133d4b7d8f73be3bc5e4ceea726893d87453b225b18c993a",
+      "thumbnail_file": "thumbnails/23_LIBERO.jpg"
+    },
+    {
+      "benchmark": "LIBERO",
+      "data_kind": "expert_demonstration",
+      "suite": "libero_90",
+      "task": "KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove",
+      "sample_number": 2,
+      "episode": 26,
+      "source_demo": "demo_26",
+      "source_url": "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/main/libero_90/KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo.hdf5",
+      "hdf5_file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_02_episode_0026.hdf5",
+      "frame_count": 199,
+      "observation_keys": [
+        "agentview_rgb",
+        "ee_ori",
+        "ee_pos",
+        "ee_states",
+        "eye_in_hand_rgb",
+        "gripper_states",
+        "joint_states"
+      ],
+      "data_frequency_hz": 20,
+      "image_convention": "opengl",
+      "language_instruction": "put the right moka pot on the stove",
+      "last_reward": 1.0,
+      "last_done": true,
+      "outcome": "expert_demo",
+      "outcome_note": "Official demonstration dataset; original rewards and dones retained.",
+      "video_file": "LIBERO_demos/02_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove/LIBERO_KITCHEN_SCENE8_put_the_right_moka_pot_on_the_stove_demo_02_episode_0026_agentview_wrist.mp4",
+      "views": "left: agentview_rgb; right: eye_in_hand_rgb",
+      "preview_note": "All original observations, at env_args control_freq=20 Hz. OpenGL images flipped vertically following official LIBERO VideoWriter.append_obs; views placed side by side, 2x display scaling. No time cropping or frame dropping.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 512,
+            "height": 256,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "20/1",
+            "avg_frame_rate": "20/1",
+            "nb_frames": "199"
+          }
+        ],
+        "format": {
+          "duration": "9.950000",
+          "size": "412073"
+        }
+      },
+      "duration_seconds": 9.95,
+      "sha256": "28217b389b836ec8d8f931a2060d9d3b414c834de49704cd2d5732a46f47cd24",
+      "thumbnail_file": "thumbnails/24_LIBERO.jpg"
+    },
+    {
+      "benchmark": "LIBERO",
+      "data_kind": "expert_demonstration",
+      "suite": "libero_90",
+      "task": "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it",
+      "sample_number": 1,
+      "episode": 16,
+      "source_demo": "demo_16",
+      "source_url": "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/main/libero_90/KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo.hdf5",
+      "hdf5_file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_01_episode_0016.hdf5",
+      "frame_count": 202,
+      "observation_keys": [
+        "agentview_rgb",
+        "ee_ori",
+        "ee_pos",
+        "ee_states",
+        "eye_in_hand_rgb",
+        "gripper_states",
+        "joint_states"
+      ],
+      "data_frequency_hz": 20,
+      "image_convention": "opengl",
+      "language_instruction": "close the top drawer of the cabinet and put the black bowl on top of it",
+      "last_reward": 1.0,
+      "last_done": true,
+      "outcome": "expert_demo",
+      "outcome_note": "Official demonstration dataset; original rewards and dones retained.",
+      "video_file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_01_episode_0016_agentview_wrist.mp4",
+      "views": "left: agentview_rgb; right: eye_in_hand_rgb",
+      "preview_note": "All original observations, at env_args control_freq=20 Hz. OpenGL images flipped vertically following official LIBERO VideoWriter.append_obs; views placed side by side, 2x display scaling. No time cropping or frame dropping.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 512,
+            "height": 256,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "20/1",
+            "avg_frame_rate": "20/1",
+            "nb_frames": "202"
+          }
+        ],
+        "format": {
+          "duration": "10.100000",
+          "size": "493547"
+        }
+      },
+      "duration_seconds": 10.1,
+      "sha256": "7f7bcc524a579389d26f25146ea0a286d7b09c6e70e77f469ab035401031e06b",
+      "thumbnail_file": "thumbnails/25_LIBERO.jpg"
+    },
+    {
+      "benchmark": "LIBERO",
+      "data_kind": "expert_demonstration",
+      "suite": "libero_90",
+      "task": "KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it",
+      "sample_number": 2,
+      "episode": 36,
+      "source_demo": "demo_36",
+      "source_url": "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/main/libero_90/KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo.hdf5",
+      "hdf5_file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_02_episode_0036.hdf5",
+      "frame_count": 202,
+      "observation_keys": [
+        "agentview_rgb",
+        "ee_ori",
+        "ee_pos",
+        "ee_states",
+        "eye_in_hand_rgb",
+        "gripper_states",
+        "joint_states"
+      ],
+      "data_frequency_hz": 20,
+      "image_convention": "opengl",
+      "language_instruction": "close the top drawer of the cabinet and put the black bowl on top of it",
+      "last_reward": 1.0,
+      "last_done": true,
+      "outcome": "expert_demo",
+      "outcome_note": "Official demonstration dataset; original rewards and dones retained.",
+      "video_file": "LIBERO_demos/03_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it/LIBERO_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet_and_put_the_black_bowl_on_top_of_it_demo_02_episode_0036_agentview_wrist.mp4",
+      "views": "left: agentview_rgb; right: eye_in_hand_rgb",
+      "preview_note": "All original observations, at env_args control_freq=20 Hz. OpenGL images flipped vertically following official LIBERO VideoWriter.append_obs; views placed side by side, 2x display scaling. No time cropping or frame dropping.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 512,
+            "height": 256,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "20/1",
+            "avg_frame_rate": "20/1",
+            "nb_frames": "202"
+          }
+        ],
+        "format": {
+          "duration": "10.100000",
+          "size": "503460"
+        }
+      },
+      "duration_seconds": 10.1,
+      "sha256": "fe72f7b1c9722f111e7404ff21c74c5f1720510a983bf54a5e88b1686e0f5f79",
+      "thumbnail_file": "thumbnails/26_LIBERO.jpg"
+    },
+    {
+      "task": "place_mouse_pad",
+      "sample_number": 1,
+      "episode": 23,
+      "source_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/resolve/main/dataset/place_mouse_pad/demo_clean.zip",
+      "source_archive": "dataset/place_mouse_pad/demo_clean.zip",
+      "config": "demo_clean",
+      "files": [
+        {
+          "path": "01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023.hdf5",
+          "archive_member": "place_mouse_pad/aloha_agilex/data/episode_0000023.hdf5"
+        },
+        {
+          "path": "01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_01_episode_0000023.mp4",
+          "archive_member": "place_mouse_pad/aloha_agilex/video/episode_0000023.mp4"
+        },
+        {
+          "path": "01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023.json",
+          "archive_member": "place_mouse_pad/aloha_agilex/instruction/episode_0000023.json"
+        }
+      ],
+      "benchmark": "RoboTwin",
+      "data_kind": "expert_demonstration",
+      "observation_count": 155,
+      "data_frequency_hz": 15,
+      "camera_names": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist",
+        "cam_third_view"
+      ],
+      "action_keys": [
+        "left_arm_joint_states",
+        "left_ee_joint_states",
+        "left_ee_poses",
+        "right_arm_joint_states",
+        "right_ee_joint_states",
+        "right_ee_poses"
+      ],
+      "instruction_examples": [
+        "Grab the plastic mouse and drop it on Blue mat.",
+        "Take the plastic mouse and put it on the Blue mat.",
+        "Grip the dark gray palm-sized mouse using the right arm and move it to the Blue mat."
+      ],
+      "video_file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023_preview_15fps.mp4",
+      "source_video_file": "RoboTwin_demos/01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_01_episode_0000023.mp4",
+      "hdf5_file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_01_episode_0000023.hdf5",
+      "source_video_frame_count": 156,
+      "source_video_fps": 30.0,
+      "preview_note": "Official MP4 retimed losslessly to HDF5 additional_info/frequency (15 Hz). All original frames retained. Original video contains one more frame than state/action arrays.",
+      "outcome": "expert_demo",
+      "outcome_note": "Public demo_clean expert data; no independent per-episode success boolean was found in this HDF5. Not relabeled as model rollout success.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 320,
+            "height": 240,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "15/1",
+            "avg_frame_rate": "15/1",
+            "nb_frames": "156"
+          }
+        ],
+        "format": {
+          "duration": "10.400000",
+          "size": "69803"
+        }
+      },
+      "duration_seconds": 10.4,
+      "sha256": "50e8eb002c43928a500975638672f7ccef17fc20f102526eca88fe727ff7b089",
+      "thumbnail_file": "thumbnails/27_RoboTwin.jpg"
+    },
+    {
+      "task": "place_mouse_pad",
+      "sample_number": 2,
+      "episode": 26,
+      "source_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/resolve/main/dataset/place_mouse_pad/demo_clean.zip",
+      "source_archive": "dataset/place_mouse_pad/demo_clean.zip",
+      "config": "demo_clean",
+      "files": [
+        {
+          "path": "01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026.hdf5",
+          "archive_member": "place_mouse_pad/aloha_agilex/data/episode_0000026.hdf5"
+        },
+        {
+          "path": "01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_02_episode_0000026.mp4",
+          "archive_member": "place_mouse_pad/aloha_agilex/video/episode_0000026.mp4"
+        },
+        {
+          "path": "01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026.json",
+          "archive_member": "place_mouse_pad/aloha_agilex/instruction/episode_0000026.json"
+        }
+      ],
+      "benchmark": "RoboTwin",
+      "data_kind": "expert_demonstration",
+      "observation_count": 138,
+      "data_frequency_hz": 15,
+      "camera_names": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist",
+        "cam_third_view"
+      ],
+      "action_keys": [
+        "left_arm_joint_states",
+        "left_ee_joint_states",
+        "left_ee_poses",
+        "right_arm_joint_states",
+        "right_ee_joint_states",
+        "right_ee_poses"
+      ],
+      "instruction_examples": [
+        "With the left arm, grab the oval-shaped mouse and position it on Yellow mat.",
+        "Lift the mouse with buttons and wheel using the left arm and drop it on the Yellow colored mat.",
+        "With the left arm, pick up the mouse with ergonomic design and lay it on Yellow mat."
+      ],
+      "video_file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026_preview_15fps.mp4",
+      "source_video_file": "RoboTwin_demos/01_place_mouse_pad/source_video/RoboTwin_place_mouse_pad_demo_02_episode_0000026.mp4",
+      "hdf5_file": "RoboTwin_demos/01_place_mouse_pad/RoboTwin_place_mouse_pad_demo_02_episode_0000026.hdf5",
+      "source_video_frame_count": 139,
+      "source_video_fps": 30.0,
+      "preview_note": "Official MP4 retimed losslessly to HDF5 additional_info/frequency (15 Hz). All original frames retained. Original video contains one more frame than state/action arrays.",
+      "outcome": "expert_demo",
+      "outcome_note": "Public demo_clean expert data; no independent per-episode success boolean was found in this HDF5. Not relabeled as model rollout success.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 320,
+            "height": 240,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "15/1",
+            "avg_frame_rate": "15/1",
+            "nb_frames": "139"
+          }
+        ],
+        "format": {
+          "duration": "9.266667",
+          "size": "70978"
+        }
+      },
+      "duration_seconds": 9.266667,
+      "sha256": "5da2d436c1e782eb17c2cdb6e3ab36751c202190b6883fbd9e63191ca222b99b",
+      "thumbnail_file": "thumbnails/28_RoboTwin.jpg"
+    },
+    {
+      "task": "place_dual_shoes",
+      "sample_number": 1,
+      "episode": 16,
+      "source_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/resolve/main/dataset/place_dual_shoes/demo_clean.zip",
+      "source_archive": "dataset/place_dual_shoes/demo_clean.zip",
+      "config": "demo_clean",
+      "files": [
+        {
+          "path": "02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016.hdf5",
+          "archive_member": "place_dual_shoes/aloha_agilex/data/episode_0000016.hdf5"
+        },
+        {
+          "path": "02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_01_episode_0000016.mp4",
+          "archive_member": "place_dual_shoes/aloha_agilex/video/episode_0000016.mp4"
+        },
+        {
+          "path": "02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016.json",
+          "archive_member": "place_dual_shoes/aloha_agilex/instruction/episode_0000016.json"
+        }
+      ],
+      "benchmark": "RoboTwin",
+      "data_kind": "expert_demonstration",
+      "observation_count": 240,
+      "data_frequency_hz": 15,
+      "camera_names": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist",
+        "cam_third_view"
+      ],
+      "action_keys": [
+        "left_arm_joint_states",
+        "left_ee_joint_states",
+        "left_ee_poses",
+        "right_arm_joint_states",
+        "right_ee_joint_states",
+        "right_ee_poses"
+      ],
+      "instruction_examples": [
+        "Grab both the comfortable shoe for walking and put them into the rectangular shoe-box with orange lid, tips left.",
+        "Use hands to grab two the black and white shoe, tips left, drop into the orange Nike shoe-box with logo.",
+        "Pick up two the rubber-soled shoe with lace-up top, tips left, drop them into the orange cardboard shoe-box."
+      ],
+      "video_file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016_preview_15fps.mp4",
+      "source_video_file": "RoboTwin_demos/02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_01_episode_0000016.mp4",
+      "hdf5_file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_01_episode_0000016.hdf5",
+      "source_video_frame_count": 241,
+      "source_video_fps": 30.0,
+      "preview_note": "Official MP4 retimed losslessly to HDF5 additional_info/frequency (15 Hz). All original frames retained. Original video contains one more frame than state/action arrays.",
+      "outcome": "expert_demo",
+      "outcome_note": "Public demo_clean expert data; no independent per-episode success boolean was found in this HDF5. Not relabeled as model rollout success.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 320,
+            "height": 240,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "15/1",
+            "avg_frame_rate": "15/1",
+            "nb_frames": "241"
+          }
+        ],
+        "format": {
+          "duration": "16.066667",
+          "size": "190529"
+        }
+      },
+      "duration_seconds": 16.066667,
+      "sha256": "0332816d1bbd72388043564d7fa61e170f530ee24ed37c99d91a14190982a064",
+      "thumbnail_file": "thumbnails/29_RoboTwin.jpg"
+    },
+    {
+      "task": "place_dual_shoes",
+      "sample_number": 2,
+      "episode": 36,
+      "source_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/resolve/main/dataset/place_dual_shoes/demo_clean.zip",
+      "source_archive": "dataset/place_dual_shoes/demo_clean.zip",
+      "config": "demo_clean",
+      "files": [
+        {
+          "path": "02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036.hdf5",
+          "archive_member": "place_dual_shoes/aloha_agilex/data/episode_0000036.hdf5"
+        },
+        {
+          "path": "02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_02_episode_0000036.mp4",
+          "archive_member": "place_dual_shoes/aloha_agilex/video/episode_0000036.mp4"
+        },
+        {
+          "path": "02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036.json",
+          "archive_member": "place_dual_shoes/aloha_agilex/instruction/episode_0000036.json"
+        }
+      ],
+      "benchmark": "RoboTwin",
+      "data_kind": "expert_demonstration",
+      "observation_count": 215,
+      "data_frequency_hz": 15,
+      "camera_names": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist",
+        "cam_third_view"
+      ],
+      "action_keys": [
+        "left_arm_joint_states",
+        "left_ee_joint_states",
+        "left_ee_poses",
+        "right_arm_joint_states",
+        "right_ee_joint_states",
+        "right_ee_poses"
+      ],
+      "instruction_examples": [
+        "Pick up two the white shoe with curved top, tips left, drop them into the smooth orange box for shoes.",
+        "Set two the medium shoe with synthetic material into the smooth bright orange box, align tips to the left.",
+        "Use both arms to Place the two white shoe into the rectangular orange shoe-box, tips left."
+      ],
+      "video_file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036_preview_15fps.mp4",
+      "source_video_file": "RoboTwin_demos/02_place_dual_shoes/source_video/RoboTwin_place_dual_shoes_demo_02_episode_0000036.mp4",
+      "hdf5_file": "RoboTwin_demos/02_place_dual_shoes/RoboTwin_place_dual_shoes_demo_02_episode_0000036.hdf5",
+      "source_video_frame_count": 216,
+      "source_video_fps": 30.0,
+      "preview_note": "Official MP4 retimed losslessly to HDF5 additional_info/frequency (15 Hz). All original frames retained. Original video contains one more frame than state/action arrays.",
+      "outcome": "expert_demo",
+      "outcome_note": "Public demo_clean expert data; no independent per-episode success boolean was found in this HDF5. Not relabeled as model rollout success.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 320,
+            "height": 240,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "15/1",
+            "avg_frame_rate": "15/1",
+            "nb_frames": "216"
+          }
+        ],
+        "format": {
+          "duration": "14.400000",
+          "size": "166367"
+        }
+      },
+      "duration_seconds": 14.4,
+      "sha256": "1966f9f27368d757edb5d71f5e3a5752bdbdb61190736539ae9da6f185cf218c",
+      "thumbnail_file": "thumbnails/30_RoboTwin.jpg"
+    },
+    {
+      "task": "open_laptop",
+      "sample_number": 1,
+      "episode": 22,
+      "source_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/resolve/main/dataset/open_laptop/demo_clean.zip",
+      "source_archive": "dataset/open_laptop/demo_clean.zip",
+      "config": "demo_clean",
+      "files": [
+        {
+          "path": "03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022.hdf5",
+          "archive_member": "open_laptop/aloha_agilex/data/episode_0000022.hdf5"
+        },
+        {
+          "path": "03_open_laptop/source_video/RoboTwin_open_laptop_demo_01_episode_0000022.mp4",
+          "archive_member": "open_laptop/aloha_agilex/video/episode_0000022.mp4"
+        },
+        {
+          "path": "03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022.json",
+          "archive_member": "open_laptop/aloha_agilex/instruction/episode_0000022.json"
+        }
+      ],
+      "benchmark": "RoboTwin",
+      "data_kind": "expert_demonstration",
+      "observation_count": 256,
+      "data_frequency_hz": 15,
+      "camera_names": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist",
+        "cam_third_view"
+      ],
+      "action_keys": [
+        "left_arm_joint_states",
+        "left_ee_joint_states",
+        "left_ee_poses",
+        "right_arm_joint_states",
+        "right_ee_joint_states",
+        "right_ee_poses"
+      ],
+      "instruction_examples": [
+        "Lift the smooth laptop with Windows logo underneath's lid upwards.",
+        "Pull up the lid of the laptop featuring black base and hinged screen",
+        "Raise the black laptop with visible hinge lid with the right arm."
+      ],
+      "video_file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022_preview_15fps.mp4",
+      "source_video_file": "RoboTwin_demos/03_open_laptop/source_video/RoboTwin_open_laptop_demo_01_episode_0000022.mp4",
+      "hdf5_file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_01_episode_0000022.hdf5",
+      "source_video_frame_count": 257,
+      "source_video_fps": 30.0,
+      "preview_note": "Official MP4 retimed losslessly to HDF5 additional_info/frequency (15 Hz). All original frames retained. Original video contains one more frame than state/action arrays.",
+      "outcome": "expert_demo",
+      "outcome_note": "Public demo_clean expert data; no independent per-episode success boolean was found in this HDF5. Not relabeled as model rollout success.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 320,
+            "height": 240,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "15/1",
+            "avg_frame_rate": "15/1",
+            "nb_frames": "257"
+          }
+        ],
+        "format": {
+          "duration": "17.133333",
+          "size": "87869"
+        }
+      },
+      "duration_seconds": 17.133333,
+      "sha256": "956981a789f36d528e2e1cbbf3054e90865bf28817f62752bcc4f726bad09ad1",
+      "thumbnail_file": "thumbnails/31_RoboTwin.jpg"
+    },
+    {
+      "task": "open_laptop",
+      "sample_number": 2,
+      "episode": 35,
+      "source_url": "https://huggingface.co/datasets/TianxingChen/RoboTwin2.0/resolve/main/dataset/open_laptop/demo_clean.zip",
+      "source_archive": "dataset/open_laptop/demo_clean.zip",
+      "config": "demo_clean",
+      "files": [
+        {
+          "path": "03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035.hdf5",
+          "archive_member": "open_laptop/aloha_agilex/data/episode_0000035.hdf5"
+        },
+        {
+          "path": "03_open_laptop/source_video/RoboTwin_open_laptop_demo_02_episode_0000035.mp4",
+          "archive_member": "open_laptop/aloha_agilex/video/episode_0000035.mp4"
+        },
+        {
+          "path": "03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035.json",
+          "archive_member": "open_laptop/aloha_agilex/instruction/episode_0000035.json"
+        }
+      ],
+      "benchmark": "RoboTwin",
+      "data_kind": "expert_demonstration",
+      "observation_count": 156,
+      "data_frequency_hz": 15,
+      "camera_names": [
+        "cam_head",
+        "cam_left_wrist",
+        "cam_right_wrist",
+        "cam_third_view"
+      ],
+      "action_keys": [
+        "left_arm_joint_states",
+        "left_ee_joint_states",
+        "left_ee_poses",
+        "right_arm_joint_states",
+        "right_ee_joint_states",
+        "right_ee_poses"
+      ],
+      "instruction_examples": [
+        "Lift the lightweight laptop's lid upwards.",
+        "Lift the sleek laptop design lid completely.",
+        "Gently lift the laptop featuring textured exterior using the left arm"
+      ],
+      "video_file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035_preview_15fps.mp4",
+      "source_video_file": "RoboTwin_demos/03_open_laptop/source_video/RoboTwin_open_laptop_demo_02_episode_0000035.mp4",
+      "hdf5_file": "RoboTwin_demos/03_open_laptop/RoboTwin_open_laptop_demo_02_episode_0000035.hdf5",
+      "source_video_frame_count": 157,
+      "source_video_fps": 30.0,
+      "preview_note": "Official MP4 retimed losslessly to HDF5 additional_info/frequency (15 Hz). All original frames retained. Original video contains one more frame than state/action arrays.",
+      "outcome": "expert_demo",
+      "outcome_note": "Public demo_clean expert data; no independent per-episode success boolean was found in this HDF5. Not relabeled as model rollout success.",
+      "video_metadata": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 320,
+            "height": 240,
+            "pix_fmt": "yuv420p",
+            "r_frame_rate": "15/1",
+            "avg_frame_rate": "15/1",
+            "nb_frames": "157"
+          }
+        ],
+        "format": {
+          "duration": "10.466667",
+          "size": "60827"
+        }
+      },
+      "duration_seconds": 10.466667,
+      "sha256": "a3fe2c807e84ec16c4a43f75446c277fe0a2e6ea47a831dc1a1a01b35f1ae68f",
+      "thumbnail_file": "thumbnails/32_RoboTwin.jpg"
+    }
+  ]
+}

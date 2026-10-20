@@ -304,6 +304,70 @@
     .vlm-sample-table .vlm-purpose { color: var(--blue); font-size: 21px; }
     .vlm-samples figcaption { margin-top: 13px; color: var(--muted); font-size: 17px; line-height: 1.5; }
     .vlm-training-slide .footer { margin-top: auto; }
+    .dual-progress-slide { padding-top: 40px; }
+    .dual-progress-slide .eyebrow { margin-bottom: 12px; }
+    .dual-progress-slide h1 { font-size: 49px; }
+    .s5-inputs { display: grid; grid-template-columns: 540px minmax(0, 1fr); gap: 38px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
+    .s5-inputs h2, .s5-targets h2 { margin: 0 0 9px; font-size: 24px; font-weight: 600; line-height: 1.35; }
+    .s5-inputs h2 span { margin-left: 12px; color: var(--muted); font-size: 18px; font-weight: 400; }
+    .s5-visual { margin: 0; }
+    .s5-frames { display: grid; grid-template-columns: 44px repeat(6, minmax(0, 1fr)); gap: 5px 6px; align-items: center; }
+    .s5-time, .s5-camera { color: var(--muted); font-size: 17px; line-height: 22px; text-align: center; }
+    .s5-time:last-child { color: var(--blue); font-weight: 600; }
+    .s5-camera { text-align: left; white-space: nowrap; }
+    .s5-frames img { display: block; width: 100%; aspect-ratio: 4 / 3; height: auto; object-fit: contain; background: #e9edf1; }
+    .s5-frames img:nth-child(7n) { outline: 2px solid var(--blue); outline-offset: -2px; }
+    .s5-prompt { min-width: 0; }
+    .s5-tagged-text { margin: 0; font-size: 20px; line-height: 1.5; }
+    .s5-tag { color: var(--blue); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 17px; font-weight: 400; white-space: nowrap; }
+    .s5-section-arrow { display: flex; flex: 0 0 34px; align-items: center; justify-content: center; color: var(--blue); }
+    .s5-section-arrow svg { display: block; width: 28px; height: 28px; }
+    .s5-targets { margin: 0; }
+    .s5-target-heading { display: flex; align-items: baseline; gap: 24px; margin-bottom: 5px; }
+    .s5-target-heading h2 { flex: none; margin: 0; }
+    .s5-progress-target { display: flex; align-items: baseline; gap: 24px; margin-top: 6px; padding: 4px 14px; background: #eef3fa; }
+    .s5-progress-target .s5-tagged-text { color: var(--blue); font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .s5-progress-target > span { margin-left: auto; color: var(--muted); font-size: 18px; }
+    .s5-models { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .s5-model { min-width: 0; padding: 12px 22px; border: 2px solid #b78761; border-radius: 5px; background: #fcf8f3; }
+    .s5-online { border-color: #498f85; background: #f4f9f7; }
+    .s5-model h2 { display: flex; align-items: baseline; gap: 18px; margin: 0 0 7px; font-size: 26px; line-height: 1.3; font-weight: 600; }
+    .s5-model h2 span { color: #935023; font-size: 21px; font-weight: 500; }
+    .s5-online h2 span { color: #157065; }
+    .s5-model-flow { display: flex; align-items: center; gap: 15px; min-height: 36px; font-size: 25px; line-height: 1.3; }
+    .s5-model-flow strong { font-weight: 600; }
+    .s5-flow-arrow { color: var(--blue); font-size: 28px; }
+    .s5-offline .s5-model-flow > strong:last-child { color: #935023; }
+    .s5-online .s5-model-flow > strong:last-child { color: #157065; }
+    .s5-model p { margin: 6px 0 0; font-size: 20px; line-height: 1.4; }
+    .s5-output-format { color: #935023; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 18px !important; }
+    .s5-output-format .s5-tag { color: inherit; font-size: inherit; }
+    .s5-auxiliary { color: var(--muted); }
+    .s5-loss { font-size: 24px !important; line-height: 1.4 !important; font-variant-numeric: tabular-nums; }
+    .s5-loss b:first-child { color: var(--blue); }
+    .s5-loss b:last-child { color: #157065; }
+    .s5-loss sub { font-size: .7em; }
+    .s5-deploy { margin-top: 8px !important; font-size: 22px !important; font-weight: 600; }
+    .s5-online .s5-deploy { color: #157065; }
+    .recovery-results-slide { padding-top: 38px; }
+    .recovery-results-slide .eyebrow { margin-bottom: 16px; }
+    .recovery-results-slide h1 { font-size: 49px; }
+    .recovery-intro { margin: 10px 0 0; font-size: 22px; line-height: 1.4; color: var(--muted); }
+    .recovery-legend { display: flex; align-items: center; gap: 32px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 21px; }
+    .recovery-legend span { display: inline-flex; align-items: center; gap: 10px; }
+    .recovery-legend i { display: inline-block; width: 37px; border-top: 3px solid #2458a6; }
+    .recovery-legend .prediction i { border-color: #d77829; }
+    .recovery-legend .rollback i { border-color: #9a668d; border-top-style: dashed; border-top-width: 2px; }
+    .recovery-examples { display: grid; grid-template-columns: 1fr 1fr; gap: 38px; margin-top: 20px; }
+    .recovery-example { min-width: 0; margin: 0; }
+    .recovery-example h2 { margin: 0; font-size: 29px; line-height: 1.4; font-weight: 600; }
+    .recovery-example .recovery-metrics { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 9px 0 13px; font-size: 21px; line-height: 1.5; color: var(--muted); }
+    .recovery-metrics strong { color: var(--blue); font-size: 23px; font-weight: 600; }
+    .recovery-example a, .recovery-example img { display: block; width: 100%; }
+    .recovery-example img { height: auto; aspect-ratio: 6.85 / 3.95; }
+    .recovery-example figcaption { margin-top: 8px; font-size: 22px; line-height: 1.5; }
+    .recovery-evidence-note { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-top: auto; padding: 13px 0 8px; border-top: 1px solid var(--rule); font-size: 19px; line-height: 1.5; color: var(--muted); }
+    .recovery-evidence-note a { flex: none; color: var(--blue); text-underline-offset: 4px; }
     .vlm-example-stages { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 20px 0 0; padding: 14px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font-size: 20px; line-height: 1.5; color: var(--muted); }
     .vlm-example-stages strong { color: var(--blue); font-weight: 600; }
     .vlm-example-layout { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 52px; margin-top: 22px; flex: 1; align-content: start; }
@@ -359,6 +423,41 @@
     body:fullscreen .toolbar { display: none; }
     body:fullscreen .slide { box-shadow: none; }
     @media (max-width: 720px) {
+      .recovery-results-slide h1 { font-size: 29px; }
+      .recovery-intro { font-size: 17px; }
+      .recovery-legend { gap: 15px; font-size: 15px; flex-wrap: wrap; }
+      .recovery-legend span { gap: 7px; }
+      .recovery-legend i { width: 26px; }
+      .recovery-examples { grid-template-columns: 1fr; gap: 30px; }
+      .recovery-example h2 { font-size: 23px; }
+      .recovery-example .recovery-metrics { font-size: 15px; gap: 8px; flex-wrap: wrap; }
+      .recovery-metrics strong { font-size: 18px; }
+      .recovery-example figcaption { font-size: 17px; }
+      .recovery-evidence-note { flex-direction: column; gap: 10px; margin-top: 25px; font-size: 15px; }
+      .dual-progress-slide h1 { font-size: 29px; }
+      .s5-inputs { grid-template-columns: 1fr; gap: 24px; margin-top: 22px; }
+      .s5-inputs h2, .s5-targets h2 { font-size: 20px; }
+      .s5-inputs h2 span { font-size: 15px; margin-left: 8px; }
+      .s5-frames { grid-template-columns: 32px repeat(6, minmax(0, 1fr)); gap: 4px; }
+      .s5-time, .s5-camera { font-size: 12px; }
+      .s5-tagged-text { font-size: 17px; }
+      .s5-tag { font-size: 14px; }
+      .s5-section-arrow { flex-basis: 40px; }
+      .s5-target-heading { display: block; }
+      .s5-target-heading h2 { margin-bottom: 8px; }
+      .s5-progress-target { display: block; padding: 10px 12px; }
+      .s5-progress-target .s5-tagged-text { font-size: 19px; }
+      .s5-progress-target > span { display: block; margin-top: 4px; font-size: 14px; }
+      .s5-models { grid-template-columns: 1fr; gap: 18px; }
+      .s5-targets { margin-bottom: 28px; }
+      .s5-model { padding: 16px; }
+      .s5-model h2 { font-size: 25px; gap: 14px; }
+      .s5-model h2 span { font-size: 18px; }
+      .s5-model-flow { gap: 10px; font-size: 20px; flex-wrap: wrap; }
+      .s5-model p { font-size: 17px; }
+      .s5-output-format { font-size: 14px !important; white-space: normal; overflow-wrap: anywhere; }
+      .s5-loss { font-size: 21px !important; }
+      .s5-deploy { font-size: 19px !important; }
       .vlm-example-stages { gap: 8px 18px; margin-top: 22px; font-size: 14px; }
       .vlm-example-layout { grid-template-columns: 1fr; gap: 26px; }
       .vlm-example-column + .vlm-example-column { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 24px; }
@@ -769,298 +868,86 @@
           <span class="page-number" aria-label="第 4 页">04</span>
         </footer>
       </article>
-      <article class="slide vlm-training-slide" id="slide-5" data-title="图像事实与任务要求的联合监督" aria-labelledby="state-prediction-title" hidden>
+      <article class="slide vlm-training-slide dual-progress-slide" id="slide-5" data-title="思维链进度预测" aria-labelledby="state-prediction-title" hidden>
         <header>
-          <div class="eyebrow"><span class="section-name">基本方案 · VLM 训练输入与监督</span><span>EVO-Inter</span></div>
-          <h1 id="state-prediction-title">图像事实与任务要求的联合监督</h1>
-          <p class="state-intro">意图与记忆<strong>对齐图像</strong>，进度与预期阶段<strong>对齐任务 prompt</strong>。</p>
+          <div class="eyebrow"><span class="section-name">基本方案 · 两种进度预测模型</span><span>EVO-Inter</span></div>
+          <h1 id="state-prediction-title">思维链进度预测</h1>
         </header>
-        <div class="vlm-supervision-flow" aria-label="图像、可选记忆和任务指令输入 VLM，输出按图像与任务分别监督">
-          <section class="vlm-shared-input" aria-label="训练输入">
-            <h2>图像 + 记忆 + prompt</h2>
-            <p>三视角：当前图像与短期历史</p>
-            <p>长期记忆可选：有／无／少量错误</p>
+        <div class="s5-inputs">
+          <figure class="s5-visual" aria-label="真实装配样本：三个同步视角，每个视角六个时刻，共十八张图片">
+            <h2>共同视觉输入<span>3 个视角 × 6 帧 = 18 张图像</span></h2>
+            <div class="s5-frames">
+              <span aria-hidden="true"></span><span class="s5-time">t1</span><span class="s5-time">t2</span><span class="s5-time">t3</span><span class="s5-time">t4</span><span class="s5-time">t5</span><span class="s5-time">t6</span>
+              <span class="s5-camera">顶部</span><img src="assets/training-input/top-t1.jpg" alt="顶部视角第 1 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/top-t2.jpg" alt="顶部视角第 2 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/top-t3.jpg" alt="顶部视角第 3 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/top-t4.jpg" alt="顶部视角第 4 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/top-t5.jpg" alt="顶部视角第 5 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/top-t6.jpg" alt="顶部视角第 6 个时刻的装配观测" width="640" height="480" loading="eager">
+              <span class="s5-camera">左腕</span><img src="assets/training-input/left-t1.jpg" alt="左腕视角第 1 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/left-t2.jpg" alt="左腕视角第 2 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/left-t3.jpg" alt="左腕视角第 3 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/left-t4.jpg" alt="左腕视角第 4 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/left-t5.jpg" alt="左腕视角第 5 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/left-t6.jpg" alt="左腕视角第 6 个时刻的装配观测" width="640" height="480" loading="eager">
+              <span class="s5-camera">右腕</span><img src="assets/training-input/right-t1.jpg" alt="右腕视角第 1 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/right-t2.jpg" alt="右腕视角第 2 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/right-t3.jpg" alt="右腕视角第 3 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/right-t4.jpg" alt="右腕视角第 4 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/right-t5.jpg" alt="右腕视角第 5 个时刻的装配观测" width="640" height="480" loading="eager"><img src="assets/training-input/right-t6.jpg" alt="右腕视角第 6 个时刻的装配观测" width="640" height="480" loading="eager">
+            </div>
+          </figure>
+          <section class="s5-prompt" aria-labelledby="s5-input-title">
+            <h2 id="s5-input-title">任务 prompt + 基本信息<span>观测前的状态</span></h2>
+            <p class="s5-tagged-text"><code class="s5-tag">&lt;prompt&gt;</code>当前任务是装配螺栓<code class="s5-tag">&lt;/prompt&gt;</code><wbr><code class="s5-tag">&lt;description&gt;</code>任务一共有四个阶段：拿起套筒、拿起螺钉、将螺钉和套筒对齐并插入、将装配好的组件放入盒子。<code class="s5-tag">&lt;/description&gt;</code><wbr><code class="s5-tag">&lt;nowstage&gt;</code>拿起螺钉<code class="s5-tag">&lt;/nowstage&gt;</code><wbr><code class="s5-tag">&lt;finishstage&gt;</code>拿起套筒<code class="s5-tag">&lt;/finishstage&gt;</code><wbr><code class="s5-tag">&lt;reststage&gt;</code>对齐并插入、组件入盒<code class="s5-tag">&lt;/reststage&gt;</code><wbr><code class="s5-tag">&lt;nextstage&gt;</code>对齐并插入<code class="s5-tag">&lt;/nextstage&gt;</code></p>
           </section>
-          <span class="vlm-connector" aria-hidden="true">→</span>
-          <div class="vlm-core">VLM</div>
-          <span class="vlm-connector" aria-hidden="true">→</span>
-          <div class="vlm-supervision-targets">
-            <section aria-label="四类样本的意图和长期记忆均与图像一致">
-              <p class="vlm-target-basis">依据图像监督</p>
-              <h2>意图与长期记忆</h2>
-              <p class="vlm-target-detail">四类样本均保留这两项监督</p>
-            </section>
-            <section class="vlm-task-target" aria-label="进度和预期阶段以任务指令为参照，监督方式随样本调整">
-              <p class="vlm-target-basis">依据任务 prompt 监督</p>
-              <h2>进度与预期阶段</h2>
-              <p class="vlm-target-detail">pₜ 与 expect-set，按下表调整</p>
-            </section>
-          </div>
         </div>
-        <figure class="vlm-samples" aria-label="四类训练样本的输入变化、监督与目的">
-          <table class="vlm-sample-table" aria-describedby="vlm-sample-note">
-            <colgroup><col><col><col><col><col></colgroup>
-            <thead><tr><th scope="col">训练样本</th><th scope="col">任务 prompt</th><th scope="col">进度 pₜ 监督</th><th scope="col">预期阶段 expect-set</th><th scope="col">训练目的</th></tr></thead>
-            <tbody>
-              <tr>
-                <th scope="row"><span class="vlm-sample-number">01</span>正常匹配</th>
-                <td data-label="任务 prompt"><div>与图像匹配</div></td>
-                <td data-label="进度 pₜ"><div>当前任务的有效进度</div></td>
-                <td data-label="expect-set"><div>按任务要求监督</div></td>
-                <td data-label="训练目的" class="vlm-purpose"><div>依据短期观测<br>预测任务进度</div></td>
-              </tr>
-              <tr>
-                <th scope="row"><span class="vlm-sample-number">02</span>指令错配</th>
-                <td data-label="任务 prompt"><div><strong>与图像错配</strong></div></td>
-                <td data-label="进度 pₜ"><div><strong>保留共享前置进度</strong><small>没有共享前置则为 0</small></div></td>
-                <td data-label="expect-set"><div>仍按任务要求监督</div></td>
-                <td data-label="训练目的" class="vlm-purpose"><div>识别实际阶段<br>区分行为与任务要求</div></td>
-              </tr>
-              <tr>
-                <th scope="row"><span class="vlm-sample-number">03</span>时序异常</th>
-                <td data-label="任务 prompt"><div>与图像匹配</div></td>
-                <td data-label="进度 pₜ"><div>计算有效进度<small>仅在时序正常时增加</small></div></td>
-                <td data-label="expect-set"><div>与实际阶段 nowid<br><strong>不一致</strong></div></td>
-                <td data-label="训练目的" class="vlm-purpose"><div>学习阶段的前置依赖</div></td>
-              </tr>
-              <tr>
-                <th scope="row"><span class="vlm-sample-number">04</span>无任务指令</th>
-                <td data-label="任务 prompt"><div><strong>不提供</strong></div></td>
-                <td data-label="进度 pₜ"><div><strong>不监督</strong></div></td>
-                <td data-label="expect-set"><div>无监督目标</div></td>
-                <td data-label="训练目的" class="vlm-purpose"><div>防止意图照抄 prompt</div></td>
-              </tr>
-            </tbody>
-          </table>
-          <figcaption id="vlm-sample-note">expect-set：任务要求的预期阶段集合。nowid：实际执行阶段。意图 intention 始终依据图像监督。</figcaption>
-        </figure>
+        <div class="s5-section-arrow" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none"><path d="M14 2v22m-8-8 8 8 8-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="s5-models" aria-label="分别训练离线文字进度模型和在线 MLP 进度模型">
+          <section class="s5-model s5-offline" aria-labelledby="s5-offline-title">
+            <h2 id="s5-offline-title">离线 VLM<span>进度嵌入思维链</span></h2>
+            <div class="s5-model-flow"><strong>VLM</strong><span class="s5-flow-arrow" aria-hidden="true">→</span><strong>思维链</strong><span class="s5-flow-arrow" aria-hidden="true">→</span><strong>文字进度</strong></div>
+            <p>思维链输出意图、阶段，并包含逐帧进度：</p>
+            <p class="s5-output-format"><code class="s5-tag">&lt;progress&gt;</code>0.5, 0.6, 0.7, 0.8, 0.9, 0.92<code class="s5-tag">&lt;/progress&gt;</code></p>
+            <p class="s5-deploy">部署：逐 Token 解码，再读取进度</p>
+          </section>
+          <section class="s5-model s5-online" aria-labelledby="s5-online-title">
+            <h2 id="s5-online-title">在线 VLM<span>MLP 直接回归进度</span></h2>
+            <div class="s5-model-flow"><strong>VLM 最后一层</strong><span class="s5-flow-arrow" aria-hidden="true">→</span><strong>MLP</strong><span class="s5-flow-arrow" aria-hidden="true">→</span><strong>p₁, …, p₆</strong></div>
+            <p class="s5-auxiliary">思维链仅作辅助训练，不含进度真值。</p>
+            <p class="s5-loss">L = <b>0.7</b> L<sub>思维链</sub> + <b>0.3</b> L<sub>进度</sub></p>
+            <p class="s5-deploy">部署：一次前向，无需解码思维链</p>
+          </section>
+        </div>
+        <div class="s5-section-arrow" aria-hidden="true"><svg viewBox="0 0 28 28" fill="none"><path d="M14 2v22m-8-8 8 8 8-8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <section class="s5-targets" aria-labelledby="s5-target-title">
+          <div class="s5-target-heading">
+            <h2 id="s5-target-title">输出 / 监督 · 当前图像状态</h2>
+            <p class="s5-tagged-text"><code class="s5-tag">&lt;intention&gt;</code>当前正在进行的任务是插螺栓<code class="s5-tag">&lt;/intention&gt;</code></p>
+          </div>
+          <p class="s5-tagged-text"><code class="s5-tag">&lt;nowstage&gt;</code>对齐并插入<code class="s5-tag">&lt;/nowstage&gt;</code><wbr><code class="s5-tag">&lt;finishstage&gt;</code>拿起螺钉、拿起套筒<code class="s5-tag">&lt;/finishstage&gt;</code><wbr><code class="s5-tag">&lt;reststage&gt;</code>组件入盒<code class="s5-tag">&lt;/reststage&gt;</code><wbr><code class="s5-tag">&lt;nextstage&gt;</code>组件入盒<code class="s5-tag">&lt;/nextstage&gt;</code></p>
+          <div class="s5-progress-target" aria-label="六个时刻的进度格式示例，不是展示图片的实测标签">
+            <p class="s5-tagged-text"><code class="s5-tag">&lt;progress&gt;</code>0.5, 0.6, 0.7, 0.8, 0.9, 0.92<code class="s5-tag">&lt;/progress&gt;</code></p>
+            <span>t₁ → t₆ · 格式示例</span>
+          </div>
+        </section>
         <footer class="footer"><span class="page-number" aria-label="第 5 页">05</span></footer>
       </article>
-      <article class="slide vlm-example-slide" id="slide-6" data-title="正常匹配的输入输出示例" aria-labelledby="vlm-example-title" hidden>
+      <article class="slide recovery-results-slide" id="slide-6" data-title="恢复过程中的进度预测" aria-labelledby="recovery-results-title" hidden>
         <header>
-          <div class="eyebrow"><span class="section-name">训练样例 · 正常匹配</span><span>EVO-Inter</span></div>
-          <h1 id="vlm-example-title">螺钉装配的输入与输出</h1>
+          <div class="eyebrow"><span class="section-name">模型效果 · 恢复样例</span><span>EVO-Inter</span></div>
+          <h1 id="recovery-results-title">恢复过程中的进度预测</h1>
+          <p class="recovery-intro">已有 Qwen3.5-2B 检查点 · epoch-04 · 验证集逐帧闭环评估</p>
         </header>
-        <div class="vlm-example-stages" aria-label="本例的四个任务阶段">
-          <span>拿起套筒</span><span>拿起螺钉</span><strong>将螺钉和套筒对齐并插入</strong><span>将装配好的组件放入盒子</span>
+        <div class="recovery-legend" aria-label="蓝线是真值，橙线是预测，紫色虚线是真值进度回退">
+          <span><i aria-hidden="true"></i>进度真值</span>
+          <span class="prediction"><i aria-hidden="true"></i>模型预测</span>
+          <span class="rollback"><i aria-hidden="true"></i>真值回退时刻</span>
         </div>
-        <div class="vlm-example-layout">
-          <section class="vlm-example-column" aria-labelledby="vlm-example-input-title">
-            <h2 id="vlm-example-input-title">输入 VLM</h2>
-            <section class="vlm-example-item vlm-example-prompt">
-              <h3>任务 prompt</h3>
-              <p>将螺丝插入螺栓中</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>三视角图像（内容示意）</h3>
-              <p>短期历史：先后拿起套筒和螺钉。<br>当前观测：夹爪持有两者，正对齐并插入。</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>长期记忆（上一状态）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>拿起螺钉</dd></div>
-                <div><dt>已完成</dt><dd>拿起套筒</dd></div>
-                <div><dt>待执行</dt><dd>对齐并插入、组件入盒</dd></div>
-              </dl>
-            </section>
-          </section>
-          <section class="vlm-example-column" aria-labelledby="vlm-example-output-title">
-            <h2 id="vlm-example-output-title">输出 / 监督目标</h2>
-            <section class="vlm-example-item">
-              <h3>实际意图 intention</h3>
-              <p>将螺丝插入螺栓中</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>更新后的长期记忆（依据图像）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>将螺钉和套筒对齐并插入</dd></div>
-                <div><dt>已完成</dt><dd>拿起套筒、拿起螺钉</dd></div>
-                <div><dt>待执行</dt><dd>将装配好的组件放入盒子</dd></div>
-              </dl>
-            </section>
-            <div class="vlm-example-task" aria-label="依据任务 prompt 的进度和预期阶段监督">
-              <section>
-                <h3>有效任务进度（示意）</h3>
-                <p class="vlm-example-value">pₜ = 0.60</p>
-              </section>
-              <section>
-                <h3>预期阶段 expect-set</h3>
-                <p class="vlm-example-stage-value">将螺钉和套筒对齐并插入</p>
-              </section>
-            </div>
-          </section>
+        <div class="recovery-examples">
+          <figure class="recovery-example">
+            <h2>单次回退后的恢复</h2>
+            <p class="recovery-metrics"><span>file-020 · episode 5</span><strong>MAE 5.54 个百分点</strong></p>
+            <a href="assets/validation-recovery/file-020-ep05.svg" target="_blank" rel="noopener" aria-label="查看 file-020 episode 5 的完整进度曲线"><img src="assets/validation-recovery/file-020-ep05.svg" width="1233" height="711" alt="912 帧的进度真值与预测：17.6 秒真值回退，预测随后下降，并随任务继续推进而回升。"></a>
+            <figcaption>17.6 s 发生回退，预测下降后随进展恢复。</figcaption>
+          </figure>
+          <figure class="recovery-example">
+            <h2>两次回退的连续恢复</h2>
+            <p class="recovery-metrics"><span>file-010 · episode 3</span><strong>MAE 11.34 个百分点</strong></p>
+            <a href="assets/validation-recovery/file-010-ep03.svg" target="_blank" rel="noopener" aria-label="查看 file-010 episode 3 的完整进度曲线"><img src="assets/validation-recovery/file-010-ep03.svg" width="1233" height="711" alt="1410 帧的进度真值与预测：20.6 秒和 35.4 秒两次真值回退，预测在附近下降，第二次响应偏早，恢复段仍有低估。"></a>
+            <figcaption>20.6 / 35.4 s 两次回退；第二次响应偏早。</figcaption>
+          </figure>
         </div>
+        <div class="recovery-evidence-note"><span>保留全部逐帧预测；30 Hz 是离线预测密度，不代表实时推理速度。</span><a href="../../../RW-RL-Dataset/exp-result/qwen35_2b_validation_30hz_20261012/report.html#transitions" target="_blank" rel="noopener">查看完整报告 ↗</a></div>
         <footer class="footer"><span class="page-number" aria-label="第 6 页">06</span></footer>
       </article>
-      <article class="slide vlm-example-slide" id="slide-7" data-title="指令错配的输入输出示例" aria-labelledby="vlm-example-7-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">训练样例 · 指令错配</span><span>EVO-Inter</span></div>
-          <h1 id="vlm-example-7-title">指令错配的输入与输出</h1>
-        </header>
-        <div class="vlm-example-stages" aria-label="指令任务、观测任务与共享前置阶段">
-          <span>指令任务：拿起水杯</span><span>观测任务：螺钉装配</span><strong>无共享前置阶段</strong>
-        </div>
-        <div class="vlm-example-layout">
-          <section class="vlm-example-column" aria-labelledby="vlm-example-7-input-title">
-            <h2 id="vlm-example-7-input-title">输入 VLM</h2>
-            <section class="vlm-example-item vlm-example-prompt">
-              <h3>任务 prompt</h3>
-              <p class="vlm-example-mismatch">拿起水杯</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>三视角图像（内容示意）</h3>
-              <p>短期历史：先后拿起套筒和螺钉。<br>当前观测：夹爪持有两者，正对齐并插入。</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>长期记忆（上一状态）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>拿起螺钉</dd></div>
-                <div><dt>已完成</dt><dd>拿起套筒</dd></div>
-                <div><dt>待执行</dt><dd>对齐并插入、组件入盒</dd></div>
-              </dl>
-            </section>
-          </section>
-          <section class="vlm-example-column" aria-labelledby="vlm-example-7-output-title">
-            <h2 id="vlm-example-7-output-title">输出 / 监督目标</h2>
-            <section class="vlm-example-item">
-              <h3>实际意图 intention</h3>
-              <p class="vlm-example-mismatch">将螺丝插入螺栓中</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>更新后的长期记忆（依据图像）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>将螺钉和套筒对齐并插入</dd></div>
-                <div><dt>已完成</dt><dd>拿起套筒、拿起螺钉</dd></div>
-                <div><dt>待执行</dt><dd>将装配好的组件放入盒子</dd></div>
-              </dl>
-            </section>
-            <div class="vlm-example-task" aria-label="依据任务 prompt 的进度和预期阶段监督">
-              <section>
-                <h3>有效任务进度</h3>
-                <p class="vlm-example-value">pₜ = 0</p>
-              </section>
-              <section>
-                <h3>预期阶段 expect-set</h3>
-                <p class="vlm-example-stage-value">拿起水杯</p>
-              </section>
-            </div>
-          </section>
-        </div>
-        <footer class="footer"><span class="page-number" aria-label="第 7 页">07</span></footer>
-      </article>
-      <article class="slide vlm-example-slide" id="slide-8" data-title="时序异常的输入输出示例" aria-labelledby="vlm-example-8-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">训练样例 · 时序异常</span><span>EVO-Inter</span></div>
-          <h1 id="vlm-example-8-title">时序异常的输入与输出</h1>
-        </header>
-        <div class="vlm-example-stages" aria-label="本例的四个任务阶段">
-          <span>拿起物品</span><span>打开盒盖</span><strong>将物品放入盒子</strong><span>合上盒盖</span>
-        </div>
-        <div class="vlm-example-layout">
-          <section class="vlm-example-column" aria-labelledby="vlm-example-8-input-title">
-            <h2 id="vlm-example-8-input-title">输入 VLM</h2>
-            <section class="vlm-example-item vlm-example-prompt">
-              <h3>任务 prompt</h3>
-              <p>将物品收进盒子并合上盒盖。</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>三视角图像（内容示意）</h3>
-              <p>短期历史：已拿起物品，盒盖始终关闭。<br>当前观测：盒盖未开，正尝试把物品放入盒子。</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>长期记忆（上一状态）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>拿起物品</dd></div>
-                <div><dt>已完成</dt><dd>无</dd></div>
-                <div><dt>待执行</dt><dd>打开盒盖、放入物品、合上盒盖</dd></div>
-              </dl>
-            </section>
-          </section>
-          <section class="vlm-example-column" aria-labelledby="vlm-example-8-output-title">
-            <h2 id="vlm-example-8-output-title">输出 / 监督目标</h2>
-            <section class="vlm-example-item">
-              <h3>实际意图 intention</h3>
-              <p>将物品收进盒子并合上盒盖</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>更新后的长期记忆（依据图像）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>尝试将物品放入盒子</dd></div>
-                <div><dt>已完成</dt><dd>拿起物品</dd></div>
-                <div><dt>待执行</dt><dd>打开盒盖、合上盒盖</dd></div>
-              </dl>
-            </section>
-            <div class="vlm-example-task" aria-label="依据任务 prompt 的进度和预期阶段监督">
-              <section>
-                <h3>有效进度（不变，示意）</h3>
-                <p class="vlm-example-value">pₜ = 0.25</p>
-              </section>
-              <section>
-                <h3>预期阶段 expect-set</h3>
-                <p class="vlm-example-stage-value">打开盒盖</p>
-              </section>
-            </div>
-          </section>
-        </div>
-        <footer class="footer"><span class="page-number" aria-label="第 8 页">08</span></footer>
-      </article>
-      <article class="slide vlm-example-slide" id="slide-9" data-title="无任务指令的输入输出示例" aria-labelledby="vlm-example-9-title" hidden>
-        <header>
-          <div class="eyebrow"><span class="section-name">训练样例 · 无任务指令</span><span>EVO-Inter</span></div>
-          <h1 id="vlm-example-9-title">无任务指令的输入与输出：依据图片推理当前状态</h1>
-        </header>
-        <div class="vlm-example-stages" aria-label="本例的四个任务阶段">
-          <span>拿起套筒</span><span>拿起螺钉</span><strong>将螺钉和套筒对齐并插入</strong><span>将装配好的组件放入盒子</span>
-        </div>
-        <div class="vlm-example-layout">
-          <section class="vlm-example-column" aria-labelledby="vlm-example-9-input-title">
-            <h2 id="vlm-example-9-input-title">输入 VLM</h2>
-            <section class="vlm-example-item vlm-example-prompt">
-              <h3>任务 prompt</h3>
-              <p>不提供</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>三视角图像（内容示意）</h3>
-              <p>短期历史：先后拿起套筒和螺钉。<br>当前观测：夹爪持有两者，正对齐并插入。</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>长期记忆（上一状态）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>拿起螺钉</dd></div>
-                <div><dt>已完成</dt><dd>拿起套筒</dd></div>
-                <div><dt>待执行</dt><dd>对齐并插入、组件入盒</dd></div>
-              </dl>
-            </section>
-          </section>
-          <section class="vlm-example-column" aria-labelledby="vlm-example-9-output-title">
-            <h2 id="vlm-example-9-output-title">输出 / 监督目标</h2>
-            <section class="vlm-example-item">
-              <h3>实际意图 intention</h3>
-              <p>将螺丝插入螺栓中</p>
-            </section>
-            <section class="vlm-example-item">
-              <h3>更新后的长期记忆（依据图像）</h3>
-              <dl class="vlm-example-memory">
-                <div><dt>正在执行</dt><dd>将螺钉和套筒对齐并插入</dd></div>
-                <div><dt>已完成</dt><dd>拿起套筒、拿起螺钉</dd></div>
-                <div><dt>待执行</dt><dd>将装配好的组件放入盒子</dd></div>
-              </dl>
-            </section>
-            <div class="vlm-example-task" aria-label="未提供任务指令，进度和预期阶段不设监督目标">
-              <section>
-                <h3>任务进度监督</h3>
-                <p class="vlm-example-value">不监督</p>
-              </section>
-              <section>
-                <h3>预期阶段 expect-set</h3>
-                <p class="vlm-example-stage-value">无监督目标</p>
-              </section>
-            </div>
-          </section>
-        </div>
-        <footer class="footer"><span class="page-number" aria-label="第 9 页">09</span></footer>
-      </article>
-      <article class="slide" id="slide-10" data-title="三类需要介入的异常" aria-labelledby="modal-summary-title" hidden>
+      <article class="slide" id="slide-7" data-title="三类需要介入的异常" aria-labelledby="modal-summary-title" hidden>
         <header>
           <div class="eyebrow"><span class="section-name">介入时机 · 核心异常模态</span><span>EVO-Inter</span></div>
           <h1 id="modal-summary-title">三类需要介入的异常</h1>
@@ -1087,13 +974,13 @@
           </section>
         </div>
         <section class="goal modal-conclusion"><span class="goal-label">判定依据</span><p>停滞结合历史判断，时序与意图结合任务要求判断。</p></section>
-        <footer class="footer"><span class="page-number" aria-label="第 10 页">10</span></footer>
+        <footer class="footer"><span class="page-number" aria-label="第 7 页">07</span></footer>
       </article>
 
     </div>
     <div class="toolbar" aria-label="演示控制">
       <button type="button" id="previous-slide" aria-label="上一页">上一页</button>
-      <span id="page-status" role="status" aria-live="polite">1 / 10</span>
+      <span id="page-status" role="status" aria-live="polite">1 / 7</span>
       <button type="button" id="next-slide" aria-label="下一页">下一页</button>
       <button type="button" id="fullscreen">全屏演示</button>
       <span id="display-status" role="status" aria-live="polite"></span>
@@ -1105,22 +992,24 @@
     Also checked the user's local draft: paper_read/CVPRpaper_search/report/tmpabstract.md.
     Automatic intervention timing and action generation are proposed research directions,
     not completed capabilities or measured results of this project.
-    Slide 5 follows the user's revised training-supervision matrix:
-    assets/reference/vlm-training-supervision-reference.png
-    The source image was supplied as codex-clipboard-4c1ccaea-8741-48a4-ba27-cfa992914f5e.png.
-    All four sample types include short visual history. The three-camera
-    current/history observation setup follows the user's existing VLM design.
-    Input long-term memory is optional: present, absent, or containing a small
-    number of errors. In every type, intention and output long-term memory
-    are supervised against the observed images, not the desired task answer.
-    Progress p_t and expect-set are referenced to the task prompt. With a
-    mismatched prompt, progress retains only shared prerequisite progress,
-    or zero if there is none. With a temporal-order error, effective progress
-    must be calculated and only grows for valid ordering; expect-set differs
-    from the actually executed stage nowid. Without a task prompt, p_t has no
-    supervision and expect-set has no target; image-grounded targets remain.
-    The mismatch examples also supervise recognition of the actual stage.
-    These are training objectives, not measured model capabilities.
+    Slide 5 is ordered input, models, then output/supervision per the user's comment.
+    Revised per the user's 2026-10-14 design. Two separately trained models:
+    offline autoregressive reasoning with per-frame progress embedded in text;
+    online VLM features to MLP, with 0.7 reasoning loss + 0.3 progress loss.
+    Online reasoning is an auxiliary training task and excludes progress ground-truth
+    values. Deployment uses one forward pass and does not generate reasoning text.
+    These are the proposed training/deployment paths, not claims of implemented or
+    benchmarked online latency, and no distillation/teacher link is asserted.
+    Visual input is three synchronized views at six time points (18 images).
+    Real images: assets/training-input/, provenance and hashes in sources.json.
+    Source sample piperx_insert_copper_screw/0000229, file-000, frames
+    311,337,364,390,417,455; top, wrist-left, wrist-right. The sample transitions
+    from picking up the screw to alignment/insertion. Images are unaltered frames.
+    The user-supplied progress sequence 0.5,0.6,0.7,0.8,0.9,0.92 is a format
+    illustration, not measured labels for these displayed frames; the slide says so.
+    The original typo 0,7 is normalized to 0.7. XML-like field tags are displayed as
+    compact inline text with matching closing tags. Two downward arrows connect
+    inputs, independently boxed VLM models, and output/supervision.
     Slide 4 adapts the five original records to the current four-stage scheme:
     alignment and insertion are merged into stage 3, spanning sampled times
     32.6–37.2 s and inclusive original frames 978–1121. Box placement becomes
@@ -1166,32 +1055,24 @@
     allocation alone is also nonnegative; the reintroduced-step deduction
     is what makes the upper labeling method explicitly support rollback.
     Reproduction: presentation/assets/progress/render_time_comparison.py.
-    Slide 6 is a constructed normal-match training example for slide 5.
-    Both objects are held and the robot is aligning/inserting them. Previous
-    memory has nowid={2}, finishid={1}, restid={3,4}; the image-grounded update
-    has nowid={3}, finishid={1,2}, restid={4}. The task's currently eligible
-    stage is expect-set={3}, not a prediction of the subsequent box stage.
-    The intent string preserves the user's supplied unified target.intent.
-    Image contents are described in text, not presented as a real observation.
-    The progress value 0.60 is illustrative, not a calculated sample label or
-    a measured model prediction. Actual training uses offline progress labels.
-    Slides 7-9 are constructed examples for rows 2-4 of slide 5, using
-    the same layout as slide 6. Named stages replace numeric identifiers.
-    Slide 7 requests picking up a water cup while retaining the assembly
-    observations, intent and memory. The prompt and actual intention are
-    highlighted in red. There is no shared prerequisite, so progress toward
-    the requested task is zero. The expected stage is picking up the cup.
-    Slide 8 uses a box-storage task with a lid-opening prerequisite. The
-    robot attempts insertion before opening the lid; actual attempt and
-    expected lid opening differ. The illustrative progress remains 0.25,
-    representing previously earned valid pickup progress, with no increment
-    for the invalid insertion attempt. These are not measured labels.
-    Slide 9 omits the task prompt while keeping visual observations and
-    prior memory. Image-grounded intention and memory retain supervision.
-    Progress is not supervised; expect-set has no supervision target. These
-    indicate loss masking, not a target progress of zero or an empty stage.
-    The stage strips describe the examples and are not extra model inputs.
-    Slide 10 summarizes the user's three selected intervention categories:
+    Slide 6: two selected existing Qwen3.5-2B epoch-04 recovery validation
+    episodes, taken from the user-provided local report:
+    /Users/hongru/paper_project/RW-RL-Dataset/exp-result/qwen35_2b_validation_30hz_20261012/report.html
+    Left: recovery file-020 / episode 5, 912 frames, progress MAE 5.5433669354 pp,
+    rollback at 17.6 s. Right: recovery file-010 / episode 3, 1410 frames,
+    progress MAE 11.3429480754 pp, rollbacks at 20.6 and 35.4 s.
+    Selected to show one rollback and repeated rollbacks from different videos;
+    they are illustrative episodes, not aggregate results or a comparison of
+    the two newly proposed training variants on slide 5.
+    The second response in file-010 occurs early: the report's largest nearby
+    single-step predicted decline is at 34.5 s, before the 35.4 s label event.
+    All source frames and values are retained without smoothing or resampling.
+    The curves are replotted for legible slide typography; source hashes and
+    exact rows/metrics are in assets/validation-recovery/selected_episodes.json.
+    Reproduction: assets/validation-recovery/render_curves.py.
+    Thirty Hz is sampling density along video time, not measured online throughput.
+    Original example slides 6 through 9 were removed at the user's request.
+    Slide 7 summarizes the user's three selected intervention categories:
     stagnation, temporal-order error and intention mismatch. Definitions and
     example cases follow the user's comments and:
     /Users/hongru/paper_read/CVPRpaper_search/介入时机与benchmark/benchmark-design.md

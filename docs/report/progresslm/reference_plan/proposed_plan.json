@@ -1,0 +1,93 @@
+{
+  "status": "PROPOSED_AWAITING_USER_CONFIRMATION",
+  "model": "Raymond-Qiancx/ProgressLM-3B-RL",
+  "mode": "official_visual_demo",
+  "reference_source": "second assembly cycle in source episode 0",
+  "query_range_inclusive": [
+    0,
+    689
+  ],
+  "query_fps": 30,
+  "query_count": 690,
+  "query_view": "camera_top",
+  "reference_view": "camera_top",
+  "input_per_prediction": "task goal + five fixed reference images and anchors + one current image; no query history",
+  "task": "Insert one copper screw into a black sleeve, then place the assembled component into the box.",
+  "reference_frame_selection": "human-reviewed semantic task states, not uniform temporal sampling",
+  "references": [
+    {
+      "source_frame_index": 720,
+      "source_time_seconds": 24.0,
+      "progress": 0,
+      "state": "Before grasp",
+      "path": "/root/autodl-tmp/EvalProgress/ProgressLM/local_setup/bolt_visual_reference_plan_20261015/camera_top/frame_000720.png",
+      "sha256": "4ffe4c85b098e94419f40bce061ccd6b3d11aa6cac806e615477a6f44962168d"
+    },
+    {
+      "source_frame_index": 870,
+      "source_time_seconds": 29.0,
+      "progress": 25,
+      "state": "Sleeve held",
+      "path": "/root/autodl-tmp/EvalProgress/ProgressLM/local_setup/bolt_visual_reference_plan_20261015/camera_top/frame_000870.png",
+      "sha256": "f30f4f69895a03bd3ae2d63d54b1d10133c869866aec4cfe1ca83c48a3745d89"
+    },
+    {
+      "source_frame_index": 1560,
+      "source_time_seconds": 52.0,
+      "progress": 50,
+      "state": "Both parts held",
+      "path": "/root/autodl-tmp/EvalProgress/ProgressLM/local_setup/bolt_visual_reference_plan_20261015/camera_top/frame_001560.png",
+      "sha256": "2690d496429b16703e8936bb14843a179f680207fbb9a8fe0ec89fd82a8be36b"
+    },
+    {
+      "source_frame_index": 1680,
+      "source_time_seconds": 56.0,
+      "progress": 75,
+      "state": "Insertion complete",
+      "path": "/root/autodl-tmp/EvalProgress/ProgressLM/local_setup/bolt_visual_reference_plan_20261015/camera_top/frame_001680.png",
+      "sha256": "536ea8a89cae01f84023d7115dfcd834d300579ad5c03fae2b079f56a9def421"
+    },
+    {
+      "source_frame_index": 1740,
+      "source_time_seconds": 58.0,
+      "progress": 100,
+      "state": "Released in box",
+      "path": "/root/autodl-tmp/EvalProgress/ProgressLM/local_setup/bolt_visual_reference_plan_20261015/camera_top/frame_001740.png",
+      "sha256": "c6fdeae9124f5effa9b85bcad6498fd11dedc296319d61d03fdd8f187e735234"
+    }
+  ],
+  "boundary_note": "Propose using frame720 rather than689 for 0%, because689 is exactly the query final frame; requires user agreement.",
+  "anchor_note": "Four semantic milestones are weighted equally; these are manually defined progress anchors, not model outputs or independent ground truth.",
+  "timing_plan": {
+    "batch_size": 1,
+    "sequential": true,
+    "warmup_requests": 3,
+    "metrics": [
+      "mean_latency",
+      "p50_latency",
+      "p95_latency",
+      "fps",
+      "generated_tokens",
+      "truncation_or_invalid_rate"
+    ],
+    "included": "image reading and preprocessing + all reference and query encoding + complete reasoning generation + progress parsing, synchronized CUDA wall time",
+    "excluded_and_reported_separately": [
+      "model_initialization",
+      "offline_video_decoding",
+      "result_file_writing"
+    ],
+    "reference_prefix_cache": false
+  },
+  "runtime_proposal": {
+    "source_image_resolution": [
+      640,
+      480
+    ],
+    "image_resize": "checkpoint processor defaults, no forced 1MP upscaling",
+    "max_new_tokens": 2048,
+    "decoding": "greedy",
+    "retain_reasoning": true,
+    "note": "Native-resolution deterministic deployment configuration, differs from repository benchmark launcher pixel and generation presets; report explicitly."
+  },
+  "inference_started": false
+}

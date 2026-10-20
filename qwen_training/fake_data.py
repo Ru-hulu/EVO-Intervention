@@ -11,8 +11,7 @@ def fakefunc(batch_size=3, num_frames=6, image_size=128, seed=0):
     inputs["images"]：CPU uint8 [B,3,L,3,H,W]，三视角依次为顶部、左侧、右侧，时间从旧到新。
         L=num_frames，包含当前帧；H=W=image_size，所有图片尺寸相同。
     inputs["frame_mask"]：bool [B,3,L]，此处生成的帧全部有效。
-    targets["responses"]：每个样本的任务意图和当前阶段状态答案。
-    targets["progress"]：float32 [B]，单独监督进度回归头。
+    targets["responses"]：任务意图、阶段状态、有效的 expect-set 及末尾进度文本。
     图像先交给 model.encode_history()，得到视觉特征后再和 messages 一起送入 VLM。
     """
     # 每对分别是上一观测时刻的状态、当前答案；ID 沿用标注的 1..4。
@@ -53,9 +52,5 @@ def fakefunc(batch_size=3, num_frames=6, image_size=128, seed=0):
         )[cases],  # [B,3,L,3,H,W]，由图像预处理器负责转换。
         "frame_mask": torch.ones(batch_size, 3, num_frames, dtype=torch.bool),  # [B,3,L]
     }
-    targets = {
-        "responses": examples["responses"],
-        "progress": torch.tensor(examples["progress"], dtype=torch.float32),
-        "progress_mask": torch.tensor(examples["progress_mask"], dtype=torch.bool),
-    }
+    targets = {"responses": examples["responses"]}
     return inputs, targets

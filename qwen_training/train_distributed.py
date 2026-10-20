@@ -55,34 +55,26 @@ class GlobalBatchSampler(Sampler):
 
 
 def add_metrics(totals, outputs, targets, combination_ids):
-    # CE token 数、Pt 有效样本数、总样本数分别累计，隐藏 prompt 不稀释 MSE。
-    expected = targets["progress"].to(outputs.progress)
-    valid = targets["progress_mask"].to(device=expected.device)
-    totals[:6] += torch.stack((
+    # 统一按所有有效答案 token 累计 CE；数值误差由自回归生成评估单独计算。
+    totals[:3] += torch.stack((
         outputs.text_loss.detach().double() * outputs.text_tokens,
         outputs.text_tokens.double(),
-        outputs.progress_loss.detach().double() * outputs.progress_count,
-        (outputs.progress.detach()[valid] - expected[valid]).abs().double().sum(),
-        outputs.progress_count.double(),
-        totals.new_tensor(len(expected)),
+        totals.new_tensor(len(targets["responses"])),
     ))
-    totals[6:] += torch.bincount(torch.tensor(combination_ids, device=totals.device),
+    totals[3:] += torch.bincount(torch.tensor(combination_ids, device=totals.device),
                                 minlength=len(INPUT_COMBINATIONS))
 
 
-def collect_metrics(totals, args):
+def collect_metrics(totals):
     totals = totals.clone()
     dist.all_reduce(totals)
-    text_sum, token_count, squared_error, absolute_error, progress_count, count = totals[:6].tolist()
-    text_loss, progress_loss = text_sum / max(token_count, 1), squared_error / max(progress_count, 1)
+    text_sum, token_count, count = totals[:3].tolist()
+    text_loss = text_sum / max(token_count, 1)
     return {
-        "loss": args.text_loss_weight * text_loss + args.progress_loss_weight * progress_loss,
-        "text_ce": text_loss, "progress_mse": progress_loss,
-        "progress_mae": absolute_error / max(progress_count, 1), "samples": int(count),
-        "progress_samples": int(progress_count),
+        "loss": text_loss, "text_ce": text_loss, "text_tokens": int(token_count), "samples": int(count),
         "input_combination_counts": {
             f"{mode}_{'memory' if keep else 'no_memory'}": int(n)
-            for (mode, keep, _), n in zip(INPUT_COMBINATIONS, totals[6:].tolist(), strict=True)
+            for (mode, keep, _), n in zip(INPUT_COMBINATIONS, totals[3:].tolist(), strict=True)
         },
     }
 
@@ -106,7 +98,7 @@ def phase_batches(loader):
 @torch.no_grad()
 def evaluate(model, loader, args, rank, device):
     model.eval()
-    totals = torch.zeros(6 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
+    totals = torch.zeros(3 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
     for batch_index, (inputs, targets) in enumerate(phase_batches(loader)):
         if args.gpu_image_processing:
             inputs["images"] = inputs["images"].to(device, non_blocking=True)
@@ -119,7 +111,7 @@ def evaluate(model, loader, args, rank, device):
             visual = model.encode_history(inputs["images"], inputs["frame_mask"])
             outputs = model(messages=inputs["messages"], **visual, **targets)
         add_metrics(totals, outputs, targets, inputs["combination_ids"])
-    result = collect_metrics(totals, args)
+    result = collect_metrics(totals)
     model.train()
     model.qwen.model.visual.eval()
     return result
@@ -146,8 +138,6 @@ def main():
     parser.add_argument("--val-fraction", type=float, default=0.1)
     parser.add_argument("--max-pixels", type=int, default=262144)
     parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--text-loss-weight", type=float, default=0.7)
-    parser.add_argument("--progress-loss-weight", type=float, default=0.3)
     parser.add_argument("--lora-rank", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=32)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
@@ -159,10 +149,13 @@ def main():
     args = parser.parse_args()
     checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True) if args.resume else None
     if checkpoint:
+        if "progress_head" in checkpoint:
+            parser.error("旧回归头检查点不能直接续训，请使用文本进度检查点或重新训练")
         for key, value in checkpoint["config"].items():
             if key not in {"epochs", "save_epochs", "output_dir", "resume", "num_workers", "prefetch_factor", "log_every"}:
                 setattr(args, key, value)
     args.input_combinations = INPUT_COMBINATIONS
+    args.progress_format = "text_3dp"
 
     if args.require_fast_kernels:
         from transformers.models.qwen3_5.modeling_qwen3_5 import is_fast_path_available
@@ -199,7 +192,6 @@ def main():
     model = QwenProgressModel(
         args.model_path, dtype=torch.bfloat16, freeze_backbone=True, max_pixels=args.max_pixels,
         lora_rank=args.lora_rank, lora_alpha=args.lora_alpha, lora_dropout=args.lora_dropout,
-        text_loss_weight=args.text_loss_weight, progress_loss_weight=args.progress_loss_weight,
     ).to(device)
     if args.gradient_checkpointing:
         model.qwen.model.language_model.gradient_checkpointing_enable(
@@ -210,7 +202,6 @@ def main():
         parameter.data = parameter.data.float()
     if checkpoint:
         model.visual_adapter.load_state_dict(checkpoint["visual_adapter"])
-        model.progress_head.load_state_dict(checkpoint["progress_head"])
         set_peft_model_state_dict(model.qwen, checkpoint["lora"])
     distributed_model = DistributedDataParallel(
         model, device_ids=[device.index], broadcast_buffers=False, gradient_as_bucket_view=True,
@@ -263,7 +254,7 @@ def main():
     for epoch in range(start_epoch, args.epochs):
         record_phase("before_train", epoch + 1)
         sampler.epoch = epoch
-        epoch_totals = torch.zeros(6 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
+        epoch_totals = torch.zeros(3 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
         window_totals = torch.zeros_like(epoch_totals)
         epoch_started = window_started = perf_counter()
         for batch_index, (inputs, targets) in enumerate(phase_batches(train_loader)):
@@ -277,14 +268,10 @@ def main():
                 with torch.no_grad():
                     visual = model.encode_history(inputs["images"], inputs["frame_mask"])
                 outputs = distributed_model(messages=inputs["messages"], **visual, **targets)
-                denominators = torch.stack((outputs.text_tokens.double(), outputs.progress_count.double()))
-                dist.all_reduce(denominators)
-                # DDP 对卡取平均，乘 world_size 抵消；CE 按 token，MSE 按样本加权。
-                loss = world_size * (
-                    args.text_loss_weight * outputs.text_loss * outputs.text_tokens / denominators[0].clamp_min(1)
-                    + args.progress_loss_weight * outputs.progress_loss * outputs.progress_count
-                    / denominators[1].clamp_min(1)
-                )
+                token_count = outputs.text_tokens.double()
+                dist.all_reduce(token_count)
+                # DDP 对卡取平均；恢复为全局所有答案 token 的平均 CE。
+                loss = world_size * outputs.loss * outputs.text_tokens / token_count.clamp_min(1)
             loss.backward()
             add_metrics(window_totals, outputs, targets, inputs["combination_ids"])
             add_metrics(epoch_totals, outputs, targets, inputs["combination_ids"])
@@ -293,14 +280,14 @@ def main():
             optimizer.step()
             step += 1
             if step % args.log_every == 0 or batch_index + 1 == len(train_loader):
-                metrics = collect_metrics(window_totals, args)
+                metrics = collect_metrics(window_totals)
                 elapsed = perf_counter() - window_started
                 metrics["samples_per_second"] = metrics["samples"] / elapsed
                 record("train", metrics, epoch + 1)
                 window_totals.zero_()
                 window_started = perf_counter()
         optimizer.zero_grad(set_to_none=True)
-        metrics = collect_metrics(epoch_totals, args)
+        metrics = collect_metrics(epoch_totals)
         metrics["seconds"] = perf_counter() - epoch_started
         record("train_epoch", metrics, epoch + 1)
         record_phase("before_validation", epoch + 1)
@@ -317,7 +304,6 @@ def main():
                 temporary = path.with_suffix(".pt.tmp")
                 torch.save({
                     "visual_adapter": model.visual_adapter.state_dict(),
-                    "progress_head": model.progress_head.state_dict(),
                     "lora": get_peft_model_state_dict(model.qwen, save_embedding_layers=False),
                     "optimizer": optimizer.state_dict(), "step": step, "epoch": epoch + 1,
                     "config": vars(args), "world_size": world_size, "rng_by_rank": rng_by_rank,

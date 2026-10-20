@@ -1,0 +1,23 @@
+{
+  "source_pdf": "/Users/hongru/paper_read/CVPRpaper_search/介入时机与benchmark/Robo-Dopamine-2.0-进度预测.pdf",
+  "pages": [
+    5,
+    13
+  ],
+  "section": "Experimental Setup; Computing Infrastructure and Training Cost",
+  "training_scope": "A complete reward-model fine-tuning run; base VLM pretraining and downstream policy learning excluded",
+  "signed_pairs": 400000,
+  "signed_pair_stages": [
+    200000,
+    200000
+  ],
+  "visual_qa_examples": 200000,
+  "qa_excluded_from_pair_budget": true,
+  "gpus": 8,
+  "gpu_model": "NVIDIA H100",
+  "gpu_memory_gb": 80,
+  "wall_clock_hours_approx": 20,
+  "downstream": "Reward model stays frozen; not trained on downstream rollouts.",
+  "verified_on": "2026-10-16",
+  "source_pdf_sha256": "e8664e6866a75881fdf492b5eb4e8fd42f901b701a895b5a418d7abdf8aa083a"
+}

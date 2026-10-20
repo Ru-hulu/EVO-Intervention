@@ -22,6 +22,5 @@ exec python -u -m torch.distributed.run --standalone --nproc_per_node=8 \
   --gpu-image-processing --require-fast-kernels \
   --max-pixels 262144 --lr 1e-4 \
   --lora-rank 16 --lora-alpha 32 --lora-dropout 0.05 \
-  --text-loss-weight 0.7 --progress-loss-weight 0.3 \
   --epochs 12 --save-epochs 2 4 6 8 10 12 --log-every 50 \
   "$@"

@@ -3,7 +3,7 @@
 Every token, including EOS, must be the current model's greedy choice. Any
 mismatch or low-margin token causes a full ordinary autoregressive generation.
 The only draft source is the preceding prediction, never an annotated answer.
-Progress is pooled from prompt positions only, excluding every draft token.
+Progress is parsed from the final verified or freshly generated response.
 """
 
 import torch
@@ -16,10 +16,6 @@ def generate_verified(model, messages, visual_features, visual_mask, drafts,
         raise ValueError("Drafts must match the batch")
     count=len(messages)
     responses=[None]*count
-    # Keep PT completely independent of draft length/content and fallback batch
-    # composition, using the original prompt-only regression path once for all.
-    model.qwen.model.rope_deltas=None
-    progress=model(messages,visual_features,visual_mask).progress
     accepted=[False]*count
     margins=[None]*count
     draft_tokens=[model.tokenizer.encode(text,add_special_tokens=False)+[model.tokenizer.eos_token_id]
@@ -66,5 +62,6 @@ def generate_verified(model, messages, visual_features, visual_mask, drafts,
         normal=model.generate([messages[i] for i in fallback],visual_features[fallback],visual_mask[fallback],max_new_tokens=max_new_tokens)
         for j,i in enumerate(fallback):
             responses[i]=normal['responses'][j]
-    return dict(responses=responses,progress=progress,draft_accepted=accepted,
+    progress=model.parse_generated_progress(responses,visual_features.device)
+    return dict(responses=responses,progress=progress,progress_valid=progress.isfinite(),draft_accepted=accepted,
                 draft_minimum_margin=margins,minimum_margin=minimum_margin)

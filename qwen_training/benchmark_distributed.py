@@ -58,7 +58,6 @@ def main():
             names = {
                 "lora": next(n for n in parameters if "lora_B" in n),
                 "visual_adapter": "visual_adapter.1.weight",
-                "progress_head": "progress_head.mlp.4.bias",
             }
             captured["before"] = {
                 group: (name, parameters[name].detach().flatten()[:4096].float().cpu().clone())
@@ -91,7 +90,7 @@ def main():
     (output / f"rank-{result['rank']}.json").write_text(json.dumps(result, indent=2))
     print("BENCHMARK_GPU " + json.dumps(result), flush=True)
     if not all(0 < value < float("inf") for value in deltas.values()):
-        raise RuntimeError("LoRA、视觉适配层和进度回归头必须都产生有限的参数更新")
+        raise RuntimeError("LoRA 和视觉适配层必须都产生有限的参数更新")
 
 
 if __name__ == "__main__":

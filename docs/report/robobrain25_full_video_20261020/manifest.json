@@ -1,0 +1,262 @@
+{
+  "model": "BAAI/RoboBrain2.5-4B",
+  "revision": "ec4b3bf5e969b48ad17df432b479c10402a0079b",
+  "model_path": "/root/models/RoboBrain2.5-4B",
+  "task": "Swap the two blocks between their mats. Each mat holds at most one block and only one block may move at a time, so it takes three moves: move the left one of the two blocks into the empty mat first, then the other block into the mat it just vacated, then the parked block into the mat the second came from. After each move, press the button once; pressing it changes nothing visible.",
+  "task_source": "User-provided exact English instruction",
+  "video": "/root/autodl-tmp/EvalProgress/outputs/full_video_20261020/input/full_video.mp4",
+  "video_sha256": "9379ef73895c6566f96b90d9d8f05eb9bf8acc2ba2c39d0924076e00d4e7e75d",
+  "source_fps": 25.0,
+  "source_frames": 442,
+  "duration_s": 17.68,
+  "decoder": "OpenCV sequential decoding; constant-frame-rate frame_index/fps timestamps",
+  "sample_fps": 3,
+  "sample_frames": [
+    0,
+    8,
+    17,
+    25,
+    33,
+    42,
+    50,
+    58,
+    67,
+    75,
+    83,
+    92,
+    100,
+    108,
+    117,
+    125,
+    133,
+    142,
+    150,
+    158,
+    167,
+    175,
+    183,
+    192,
+    200,
+    208,
+    217,
+    225,
+    233,
+    242,
+    250,
+    258,
+    267,
+    275,
+    283,
+    292,
+    300,
+    308,
+    317,
+    325,
+    333,
+    342,
+    350,
+    358,
+    367,
+    375,
+    383,
+    392,
+    400,
+    408,
+    417,
+    425,
+    433,
+    441
+  ],
+  "sample_times_s": [
+    0.0,
+    0.32,
+    0.68,
+    1.0,
+    1.32,
+    1.68,
+    2.0,
+    2.32,
+    2.68,
+    3.0,
+    3.32,
+    3.68,
+    4.0,
+    4.32,
+    4.68,
+    5.0,
+    5.32,
+    5.68,
+    6.0,
+    6.32,
+    6.68,
+    7.0,
+    7.32,
+    7.68,
+    8.0,
+    8.32,
+    8.68,
+    9.0,
+    9.32,
+    9.68,
+    10.0,
+    10.32,
+    10.68,
+    11.0,
+    11.32,
+    11.68,
+    12.0,
+    12.32,
+    12.68,
+    13.0,
+    13.32,
+    13.68,
+    14.0,
+    14.32,
+    14.68,
+    15.0,
+    15.32,
+    15.68,
+    16.0,
+    16.32,
+    16.68,
+    17.0,
+    17.32,
+    17.64
+  ],
+  "predicted_points": 54,
+  "sampling": "Nearest native frame at k/3 seconds, plus the exact final frame",
+  "reference_start": "Video frame 0, main view",
+  "reference_end": "Video frame 441, main view; endpoint anchor, not verified success",
+  "uses_future_goal_reference": true,
+  "goal_success_verified": false,
+  "comparison": "Fixed first frame BEFORE versus current sampled frame AFTER",
+  "images_order": [
+    "reference_start",
+    "reference_end",
+    "before_main_first_frame",
+    "before_left_wrist_blank",
+    "before_right_wrist_blank",
+    "after_main_current_frame",
+    "after_left_wrist_blank",
+    "after_right_wrist_blank"
+  ],
+  "history_video": false,
+  "previous_prediction_input": false,
+  "expert_trajectory": null,
+  "missing_views": "Black blank 640x480 images",
+  "score_semantics": "Signed start-to-current GRM score in [-1,1], not calibrated absolute completion",
+  "postprocessing": "Score times 100 for plotting only; no smoothing, clamping, accumulation, forced endpoints, or monotonicity",
+  "backend": "transformers AutoModelForImageTextToText, Torch SDPA",
+  "batch_size": 8,
+  "generation": {
+    "do_sample": false,
+    "max_new_tokens": 128
+  },
+  "image_processor_size": {
+    "shortest_edge": 65536,
+    "longest_edge": 307200
+  },
+  "image_grid_thw": [
+    [
+      1,
+      30,
+      40
+    ],
+    [
+      1,
+      30,
+      40
+    ],
+    [
+      1,
+      30,
+      40
+    ],
+    [
+      1,
+      30,
+      40
+    ],
+    [
+      1,
+      30,
+      40
+    ],
+    [
+      1,
+      30,
+      40
+    ],
+    [
+      1,
+      30,
+      40
+    ],
+    [
+      1,
+      30,
+      40
+    ]
+  ],
+  "input_token_count_single_sample": 3273,
+  "prompt_sha256": "6baabeeecf35c731aa1d058147f741f064a1391956bd8aa39448fe9bacad1b94",
+  "limitations": [
+    "Start/end block layouts look alike; block identities and button-press history may be unobservable from static frames",
+    "The GRM prompt calls the reference endpoint complete; supplying the final frame is an offline anchor assumption",
+    "No ground-truth event annotations or accuracy metric supplied"
+  ],
+  "torch_version": "2.8.0+cu128",
+  "transformers_version": "4.57.0",
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "model_load_s": 3.242274731397629,
+  "timing": {
+    "evaluation_wall_s": 15.39426440373063,
+    "batches": [
+      {
+        "batch_id": 0,
+        "size": 8,
+        "elapsed_s": 3.242963057011366,
+        "generate_s": 2.756507497280836
+      },
+      {
+        "batch_id": 1,
+        "size": 8,
+        "elapsed_s": 2.1177443750202656,
+        "generate_s": 1.6319562420248985
+      },
+      {
+        "batch_id": 2,
+        "size": 8,
+        "elapsed_s": 2.138657044619322,
+        "generate_s": 1.6500966437160969
+      },
+      {
+        "batch_id": 3,
+        "size": 8,
+        "elapsed_s": 2.0918715707957745,
+        "generate_s": 1.6242319010198116
+      },
+      {
+        "batch_id": 4,
+        "size": 8,
+        "elapsed_s": 2.098258025944233,
+        "generate_s": 1.6200845576822758
+      },
+      {
+        "batch_id": 5,
+        "size": 8,
+        "elapsed_s": 2.065050844103098,
+        "generate_s": 1.616619173437357
+      },
+      {
+        "batch_id": 6,
+        "size": 6,
+        "elapsed_s": 1.6332605332136154,
+        "generate_s": 1.30182346701622
+      }
+    ],
+    "amortized_s_per_frame": 0.28495936019829027,
+    "note": "Batch throughput including preprocessing and decoding, not serial frame latency; excludes model load"
+  },
+  "valid_points": 54
+}

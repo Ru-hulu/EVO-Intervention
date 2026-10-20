@@ -1,0 +1,218 @@
+{
+  "episode_id": "hybrid__pack_objects_into_box__random__g0__l1",
+  "fps": 25.0,
+  "control_dt": 0.04,
+  "control_steps": 1022,
+  "control_duration": 40.88,
+  "video_frames": 1023,
+  "video_duration": 40.92,
+  "segments": [
+    {
+      "mode": "policy",
+      "start": 0.0,
+      "end": 12.2,
+      "start_tick": 0,
+      "end_tick": 305,
+      "decisions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    {
+      "mode": "astra",
+      "start": 12.2,
+      "end": 12.8,
+      "start_tick": 305,
+      "end_tick": 320,
+      "decisions": [
+        21,
+        22,
+        23
+      ]
+    },
+    {
+      "mode": "policy",
+      "start": 12.8,
+      "end": 13.2,
+      "start_tick": 320,
+      "end_tick": 330,
+      "decisions": [
+        24
+      ]
+    },
+    {
+      "mode": "astra",
+      "start": 13.2,
+      "end": 13.4,
+      "start_tick": 330,
+      "end_tick": 335,
+      "decisions": [
+        25
+      ]
+    },
+    {
+      "mode": "policy",
+      "start": 13.4,
+      "end": 14.6,
+      "start_tick": 335,
+      "end_tick": 365,
+      "decisions": [
+        26,
+        27
+      ]
+    },
+    {
+      "mode": "astra",
+      "start": 14.6,
+      "end": 14.8,
+      "start_tick": 365,
+      "end_tick": 370,
+      "decisions": [
+        28
+      ]
+    },
+    {
+      "mode": "policy",
+      "start": 14.8,
+      "end": 18.8,
+      "start_tick": 370,
+      "end_tick": 470,
+      "decisions": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ]
+    },
+    {
+      "mode": "astra",
+      "start": 18.8,
+      "end": 19.4,
+      "start_tick": 470,
+      "end_tick": 485,
+      "decisions": [
+        36,
+        37,
+        38
+      ]
+    },
+    {
+      "mode": "policy",
+      "start": 19.4,
+      "end": 31.6,
+      "start_tick": 485,
+      "end_tick": 790,
+      "decisions": [
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ]
+    },
+    {
+      "mode": "astra",
+      "start": 31.6,
+      "end": 38.2,
+      "start_tick": 790,
+      "end_tick": 955,
+      "decisions": [
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92
+      ]
+    },
+    {
+      "mode": "policy",
+      "start": 38.2,
+      "end": 40.88,
+      "start_tick": 955,
+      "end_tick": 1022,
+      "decisions": [
+        93,
+        94,
+        95,
+        96,
+        97,
+        98
+      ]
+    }
+  ],
+  "decision_count": 99,
+  "correction_decisions": 41,
+  "intervention_segments": 5,
+  "source_steps": {
+    "student": 817,
+    "eef": 195,
+    "edit": 10
+  },
+  "evaluation_success": true
+}

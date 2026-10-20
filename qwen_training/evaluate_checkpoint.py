@@ -73,17 +73,17 @@ def select_samples(samples, split, limit=0):
 
 
 def load_model(checkpoint, device):
+    if "progress_head" in checkpoint:
+        raise ValueError("旧回归头检查点需使用旧版代码评估；当前模型从文本解析进度")
     config = checkpoint["config"]
     model = QwenProgressModel(
         config["model_path"], dtype=torch.bfloat16, freeze_backbone=True,
         max_pixels=config["max_pixels"], lora_rank=config["lora_rank"],
-        lora_alpha=config["lora_alpha"], lora_dropout=config["lora_dropout"],
-        text_loss_weight=config["text_loss_weight"], progress_loss_weight=config["progress_loss_weight"])
+        lora_alpha=config["lora_alpha"], lora_dropout=config["lora_dropout"])
     for parameter in model.parameters():
         if parameter.requires_grad:
             parameter.data = parameter.data.float()
     model.visual_adapter.load_state_dict(checkpoint["visual_adapter"], strict=True)
-    model.progress_head.load_state_dict(checkpoint["progress_head"], strict=True)
     expected = get_peft_model_state_dict(model.qwen, save_embedding_layers=False)
     if expected.keys() != checkpoint["lora"].keys():
         raise ValueError("Checkpoint LoRA keys do not match model")
@@ -134,6 +134,7 @@ def main():
     if predictions_path.exists():
         raise FileExistsError(f"Refusing to overwrite predictions: {predictions_path}")
     manifest = dict(checkpoint=str(args.checkpoint), checkpoint_sha256=digest,
+                    progress_format=config.get("progress_format", "regression"),
                     checkpoint_epoch=checkpoint["epoch"], checkpoint_step=checkpoint["step"],
                     split_file=str(args.split), split_sha256=sha256(args.split),
                     index_sha256={p: sha256(p) for p in config["index_files"]},
@@ -168,10 +169,10 @@ def main():
                     predictions = model.generate(messages, **visual, max_new_tokens=args.max_new_tokens)
                     values = predictions["progress"].float().cpu().tolist()
                     for meta, target_text, response, progress in zip(metadata, targets["responses"], predictions["responses"], values, strict=True):
-                        if not math.isfinite(progress) or not 0 <= progress <= 1:
-                            raise ValueError("Invalid progress output")
+                        progress_valid = math.isfinite(progress)
                         row = dict(meta, mode=mode, target_response=target_text,
-                                   response=response, predicted_progress=progress,
+                                   response=response, predicted_progress=progress if progress_valid else None,
+                                   progress_parse_valid=progress_valid,
                                    generated_tokens_reencoded=len(model.tokenizer.encode(response, add_special_tokens=False)))
                         output.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
             output.flush()

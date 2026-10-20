@@ -1,0 +1,238 @@
+{
+  "sample": {
+    "sample_id": "piperx_insert_copper_screw/0000229",
+    "dataset": "piperx_insert_copper_screw",
+    "video_id": "file-000",
+    "task_index": 0,
+    "episode": 1,
+    "sample_type": "cross_stage_changed",
+    "group": 0,
+    "sampling_method": "shared_offset",
+    "video_paths": {
+      "top": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/file-000.mp4",
+      "left": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_left/chunk-000/file-000.mp4",
+      "right": "/root/dataset/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_wrist_right/chunk-000/file-000.mp4"
+    },
+    "frame_indices": [
+      311,
+      337,
+      364,
+      390,
+      417,
+      455
+    ],
+    "frame_mask": [
+      [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    ],
+    "input_state": {
+      "nowid": 2,
+      "restid": [
+        3,
+        4
+      ],
+      "finishid": [
+        1
+      ]
+    },
+    "target": {
+      "nowid": 3,
+      "restid": [
+        4
+      ],
+      "finishid": [
+        1,
+        2
+      ],
+      "progress": 0.62477482,
+      "intent": "将螺丝插入螺栓中"
+    }
+  },
+  "purpose": "Real synchronized images for presentation input illustration. The displayed progress sequence is user-supplied format example, not labels for these image frames.",
+  "images": [
+    {
+      "view": "top",
+      "frame": 311,
+      "time_seconds": 10.366666666666667,
+      "file": "top-t1.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "d93191ffdd239c729a34d445cbed0ecba846c763b5dbecd154fb4f5227bd44ec"
+    },
+    {
+      "view": "top",
+      "frame": 337,
+      "time_seconds": 11.233333333333333,
+      "file": "top-t2.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "1db98c776e29a6e247be885f95d77ec892f33a3b3ba89f2c673cd5b11a8cf906"
+    },
+    {
+      "view": "top",
+      "frame": 364,
+      "time_seconds": 12.133333333333333,
+      "file": "top-t3.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "cebd507b33d1c0c953f676c9a6282a64cba69446958fd4135248a8ca600c131d"
+    },
+    {
+      "view": "top",
+      "frame": 390,
+      "time_seconds": 13.0,
+      "file": "top-t4.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "862fa140a9d474616bdb2b854418cfe551b256da148e8806a2f93df65ff97512"
+    },
+    {
+      "view": "top",
+      "frame": 417,
+      "time_seconds": 13.9,
+      "file": "top-t5.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "1b003e4e1ec65a4626931b6f283d8e2291b7eaadbd3372eb5c8b75d15876c7b6"
+    },
+    {
+      "view": "top",
+      "frame": 455,
+      "time_seconds": 15.166666666666666,
+      "file": "top-t6.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "6a76150f20f9f7ddd1b6e505a206e7e2b4e3b933b68df9090aaca5c52deec0fd"
+    },
+    {
+      "view": "left",
+      "frame": 311,
+      "time_seconds": 10.366666666666667,
+      "file": "left-t1.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "79746b7de803523c42cd4c366d551345e76f9a5054ac2028a44525cb067b5449"
+    },
+    {
+      "view": "left",
+      "frame": 337,
+      "time_seconds": 11.233333333333333,
+      "file": "left-t2.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "832459c3972990678d59167a624ea83ea20d3664e6d3d3933e94da0dc14576df"
+    },
+    {
+      "view": "left",
+      "frame": 364,
+      "time_seconds": 12.133333333333333,
+      "file": "left-t3.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "8931008396bee151af78d4a8cfb208beb606a2baaac507cca5bb2feb25039f1d"
+    },
+    {
+      "view": "left",
+      "frame": 390,
+      "time_seconds": 13.0,
+      "file": "left-t4.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "a46fff708c51ab5026779ca2a4ace36ea1489588a8c6d2f2d3b82af0a28c0eb7"
+    },
+    {
+      "view": "left",
+      "frame": 417,
+      "time_seconds": 13.9,
+      "file": "left-t5.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "942b6b1e3462b9d491b4d26dffd8654475d20de8ce776800d6723fee2afdf391"
+    },
+    {
+      "view": "left",
+      "frame": 455,
+      "time_seconds": 15.166666666666666,
+      "file": "left-t6.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "19808dd97fc481e6dadfe58bfe373e09a230f746604dc6526e0f99a94aef9b4a"
+    },
+    {
+      "view": "right",
+      "frame": 311,
+      "time_seconds": 10.366666666666667,
+      "file": "right-t1.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "0659bd8b24954cea96a311cae55673da449e4819fae1bea75dd0dfed1d4bbc66"
+    },
+    {
+      "view": "right",
+      "frame": 337,
+      "time_seconds": 11.233333333333333,
+      "file": "right-t2.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "e5e57724ae6b1f0b20b6f201fbf54b404946072afedcef9133d7030ef258b766"
+    },
+    {
+      "view": "right",
+      "frame": 364,
+      "time_seconds": 12.133333333333333,
+      "file": "right-t3.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "651d0cfd0c5a08ab41d14fca39df16ebdea4e4719f1f6bacb0af35d8e17ccaaf"
+    },
+    {
+      "view": "right",
+      "frame": 390,
+      "time_seconds": 13.0,
+      "file": "right-t4.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "45ce22f24c8fbb54db433d994aa4d83d6dd8c9a866299fd535dabe9c81de0aa7"
+    },
+    {
+      "view": "right",
+      "frame": 417,
+      "time_seconds": 13.9,
+      "file": "right-t5.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "5b6ca38b6e09955c3a4c00e143a5e93f0f3fd8e15f7b682eb5e7fec52ecf107b"
+    },
+    {
+      "view": "right",
+      "frame": 455,
+      "time_seconds": 15.166666666666666,
+      "file": "right-t6.jpg",
+      "width": 640,
+      "height": 480,
+      "sha256": "66d005483db96528e9e990f85f390e0dea5f40e432da821e50ba5fffa2f970bc"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 # Licensed under the MIT License; see LICENSE.
 # Original trainer implemented by Jinhui YE / HKUST University (2025).
 # ruff: noqa: RUF001, RUF003
-"""真实视频 → MEM → 状态文本与进度回归，联合训练 LoRA、适配层和回归头。"""
+"""真实视频 → MEM → 状态与进度文本，以统一 CE 训练 LoRA 和视觉适配层。"""
 
 import argparse
 from pathlib import Path
@@ -29,8 +29,6 @@ def main():
     parser.add_argument("--val-fraction", type=float, default=0.1)
     parser.add_argument("--max-pixels", type=int, default=262144, help="每张图像预处理后的最大像素数")
     parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--text-loss-weight", type=float, default=0.7, help="状态文本 CE 损失权重")
-    parser.add_argument("--progress-loss-weight", type=float, default=0.3, help="进度 MSE 损失权重")
     parser.add_argument("--lora-rank", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=32)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
@@ -46,16 +44,15 @@ def main():
     checkpoint = None
     if args.resume:
         checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True)
-        if "lora" not in checkpoint or "progress_head" not in checkpoint:
-            parser.error("此入口恢复含 LoRA 和进度回归头的检查点；旧版本请重新开始训练")
+        if "lora" not in checkpoint or "progress_head" in checkpoint:
+            parser.error("此入口只恢复文本进度检查点；旧回归头检查点不能直接续训")
         # 恢复模型与数据配置；总步数、设备、输出目录和读取进程数可在本次指定。
         for key in ("model_path", "index_files", "batch_size", "val_fraction", "max_pixels", "lr", "seed",
-                    "lora_rank", "lora_alpha", "lora_dropout", "progress_loss_weight"):
+                    "lora_rank", "lora_alpha", "lora_dropout"):
             setattr(args, key, checkpoint["config"][key])
-        # 旧检查点的文本权重固定为 1；恢复时延续原损失尺度。
-        args.text_loss_weight = checkpoint["config"].get("text_loss_weight", 1.0)
         args.mismatched_prompts = checkpoint["config"].get("mismatched_prompts", args.mismatched_prompts)
     args.input_combinations = INPUT_COMBINATIONS
+    args.progress_format = "text_3dp"
     if not args.model_path or not args.index_files:
         parser.error("首次训练需要 --model-path 和 --index-files；恢复训练使用 --resume")
     if args.lora_rank < 1:
@@ -71,9 +68,8 @@ def main():
     model = QwenProgressModel(
         args.model_path, dtype=dtype, freeze_backbone=True, max_pixels=args.max_pixels,
         lora_rank=args.lora_rank, lora_alpha=args.lora_alpha, lora_dropout=args.lora_dropout,
-        progress_loss_weight=args.progress_loss_weight, text_loss_weight=args.text_loss_weight,
     ).to(device)
-    # LoRA、视觉适配层、回归头和 AdamW 状态保留 FP32；CUDA 前向使用 BF16。
+    # LoRA、视觉适配层和 AdamW 状态保留 FP32；CUDA 前向使用 BF16。
     parameters = [p for p in model.parameters() if p.requires_grad]
     for parameter in parameters:
         parameter.data = parameter.data.float()
@@ -84,7 +80,6 @@ def main():
     start_step = 0
     if checkpoint is not None:
         model.visual_adapter.load_state_dict(checkpoint["visual_adapter"])
-        model.progress_head.load_state_dict(checkpoint["progress_head"])
         set_peft_model_state_dict(model.qwen, checkpoint["lora"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         start_step = checkpoint["step"]
@@ -137,7 +132,6 @@ def main():
                 print(f"step={step}/{args.steps} epoch={epoch + 1} "
                       f"batch={batch_index + 1}/{len(train_loader)} loss={loss.item():.6f} "
                       f"text_loss={outputs.text_loss.item():.6f} "
-                      f"progress_loss={outputs.progress_loss.item():.6f} "
                       f"step_s={step_seconds:.3f}", flush=True)
 
             if step % args.save_every == 0 or step == args.steps:
@@ -145,7 +139,6 @@ def main():
                 temporary = output_dir / "last.pt.tmp"
                 torch.save({
                     "visual_adapter": model.visual_adapter.state_dict(),
-                    "progress_head": model.progress_head.state_dict(),
                     "lora": get_peft_model_state_dict(model.qwen, save_embedding_layers=False),
                     "optimizer": optimizer.state_dict(),
                     "step": step,

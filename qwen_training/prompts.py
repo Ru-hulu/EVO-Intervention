@@ -3,6 +3,7 @@
 
 import random
 
+from qwen_training.progress_text import PROGRESS_INSTRUCTION, append_progress
 
 TASK_INTENT = "将螺丝插入螺栓中"
 TASK_PROMPT = "将螺钉插入套筒中"
@@ -42,13 +43,13 @@ def describe_state(state):
     return f"正在执行的阶段：{current}；已完成阶段：{finished}；未完成阶段：{remaining}。"
 
 
-def describe_target(target, expect_set=None):
-    """输出意图和当前状态；上一状态提示仍只使用 describe_state。"""
+def describe_target(target, expect_set=None, include_progress=True):
+    """输出意图、状态、可用的 expect-set 和末尾进度；记忆只使用 describe_state。"""
     response = f"任务意图为{target.get('intent', TASK_INTENT)}，当前任务状态{describe_state(target)}"
     if expect_set is not None:
         names = [STAGE_NAMES[int(stage)] if str(stage).isdigit() else str(stage) for stage in expect_set]
         response += "expect-set：" + ("、".join(names) or "无") + "。"
-    return response
+    return append_progress(response, target.get("progress") if include_progress else None)
 
 
 def expected_stages(target):
@@ -72,6 +73,7 @@ def make_message(task_prompt, memory):
         parts.append("先前长期记忆：" + describe_state(memory))
     if task_prompt is not None:
         parts.append("同时输出目标任务在此刻允许执行的阶段集合（expect-set）。")
+        parts.append(PROGRESS_INSTRUCTION)
     return [{"role": "user", "content": "\n".join(parts)}]
 
 
@@ -80,7 +82,7 @@ def build_training_examples(states, targets, seed=0, mismatched_prompts=MISMATCH
     rng = random.Random(seed)
     combinations = rng.choices(range(len(INPUT_COMBINATIONS)),
                                weights=[row[2] for row in INPUT_COMBINATIONS], k=len(states))
-    result = {key: [] for key in ("messages", "responses", "progress", "progress_mask", "combination_ids")}
+    result = {key: [] for key in ("messages", "responses", "combination_ids")}
     for state, target, combination in zip(states, targets, combinations, strict=True):
         mode, keep_memory, _ = INPUT_COMBINATIONS[combination]
         task_prompt = target.get("task_prompt", target.get("intent", TASK_PROMPT))
@@ -99,23 +101,22 @@ def build_training_examples(states, targets, seed=0, mismatched_prompts=MISMATCH
         else:
             task_prompt = None
         result["messages"].append(make_message(task_prompt, state if keep_memory else None))
-        result["responses"].append(describe_target(target, expect_set))
-        result["progress"].append(0.0 if mode == "mismatched" else target["progress"])
-        result["progress_mask"].append(mode != "missing")
+        output_target = {**target, "progress": 0.0 if mode == "mismatched" else target["progress"]}
+        result["responses"].append(describe_target(output_target, expect_set, include_progress=mode != "missing"))
         result["combination_ids"].append(combination)
     return result
 
 
-def build_messages(states, state_drop_probability=0.0, seed=0):
-    """保留旧检查点的评估模板；新训练使用 build_training_examples / make_message。"""
+def build_messages(states, state_drop_probability=0.0, seed=0, *, legacy=False):
+    """评估装配任务；legacy 仅用于复核已保存的旧版报告提示词。"""
     rng = random.Random(seed)
     messages = []
     for state in states:
-        if rng.random() >= state_drop_probability:
-            prompt = TASK_DESCRIPTION
-            prompt += "在获取当前视觉观测前，" + describe_state(state) + "\n"
-            prompt += OBSERVATION_INSTRUCTION
+        memory = state if rng.random() >= state_drop_probability else None
+        if legacy:
+            prompt = (TASK_DESCRIPTION + "在获取当前视觉观测前，" + describe_state(state) + "\n"
+                      + OBSERVATION_INSTRUCTION) if memory is not None else VISUAL_ONLY_INSTRUCTION
+            messages.append([{"role": "user", "content": prompt}])
         else:
-            prompt = VISUAL_ONLY_INSTRUCTION
-        messages.append([{"role": "user", "content": prompt}])
+            messages.append(make_message(TASK_PROMPT, memory))
     return messages

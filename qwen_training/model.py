@@ -2,45 +2,22 @@
 # Licensed under the MIT License; see LICENSE.
 # Original interface implemented by Shijie LIAN / Huazhong University of Science & Technology (2026).
 # Original design and merge by Jinhui YE / HKUST University (2026).
-"""任务提示、可选的上次状态与历史视觉表征 → 状态文本及独立回归的任务进度。"""
+"""任务提示、可选的上次状态与历史视觉表征 → 包含进度数字的自回归文本。"""
 
 from types import SimpleNamespace
 
 import torch
-from peft import LoraConfig, inject_adapter_in_model
 from torch import nn
 from torch.nn import functional as F
 from transformers import AutoImageProcessor, AutoTokenizer, Qwen3_5ForConditionalGeneration
 
-from qwen_training.losses import masked_progress_mse
+from qwen_training.progress_text import parse_progress
 from qwen_training.vision_encoder import encode_history, encode_three_views
-
-
-class ProgressHead(nn.Module):
-    """最后一层全部有效输入 token → 注意力池化 → 三层 MLP → [B] 进度。"""
-
-    def __init__(self, hidden_size):
-        super().__init__()
-        self.attention_score = nn.Linear(hidden_size, 1, bias=False)
-        self.mlp = nn.Sequential(
-            nn.Linear(hidden_size, 512), nn.GELU(),
-            nn.Linear(512, 128), nn.GELU(),
-            nn.Linear(128, 1),
-        )
-
-    def forward(self, hidden_states, input_mask):
-        hidden_states = hidden_states.to(self.attention_score.weight)  # [B,L,D]。
-        scores = self.attention_score(hidden_states).squeeze(-1).float()  # [B,L]。
-        weights = scores.masked_fill(~input_mask, float("-inf")).softmax(dim=-1)
-        pooled = torch.bmm(weights.to(hidden_states.dtype).unsqueeze(1), hidden_states).squeeze(1)
-        # pooled [B,D]；Sigmoid 在 FP32 下计算，输出范围 0～1。
-        return self.mlp(pooled).squeeze(-1).float().sigmoid()
 
 
 class QwenProgressModel(nn.Module):
     def __init__(self, model_path, feature_dim=None, dtype=torch.bfloat16, freeze_backbone=False,
-                 max_pixels=262144, lora_rank=0, lora_alpha=32, lora_dropout=0.05,
-                 progress_loss_weight=0.3, text_loss_weight=0.7):
+                 max_pixels=262144, lora_rank=0, lora_alpha=32, lora_dropout=0.05):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.image_processor = AutoImageProcessor.from_pretrained(
@@ -54,6 +31,8 @@ class QwenProgressModel(nn.Module):
         if freeze_backbone:
             self.qwen.requires_grad_(False)
         if lora_rank:
+            from peft import LoraConfig, inject_adapter_in_model
+
             # 只给语言层的 Linear 加 LoRA，覆盖全注意力、线性注意力和 MLP。
             # 不改视觉编码器、词嵌入和原语言输出头；原模型接口保持不变。
             targets = [name for name, module in self.qwen.named_modules()
@@ -71,11 +50,6 @@ class QwenProgressModel(nn.Module):
             nn.LayerNorm(feature_dim),
             nn.Linear(feature_dim, self.qwen.config.text_config.hidden_size),
         ).to(device=embedding.device, dtype=embedding.dtype)
-        self.progress_head = ProgressHead(self.qwen.config.text_config.hidden_size).to(
-            device=embedding.device, dtype=embedding.dtype,
-        )
-        self.text_loss_weight = text_loss_weight
-        self.progress_loss_weight = progress_loss_weight
 
     def encode_images(self, images):
         """三视角单帧 → 现有 visual_features 接口；图像模式使用默认 feature_dim。"""
@@ -91,7 +65,7 @@ class QwenProgressModel(nn.Module):
     def build_inputs(self, messages, visual_features, visual_mask=None, responses=None):
         """拼成 [有效视觉前缀, 聊天 Prompt, 答案]，仅监督答案及结束标记。
 
-        messages 是批量对话；responses 是包含任务意图和阶段状态的答案字符串。
+        messages 是批量对话；responses 包含任务意图、阶段状态和有效的进度数字。
         visual_features 为 [B,N,D]，visual_mask 为 [B,N]；推理时不传 responses。
         融合后的 E_t 使用连续序列位置，不冒充原始图片的 patch 网格。
         """
@@ -158,59 +132,37 @@ class QwenProgressModel(nn.Module):
             ])
         return batch
 
-    def forward(self, messages, visual_features, visual_mask=None, responses=None, progress=None,
-                progress_mask=None):
-        """文本监督意图、状态及有效的 expect-set；progress_mask 屏蔽无 prompt 的 Pt。"""
+    def forward(self, messages, visual_features, visual_mask=None, responses=None):
+        """所有答案 token（含进度数字和 EOS）统一计算 CE，不分组加权。"""
         batch = self.build_inputs(messages, visual_features, visual_mask, responses)
         labels = batch.pop("labels", None)
         # 直接取主干最终输出，不收集前面各层；保留 LoRA 与适配层的梯度。
         hidden_states = self.qwen.model(
             **batch, use_cache=False, return_dict=True, output_hidden_states=False,
         ).last_hidden_state  # [B,L,D]。
-        input_mask = batch["attention_mask"].bool()
-        if labels is not None:
-            input_mask = input_mask & labels.eq(-100)  # 排除 teacher forcing 的答案 token。
-        prediction = self.progress_head(hidden_states, input_mask)
-
-        text_loss = progress_loss = loss = None
-        text_tokens = progress_count = None
+        text_loss = text_tokens = None
         if labels is not None:
             # 用前一个位置预测下一个答案 token；只计算受监督位置的词表 logits。
             answer_mask = labels[:, 1:].ne(-100)
             text_tokens = answer_mask.sum()
             logits = self.qwen.lm_head(hidden_states[:, :-1][answer_mask])
             text_loss = F.cross_entropy(logits.float(), labels[:, 1:][answer_mask])
-            loss = self.text_loss_weight * text_loss
-        if progress is not None:
-            progress_loss, progress_count = masked_progress_mse(prediction, progress, progress_mask)
-            weighted_loss = self.progress_loss_weight * progress_loss
-            loss = weighted_loss if loss is None else loss + weighted_loss
-        return SimpleNamespace(
-            loss=loss, text_loss=text_loss, progress_loss=progress_loss, progress=prediction,
-            text_tokens=text_tokens,
-            progress_count=progress_count,
-        )
+        return SimpleNamespace(loss=text_loss, text_loss=text_loss, text_tokens=text_tokens)
+
+    def parse_generated_progress(self, responses, device):
+        """保留数值张量接口；缺失或非法文本用 NaN 标记，不伪造为零。"""
+        values = [parse_progress(response) for response in responses]
+        return torch.tensor([float("nan") if value is None else value for value in values],
+                            device=device, dtype=torch.float32)
 
     @torch.inference_mode()
     def generate(self, messages, visual_features, visual_mask=None, max_new_tokens=256):
-        """返回 {responses: 意图、阶段及 expect-set 文本, progress: [B] 回归值}。"""
+        """生成完整答案后解析末尾进度；progress_valid 标记解析是否成功。"""
         was_training = self.training
         visual_was_training = self.qwen.model.visual.training
         self.eval()
-        handle = None
         try:
             batch = self.build_inputs(messages, visual_features, visual_mask)
-            predictions = []
-
-            def pool_prompt(module, args, output):
-                # 只在生成的首轮（完整输入）池化，后续生成 token 不参与进度预测。
-                if not predictions:
-                    predictions.append(self.progress_head(
-                        output.last_hidden_state, batch["attention_mask"].bool(),
-                    ))
-
-            # 复用 generate 的首次主干前向，避免为了进度再运行一次 VLM。
-            handle = self.qwen.model.register_forward_hook(pool_prompt)
             generated = self.qwen.generate(
                 **batch,
                 max_new_tokens=max_new_tokens,
@@ -221,12 +173,9 @@ class QwenProgressModel(nn.Module):
                 output_hidden_states=False,
             )
             # 只传 inputs_embeds 时，返回的 token ID 序列不含输入前缀。
-            return {
-                "responses": self.tokenizer.batch_decode(generated, skip_special_tokens=True),
-                "progress": predictions[0],
-            }
+            responses = self.tokenizer.batch_decode(generated, skip_special_tokens=True)
+            progress = self.parse_generated_progress(responses, batch["inputs_embeds"].device)
+            return {"responses": responses, "progress": progress, "progress_valid": progress.isfinite()}
         finally:
-            if handle is not None:
-                handle.remove()
             self.train(was_training)
             self.qwen.model.visual.train(visual_was_training)

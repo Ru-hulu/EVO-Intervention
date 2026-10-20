@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from qwen_training.evaluation_metrics import normalize, parse_response, summarize
+from qwen_training.evaluation_metrics import format_metric, normalize, parse_response, progress_value, summarize
 
 
 def load_complete_run(directory):
@@ -86,7 +86,8 @@ def aggregate(directory, allow_partial=False):
         prediction = parse_response(row["response"])
         state_wrong = any(prediction[k] != (row["target"][k] if k == "nowid" else sorted(row["target"][k]))
                           for k in ("nowid", "finishid", "restid"))
-        if not prediction["parse_valid"] or state_wrong or abs(row["predicted_progress"] - row["target"]["progress"]) > 0.1:
+        if (not prediction["parse_valid"] or state_wrong or row["predicted_progress"] is None
+                or abs(row["predicted_progress"] - row["target"]["progress"]) > 0.1):
             failures.append(row)
     with (directory / "errors.jsonl").open("w") as output:
         for row in failures:
@@ -119,7 +120,11 @@ def prompt_sensitivity_section(directory, rows):
     paired = defaultdict(dict)
     for row in rows:
         paired[row['sample_id']][row['mode']] = row
-    differences = sorted(abs(r['short']['predicted_progress']-r['context']['predicted_progress'])*100 for r in paired.values())
+    differences = sorted(abs(r['short']['predicted_progress']-r['context']['predicted_progress'])*100
+                         for r in paired.values()
+                         if r['short']['predicted_progress'] is not None and r['context']['predicted_progress'] is not None)
+    if not differences:
+        return ['<h2>进度对输入的敏感性</h2><p>没有两种输入均成功解析进度的配对样本。</p>']
     exact = sum(x == 0 for x in differences) / len(differences)
     average = sum(differences) / len(differences)
     content = ['<h2>进度是否利用 Prompt 和上一状态</h2>',
@@ -147,6 +152,7 @@ def prompt_sensitivity_section(directory, rows):
 
 def metric_table(groups):
     columns = [("样本权重总数", "weighted_sample_count", ".0f"),
+               ("进度可解析率", "progress_parse_valid_rate", ".2%"),
                ("进度 MAE（百分点）", "progress_mae_pp", ".2f"),
                ("进度 RMSE（百分点）", "progress_rmse_pp", ".2f"),
                ("进度 P95 误差（百分点）", "progress_p95_ae_pp", ".2f"),
@@ -160,7 +166,7 @@ def metric_table(groups):
     header = "<tr><th>指标</th>" + "".join(f"<th>{html.escape(name)}</th>" for name, _ in groups) + "</tr>"
     body = []
     for label, key, fmt in columns:
-        body.append("<tr><th>" + label + "</th>" + "".join(f"<td>{format(values[key], fmt)}</td>" for _, values in groups) + "</tr>")
+        body.append("<tr><th>" + label + "</th>" + "".join(f"<td>{format_metric(values[key], fmt)}</td>" for _, values in groups) + "</tr>")
     return '<div class="scroll"><table>' + header + "".join(body) + "</table></div>"
 
 
@@ -183,7 +189,9 @@ def create_figures(rows, metrics):
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     for mode in ("short", "context"):
-        subset = [r for r in rows if r["mode"] == mode]
+        subset = [r for r in rows if r["mode"] == mode and r["predicted_progress"] is not None]
+        if not subset:
+            continue
         absolute = np.array([abs(r["predicted_progress"] - r["target"]["progress"]) * 100 for r in subset])
         axes[0].hist(absolute, bins=np.arange(0, 101, 2), weights=np.ones(len(absolute))/len(absolute),
                      alpha=0.55, color=colors[mode], label=mode)
@@ -226,7 +234,7 @@ def create_figures(rows, metrics):
         ax.plot([x/30 for x in frames], [100*truth[x] for x in frames], color="#192d38", label="label", linewidth=2)
         for mode in ("short", "context"):
             group = [r for r in selected if r["mode"] == mode]
-            ax.scatter([r["frame_indices"][-1]/30 for r in group], [r["predicted_progress"]*100 for r in group],
+            ax.scatter([r["frame_indices"][-1]/30 for r in group], [progress_value(r)*100 for r in group],
                        s=9, alpha=0.5, color=colors[mode], label=mode)
         ax.set(xlabel="Time in original video (seconds)", ylabel="Progress (%)", ylim=(-3, 103),
                title=f"{key[1]} / task {key[2]} / episode {key[3]}")
@@ -244,7 +252,7 @@ def render(directory, allow_partial=False):
     mixed = metrics["mixed_30_70"]
     title = f"Qwen3.5-2B · Epoch {manifest['checkpoint_epoch']} 验证集推理报告" + ('（提前停止）' if manifest.get('partial_evaluation') else '')
     content = [f"<h1>{title}</h1>",
-        f"<p class='lead'>进度平均绝对误差 <b>{mixed['progress_mae_pp']:.2f} 个百分点</b>；当前阶段准确率 "
+        f"<p class='lead'>进度平均绝对误差 <b>{format_metric(mixed['progress_mae_pp'])} 个百分点</b>；当前阶段准确率 "
         f"<b>{mixed['current_stage_accuracy']:.2%}</b>；完整阶段状态准确率 <b>{mixed['full_state_accuracy']:.2%}</b>。上述汇总按两种输入的 30% / 70% 权重计算。</p>",
         *coverage_section(directory, manifest, rows),
         "<h2>评估范围与口径</h2>",
@@ -257,7 +265,8 @@ def render(directory, allow_partial=False):
         f"训练步数：{manifest['checkpoint_step']:,}；生成上限：{manifest['max_new_tokens']} tokens；测试状态：{'按用户要求停止，仅统计已完成配对样本' if manifest.get('partial_evaluation') else ('短程检查，非完整评估' if manifest['smoke_test'] else '完整评估')}。</p>",
         "<h2>进度与阶段预测</h2>", metric_table(groups),
         "<p>进度使用 0–100% 表示：真实 60%、预测 66% 对应 6 个百分点误差。MAE 是平均绝对误差；RMSE 对大误差更敏感；P95 表示约 95% 样本误差不超过该值。</p>",
-        f"<p>加权进度偏差（预测−真值）为 {mixed['progress_bias_pp']:+.2f} 个百分点；正值偏高估，负值偏低估。"
+        "<p>进度解析失败保留为 null。MAE、RMSE 和分位数仅统计成功解析的样本；误差阈值覆盖率将解析失败计为未通过。</p>",
+        f"<p>加权进度偏差（预测−真值）为 {format_metric(mixed['progress_bias_pp'], '+.2f')} 个百分点；正值偏高估，负值偏低估。"
         f"误差 ≤10 个百分点的覆盖率为 {mixed['progress_within_10pp']:.2%}。</p>",
         "<p>阶段名称采用标签中的四个标准名称：1 拿起套筒；2 拿起螺钉；3 将螺钉和套筒对齐并插入；4 将装配好的组件放入盒子。"
         "当前阶段逐样本比对；已完成和未完成阶段按集合比对，不要求集合内顺序一致。完整状态要求三个字段全部正确。解析失败保留在分母中，未被丢弃。</p>",
@@ -281,7 +290,8 @@ def render(directory, allow_partial=False):
     content.append(f"<p>在本报告纳入的样本中，直接复制上一阶段的准确率为 {mixed['previous_stage_baseline_accuracy']:.2%}，在阶段已变化的样本中为 0%。"
                    f"本次包含 {len(changed)//2:,} 个阶段发生变化的索引样本，应重点阅读对应分组结果，避免大量阶段不变样本掩盖切换错误。</p>")
     wrong_stage = [r for r in rows if parse_response(r["response"])["nowid"] != r["target"]["nowid"]]
-    progress_errors = sorted(rows, key=lambda r: abs(r["predicted_progress"]-r["target"]["progress"]), reverse=True)
+    progress_errors = sorted(rows, key=lambda r: float("inf") if r["predicted_progress"] is None
+                             else abs(r["predicted_progress"]-r["target"]["progress"]), reverse=True)
     examples, example_keys = [], set()
     for row in wrong_stage[:12] + progress_errors[:12]:
         key = row["sample_id"], row["mode"]
@@ -290,7 +300,7 @@ def render(directory, allow_partial=False):
     content.append("<h2>典型错误与最大进度误差</h2>")
     for row in examples:
         content.append(f"<details><summary>{html.escape(row['sample_id'])} · {row['mode']} · "
-                       f"进度真值 {row['target']['progress']*100:.2f}% / 预测 {row['predicted_progress']*100:.2f}%</summary>"
+                       f"进度真值 {row['target']['progress']*100:.2f}% / 预测 {format_metric(progress_value(row)*100)}%</summary>"
                        f"<p>标准：{html.escape(row['target_response'])}</p><p>生成：{html.escape(row['response'])}</p></details>")
     content.append("<h2>可复核文件</h2><p>同目录 metrics.json 包含纳入样本的完整分组指标及原始文件哈希；predictions-rankXX.jsonl 保存原始生成文本、进度真值、预测值和元数据；"
                    "errors.jsonl 保存已纳入样本中的阶段错误、解析失败或进度误差超过 10 个百分点的记录；manifest.json 保留原计划模型、索引和划分信息。"

@@ -12,6 +12,16 @@ def normalize(text):
     return re.sub(r"\s+", "", unicodedata.normalize("NFKC", text)).replace("。", ".")
 
 
+def progress_value(row):
+    """报告绘图用 NaN 留空；原始 JSON 中无效进度仍保留 null。"""
+    value = row["predicted_progress"]
+    return float("nan") if value is None else value
+
+
+def format_metric(value, spec=".2f"):
+    return "—" if value is None or not math.isfinite(value) else format(value, spec)
+
+
 def parse_response(text):
     """Parse canonical stage names; retain invalid/missing fields instead of guessing."""
     text = normalize(text)
@@ -76,9 +86,12 @@ def measure(rows, mixed=False):
     weights = [({"short": 0.3, "context": 0.7}[r["mode"]] if mixed else 1.0) for r in rows]
     total = sum(weights)
     mean = lambda values: sum(w * value for w, value in zip(weights, values)) / total
-    errors = [r["predicted_progress"] - r["target"]["progress"] for r in rows]
-    if not all(math.isfinite(e) for e in errors):
-        raise ValueError("Nonfinite progress prediction")
+    valid = [math.isfinite(progress_value(r)) and 0 <= progress_value(r) <= 1
+             and r.get("progress_parse_valid", True) for r in rows]
+    errors = [progress_value(r) - r["target"]["progress"] for r, ok in zip(rows, valid) if ok]
+    progress_weights = [w for w, ok in zip(weights, valid) if ok]
+    progress_total = sum(progress_weights)
+    progress_mean = lambda values: sum(w * value for w, value in zip(progress_weights, values)) / progress_total
     absolute = [abs(e) for e in errors]
     parsed = [parse_response(r["response"]) for r in rows]
     confusion = [[0.0] * 5 for _ in range(4)]  # columns 1..4, invalid
@@ -92,14 +105,17 @@ def measure(rows, mixed=False):
         f1_scores.append(2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0)
     result = {
         "generated_responses": len(rows), "weighted_sample_count": total,
-        "progress_mae_pp": mean(absolute) * 100,
-        "progress_rmse_pp": math.sqrt(mean([e * e for e in errors])) * 100,
-        "progress_bias_pp": mean(errors) * 100,
-        "progress_median_ae_pp": quantile(absolute, weights, 0.5) * 100,
-        "progress_p90_ae_pp": quantile(absolute, weights, 0.9) * 100,
-        "progress_p95_ae_pp": quantile(absolute, weights, 0.95) * 100,
-        "progress_within_5pp": mean([e <= 0.05 for e in absolute]),
-        "progress_within_10pp": mean([e <= 0.1 for e in absolute]),
+        "progress_valid_samples": sum(valid), "progress_invalid_samples": len(rows) - sum(valid),
+        "progress_parse_valid_rate": mean(valid),
+        "progress_mae_pp": progress_mean(absolute) * 100 if errors else None,
+        "progress_rmse_pp": math.sqrt(progress_mean([e * e for e in errors])) * 100 if errors else None,
+        "progress_bias_pp": progress_mean(errors) * 100 if errors else None,
+        "progress_median_ae_pp": quantile(absolute, progress_weights, 0.5) * 100 if errors else None,
+        "progress_p90_ae_pp": quantile(absolute, progress_weights, 0.9) * 100 if errors else None,
+        "progress_p95_ae_pp": quantile(absolute, progress_weights, 0.95) * 100 if errors else None,
+        # 无效输出仍在覆盖率分母中，不能靠不输出数字提高通过率。
+        "progress_within_5pp": sum(w for w, e in zip(progress_weights, absolute) if e <= 0.05) / total,
+        "progress_within_10pp": sum(w for w, e in zip(progress_weights, absolute) if e <= 0.1) / total,
         "current_stage_accuracy": mean([p["nowid"] == r["target"]["nowid"] for r, p in zip(rows, parsed)]),
         "current_stage_macro_f1": sum(f1_scores) / 4,
         "stage_confusion": confusion,

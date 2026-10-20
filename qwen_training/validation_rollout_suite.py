@@ -14,7 +14,7 @@ from types import SimpleNamespace
 
 from qwen_training.closed_loop_rollout import feedback_state, prepare, save_json, sha256
 from qwen_training.evaluation_metrics import parse_response
-from qwen_training.prompts import build_messages, describe_target
+from qwen_training.prompts import build_messages, describe_target, expected_stages
 
 
 def prepare_one(job):
@@ -189,9 +189,10 @@ def run_worker(args):
                     meta=context['rows'][context['step']]
                     response=prediction['responses'][i]
                     value=values[i]
-                    if not 0<=value<=1:raise ValueError('Nonfinite or invalid progress')
+                    progress_valid=0<=value<=1
                     row=dict(meta,input_state=context['state'],prompt=messages[i],response=response,
-                             predicted_progress=value,parsed=parse_response(response),target_response=describe_target(meta['target']),
+                             predicted_progress=value if progress_valid else None,progress_parse_valid=progress_valid,
+                             parsed=parse_response(response),target_response=describe_target(meta['target'],expected_stages(meta['target'])),
                              mode='closed_loop',input_state_source='initial_ground_truth' if context['step']==0 else 'previous_prediction',
                              seconds=duration,amortized_seconds=duration/len(active),batch_size=len(active),gpu_rank=rank,
                              draft_source='previous_prediction' if context['previous_response'] is not None else None,
