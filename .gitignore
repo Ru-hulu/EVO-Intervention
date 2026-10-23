@@ -1,7 +1,9 @@
 # Project-local rules (placed first so the StarVLA rules below can re-include its own docs)
 media/
+/research/
 tests/
 *.md
+!README.md
 
 debug/
 ckpts/
