@@ -1,6 +1,7 @@
 # Project-local rules (placed first so the StarVLA rules below can re-include its own docs)
 media/
 /research/
+/outputs/
 tests/
 *.md
 !README.md
@@ -277,3 +278,7 @@ evo_intervention/model/framework/VLM4A/QwenGR00T_v2.py
 # Track le-wm training configuration files under the otherwise ignored data directory
 !le-wm/config/train/data/
 !le-wm/config/train/data/*.yaml
+
+# Current project structure documentation
+!qwen_training/datasets/rmbench/README.md
+!backup/legacy_progress/README.md
