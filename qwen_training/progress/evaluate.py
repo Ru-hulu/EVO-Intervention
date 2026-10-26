@@ -23,8 +23,7 @@ def evaluate(model, dataset, cfg, episodes=0):
 
     - 关键帧分两种：oracle 用无扰动的标注状态变化帧，model 用模型自己按 δ 触发的（即实际推理）。
     - loss 与训练同一公式，按帧加权平均；stage_acc 不扣除边界帧。
-    - count_acc：每帧每项预测的次数与真值完全相同的比例。预测次数为 P(n_j ≥ r) > 0.5 的个数，
-      再沿时间取累计最大：目前只有成功轨迹，完成次数只增不减（proposal 3.5）。
+    - count_acc：每帧每项预测的次数（P(n_j ≥ r) > 0.5 的个数）与真值完全相同的比例。
     返回 {"overall": {"val/<模式>/<指标>": 值}, "per_task": {任务: {"<模式>/<指标>": 值}}}。
     """
     was_training = model.training
@@ -43,7 +42,7 @@ def evaluate(model, dataset, cfg, episodes=0):
             labels = {key: sample[key].to(model.special.device) for key in ("stage", "count", "progress")}
             frames = len(outputs)
             p = (F.softmax(logits["progress"], -1) * model.bins).sum(-1)
-            counts = (logits["count"] > 0).sum(-1).cummax(0).values
+            counts = (logits["count"] > 0).sum(-1)
             metrics = {"frames": frames, "items": labels["count"][..., 0].numel(), "loss": loss.item() * frames,
                        **{f"{part}_loss": parts[part] * frames for part in ("stage", "count", "progress")},
                        "stage_acc": (logits["stage"].argmax(-1) == labels["stage"]).sum().item(),
