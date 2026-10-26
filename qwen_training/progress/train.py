@@ -178,6 +178,8 @@ def main(argv=None):
 
     cfg = parse_config(argv, __doc__.splitlines()[0])
     tasks = cfg.tasks.split(",") if cfg.tasks else None
+    random.seed(cfg.seed)
+    torch.manual_seed(cfg.seed)   # 在构建模型之前设：新加部分（readout、MLP 头、LoRA）的随机初始化也由 seed 决定
     model = ProgressModel.from_pretrained(cfg.model, cfg, cfg.device)
     train(model, cfg, RMBench(cfg.labels, cfg.data, "train", tasks), RMBench(cfg.labels, cfg.data, "val", tasks))
 

@@ -358,6 +358,25 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(history[0]["iteration"], 1)
         self.assertLess(history[0]["lr_head"], stage2.cfg.head_lr)                       # 预热重新开始
 
+    def test_main_seeds_before_building_model(self):
+        """同一个 seed 两次运行 main，新加部分的初始化完全相同；换 seed 则不同。"""
+        from qwen_training.progress import train as train_module
+        from qwen_training.progress.model import ProgressModel
+
+        def initial(seed):
+            backbone = tiny_backbone()      # 它自己会设 seed，所以在 main 之前建好，main 里只剩新加部分的初始化
+            parts = backbone, image_processor(), Tokenizer(), tiny_cfg()
+            with mock.patch.object(ProgressModel, "from_pretrained", side_effect=lambda *args: ProgressModel(*parts)), \
+                    mock.patch.object(data, "RMBench"), mock.patch.object(train_module, "train") as run:
+                train_module.main(["--seed", str(seed)])
+            model = run.call_args.args[0]
+            return {name: param.detach().clone() for name, param in model.named_parameters() if param.requires_grad}
+
+        first, again, other = initial(0), initial(0), initial(1)
+        for name in first:
+            torch.testing.assert_close(first[name], again[name], rtol=0, atol=0)
+        self.assertFalse(torch.equal(first["special"], other["special"]))
+
     def test_evaluate_reports_overall_and_per_task(self):
         model = self.make()
         result = evaluate(model, FakeSet(), model.cfg, 1)
