@@ -1,0 +1,13 @@
+{
+  "sample_fps": 10,
+  "difference_width": 160,
+  "pixel_delta": 12,
+  "min_changed_fraction": 0.002,
+  "seed": 42,
+  "samples_per_case": {
+    "case1": 8,
+    "case2": 8,
+    "case3": 8,
+    "case4": 8
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "history_dim": 512,
+  "num_bins": 101,
+  "lora_rank": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "gradient_checkpointing": true
+}
