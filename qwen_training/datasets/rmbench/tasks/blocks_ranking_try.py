@@ -11,5 +11,4 @@ SPEC = TaskSpec(
     kind=SEARCH,
     steps=("Press the button to check the arrangement.", "Swap two blocks."),
     step_prefixes=(("Press", 0), ("Swap", 1)),
-    max_counts=(6, 5),
 )

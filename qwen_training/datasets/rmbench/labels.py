@@ -1,4 +1,4 @@
-# ruff: noqa: RUF001, RUF002
+# ruff: noqa: RUF001, RUF002, RUF003
 """把 RMBench 的分段标注转成逐帧的流式进度标签（proposal_progress 3.2.1、3.5、5.3）。
 
 python -m qwen_training.datasets.rmbench --root /path/to/rmbench/data --out /path/to/rmbench_labels \
@@ -36,7 +36,7 @@ from qwen_training.datasets.rmbench.spec import FIXED, SEARCH
 from qwen_training.datasets.rmbench.tasks import TASKS
 
 CAMERAS = ("head_camera", "left_camera", "right_camera")
-MAX_SLOTS = 16
+MAX_COUNT = 10   # [CNT] 累积计数的上限：每项最多计到几次
 SAMPLE_FPS = 5
 
 
@@ -99,11 +99,8 @@ def episode_labels(segments, spec, source_fps, sample_fps=SAMPLE_FPS):
         step = step_of(text, order, spec)
         step_counts[step] += 1
         trace.append({"step": step, "instance": step_counts[step], "start": start, "end": end, "annotation": text})
-    capacity = sum(spec.max_counts) if spec.kind == SEARCH else len(trace)
-    if capacity > MAX_SLOTS:
-        raise ValueError(f"需要 {capacity} 个槽位，超过 {MAX_SLOTS} 个")
-    if spec.kind == SEARCH and any(n > m for n, m in zip(step_counts, spec.max_counts, strict=True)):
-        raise ValueError(f"尝试次数 {step_counts} 超过上限 {list(spec.max_counts)}")
+    if max(step_counts) > MAX_COUNT:
+        raise ValueError(f"每项次数 {step_counts} 超过上限 {MAX_COUNT}")
     frames = []
     for index in sample_frames(trace[-1]["end"] + 1, source_fps, sample_fps):
         current = next(item for item in trace if item["start"] <= index <= item["end"])
@@ -114,8 +111,7 @@ def episode_labels(segments, spec, source_fps, sample_fps=SAMPLE_FPS):
         elapsed = 0 if index >= current["end"] else (index - current["start"]) / length
         progress = round((sum(counts) + elapsed) / len(trace), 6)
         frames.append({"index": index, "stage": current["step"], "counts": counts, "progress": progress})
-    return {"steps": list(spec.steps), "step_counts": step_counts,
-            "max_counts": list(spec.max_counts) or None, "trace": trace,
+    return {"steps": list(spec.steps), "step_counts": step_counts, "trace": trace,
             "demo": demo_keyframes(trace, spec), "frames": frames}
 
 

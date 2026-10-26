@@ -12,5 +12,4 @@ SPEC = TaskSpec(
     steps=("Place both batteries into the slot in the positive direction.",
            "Flip one battery to try the next orientation combination."),
     step_prefixes=(("Use dual arm", 0), ("Pick up", 1)),
-    max_counts=(1, 3),
 )

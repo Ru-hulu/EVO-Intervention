@@ -6,8 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from qwen_training.datasets.rmbench.labels import MAX_SLOTS, build, episode_labels, instances, sample_frames
-from qwen_training.datasets.rmbench.spec import FIXED, TaskSpec
+from qwen_training.datasets.rmbench.labels import MAX_COUNT, build, episode_labels, instances, sample_frames
 from qwen_training.datasets.rmbench.tasks import TASKS
 
 LEFT, MIDDLE = "Press the left button one time.", "Press the middle button one time."
@@ -75,7 +74,6 @@ class LabelTests(unittest.TestCase):
     def test_search_task_progress_uses_actual_attempts_and_demo_has_success(self):
         labels = episode_labels(BATTERY, TASKS["battery_try"], 25)
         self.assertEqual(labels["step_counts"], [1, 2])
-        self.assertEqual(labels["max_counts"], [1, 3])
         frames = {f["index"]: f for f in labels["frames"]}
         self.assertAlmostEqual(frames[10]["progress"], 1 / 3, places=5)   # 共 3 次尝试，第 1 次在第 9 帧结束。
         progress = [f["progress"] for f in labels["frames"]]
@@ -84,15 +82,10 @@ class LabelTests(unittest.TestCase):
         self.assertEqual(labels["demo"], [{"step": 0, "frame": 9}, {"step": 1, "frame": 19},
                                           {"step": None, "frame": 29}])
 
-    def test_search_task_rejects_too_many_attempts(self):
-        segments = [*BATTERY, BATTERY[1], BATTERY[2]]   # 共翻转 4 次，超过上限 3。
+    def test_rejects_more_than_max_count(self):
+        segments = [PRESS[0]] * (MAX_COUNT + 1) + PRESS[2:]   # 左键按了 11 次
         with self.assertRaises(ValueError):
-            episode_labels(segments, TASKS["battery_try"], 25)
-
-    def test_rejects_more_than_max_slots(self):
-        spec = TaskSpec(kind=FIXED, steps=tuple(str(i) for i in range(MAX_SLOTS + 1)), segments_per_instance=1)
-        with self.assertRaises(ValueError):
-            episode_labels([["x", 2]] * (MAX_SLOTS + 1), spec, 25)
+            episode_labels(segments, TASKS["press_button"], 25)
 
 
 class BuildTests(unittest.TestCase):

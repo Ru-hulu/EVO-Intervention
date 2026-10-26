@@ -19,5 +19,3 @@ class TaskSpec:
     segments_per_instance: int | None = None
     # 这些标注文字的段并入前一个实例（原始标注把同一次动作的收尾标成了别的文字）。
     merge_into_previous: tuple[str, ...] = ()
-    # 试错：每项最多做几次，用来预留槽位。
-    max_counts: tuple[int, ...] = ()
