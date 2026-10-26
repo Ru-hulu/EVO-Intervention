@@ -14,6 +14,7 @@ class Config:
     out: str = "outputs/progress"
     tasks: str = ""                 # 逗号分隔，空为全部任务
     resume: str = ""                # 从这个 checkpoint 继续训练（模型、优化器、调度器、随机数状态）
+    init_from: str = ""             # 只载入这个 checkpoint 的模型参数，优化器、调度器、迭代号从头开始（如 stage 2）
 
     # 流式结构（proposal 3.3）
     window: int = 15                # 最近 N 帧，5 Hz 下 3 秒
@@ -30,6 +31,9 @@ class Config:
 
     # 样本
     segment: int = 6                # 带梯度的步数，5 Hz 下 1.2 秒；24 GB 显存下 2B 最多约 12
+    # 两阶段分开训练：stage 1 teacher=True，[CNT] 回传真值计数、整段并行；stage 2 teacher=False，回传自己的预测、
+    # 逐步计算，用 init_from 从 stage 1 的 checkpoint 开始
+    teacher: bool = False
     boundary: int = 1               # 切换、完成前后 ±w 步不计 STG、CNT 损失
     keyframe_jitter: int = 2        # 标注关键帧随机偏移 ±步数
     keyframe_drop: float = 0.2

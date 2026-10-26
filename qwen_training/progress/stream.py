@@ -1,10 +1,10 @@
 # ruff: noqa: RUF002, RUF003
-"""逐步前向：前缀一次算完，之后每步追加一帧和 readout（proposal_progress 3.3、3.4）。
+"""流式前向：前缀一次算完，之后追加帧和 readout（proposal_progress 3.3、3.4）。
 
 直接复用 Qwen3.5 各层的权重，只替换 token 混合部分：
 - full attention 层：缓存只保留"前缀 + 首帧 + 关键帧 + 最近 N 帧"，按 token 类型给 mask；
 - GDN 层：readout 位置 β=0、g=0（α=1），不写入、不衰减，也不进入短卷积窗口。
-训练和推理走同一条路径，逐步计算，保证两者一致。
+推理和 stage 2 每次追加一步；stage 1（teacher forcing）一次追加多步，mask 按每个 token 所在的帧计算，结果相同。
 """
 
 from dataclasses import dataclass, fields

@@ -1,10 +1,13 @@
 # RMBench + Qwen3.5-2B，单张 24 GB 卡（主机 192.168.105.242）。
+# Stage 1：[CNT] 回传上一帧的真值计数，热身按窗口分段，带梯度段并行；随机帧淘汰时切段（teacher forcing）。
+# 结束后挑一个 checkpoint，用 rmbench_2b_stage2.yaml 加 --init-from 开始 stage 2。
+teacher: true
 model: /media/zhaobo/Element1/EVO-Intervention/models/Qwen3.5-2B
 labels: /media/zhaobo/Element1/EVO-Intervention/outputs/progress/rmbench_2b_smoke_20261024_222224/labels
 data: /home/zhaobo/datasets/rmbench/data
-out: outputs/progress/rmbench_2b
+out: outputs/progress/rmbench_2b_stage1
 
-segment: 6          # 24 GB 下实测：6 步峰值约 13.5 GB，12 步约 18.7 GB
+segment: 6          # 逐步计算时实测：6 步峰值约 13.5 GB，12 步约 18.7 GB；整段并行尚未在 2B 上测
 accumulate: 8
 iterations: 2000
 warmup: 50

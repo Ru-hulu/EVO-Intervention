@@ -1,7 +1,12 @@
 # ruff: noqa: RUF002, RUF003
 """单卡训练：无梯度热身 + 短段反传（proposal_progress 5.1、5.2）。
 
-python -m qwen_training.progress.train --config qwen_training/progress/configs/rmbench_2b.yaml [--key value ...]
+两阶段分开运行：stage 1（--teacher true）[CNT] 回传真值计数、整段并行；stage 2 回传自己的预测、逐步计算，
+用 --init-from 载入 stage 1 的 checkpoint。
+
+python -m qwen_training.progress.train --config qwen_training/progress/configs/rmbench_2b_stage1.yaml [--key value ...]
+python -m qwen_training.progress.train --config qwen_training/progress/configs/rmbench_2b_stage2.yaml \
+    --init-from <stage 1 的 checkpoint>
 
 输出目录（--out）：
 - config.yaml：最终生效的配置；
@@ -47,6 +52,9 @@ def train(model, cfg, train_set, val_set=None):
     import yaml
     from torch.utils.tensorboard import SummaryWriter
 
+    if cfg.resume and cfg.init_from:
+        raise ValueError("resume and init_from are mutually exclusive")
+
     out = Path(cfg.out)
     (out / "eval").mkdir(parents=True, exist_ok=True)
     (out / "config.yaml").write_text(yaml.safe_dump(asdict(cfg), sort_keys=False, allow_unicode=True))
@@ -83,6 +91,9 @@ def train(model, cfg, train_set, val_set=None):
             torch.cuda.set_rng_state_all(checkpoint["rng"]["cuda"])
         print(f"resumed from {cfg.resume} at iteration {start}", flush=True)
     else:
+        if cfg.init_from:
+            model.load_trainable(torch.load(cfg.init_from, map_location="cpu", weights_only=False)["model"])
+            print(f"initialized from {cfg.init_from}", flush=True)
         random.seed(cfg.seed)
         torch.manual_seed(cfg.seed)
 
@@ -131,7 +142,7 @@ def train(model, cfg, train_set, val_set=None):
         for _ in range(cfg.accumulate):
             sample = next(loader)
             with autocast(cfg):
-                outputs = model.rollout(sample, sample["grad_from"])
+                outputs = model.rollout(sample, sample["grad_from"], teacher=cfg.teacher)
                 loss, parts = sample_loss(model, outputs, sample, cfg)
                 loss = loss + cfg.gate_l2 * sum(((param - init) ** 2).sum() for param, init in model.gates)
             (loss / cfg.accumulate).backward()

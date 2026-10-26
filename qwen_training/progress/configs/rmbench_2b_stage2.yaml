@@ -1,0 +1,21 @@
+# RMBench + Qwen3.5-2B，单张 24 GB 卡（主机 192.168.105.242）。
+# Stage 2：[CNT] 回传自己上一步的预测、逐步计算（与推理相同）。启动时用 --init-from 指定 stage 1 的 checkpoint。
+teacher: false
+model: /media/zhaobo/Element1/EVO-Intervention/models/Qwen3.5-2B
+labels: /media/zhaobo/Element1/EVO-Intervention/outputs/progress/rmbench_2b_smoke_20261024_222224/labels
+data: /home/zhaobo/datasets/rmbench/data
+out: outputs/progress/rmbench_2b_stage2
+
+segment: 6          # 24 GB 下实测：6 步峰值约 13.5 GB，12 步约 18.7 GB
+accumulate: 8
+iterations: 2000
+warmup: 50
+head_lr: 1.0e-3
+lr: 1.0e-4
+gate_lr: 1.0e-5
+
+eval_every: 100
+eval_episodes: 12   # 每个任务约 1 条
+final_eval_episodes: 0
+save_every: 200
+workers: 2

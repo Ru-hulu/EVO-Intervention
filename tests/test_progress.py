@@ -250,6 +250,64 @@ class ModelTests(unittest.TestCase):
         self.assertIn(model.cfg.best_metric, result["overall"])
         self.assertFalse(any(key.startswith("val/oracle/") for key in result["overall"]))
 
+    def test_teacher_forcing_in_parallel_matches_stepwise(self):
+        """覆盖热身、零热身与段内随机帧淘汰；回传头非零时仍与逐步 teacher forcing 一致。"""
+        cases = [(3, 2, [2, 5], [1]), (0, 1, [4], [1, 3]), (0, 2, [2, 5], [])]
+        for grad_from, limit, real_frames, extra_frames in cases:
+            with self.subTest(grad_from=grad_from, max_keyframes=limit, extra=extra_frames):
+                model = self.make(window=2, max_keyframes=limit)
+                torch.nn.init.normal_(model.count_feedback[-1].weight, std=0.1)
+                sample = fake_sample(np.random.default_rng(3), grad_from=grad_from)
+                sample["keyframes"].zero_()
+                sample["keyframes"][real_frames] = True
+                sample["extra_keyframes"].zero_()
+                sample["extra_keyframes"][extra_frames] = True
+                truth = sample["count"].to(DEVICE)
+                with torch.no_grad(), autocast(model.cfg):
+                    parallel = model.rollout(sample, grad_from, teacher=True)
+                    state = model.start(sample["instruction"], sample["steps"], sample["demo"])
+                    stepwise = []
+                    for t, views in enumerate(sample["frames"]):
+                        state.count_probs = truth[t - 1] if t else torch.zeros_like(truth[0])
+                        stepwise.append(model.step(state, views))
+                        real, extra = sample["keyframes"][t], sample["extra_keyframes"][t]
+                        if real or extra:
+                            state.meta.key |= (state.meta.frame == t) & (state.meta.kind == FRAME)
+                            (state.keyframes if real else state.extra_keyframes).append(t)
+                        state.evict(model.cfg.window, model.cfg.max_keyframes)
+                self.assertEqual(len(parallel), len(sample["frames"]) - grad_from)
+                tolerance = 5e-2 if DEVICE == "cuda" else 2e-5
+                for fast, slow in zip(parallel, stepwise[grad_from:], strict=True):
+                    for name in ("stage", "count", "progress"):
+                        torch.testing.assert_close(fast[name], slow[name], atol=tolerance, rtol=tolerance)
+
+    def test_teacher_future_keyframe_does_not_change_past_outputs(self):
+        model = self.make(window=2, max_keyframes=1)
+        sample = fake_sample(np.random.default_rng(4), grad_from=0)
+        sample["keyframes"].zero_()
+        future = {**sample, "keyframes": sample["keyframes"].clone()}
+        future["keyframes"][-1] = True
+        with torch.no_grad(), autocast(model.cfg):
+            original = model.rollout(sample, teacher=True)
+            changed = model.rollout(future, teacher=True)
+        for before, after in zip(original[:-1], changed[:-1], strict=True):
+            for name in ("stage", "count", "progress"):
+                torch.testing.assert_close(before[name], after[name])
+
+    def test_teacher_rollout_backward_and_caps_extra_keyframes(self):
+        model = self.make()
+        sample = fake_sample(np.random.default_rng(0))             # 2 个标注关键帧 + 1 个随机帧，上限 2
+        with autocast(model.cfg):
+            outputs = model.rollout(sample, sample["grad_from"], teacher=True)
+            loss, _ = sample_loss(model, outputs, sample, model.cfg)
+        loss.backward()
+        self.assertEqual(len(outputs), len(sample["frames"]) - sample["grad_from"])
+        lora = model.language.layers[3].self_attn.q_proj.up.weight
+        for param in (model.special, model.count_feedback[-1].weight, lora):
+            self.assertGreater(param.grad.abs().sum().item(), 0)
+        with self.assertRaises(ValueError):
+            model.rollout(sample, keyframes="model", teacher=True)
+
     def test_model_triggered_keyframes_run(self):
         model = self.make(keyframes="model", delta=0.0, window=2)
         with torch.no_grad(), autocast(model.cfg):
@@ -278,6 +336,28 @@ class ModelTests(unittest.TestCase):
             self.assertAlmostEqual(continued[0]["lr_head"], history[6]["lr_head"])
             self.assertAlmostEqual(continued[0]["lr_gate"], history[6]["lr_gate"])
 
+    def test_resume_and_init_from_are_mutually_exclusive(self):
+        model = self.make(resume="resume.pt", init_from="stage1.pt")
+        with self.assertRaisesRegex(ValueError, "mutually exclusive"):
+            train(model, model.cfg, FakeSet())
+
+    def test_stage2_starts_from_stage1_checkpoint(self):
+        """stage 1 用 teacher forcing 训练；stage 2 只载入它的模型参数，迭代号和学习率调度从头开始。"""
+        stage1 = self.make(teacher=True, iterations=2, save_every=2)
+        with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
+            stage1.cfg.out = first
+            train(stage1, stage1.cfg, FakeSet())
+            trained = torch.load(Path(first) / "step2.pt", map_location="cpu", weights_only=False)["model"]
+            stage2 = self.make(iterations=2, init_from=str(Path(first) / "step2.pt"))
+            stage2.cfg.out = second
+            with mock.patch.object(stage2, "rollout", wraps=stage2.rollout) as rollout, \
+                    mock.patch.object(stage2, "load_trainable", wraps=stage2.load_trainable) as load:
+                history = train(stage2, stage2.cfg, FakeSet())
+        torch.testing.assert_close(load.call_args.args[0], trained)
+        self.assertTrue(all(call.kwargs["teacher"] is False for call in rollout.call_args_list))
+        self.assertEqual(history[0]["iteration"], 1)
+        self.assertLess(history[0]["lr_head"], stage2.cfg.head_lr)                       # 预热重新开始
+
     def test_evaluate_reports_overall_and_per_task(self):
         model = self.make()
         result = evaluate(model, FakeSet(), model.cfg, 1)
@@ -288,6 +368,17 @@ class ModelTests(unittest.TestCase):
 
 
 class ConfigTests(unittest.TestCase):
+    def test_stage_configs_allow_independent_segment_overrides(self):
+        configs = Path(__file__).resolve().parents[1] / "qwen_training/progress/configs"
+        for stage, teacher, segment in ((1, True, 9), (2, False, 3)):
+            args = ["--config", str(configs / f"rmbench_2b_stage{stage}.yaml"), "--segment", str(segment)]
+            if stage == 2:
+                args += ["--init-from", "stage1.pt"]
+            cfg = parse_config(args)
+            self.assertEqual((cfg.teacher, cfg.segment), (teacher, segment))
+            if stage == 2:
+                self.assertEqual(cfg.init_from, "stage1.pt")
+
     def test_yaml_then_command_line(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "run.yaml"

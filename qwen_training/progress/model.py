@@ -6,6 +6,7 @@
 """
 
 import math
+from itertools import pairwise
 
 import torch
 import torch.nn.functional as F
@@ -106,16 +107,18 @@ class ProgressModel(nn.Module):
         return [(feature, (int(grid[1]) // merge, int(grid[2]) // merge))
                 for feature, grid in zip(features, grids, strict=True)]
 
-    def _forward(self, state, items):
+    def _forward(self, state, items, frames=None, keyframes=()):
         """items: [(kind, 内容)]，内容是文本、特殊 token 序号、embedding [1, d] 或 (图像特征, (h, w))。
 
         拼成一段接到缓存后前向，返回每个 item 对应的 hidden。图像前后加 vision_start、vision_end；
         位置按 Qwen3.5 的 get_rope_index：文本三轴相同，图像为 (起点, 起点 + 行, 起点 + 列)。
+        frames：每个 item 所在的帧号，默认都是 state.frame（一段多步并行时逐个给出）；keyframes 中的帧标为关键帧。
         """
         device, embed, config = self.special.device, self.language.embed_tokens, self.backbone.config
         marks = embed(torch.tensor([config.vision_start_token_id, config.vision_end_token_id], device=device))
-        embeds, positions, kinds, lengths = [], [], [], []
-        for kind, content in items:
+        frames = frames or [state.frame] * len(items)
+        embeds, positions, kinds, frame_ids, lengths = [], [], [], [], []
+        for (kind, content), frame in zip(items, frames, strict=True):
             if isinstance(content, str):
                 ids = self.tokenizer(content, add_special_tokens=False)["input_ids"]
                 parts = [(embed(torch.tensor(ids, device=device)), None)]
@@ -138,13 +141,14 @@ class ProgressModel(nn.Module):
                     state.next_position += max(height, width)
                 embeds.append(part.to(embed.weight.dtype))
                 kinds.append(torch.full((len(part),), kind))
+                frame_ids.append(torch.full((len(part),), frame))
             lengths.append(sum(len(part) for part, _ in parts))
-        kind = torch.cat(kinds).to(device)
+        kind, frame = torch.cat(kinds).to(device), torch.cat(frame_ids).to(device)
         n = len(kind)
-        meta = Tokens(kind=kind, frame=torch.full((n,), state.frame, device=device),
+        meta = Tokens(kind=kind, frame=frame,
                       index=torch.arange(state.next_index, state.next_index + n, device=device),
-                      keep=(kind == FRAME) & (state.frame == 0),          # 首帧画面永久保留
-                      key=torch.zeros(n, dtype=torch.bool, device=device))
+                      keep=(kind == FRAME) & (frame == 0),                # 首帧画面永久保留
+                      key=(kind == FRAME) & torch.isin(frame, torch.tensor(list(keyframes), device=device).long()))
         state.next_index += n
         hidden = forward_chunk(self.language, torch.cat(embeds)[None], torch.cat(positions, 1)[:, None].to(device),
                                meta, state, self.cfg.window, self.cfg.isolate_gdn)
@@ -169,39 +173,91 @@ class ProgressModel(nn.Module):
         hidden = self._forward(state, items)
         state.steps = torch.cat([h for (_, content), h in zip(items, hidden, strict=True)
                                  if isinstance(content, int) and content == STEP_TOKEN])
+        state.count_probs = state.steps.new_zeros(len(steps), MAX_COUNT, dtype=torch.float)   # 第一步回传全 0
         return state
 
-    def step(self, state, views):
-        """追加一帧（多视角）和 [STG]·[CNT]·[P]，返回各头的 logits。
+    def _count_inputs(self, steps, probs):
+        """[CNT] 的输入：e_CNT + Σ_j MLP([h_STEP_j; 上一步的 P(n_j ≥ 1..R)])。probs: [k, J, R] → [k, d]。"""
+        return self.special[CNT_TOKEN] + self.count_feedback(
+            torch.cat([steps.expand(len(probs), -1, -1), probs], -1)).sum(1)
+
+    def _heads(self, steps, stage, count, progress):
+        """一步的三个 readout hidden [d] → 各头的 logits。
 
         stage: [J+1]；count: [J, R]，第 (j, r) 个是"第 j 项已经做了至少 r 次"的 logit；progress: [bins]。
         """
-        state.frame += 1
-        items = [(FRAME, image) for image in self.encode_images(views)]
-        steps = state.steps.float()
-        if state.count_probs is None:
-            state.count_probs = steps.new_zeros(len(steps), MAX_COUNT)
-        count_input = self.special[CNT_TOKEN : CNT_TOKEN + 1] + self.count_feedback(
-            torch.cat([steps, state.count_probs], -1)).sum(0, keepdim=True)
-        items += [(STG, STG_TOKEN), (CNT, count_input), (P, P_TOKEN)]
-        stage, count, progress = (h[0].float() for h in self._forward(state, items)[-3:])
+        stage, count, progress = stage.float(), count.float(), progress.float()
         stage_logits = torch.cat([self.stage_head(torch.cat([stage.expand_as(steps), steps], -1)).squeeze(-1),
                                   self.none_head(stage)])
         scores = self.count_head(torch.cat([count.expand_as(steps), steps], -1))           # [J, 1]
         thresholds = torch.cat([self.count_first, self.count_first + F.softplus(self.count_gaps).cumsum(0)])
-        count_logits = scores - thresholds
-        state.count_probs = count_logits.detach().sigmoid()   # 截断：回传只当输入，不沿它反传
-        return {"stage": stage_logits, "count": count_logits, "progress": self.progress_head(progress)}
+        return {"stage": stage_logits, "count": scores - thresholds, "progress": self.progress_head(progress)}
 
-    def rollout(self, sample, grad_from=0, keyframes=None):
+    def step(self, state, views):
+        """追加一帧（多视角）和 [STG]·[CNT]·[P]，[CNT] 回传自己上一步的计数概率，返回各头的 logits。"""
+        state.frame += 1
+        steps = state.steps.float()
+        items = [(FRAME, image) for image in self.encode_images(views)]
+        items += [(STG, STG_TOKEN), (CNT, self._count_inputs(steps, state.count_probs[None])), (P, P_TOKEN)]
+        out = self._heads(steps, *(h[0] for h in self._forward(state, items)[-3:]))
+        state.count_probs = out["count"].detach().sigmoid()   # 截断：回传只当输入，不沿它反传
+        return out
+
+    def teacher_steps(self, state, sample, start, end, keyframes):
+        """第 start…end−1 帧一次前向（stage 1）：[CNT] 回传上一帧的真值计数，所以各步的输入事先已知，
+        可以像 LLM 的 teacher forcing 一样整段并行；窗口、可见性靠 mask，结果与逐步计算相同。"""
+        steps = state.steps.float()
+        truth = sample["count"].to(steps.device)
+        previous = torch.cat([torch.zeros_like(truth[:1]), truth[:-1]])[start:end]
+        counts = self._count_inputs(steps, previous)
+        items, frames = [], []
+        for i, t in enumerate(range(start, end)):
+            step = [(FRAME, image) for image in self.encode_images(sample["frames"][t])]
+            step += [(STG, STG_TOKEN), (CNT, counts[i : i + 1]), (P, P_TOKEN)]
+            items += step
+            frames += [t] * len(step)
+        hidden = self._forward(state, items, frames, keyframes)
+        state.frame = end - 1
+        readouts = [h for (kind, _), h in zip(items, hidden, strict=True) if kind in (STG, CNT, P)]
+        return [self._heads(steps, *(h[0] for h in readouts[i : i + 3])) for i in range(0, len(readouts), 3)]
+
+    def rollout(self, sample, grad_from=0, keyframes=None, teacher=False):
         """跑完 sample 的前缀和全部帧；grad_from 之前的帧不求梯度（热身），返回之后各帧的输出。
 
         每步之后标关键帧（默认 cfg.keyframes）：label 用样本给的标注（子任务边界，训练时另有随机加入的帧），
         model 用 [CNT] 任一概率变化超过 δ。
+        teacher（stage 1）：[CNT] 回传真值计数，热身按窗口长度分段、带梯度的一段整段并行，只用标注关键帧。
         """
         cfg = self.cfg
         keyframes = keyframes or cfg.keyframes
+        if teacher and keyframes != "label":
+            raise ValueError("teacher forcing 只支持标注关键帧")
         state = self.start(sample["instruction"], sample["steps"], sample["demo"])
+        if teacher:
+            real = set(sample["keyframes"].nonzero().flatten().tolist())
+            extra = set(sample["extra_keyframes"].nonzero().flatten().tolist())
+            # 仅在实际淘汰发生后切段，避免用未来的关键帧数量提前删除过去的证据。
+            boundaries = {0, grad_from, len(sample["frames"]), *range(0, grad_from, cfg.window)}
+            seen_real, active_extra = 0, []
+            for t in sorted(real | extra):
+                seen_real += t in real
+                if t in extra:
+                    active_extra.append(t)
+                overflow = seen_real + len(active_extra) - cfg.max_keyframes
+                if overflow > 0 and active_extra:
+                    active_extra = active_extra[overflow:]
+                    boundaries.add(t + 1)
+            boundaries = sorted(boundaries)
+            outputs = []
+            for start, end in pairwise(boundaries):
+                with torch.set_grad_enabled(torch.is_grad_enabled() and start >= grad_from):
+                    out = self.teacher_steps(state, sample, start, end, real | extra)
+                if start >= grad_from:
+                    outputs += out
+                state.keyframes.extend(sorted(t for t in real if start <= t < end))
+                state.extra_keyframes.extend(sorted(t for t in extra if start <= t < end))
+                state.evict(cfg.window, cfg.max_keyframes)
+            return outputs
         outputs = []
         for t, views in enumerate(sample["frames"]):
             previous = state.count_probs
@@ -211,7 +267,7 @@ class ProgressModel(nn.Module):
                 outputs.append(out)
             counts = state.count_probs
             real = (keyframes == "label" and sample["keyframes"][t]) or (
-                keyframes == "model" and previous is not None and (counts - previous).abs().max() > cfg.delta)
+                keyframes == "model" and t > 0 and (counts - previous).abs().max() > cfg.delta)
             extra = keyframes == "label" and sample["extra_keyframes"][t]
             if real or extra:
                 state.meta.key |= (state.meta.frame == t) & (state.meta.kind == FRAME)
