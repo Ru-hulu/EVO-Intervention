@@ -34,8 +34,8 @@ class Config:
 
     # 样本
     segment: int = 6                # 带梯度的步数，5 Hz 下 1.2 秒；24 GB 显存下 2B 最多约 12
-    # 两阶段分开训练：stage 1 teacher=True，[CNT] 回传真值计数、整段并行；stage 2 teacher=False，回传自己的预测、
-    # 逐步计算，用 init_from 从 stage 1 的 checkpoint 开始
+    # 默认单阶段：teacher=False，[CNT] 全程回传自己的预测、逐步计算。
+    # teacher=True 是可选的真值回传并行训练方式；是否再训练预测回传模式由实验决定。
     teacher: bool = False
     boundary: int = 1               # 切换、完成前后 ±w 步不计 STG、CNT 损失
     keyframe_jitter: int = 2        # 标注关键帧随机偏移 ±步数

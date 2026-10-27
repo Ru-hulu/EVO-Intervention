@@ -1,12 +1,10 @@
 # ruff: noqa: RUF002, RUF003
 """单卡训练：无梯度热身 + 短段反传（proposal_progress 5.1、5.2）。
 
-两阶段分开运行：stage 1（--teacher true）[CNT] 回传真值计数、整段并行；stage 2 回传自己的预测、逐步计算，
-用 --init-from 载入 stage 1 的 checkpoint。
+默认单阶段训练（--teacher false）：[CNT] 全程回传模型自己的预测、逐步计算。
+--teacher true 可选真值回传并行训练；--init-from 只载入权重，不要求先跑另一个阶段。
 
-python -m qwen_training.progress.train --config qwen_training/progress/configs/rmbench_2b_stage1.yaml [--key value ...]
-python -m qwen_training.progress.train --config qwen_training/progress/configs/rmbench_2b_stage2.yaml \
-    --init-from <stage 1 的 checkpoint>
+python -m qwen_training.progress.train --config qwen_training/progress/configs/autodl_rmbench_4b.yaml [--key value ...]
 
 输出目录（--out）：
 - config.yaml：最终生效的配置；

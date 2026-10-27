@@ -1,9 +1,9 @@
-# AutoDL: current curated RMBench MP4s, Qwen3.5-4B, fresh stage 1.
-teacher: true
+# AutoDL: current curated RMBench MP4s, Qwen3.5-4B, single-stage predicted-count feedback.
+teacher: false
 model: /root/autodl-tmp/models/Qwen3.5-4B
 labels: /root/autodl-tmp/EVO-Intervention/outputs/rmbench/labels
 data: /root/autodl-tmp/datasets/RMBench
-out: /root/autodl-tmp/EVO-Intervention/outputs/progress/rmbench_4b_stage1_20261027_latest
+out: /root/autodl-tmp/EVO-Intervention/outputs/progress/rmbench_4b_20261027
 
 segment: 24
 accumulate: 8
