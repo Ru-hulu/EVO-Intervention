@@ -3,9 +3,9 @@ teacher: false
 model: /root/autodl-tmp/models/Qwen3.5-4B
 labels: /root/autodl-tmp/EVO-Intervention/outputs/rmbench/labels
 data: /root/autodl-tmp/datasets/RMBench
-out: /root/autodl-tmp/EVO-Intervention/outputs/progress/rmbench_4b_20261027
+out: /root/autodl-tmp/EVO-Intervention/outputs/progress/rmbench_4b_seg12_20261027
 
-segment: 24
+segment: 12
 accumulate: 8
 iterations: 2000
 warmup: 50
