@@ -19,33 +19,71 @@ import json
 import math
 import random
 import time
+from collections import Counter
 from dataclasses import asdict
 from pathlib import Path
 
 import torch
 from torch.utils.data import DataLoader, IterableDataset, get_worker_info
 
+from qwen_training.datasets.rmbench.spec import FIXED
+from qwen_training.datasets.rmbench.tasks import TASKS
 from qwen_training.progress.config import parse_config
 from qwen_training.progress.evaluate import evaluate
 from qwen_training.progress.loss import autocast, sample_loss
-from qwen_training.progress.model import LoRALinear
+from qwen_training.progress.model import LoRALinear, Standardize
 
 
 class TrainStream(IterableDataset):
-    """无限地产生训练样本：随机 episode、随机起点；每个 worker 用不同的随机种子。"""
+    """无限地产生训练样本：随机 episode、随机起点；每个 worker 用不同的随机种子。
+
+    repeat_boost > 0 时每个任务等概率，计数会超过 1 的任务（非固定流程）再乘 repeat_boost。
+    count_balance 时先等概率抽计数等级，再从该等级的帧里抽一帧，带梯度的段包含它（优先于 repeat_boost）。
+    """
 
     def __init__(self, dataset, cfg, seed):
         self.dataset, self.cfg, self.seed = dataset, cfg, seed
+        self.levels = [level for level in dataset.count_levels() if level] if cfg.count_balance else None
+        self.weights = None
+        if cfg.repeat_boost > 0:
+            tasks = Counter(task for task, _ in dataset.episodes)
+            self.weights = [(cfg.repeat_boost if TASKS[task].kind != FIXED else 1) / tasks[task]
+                            for task, _ in dataset.episodes]
 
     def __iter__(self):
         worker = get_worker_info()
         rng = random.Random(self.seed * 1000 + (worker.id if worker else 0))
         while True:
-            yield self.dataset.sample(rng.randrange(len(self.dataset)), self.cfg, rng, self.cfg.segment)
+            if self.levels:
+                index, anchor = rng.choice(rng.choice(self.levels))
+                yield self.dataset.sample(index, self.cfg, rng, self.cfg.segment, anchor)
+                continue
+            index = rng.choices(range(len(self.dataset)), self.weights)[0] if self.weights \
+                else rng.randrange(len(self.dataset))
+            yield self.dataset.sample(index, self.cfg, rng, self.cfg.segment)
 
 
 def keep_sample(sample):
     return sample
+
+
+def fit_count_norm(model, samples, cfg):
+    """训练前把几条训练样本整条跑一遍（无梯度），汇总计数头输入在所有步、所有项上的一、二阶矩，设定标准化的统计量。"""
+    moments = []
+
+    def collect(module, args):
+        x = args[0].detach().float().reshape(-1, args[0].shape[-1])
+        moments.append((len(x), x.sum(0), x.pow(2).sum(0)))
+
+    handle = model.count_norm.register_forward_pre_hook(collect)
+    try:
+        with torch.no_grad(), autocast(cfg):
+            for sample in samples:
+                model.rollout(sample, len(sample["frames"]), teacher=cfg.teacher)
+    finally:
+        handle.remove()
+    rows = sum(n for n, _, _ in moments)
+    model.count_norm.fit(sum(s for _, s, _ in moments) / rows, sum(q for _, _, q in moments) / rows)
 
 
 def train(model, cfg, train_set, val_set=None):
@@ -99,8 +137,7 @@ def train(model, cfg, train_set, val_set=None):
 
     def save(name, iteration):
         torch.save({"config": asdict(cfg), "iteration": iteration, "best": best,
-                    "model": {key: value.detach().cpu() for key, value in model.named_parameters()
-                              if value.requires_grad},
+                    "model": model.trainable_state(),
                     "optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(),
                     "rng": {"python": random.getstate(), "torch": torch.get_rng_state(),
                             "cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None}},
@@ -130,6 +167,9 @@ def train(model, cfg, train_set, val_set=None):
                              num_workers=cfg.workers, prefetch_factor=2 if cfg.workers else None,
                              persistent_workers=cfg.workers > 0))
     cuda = torch.device(cfg.device).type == "cuda"
+    if isinstance(model.count_norm, Standardize) and not model.count_norm.initialized:
+        fit_count_norm(model, [next(loader) for _ in range(cfg.count_norm_samples)], cfg)
+        print(f"count_norm fitted on {cfg.count_norm_samples} samples", flush=True)
     if val_set is not None and cfg.eval_at_start and start == 0:
         validate(0, cfg.eval_episodes)
     model.train()
@@ -143,7 +183,7 @@ def train(model, cfg, train_set, val_set=None):
             sample = next(loader)
             with autocast(cfg):
                 outputs = model.rollout(sample, sample["grad_from"], teacher=cfg.teacher)
-                loss, parts = sample_loss(model, outputs, sample, cfg)
+                loss, parts = sample_loss(model, outputs, sample, cfg, cfg.count_margin, cfg.event_weight)
                 loss = loss + cfg.gate_l2 * sum(((param - init) ** 2).sum() for param, init in model.gates)
             (loss / cfg.accumulate).backward()
             frames += len(sample["frames"])

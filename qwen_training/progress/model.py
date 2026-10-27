@@ -36,6 +36,48 @@ class LoRALinear(nn.Module):
         return self.base(x) + self.up(self.down(x)) * self.scale
 
 
+def cumulative(counts):
+    """次数 [..., J] → 累积编码 [..., J, R]：第 r 个为"至少 r 次"，与 level 模式回传的概率同形。"""
+    return (counts[..., None] >= torch.arange(1, MAX_COUNT + 1, device=counts.device)).float()
+
+
+class Standardize(nn.Module):
+    """按特征维标准化：(x − 均值) / 标准差，截断到 ±clip；统计量训练时用滑动平均更新（不求梯度），验证时固定。
+
+    readout hidden 经过最终 RMSNorm 的逐维缩放，少数维度数值远大于其余维度，会主导计数头的输入。
+    统计量是跨调用的一、二阶矩 E[x]、E[x²]，方差 = E[x²] − E[x]²。不能用每次调用内的方差：一次调用的各行是
+    同一步的 J 个项，前半 h_CNT 在各项间完全相同，调用内方差恒为 0，这些维度会被放大约 300 倍后截断，只剩符号。
+    训练前用 fit 设定汇总的统计量（见 train.fit_count_norm）；fit 之前原样输出、不更新。
+    momentum 按调用（一步）计，1e-3 约平均最近 1000 步，即十来条 episode。
+    """
+
+    def __init__(self, width, device, momentum=1e-3, clip=5.0):
+        super().__init__()
+        self.momentum, self.clip = momentum, clip
+        self.register_buffer("mean", torch.zeros(width, device=device))
+        self.register_buffer("square", torch.ones(width, device=device))
+        self.register_buffer("initialized", torch.zeros((), dtype=torch.bool, device=device))
+
+    @property
+    def var(self):
+        return (self.square - self.mean**2).clamp(min=0)
+
+    def fit(self, mean, square):
+        self.mean.copy_(mean)
+        self.square.copy_(square)
+        self.initialized.fill_(True)
+
+    def forward(self, x):
+        if not self.initialized:
+            return x
+        if self.training:
+            with torch.no_grad():
+                flat = x.detach().reshape(-1, x.shape[-1])
+                self.mean.lerp_(flat.mean(0), self.momentum)
+                self.square.lerp_(flat.pow(2).mean(0), self.momentum)
+        return ((x - self.mean) / (self.var + 1e-5).sqrt()).clamp(-self.clip, self.clip)
+
+
 class ProgressModel(nn.Module):
     def __init__(self, backbone, image_processor, tokenizer, cfg):
         super().__init__()
@@ -57,7 +99,11 @@ class ProgressModel(nn.Module):
         nn.init.zeros_(self.count_feedback[-1].bias)
 
         self.stage_head, self.none_head = head(2 * width, 1), head(width, 1)
-        self.count_head, self.progress_head = head(2 * width, 1), head(width, cfg.progress_bins)
+        self.event = cfg.count_mode == "event"
+        if cfg.count_mode not in ("level", "event"):
+            raise ValueError(f"count_mode 只能是 level 或 event, 而不是 {cfg.count_mode!r}")
+        self.count_head, self.progress_head = head(2 * width, 3 if self.event else 1), head(width, cfg.progress_bins)
+        self.count_norm = Standardize(2 * width, device) if cfg.count_norm else nn.Identity()
         # 累积计数：P(第 j 项做了至少 r 次) = σ(g_j − θ_r)，θ_1 < … < θ_R 由首项加 softplus 间隔保证递增，初始为 0…R−1。
         self.count_first = nn.Parameter(torch.zeros(1, device=device))
         self.count_gaps = nn.Parameter(torch.full((MAX_COUNT - 1,), math.log(math.e - 1), device=device))
@@ -83,9 +129,15 @@ class ProgressModel(nn.Module):
         processor = AutoProcessor.from_pretrained(path)
         return cls(backbone, processor.image_processor, processor.tokenizer, cfg)
 
+    def trainable_state(self):
+        """checkpoint 保存的部分：可训练参数，加上计数头输入标准化的统计量。"""
+        names = {name for name, param in self.named_parameters() if param.requires_grad}
+        names |= {f"count_norm.{name}" for name, _ in self.count_norm.named_buffers()}
+        return {key: value.detach().cpu() for key, value in self.state_dict().items() if key in names}
+
     def load_trainable(self, weights):
-        """checkpoint 只保存可训练参数；结构变化时拒绝静默漏载。"""
-        expected = {name for name, param in self.named_parameters() if param.requires_grad}
+        """载入 trainable_state() 保存的部分；结构变化时拒绝静默漏载。"""
+        expected = set(self.trainable_state())
         missing, unexpected = expected - weights.keys(), weights.keys() - expected
         if missing or unexpected:
             raise ValueError(f"checkpoint 参数不匹配: 缺少 {sorted(missing)}, 多余 {sorted(unexpected)}")
@@ -174,6 +226,7 @@ class ProgressModel(nn.Module):
         state.steps = torch.cat([h for (_, content), h in zip(items, hidden, strict=True)
                                  if isinstance(content, int) and content == STEP_TOKEN])
         state.count_probs = state.steps.new_zeros(len(steps), MAX_COUNT, dtype=torch.float)   # 第一步回传全 0
+        state.counts = torch.zeros(len(steps), dtype=torch.long, device=state.steps.device)  # event：累加的次数
         return state
 
     def _count_inputs(self, steps, probs):
@@ -184,12 +237,15 @@ class ProgressModel(nn.Module):
     def _heads(self, steps, stage, count, progress):
         """一步的三个 readout hidden [d] → 各头的 logits。
 
-        stage: [J+1]；count: [J, R]，第 (j, r) 个是"第 j 项已经做了至少 r 次"的 logit；progress: [bins]。
+        stage: [J+1]；count: level 为 [J, R]，第 (j, r) 个是"第 j 项已经做了至少 r 次"的 logit；
+        event 为 [J, 3]，第 j 项这一帧次数变化 −1、0、+1 的 logits；progress: [bins]。
         """
         stage, count, progress = stage.float(), count.float(), progress.float()
         stage_logits = torch.cat([self.stage_head(torch.cat([stage.expand_as(steps), steps], -1)).squeeze(-1),
                                   self.none_head(stage)])
-        scores = self.count_head(torch.cat([count.expand_as(steps), steps], -1))           # [J, 1]
+        scores = self.count_head(self.count_norm(torch.cat([count.expand_as(steps), steps], -1)))   # [J, 1 或 3]
+        if self.event:
+            return {"stage": stage_logits, "count": scores, "progress": self.progress_head(progress)}
         thresholds = torch.cat([self.count_first, self.count_first + F.softplus(self.count_gaps).cumsum(0)])
         return {"stage": stage_logits, "count": scores - thresholds, "progress": self.progress_head(progress)}
 
@@ -200,16 +256,21 @@ class ProgressModel(nn.Module):
         items = [(FRAME, image) for image in self.encode_images(views)]
         items += [(STG, STG_TOKEN), (CNT, self._count_inputs(steps, state.count_probs[None])), (P, P_TOKEN)]
         out = self._heads(steps, *(h[0] for h in self._forward(state, items)[-3:]))
-        state.count_probs = out["count"].detach().sigmoid()   # 截断：回传只当输入，不沿它反传
+        if self.event:   # 次数在模型外累加：这一步的输入次数加上预测的变化
+            out["fed"] = state.counts
+            state.counts = (state.counts + out["count"].argmax(-1) - 1).clamp(0, MAX_COUNT)
+            state.count_probs = cumulative(state.counts)
+        else:
+            state.count_probs = out["count"].detach().sigmoid()   # 截断：回传只当输入，不沿它反传
         return out
 
     def teacher_steps(self, state, sample, start, end, keyframes):
-        """第 start…end−1 帧一次前向（stage 1）：[CNT] 回传上一帧的真值计数，所以各步的输入事先已知，
-        可以像 LLM 的 teacher forcing 一样整段并行；窗口、可见性靠 mask，结果与逐步计算相同。"""
+        """第 start…end−1 帧一次前向（stage 1）：[CNT] 回传样本给的次数 sample["fed"]（上一帧的真值，训练时可能
+        注入了错误），所以各步的输入事先已知，可以像 LLM 的 teacher forcing 一样整段并行；
+        窗口、可见性靠 mask，结果与逐步计算相同。"""
         steps = state.steps.float()
-        truth = sample["count"].to(steps.device)
-        previous = torch.cat([torch.zeros_like(truth[:1]), truth[:-1]])[start:end]
-        counts = self._count_inputs(steps, previous)
+        fed = sample["fed"][start:end].to(steps.device)
+        counts = self._count_inputs(steps, cumulative(fed))
         items, frames = [], []
         for i, t in enumerate(range(start, end)):
             step = [(FRAME, image) for image in self.encode_images(sample["frames"][t])]
@@ -219,7 +280,11 @@ class ProgressModel(nn.Module):
         hidden = self._forward(state, items, frames, keyframes)
         state.frame = end - 1
         readouts = [h for (kind, _), h in zip(items, hidden, strict=True) if kind in (STG, CNT, P)]
-        return [self._heads(steps, *(h[0] for h in readouts[i : i + 3])) for i in range(0, len(readouts), 3)]
+        outputs = [self._heads(steps, *(h[0] for h in readouts[i : i + 3])) for i in range(0, len(readouts), 3)]
+        if self.event:
+            for out, n in zip(outputs, fed, strict=True):
+                out["fed"] = n
+        return outputs
 
     def rollout(self, sample, grad_from=0, keyframes=None, teacher=False):
         """跑完 sample 的前缀和全部帧；grad_from 之前的帧不求梯度（热身），返回之后各帧的输出。

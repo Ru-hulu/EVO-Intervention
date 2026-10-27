@@ -298,7 +298,7 @@ $$\mathcal L = \mathcal L_{\text{STG}} + \mathcal L_{\text{CNT}} + \mathcal L_{\
 - $\mathcal L_{\text{CNT}}$：每个 (j, r) 上 $\mathbb 1[n_j\ge r]$ 的二分类交叉熵，对 r 求和、对帧和项取平均；直接对 J × R 个输出取平均时，大量容易的负例会把"至少 1 次"这类关键判断的梯度稀释约 R 倍（2B 冒烟训练中计数头因此几乎全报 0）。
 - $\mathcal L_{\text{interval}}$：p 越出完成状态给出的区间时的 hinge。
 - $\mathcal L_{\text{alias}}$：画面几乎相同、完成状态不同的两帧，`[CNT]` 的 hidden 必须可区分（对比损失）。
-- 切换和完成时刻前后 ±w 帧不计 `[STG]`、`[CNT]` 损失，容忍标注边界误差。
+- 切换和完成时刻前后 ±w 帧不计 `[STG]`、`[CNT]` 损失，容忍标注边界误差。整条 episode 的末帧仍计 `[CNT]` 损失：最后一项恰好在末帧完成，那是它唯一的正标签，而此时任务已成功、计数确定（否则所有 episode 最后一次完成都没有正监督）。
 - 回退附近加权。
 
 ### 5.3 标签

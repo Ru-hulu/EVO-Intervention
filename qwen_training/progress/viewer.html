@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Progress Viewer</title>
+<!-- 打开 visualize.py 导出的 JSON，逐步查看 [STG]、[CNT]、p；无外部依赖，直接用浏览器打开本文件即可。 -->
+<style>
+  :root {
+    --bg: #f7f7f5; --panel: #ffffff; --text: #1d1d1b; --muted: #6b6b66; --line: #e2e1dc;
+    --pred: #2f6fde; --truth: #8a8a84; --good: #1e8a4c; --bad: #c8412f; --warn: #b7791f;
+    --band: rgba(47, 111, 222, 0.06); --band2: rgba(138, 138, 132, 0.08); --key: #b7791f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161615; --panel: #1f1f1d; --text: #ecebe6; --muted: #9b9a94; --line: #34332f;
+      --pred: #6f9cf0; --truth: #9a9993; --good: #4cbf7c; --bad: #ef6b57; --warn: #e0a84a;
+      --band: rgba(111, 156, 240, 0.08); --band2: rgba(154, 153, 147, 0.08); --key: #e0a84a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.5 -apple-system, "PingFang SC", "Noto Sans SC", "Segoe UI", sans-serif; }
+  header { padding: 14px 20px; border-bottom: 1px solid var(--line); display: flex; gap: 16px; align-items: center;
+           flex-wrap: wrap; }
+  header h1 { font-size: 16px; margin: 0; }
+  #meta { color: var(--muted); font-size: 13px; }
+  main { padding: 16px 20px; max-width: 1400px; margin: 0 auto; }
+  .drop { border: 2px dashed var(--line); border-radius: 10px; padding: 48px; text-align: center; color: var(--muted); }
+  .drop.over { border-color: var(--pred); color: var(--text); }
+  .grid { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr); gap: 16px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .views { min-height: 720px; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card h2 { font-size: 13px; margin: 0 0 10px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+  /* 左栏高度跟右栏一致：画面区不参与撑高（contain: size），在剩余高度里三等分，图按比例缩放 */
+  .left { display: flex; flex-direction: column; }
+  .views { flex: 1 1 auto; min-height: 360px; contain: size; display: grid;
+           grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .views figure { margin: 0; position: relative; min-height: 0; }
+  .views img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .views figcaption { position: absolute; left: 6px; top: 4px; font-size: 11px; padding: 0 5px; border-radius: 4px;
+                      color: #fff; background: rgba(0, 0, 0, 0.45); }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  #position { display: block; margin: 6px 0 10px; }
+  .controls input[type=range] { flex: 1; min-width: 160px; }
+  button, select { font: inherit; background: var(--panel); color: var(--text); border: 1px solid var(--line);
+                   border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  #position { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .side { display: flex; flex-direction: column; gap: 16px; }
+  .line { margin: 2px 0; }
+  .label { color: var(--muted); display: inline-block; min-width: 3.5em; }
+  .badge { display: inline-block; font-size: 12px; padding: 0 6px; border-radius: 4px; margin-left: 6px; }
+  .ok { color: var(--good); border: 1px solid var(--good); }
+  .err { color: var(--bad); border: 1px solid var(--bad); }
+  .key { color: var(--key); border: 1px solid var(--key); }
+  .bars { display: flex; flex-direction: column; gap: 3px; margin-top: 8px; }
+  .bar { display: grid; grid-template-columns: 9em 1fr 3.2em; gap: 8px; align-items: center; font-size: 12px; }
+  .bar .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+  .bar .track { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+  .bar .fill { height: 100%; background: var(--pred); }
+  .bar.truth .name { color: var(--text); font-weight: 600; }
+  .bar .value { text-align: right; font-variant-numeric: tabular-nums; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; text-align: left; }
+  th { font-weight: 600; color: var(--muted); font-size: 12px; border-top: none; white-space: nowrap; }
+  td.num { font-variant-numeric: tabular-nums; text-align: center; white-space: nowrap; }
+  .explain { color: var(--muted); font-size: 12px; }
+  .cells { display: flex; gap: 2px; margin-top: 4px; }
+  .cell { width: 22px; height: 16px; border-radius: 3px; font-size: 10px; line-height: 16px; text-align: center;
+          color: var(--muted); background: var(--line); position: relative; overflow: hidden; }
+  .cell i { position: absolute; left: 0; bottom: 0; width: 100%; background: var(--pred); opacity: .85; }
+  .cell span { position: relative; }
+  .cell.hit span { color: #fff; }
+  .cell.target { outline: 1.5px solid var(--text); }
+  .big { font-size: 26px; font-variant-numeric: tabular-nums; font-weight: 600; }
+  #chart-card { margin-top: 16px; }
+  #chart { width: 100%; height: 260px; display: block; cursor: crosshair; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin-bottom: 6px; flex-wrap: wrap; }
+  .legend span::before { content: ""; display: inline-block; width: 14px; height: 3px; margin-right: 6px;
+                         vertical-align: middle; background: currentColor; }
+  .legend .p { color: var(--pred); } .legend .t { color: var(--truth); } .legend .k { color: var(--key); }
+  #instruction { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Progress Viewer</h1>
+  <label><input type="file" id="file" accept=".json,application/json"></label>
+  <span id="meta">导出：python -m qwen_training.progress.visualize --checkpoint … --task … --episode …</span>
+</header>
+<main>
+  <div id="drop" class="drop">把 visualize.py 导出的 JSON 拖到这里，或用上方按钮选择文件</div>
+  <div id="app" hidden>
+    <p id="instruction"></p>
+    <div class="grid">
+      <div class="card left">
+        <h2>输入画面</h2>
+        <div class="controls">
+          <button id="prev" title="上一步（←）">◀</button>
+          <button id="play" title="播放 / 暂停（空格）">播放</button>
+          <button id="next" title="下一步（→）">▶</button>
+          <select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select>
+          <input type="range" id="slider" min="0" value="0">
+        </div>
+        <div id="position"></div>
+        <div class="views" id="views"></div>
+      </div>
+      <div class="side">
+        <div class="card"><h2>[STG] 正在做哪一项</h2><div id="stage"></div></div>
+        <div class="card"><h2>[CNT] 每项已完成几次</h2><div id="count"></div></div>
+        <div class="card"><h2>[P] 整体进度</h2><div id="progress"></div></div>
+      </div>
+    </div>
+    <div class="card" id="chart-card">
+      <h2>p 随时间变化（点击曲线跳到该步）</h2>
+      <div class="legend"><span class="p">预测 p</span><span class="t">标注 p</span><span class="k">关键帧</span>
+        <span style="color:var(--muted)">背景色块：标注的当前项</span></div>
+      <svg id="chart" role="img" aria-label="预测与标注的 p 随时间变化"></svg>
+    </div>
+  </div>
+</main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let data = null, index = 0, timer = null;
+
+  const el = (tag, attrs = {}, text) => {
+    const node = document.createElement(tag);
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+  const pct = (x) => (x * 100).toFixed(1) + "%";
+  const stageText = (k) => k >= data.steps.length ? "不在任务列表中（没有正在做的项）"
+                                                  : `第 ${k + 1} 项：${data.steps[k]}`;
+
+  function load(json) {
+    data = json;
+    index = 0;
+    $("drop").hidden = true;
+    $("app").hidden = false;
+    $("meta").textContent = [`${data.task} · episode ${data.episode}`, `${data.frames.length} 步`,
+      `关键帧：${data.keyframes === "model" ? "模型触发（实际推理）" : data.keyframes === "label" ? "标注（oracle）" : "无"}`,
+      data.iteration !== undefined ? `checkpoint 第 ${data.iteration} 次更新` : ""].filter(Boolean).join("　");
+    $("instruction").textContent = `指令：${data.instruction}`;
+    $("slider").max = data.frames.length - 1;
+    drawChart();
+    show(0);
+  }
+
+  function show(i) {
+    index = Math.max(0, Math.min(data.frames.length - 1, i));
+    const frame = data.frames[index], pred = frame.prediction, truth = frame.truth;
+    $("slider").value = index;
+    $("position").textContent = `第 ${index + 1} / ${data.frames.length} 步　t = ${frame.time} s　原始帧 ${frame.index}`
+      + (frame.keyframe ? "　· 这一步之后标为关键帧" : "");
+
+    const views = $("views");
+    views.replaceChildren(...frame.images.map((src, v) => {
+      const fig = el("figure");
+      fig.append(el("img", { src, alt: data.cameras[v] }), el("figcaption", {}, data.cameras[v]));
+      return fig;
+    }));
+
+    // [STG]
+    const stage = $("stage");
+    const right = pred.stage === truth.stage;
+    const line1 = el("div", { class: "line" });
+    line1.append(el("span", { class: "label" }, "预测"), el("span", {}, stageText(pred.stage)),
+                 el("span", { class: "badge " + (right ? "ok" : "err") }, right ? "正确" : "错误"));
+    const line2 = el("div", { class: "line explain" }, `置信度 ${pct(pred.stage_probs[pred.stage])}`);
+    const line3 = el("div", { class: "line" });
+    line3.append(el("span", { class: "label" }, "标注"), el("span", {}, stageText(truth.stage)));
+    const bars = el("div", { class: "bars" });
+    pred.stage_probs.forEach((p, k) => {
+      const bar = el("div", { class: "bar" + (k === truth.stage ? " truth" : "") });
+      const name = k < data.steps.length ? `${k + 1}. ${data.steps[k]}` : "不在列表中";
+      const track = el("div", { class: "track" }), fill = el("div", { class: "fill" });
+      fill.style.width = pct(p);
+      track.append(fill);
+      bar.append(el("span", { class: "name", title: name }, name), track, el("span", { class: "value" }, pct(p)));
+      bars.append(bar);
+    });
+    stage.replaceChildren(line1, line2, line3, bars);
+
+    // [CNT]
+    const table = el("table");
+    const head = el("tr");
+    ["项", "预测", "标注", "说明与 P(n ≥ r)"].forEach((h) => head.append(el("th", {}, h)));
+    table.append(head);
+    const shown = Math.min(data.max_count, Math.max(3, ...pred.count, ...truth.count) + 2);
+    data.steps.forEach((text, j) => {
+      const n = pred.count[j], m = truth.count[j], probs = pred.count_probs[j];
+      const row = el("tr");
+      row.append(el("td", { title: text }, `${j + 1}. ${text}`));
+      const predCell = el("td", { class: "num" }, String(n));
+      predCell.append(el("span", { class: "badge " + (n === m ? "ok" : "err") },
+                         n === m ? "✓" : n > m ? `多 ${n - m}` : `少 ${m - n}`));
+      row.append(predCell, el("td", { class: "num" }, String(m)));
+      const words = [`已完成 ${n} 次（期望 ${pred.expected[j].toFixed(2)} 次）`];
+      if (n > 0) words.push(`至少 ${n} 次的概率 ${pct(probs[n - 1])}`);
+      if (n < data.max_count) words.push(`至少 ${n + 1} 次的概率 ${pct(probs[n])}`);
+      const info = el("td");
+      info.append(el("div", { class: "explain" }, words.join("；")));
+      const cells = el("div", { class: "cells" });
+      for (let r = 0; r < shown; r++) {
+        const cell = el("div", { class: "cell" + (probs[r] > 0.5 ? " hit" : "") + (r + 1 === m ? " target" : ""),
+                                 title: `P(n ≥ ${r + 1}) = ${pct(probs[r])}` + (r + 1 === m ? "（标注次数）" : "") });
+        const fill = el("i");
+        fill.style.height = pct(probs[r]);
+        cell.append(fill, el("span", {}, String(r + 1)));
+        cells.append(cell);
+      }
+      info.append(cells);
+      row.append(info);
+      table.append(row);
+    });
+    const total = pred.count.reduce((a, b) => a + b, 0), totalTruth = truth.count.reduce((a, b) => a + b, 0);
+    $("count").replaceChildren(table, el("div", { class: "explain", style: "margin-top:6px" },
+      `合计已完成 ${total} 个实例（标注 ${totalTruth} 个）。方格 r 的高度为 P(n ≥ r)，超过 50% 记为已完成；黑框为标注次数。`));
+
+    // [P]
+    const diff = pred.progress - truth.progress;
+    const big = el("div");
+    big.append(el("span", { class: "big" }, pct(pred.progress)),
+               el("span", { class: "explain" }, `　标注 ${pct(truth.progress)}，`
+                 + `${diff >= 0 ? "高" : "低"}估 ${pct(Math.abs(diff))}`));
+    $("progress").replaceChildren(big, el("div", { class: "explain" },
+      `p 为整体完成比例：0 表示刚开始，100% 表示全部完成（已完成实例 + 当前实例内进度）/ 实例总数。`));
+
+    const svg = $("chart");
+    const cursor = svg.querySelector("[data-cursor]");
+    if (cursor) {
+      const x = svg.xScale(frame.time);
+      cursor.setAttribute("x1", x);
+      cursor.setAttribute("x2", x);
+    }
+  }
+
+  function drawChart() {
+    const svg = $("chart"), ns = "http://www.w3.org/2000/svg";
+    const width = svg.clientWidth || 900, height = 260, m = { l: 44, r: 12, t: 10, b: 28 };
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.replaceChildren();
+    const frames = data.frames, end = frames[frames.length - 1].time || 1;
+    const x = (t) => m.l + (t / end) * (width - m.l - m.r);
+    const y = (p) => m.t + (1 - p) * (height - m.t - m.b);
+    svg.xScale = x;
+    const add = (tag, attrs) => {
+      const node = document.createElementNS(ns, tag);
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+      svg.append(node);
+      return node;
+    };
+    // 背景：标注的当前项，相邻两项交替着色
+    let start = 0;
+    for (let i = 1; i <= frames.length; i++) {
+      if (i === frames.length || frames[i].truth.stage !== frames[start].truth.stage) {
+        const x0 = x(frames[start].time), x1 = x(i < frames.length ? frames[i].time : end);
+        add("rect", { x: x0, y: m.t, width: Math.max(0, x1 - x0), height: height - m.t - m.b,
+                      fill: frames[start].truth.stage % 2 ? "var(--band2)" : "var(--band)" });
+        const title = add("text", { x: x0 + 3, y: m.t + 12, "font-size": 10, fill: "var(--muted)" });
+        title.textContent = frames[start].truth.stage < data.steps.length ? `第 ${frames[start].truth.stage + 1} 项` : "";
+        start = i;
+      }
+    }
+    for (const p of [0, 0.25, 0.5, 0.75, 1]) {
+      add("line", { x1: m.l, x2: width - m.r, y1: y(p), y2: y(p), stroke: "var(--line)" });
+      const label = add("text", { x: m.l - 6, y: y(p) + 4, "text-anchor": "end", "font-size": 11, fill: "var(--muted)" });
+      label.textContent = `${p * 100}%`;
+    }
+    const ticks = Math.min(10, Math.ceil(end));
+    for (let k = 0; k <= ticks; k++) {
+      const t = (end * k) / ticks;
+      const label = add("text", { x: x(t), y: height - 8, "text-anchor": "middle", "font-size": 11, fill: "var(--muted)" });
+      label.textContent = `${t.toFixed(1)}s`;
+    }
+    for (const frame of frames.filter((f) => f.keyframe)) {
+      add("line", { x1: x(frame.time), x2: x(frame.time), y1: height - m.b - 8, y2: height - m.b,
+                    stroke: "var(--key)", "stroke-width": 2 });
+    }
+    const path = (key) => frames.map((f, i) => `${i ? "L" : "M"}${x(f.time).toFixed(1)},${y(f[key].progress).toFixed(1)}`).join("");
+    add("path", { d: path("truth"), fill: "none", stroke: "var(--truth)", "stroke-width": 2, "stroke-dasharray": "5 4" });
+    add("path", { d: path("prediction"), fill: "none", stroke: "var(--pred)", "stroke-width": 2 });
+    add("line", { "data-cursor": "", x1: x(0), x2: x(0), y1: m.t, y2: height - m.b, stroke: "var(--text)", "stroke-width": 1 });
+    svg.onclick = (event) => {
+      const box = svg.getBoundingClientRect();
+      const t = ((event.clientX - box.left) * (width / box.width) - m.l) / (width - m.l - m.r) * end;
+      let best = 0;
+      frames.forEach((f, i) => { if (Math.abs(f.time - t) < Math.abs(frames[best].time - t)) best = i; });
+      stop();
+      show(best);
+    };
+  }
+
+  function stop() { clearTimeout(timer); timer = null; $("play").textContent = "播放"; }
+  function tick() {
+    if (index >= data.frames.length - 1) return stop();
+    const gap = (data.frames[index + 1].time - data.frames[index].time) || 0.2;
+    timer = setTimeout(() => { show(index + 1); tick(); }, (gap * 1000) / Number($("speed").value));
+  }
+  function toggle() {
+    if (timer) return stop();
+    if (index >= data.frames.length - 1) show(0);
+    $("play").textContent = "暂停";
+    tick();
+  }
+
+  function read(file) {
+    file.text().then((text) => load(JSON.parse(text))).catch((error) => alert(`读取失败：${error.message}`));
+  }
+  $("file").onchange = (event) => event.target.files[0] && read(event.target.files[0]);
+  const drop = $("drop");
+  for (const target of [drop, document.body]) {
+    target.addEventListener("dragover", (event) => { event.preventDefault(); drop.classList.add("over"); });
+    target.addEventListener("dragleave", () => drop.classList.remove("over"));
+    target.addEventListener("drop", (event) => {
+      event.preventDefault();
+      drop.classList.remove("over");
+      if (event.dataTransfer.files[0]) read(event.dataTransfer.files[0]);
+    });
+  }
+  $("slider").oninput = (event) => { stop(); show(Number(event.target.value)); };
+  $("prev").onclick = () => { stop(); show(index - 1); };
+  $("next").onclick = () => { stop(); show(index + 1); };
+  $("play").onclick = toggle;
+  document.addEventListener("keydown", (event) => {
+    if (!data || event.target.tagName === "INPUT" && event.target.type !== "range") return;
+    if (event.key === "ArrowLeft") { stop(); show(index - 1); event.preventDefault(); }
+    if (event.key === "ArrowRight") { stop(); show(index + 1); event.preventDefault(); }
+    if (event.key === " ") { toggle(); event.preventDefault(); }
+  });
+  window.addEventListener("resize", () => { if (data) { drawChart(); show(index); } });
+})();
+</script>
+</body>
+</html>

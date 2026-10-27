@@ -1,0 +1,21 @@
+# AutoDL: current curated RMBench MP4s, Qwen3.5-4B, fresh stage 1.
+teacher: true
+model: /root/autodl-tmp/models/Qwen3.5-4B
+labels: /root/autodl-tmp/EVO-Intervention/outputs/rmbench/labels
+data: /root/autodl-tmp/datasets/RMBench
+out: /root/autodl-tmp/EVO-Intervention/outputs/progress/rmbench_4b_stage1_20261027_latest
+
+segment: 24
+accumulate: 8
+iterations: 2000
+warmup: 50
+head_lr: 1.0e-3
+lr: 1.0e-4
+gate_lr: 1.0e-5
+count_mode: level
+
+eval_every: 100
+eval_episodes: 12
+final_eval_episodes: 0
+save_every: 200
+workers: 2

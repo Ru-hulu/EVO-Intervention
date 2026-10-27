@@ -2,10 +2,12 @@
 """用随机初始化的小 Qwen3.5 检查流式前向、可见性隔离、反传与数据样本。有 GPU 时在 GPU 上跑（走 fla kernel）。"""
 
 import json
+import math
 import os
 import random
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 from unittest import mock
 
@@ -16,10 +18,10 @@ from qwen_training.datasets.rmbench.labels import MAX_COUNT, episode_labels
 from qwen_training.datasets.rmbench.tasks import TASKS
 from qwen_training.progress import data
 from qwen_training.progress.config import Config, parse_config
-from qwen_training.progress.evaluate import evaluate
-from qwen_training.progress.loss import autocast, sample_loss
+from qwen_training.progress.evaluate import evaluate, pause_test, sync
+from qwen_training.progress.loss import autocast, change_loss, event_loss, sample_loss
 from qwen_training.progress.stream import CNT, FRAME, PREFIX, STG, P, StreamState, Tokens, forward_chunk, visibility
-from qwen_training.progress.train import train
+from qwen_training.progress.train import TrainStream, fit_count_norm, train
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 DTYPE = torch.bfloat16 if DEVICE == "cuda" else torch.float32   # fla 的 GDN kernel 只支持 bf16
@@ -174,6 +176,8 @@ def fake_sample(rng, frames=6, grad_from=2):
             "progress": torch.linspace(0, 1, frames), "total": 2,
             "stage_mask": torch.ones(frames, dtype=torch.bool),
             "count_mask": torch.ones(frames, 2, MAX_COUNT, dtype=torch.bool),
+            "fed": torch.tensor([[0, 0], [0, 0], [0, 0], [1, 0], [1, 0], [1, 0]])[:frames],   # 上一帧的真值次数
+            "event_mask": torch.ones(frames, 2, dtype=torch.bool),
             "keyframes": torch.tensor([0, 0, 1, 0, 0, 1], dtype=torch.bool)[:frames],
             "extra_keyframes": torch.tensor([0, 1, 0, 0, 0, 0], dtype=torch.bool)[:frames]}
 
@@ -244,6 +248,35 @@ class ModelTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "feedback.weight"):
             model.load_trainable(weights)
 
+    def test_count_norm_and_event_loss_train_and_checkpoint(self):
+        """计数头输入标准化：统计量训练前汇总、训练时更新、验证时固定，存进 checkpoint；事件损失能反传到计数头。"""
+        model = self.make(count_norm=True)
+        sample = fake_sample(np.random.default_rng(0))
+        fit_count_norm(model, [sample, fake_sample(np.random.default_rng(1))], model.cfg)
+        # 前半是 h_CNT，在一步的各项间完全相同；方差跨步汇总，每一维都不为 0。
+        self.assertTrue(model.count_norm.initialized)
+        self.assertTrue((model.count_norm.var > 0).all())
+        fitted = model.count_norm.mean.clone()
+        with autocast(model.cfg):
+            outputs = model.rollout(sample, sample["grad_from"])
+            loss, parts = sample_loss(model, outputs, sample, model.cfg, event_weight=1.0)
+        loss.backward()
+        self.assertGreater(parts["event"], 0)
+        self.assertGreater(model.count_head[0].weight.grad.abs().sum().item(), 0)
+        self.assertFalse(torch.equal(model.count_norm.mean, fitted))   # 训练时滑动更新
+        state = model.trainable_state()
+        self.assertIn("count_norm.square", state)
+        model.eval()
+        mean = model.count_norm.mean.clone()
+        with torch.no_grad(), autocast(model.cfg):
+            model.rollout(sample)
+        torch.testing.assert_close(model.count_norm.mean, mean)
+        fresh = self.make(count_norm=True)
+        fresh.load_trainable(state)
+        torch.testing.assert_close(fresh.count_norm.var, model.count_norm.var)
+        with self.assertRaisesRegex(ValueError, "count_norm.mean"):
+            self.make().load_trainable(state)
+
     def test_evaluate_without_keyframes_keeps_default_best_metric(self):
         model = self.make(keyframes="none")
         result = evaluate(model, FakeSet(), model.cfg, 1)
@@ -280,6 +313,36 @@ class ModelTests(unittest.TestCase):
                 for fast, slow in zip(parallel, stepwise[grad_from:], strict=True):
                     for name in ("stage", "count", "progress"):
                         torch.testing.assert_close(fast[name], slow[name], atol=tolerance, rtol=tolerance)
+
+    def test_event_mode_accumulates_counts_and_teacher_matches_stepwise(self):
+        """event：次数在模型外累加并回传；把逐步推理时实际回传的次数作为 fed 给 teacher forcing，两者输出一致。"""
+        model = self.make(count_mode="event", window=2)
+        torch.nn.init.normal_(model.count_feedback[-1].weight, std=0.1)
+        torch.nn.init.normal_(model.count_head[-1].weight, std=1.0)   # 让预测的变化不全是 0
+        sample = fake_sample(np.random.default_rng(3), grad_from=1)
+        with torch.no_grad(), autocast(model.cfg):
+            stepwise = model.rollout(sample)
+            fed = torch.stack([out["fed"] for out in stepwise])
+            changes = torch.stack([out["count"].argmax(-1) - 1 for out in stepwise])
+            torch.testing.assert_close(fed[1:], (fed[:-1] + changes[:-1]).clamp(0, MAX_COUNT))
+            self.assertEqual(fed[0].tolist(), [0, 0])
+            self.assertEqual(stepwise[0]["count"].shape, (2, 3))
+            parallel = model.rollout({**sample, "fed": fed.cpu()}, 1, teacher=True)
+        tolerance = 5e-2 if DEVICE == "cuda" else 2e-5
+        for fast, slow in zip(parallel, stepwise[1:], strict=True):
+            for name in ("stage", "count", "progress"):
+                torch.testing.assert_close(fast[name], slow[name], atol=tolerance, rtol=tolerance)
+            self.assertEqual(fast["fed"].tolist(), slow["fed"].tolist())
+
+    def test_event_mode_trains_and_evaluates(self):
+        model = self.make(count_mode="event", teacher=True, iterations=2, eval_every=2)
+        with tempfile.TemporaryDirectory() as out:
+            model.cfg.out = out
+            history = train(model, model.cfg, FakeSet(), FakeSet())
+            records = [json.loads(line) for line in (Path(out) / "log.jsonl").read_text().splitlines()]
+        self.assertTrue(all(math.isfinite(r["count"]) for r in history))
+        final = [r for r in records if "val/model/count_acc" in r][-1]
+        self.assertAlmostEqual(final["val/model/count_zero_acc"], 7 / 12)    # fake_sample 12 个 (帧, 项) 里 7 个为 0
 
     def test_teacher_future_keyframe_does_not_change_past_outputs(self):
         model = self.make(window=2, max_keyframes=1)
@@ -336,6 +399,19 @@ class ModelTests(unittest.TestCase):
             self.assertAlmostEqual(continued[0]["lr_head"], history[6]["lr_head"])
             self.assertAlmostEqual(continued[0]["lr_gate"], history[6]["lr_gate"])
 
+    def test_train_fits_count_norm_before_training(self):
+        model = self.make(count_norm=True, count_norm_samples=2, iterations=1, eval_at_start=False)
+        with tempfile.TemporaryDirectory() as out, mock.patch.object(
+                model.count_norm, "fit", wraps=model.count_norm.fit) as fit:
+            model.cfg.out = out
+            train(model, model.cfg, FakeSet())
+        fit.assert_called_once()
+        self.assertTrue(model.count_norm.initialized)
+        # FakeSet 重复同一样本；bf16 下恒定维度可合法地有零方差，归一化已用 epsilon 保护。
+        self.assertTrue(torch.isfinite(model.count_norm.var).all())
+        self.assertTrue((model.count_norm.var >= 0).all())
+        self.assertTrue((model.count_norm.var > 0).any())
+
     def test_resume_and_init_from_are_mutually_exclusive(self):
         model = self.make(resume="resume.pt", init_from="stage1.pt")
         with self.assertRaisesRegex(ValueError, "mutually exclusive"):
@@ -377,6 +453,45 @@ class ModelTests(unittest.TestCase):
             torch.testing.assert_close(first[name], again[name], rtol=0, atol=0)
         self.assertFalse(torch.equal(first["special"], other["special"]))
 
+    def test_export_for_viewer(self):
+        from qwen_training.progress.visualize import export
+
+        model = self.make()
+        sample = fake_sample(np.random.default_rng(0))
+        result = json.loads(json.dumps(export(model, sample, "label", fps=5)))       # 能写成 JSON
+        self.assertEqual(len(result["frames"]), len(sample["frames"]))
+        self.assertEqual([frame["keyframe"] for frame in result["frames"]], sample["keyframes"].tolist())
+        last = result["frames"][-1]
+        self.assertEqual(last["truth"], {"stage": 1, "count": [1, 1], "progress": 1.0})
+        self.assertEqual(len(last["prediction"]["stage_probs"]), 3)                          # J + 1
+        self.assertEqual(len(last["prediction"]["count_probs"][0]), MAX_COUNT)
+        self.assertEqual(len(last["images"]), 3)
+        self.assertTrue(last["images"][0].startswith("data:image/jpeg;base64,"))
+        self.assertAlmostEqual(result["frames"][1]["time"], 0.2)
+
+    def test_export_event_mode_matches_rollout(self):
+        """event：导出的次数是实际累加的次数，模型关键帧与 rollout 实际标记的一致。"""
+        from qwen_training.progress.evaluate import predicted_counts
+        from qwen_training.progress.visualize import export
+
+        model = self.make(count_mode="event")
+        torch.nn.init.constant_(model.count_head[-1].bias[2], 5.0)       # 每一步都预测 +1：次数 1 → 6
+        sample = fake_sample(np.random.default_rng(0))
+        states, start = [], model.start
+        with mock.patch.object(model, "start", side_effect=lambda *args: states.append(start(*args)) or states[-1]):
+            result = json.loads(json.dumps(export(model, sample, "model", fps=5)))
+        model.eval()
+        with torch.no_grad(), autocast(model.cfg):
+            counts = predicted_counts(model, model.rollout(sample, keyframes="model"))
+        self.assertEqual([frame["prediction"]["count"] for frame in result["frames"]], counts.tolist())
+        self.assertEqual([t for t, frame in enumerate(result["frames"]) if frame["keyframe"]], states[0].keyframes)
+        self.assertEqual(states[0].keyframes, [1, 2, 3, 4, 5])
+        self.assertEqual(counts[:, 0].tolist(), [1, 2, 3, 4, 5, 6])
+        self.assertEqual(result["max_count"], MAX_COUNT)
+        last = result["frames"][-1]["prediction"]
+        self.assertEqual(len(last["change_probs"][0]), 3)
+        self.assertEqual(last["expected"], [float(n) for n in last["count"]])
+
     def test_evaluate_reports_overall_and_per_task(self):
         model = self.make()
         result = evaluate(model, FakeSet(), model.cfg, 1)
@@ -384,6 +499,148 @@ class ModelTests(unittest.TestCase):
         for mode in ("oracle", "model"):
             self.assertTrue(0 <= result["overall"][f"val/{mode}/count_acc"] <= 1)
             self.assertGreater(result["overall"][f"val/{mode}/loss"], 0)
+            self.assertIn(result["overall"][f"val/{mode}/count_final_acc"], (0.0, 1.0))
+            self.assertIn(f"val/{mode}/count_acc_n1", result["overall"])
+
+    def test_pause_test_repeats_a_frame_between_count_changes(self):
+        model = self.make()
+        result = pause_test(model, FakeSet(), model.cfg, 1, length=3)
+        self.assertEqual(result["overall"]["pauses"], 2)      # 计数在第 2、5 步变化：停在第 1、3 步
+        self.assertEqual(set(result["per_task"]), {"fake"})
+        self.assertTrue(math.isfinite(result["overall"]["count_drift"]))
+
+    def test_sync_of_item_scores(self):
+        t = torch.arange(10.0)
+        self.assertAlmostEqual(sync(torch.stack([t, 2 * t + 1, t - 3], 1)), 1.0, places=5)
+        self.assertAlmostEqual(sync(torch.stack([t, -t], 1)), -1.0, places=5)
+        self.assertIsNone(sync(torch.stack([t, torch.ones(10)], 1)))   # 只有一项在变化
+
+
+class EventLossTests(unittest.TestCase):
+    @staticmethod
+    def logits(scores):
+        """各项分数 g [T, J] → r = 1…R 的 logit g − (r − 1)。"""
+        return torch.tensor(scores, dtype=torch.float)[..., None] - torch.arange(MAX_COUNT)
+
+    @staticmethod
+    def labels(counts):
+        return (torch.tensor(counts)[..., None] >= torch.arange(1, MAX_COUNT + 1)).float()
+
+    def test_step_is_free_and_time_ramp_is_penalized(self):
+        """第 0 项在第 3 步完成，第 1 项没有完成：分数在完成时跳一下、其余不动时损失为 0；同样终点的斜坡要付代价。"""
+        counts = [[0, 0]] * 3 + [[1, 0]] * 3
+        step = [[0.0, -1.0]] * 3 + [[2.0, -1.0]] * 3
+        ramp = [[0.4 * t, -1.0 + 0.1 * t] for t in range(6)]
+        self.assertEqual(event_loss(self.logits(step), self.labels(counts)).item(), 0.0)
+        self.assertGreater(event_loss(self.logits(ramp), self.labels(counts)).item(), 0.5)
+        late = [[0.0, -1.0]] * 5 + [[2.0, -1.0]]     # 晚了两步才跳
+        self.assertGreater(event_loss(self.logits(late), self.labels(counts)).item(), 0)
+
+    def test_decrease_needs_a_downward_jump(self):
+        counts = [[1]] * 3 + [[0]] * 3
+        down, up = [[2.0]] * 3 + [[0.0]] * 3, [[2.0]] * 3 + [[4.0]] * 3
+        self.assertEqual(event_loss(self.logits(down), self.labels(counts)).item(), 0.0)
+        self.assertGreater(event_loss(self.logits(up), self.labels(counts)).item(), 1.0)
+
+    def test_rare_events_are_not_diluted(self):
+        """一次没跳的完成，在 1 项和 20 项不动的项旁边，损失相同（两类各自平均）。"""
+        counts = [[0], [0], [0], [1], [1], [1]]
+        flat = [[0.0]] * 6
+        alone = event_loss(self.logits(flat), self.labels(counts))
+        crowd = event_loss(self.logits([row * 21 for row in flat]),
+                           self.labels([row + [0] * 20 for row in counts]))
+        torch.testing.assert_close(alone, crowd)
+        self.assertEqual(alone.item(), 1.0)
+
+    def test_short_segments_have_no_event_loss(self):
+        self.assertEqual(event_loss(self.logits([[0.0], [1.0]]), self.labels([[0], [1]])).item(), 0.0)
+
+
+class ChangeLossTests(unittest.TestCase):
+    def outputs(self, logits, fed):
+        return [{"stage": torch.zeros(3), "count": logits[t], "progress": torch.zeros(21), "fed": fed[t]}
+                for t in range(len(fed))]
+
+    def test_target_corrects_the_fed_count(self):
+        """目标 = clip(真值 − 回传, −1, 1)：无误差时是完成事件；回传少 1（漏检）时之后每一步都应 +1，多 1 时应 −1。"""
+        sample = fake_sample(np.random.default_rng(0), grad_from=0)          # 第 0 项在第 2 帧、第 1 项在第 5 帧完成
+        cfg = tiny_cfg(count_mode="event", progress_bins=21)
+        model = mock.Mock(special=torch.zeros(1), bins=torch.linspace(0, 1, 21))
+        for fed, plus, minus in ((sample["fed"], {(2, 0), (5, 1)}, set()),
+                                 (sample["fed"] - torch.tensor([[0, 0]] * 3 + [[1, 0]] * 3), {(2, 0), (3, 0), (4, 0),
+                                                                                              (5, 0), (5, 1)}, set()),
+                                 (sample["fed"] + torch.tensor([[0, 0]] * 4 + [[0, 1]] * 2), {(2, 0)}, {(4, 1)})):
+            logits = torch.zeros(6, 2, 3, requires_grad=True)
+            loss, _ = sample_loss(model, self.outputs(logits, fed), sample, cfg)
+            loss.backward()
+            push = logits.grad.argmin(-1)                                   # 梯度下降抬高的那一类
+            expected = torch.ones(6, 2, dtype=torch.long)
+            for t, j in plus:
+                expected[t, j] = 2
+            for t, j in minus:
+                expected[t, j] = 0
+            torch.testing.assert_close(push, expected)
+
+    def test_rare_changes_are_not_diluted(self):
+        target = torch.ones(100, 1, dtype=torch.long)
+        target[50] = 2
+        logits = torch.zeros(100, 1, 3, requires_grad=True)
+        change_loss(logits, target, torch.ones(100, 1, dtype=torch.bool)).backward()
+        self.assertGreater(-logits.grad[50, 0, 2].item(), 10 * -logits.grad[0, 0, 1].item())
+
+
+class StandardizeTests(unittest.TestCase):
+    def test_running_statistics(self):
+        from qwen_training.progress.model import Standardize
+
+        norm = Standardize(3, "cpu", momentum=0.5)
+        x = torch.tensor([[1.0, 100.0, -5.0], [3.0, 300.0, -5.0]])
+        torch.testing.assert_close(norm(x), x)                     # fit 之前原样输出、不更新
+        self.assertFalse(norm.initialized)
+        norm.fit(x.mean(0), x.pow(2).mean(0))
+        torch.testing.assert_close(norm.var, torch.tensor([1.0, 1e4, 0.0]))
+        torch.testing.assert_close(norm(x)[:, :2], torch.tensor([[-1.0, -1.0], [1.0, 1.0]]), atol=1e-3, rtol=0)
+        norm(x + 10)                                               # 之后按 momentum 滑动一、二阶矩
+        torch.testing.assert_close(norm.mean, torch.tensor([7.0, 205.0, 0.0]))
+        norm.eval()
+        self.assertEqual(norm(torch.tensor([[1e4, 0.0, -5.0]])).abs().max().item(), 5.0)   # 截断到 ±5
+        torch.testing.assert_close(norm.mean, torch.tensor([7.0, 205.0, 0.0]))   # 验证时不更新
+
+    def test_variance_spans_calls(self):
+        """每次调用内各行相同（如复制到 J 项的 h_CNT），调用间不同：方差来自调用之间，不能为 0。"""
+        from qwen_training.progress.model import Standardize
+
+        norm = Standardize(1, "cpu", momentum=0.5)
+        norm.fit(torch.zeros(1), torch.ones(1))
+        for value in (1.0, -1.0, 1.0, -1.0):
+            norm(torch.full((3, 1), value))
+        self.assertGreater(norm.var.item(), 0.5)
+
+
+class SamplingTests(unittest.TestCase):
+    def test_warp_keeps_labels_with_frames_and_ends_on_last_frame(self):
+        cfg = tiny_cfg(pause_prob=1.0, speed_prob=1.0)
+        for seed in range(50):
+            order = data.warp(30, cfg, random.Random(seed))
+            self.assertEqual(order[-1], 29)
+            self.assertEqual(order, sorted(order))              # 只重复、删帧，不打乱顺序
+            self.assertEqual(order[0], 0)
+        self.assertEqual(data.warp(30, tiny_cfg(), random.Random(0)), list(range(30)))
+        lengths = [len(data.warp(30, tiny_cfg(pause_prob=1.0), random.Random(seed))) for seed in range(20)]
+        self.assertTrue(all(35 <= n <= 90 for n in lengths))
+
+    def test_warp_keeps_the_anchor_frame(self):
+        cfg = tiny_cfg(speed_prob=1.0)
+        self.assertNotIn(3, data.warp(30, cfg, random.Random(6)))           # 不保留时 2 倍速会删掉它
+        for seed in range(100):
+            self.assertIn(3, data.warp(30, cfg, random.Random(seed), keep=3))
+
+    def test_repeat_boost_balances_tasks(self):
+        dataset = mock.Mock(episodes=[("press_button", 9), ("press_button", 10)] + [("swap_T", e) for e in range(4)])
+        stream = TrainStream(dataset, tiny_cfg(repeat_boost=2.0), 0)
+        press, swap = sum(stream.weights[:2]), sum(stream.weights[2:])
+        self.assertAlmostEqual(press / swap, 2.0)
+        self.assertIsNone(TrainStream(dataset, tiny_cfg(), 0).weights)
 
 
 class ConfigTests(unittest.TestCase):
@@ -420,7 +677,7 @@ BATTERY = [["Use dual arm to pick up the batteries and place them into the batte
 class DataTests(unittest.TestCase):
     """用 labels.py 生成 50 条标签，HDF5 读取换成假的，检查划分、示范来源和样本里的标签。"""
 
-    def sample(self, task, segments, split="val", segment=None, rng=None):
+    def sample(self, task, segments, split="val", segment=None, rng=None, anchor=None, **overrides):
         with tempfile.TemporaryDirectory() as tmp:
             labels = Path(tmp) / task
             labels.mkdir()
@@ -429,6 +686,7 @@ class DataTests(unittest.TestCase):
                           "source": f"{task}/episode{episode}.hdf5", **episode_labels(segments, TASKS[task], 25)}
                 (labels / f"episode{episode}.json").write_text(json.dumps(record))
             dataset = data.RMBench(tmp, tmp, split)
+            self.levels = dataset.count_levels()
             self.reads = []
 
             def read(path, indices, cameras=data.CAMERAS):
@@ -436,7 +694,7 @@ class DataTests(unittest.TestCase):
                 return [[np.zeros((4, 4, 3), np.uint8)] * len(cameras) for _ in indices]
 
             with mock.patch.object(data, "read_frames", read):
-                return dataset, dataset.sample(0, tiny_cfg(boundary=1), rng, segment)
+                return dataset, dataset.sample(0, tiny_cfg(boundary=1, **overrides), rng, segment, anchor)
 
     def test_validation_sample_labels(self):
         dataset, sample = self.sample("put_back_block", PUT_BACK)
@@ -456,6 +714,112 @@ class DataTests(unittest.TestCase):
             end = len(short["frames"])
             for name in ("stage_mask", "count_mask"):
                 torch.testing.assert_close(short[name], full[name][:end])
+
+    def test_terminal_count_target_is_kept(self):
+        """最后一项在末帧（第 6 步）才完成，那是它唯一的正标签：末帧不屏蔽，前一帧照常屏蔽。"""
+        _, sample = self.sample("put_back_block", PUT_BACK)
+        self.assertEqual(sample["count"][-1, 2, 0].item(), 1.0)
+        self.assertTrue(sample["count_mask"][-1].all())
+        self.assertFalse(sample["count_mask"][-2, 2, 0])
+        self.assertFalse(sample["count_mask"][3, 1, 0])           # 中间的完成（第 4 步）前后照常屏蔽
+        # 带到末帧的训练段同样保留；在中途截断的段，段尾不因"是段的最后一帧"而解除屏蔽。
+        _, tail = self.sample("put_back_block", PUT_BACK, "train", 3, random.Random(5))   # 起点 4，段到末帧
+        self.assertEqual(len(tail["frames"]), 7)
+        self.assertTrue(tail["count_mask"][-1].all())
+        _, cut = self.sample("put_back_block", PUT_BACK, "train", 3, random.Random(0))
+        self.assertLess(len(cut["frames"]), 7)
+        self.assertFalse(cut["count_mask"][-1].all())
+
+    def test_terminal_count_loss_raises_the_score(self):
+        """末帧上最后一项的分数 g = 0 时，梯度下降应把 g 往上推（修复前 r ≥ 2 的负标签会把它压低）。"""
+        _, sample = self.sample("put_back_block", PUT_BACK)
+        steps, bins = len(sample["frames"]), torch.linspace(0, 1, 21)
+        g = torch.zeros(3, requires_grad=True)
+        outputs = [{"stage": torch.zeros(4), "count": g[:, None] - torch.arange(MAX_COUNT) if t == steps - 1
+                    else torch.full((3, MAX_COUNT), -5.0), "progress": torch.zeros(21)} for t in range(steps)]
+        model = mock.Mock(special=torch.zeros(1), bins=bins)
+        loss, _ = sample_loss(model, outputs, sample, tiny_cfg(progress_bins=21))
+        loss.backward()
+        self.assertLess(g.grad[2].item(), 0)
+
+    def test_event_segment_contains_a_count_change(self):
+        """计数在第 2、4、6 步变化（6 为末帧）；event_prob=1、段长 1 时，带梯度的那一步必须是其中之一。"""
+        for seed in range(20):
+            _, sample = self.sample("put_back_block", PUT_BACK, "train", 1, random.Random(seed), event_prob=1.0)
+            self.assertIn(sample["grad_from"], (2, 4, 6))
+
+    def test_count_levels_and_anchor(self):
+        """press_button 左键 2 次：各项最大计数依次经过 0、1、2；段包含 anchor 帧。"""
+        _, full = self.sample("press_button", PRESS)
+        top = full["count"].sum(-1).amax(-1).tolist()                 # 验证样本 = episode 45 的整条
+        self.assertEqual(len(self.levels), data.COUNT_LEVELS)
+        self.assertEqual(sorted({t for index, t in self.levels[2] if index == 0}),
+                         [t for t, c in enumerate(top) if c == 2])
+        self.assertEqual(sum(map(len, self.levels)), 5 * len(top))
+        for seed in range(20):
+            _, sample = self.sample("press_button", PRESS, "train", 2, random.Random(seed), anchor=3)
+            self.assertIn(sample["grad_from"], (2, 3))
+            self.sample("press_button", PRESS, "train", 2, random.Random(seed), anchor=3, speed_prob=1.0)   # 不抛错
+
+    def test_count_balance_draws_levels_uniformly(self):
+        levels = [[(0, 0)] * 90, [(1, 5)] * 9, [(2, 7)], [], []]
+        dataset = mock.Mock(episodes=[("press_button", 9)] * 3, count_levels=lambda: levels)
+        dataset.sample.side_effect = lambda index, cfg, rng, segment, anchor=None: index
+        stream = iter(TrainStream(dataset, tiny_cfg(count_balance=True), 0))
+        drawn = Counter(next(stream) for _ in range(3000))
+        for index in range(3):
+            self.assertAlmostEqual(drawn[index] / 3000, 1 / 3, delta=0.04)
+
+    def test_fed_counts_and_injected_errors(self):
+        """put_back_block 三项依次在第 2、4、6 步完成。fed = 上一帧的真值；注入的漏检少 1、误检多 1，持续到末帧。"""
+        _, clean = self.sample("put_back_block", PUT_BACK)
+        truth = clean["count"].sum(-1).long()
+        torch.testing.assert_close(clean["fed"][1:], truth[:-1])
+        self.assertEqual(clean["fed"][0].tolist(), [0, 0, 0])
+        # 完成帧计损失，前后 ±1 步不计
+        self.assertEqual(clean["event_mask"][:, 1].tolist(), [True, True, True, False, True, False, True])
+        seen = set()
+        for seed in range(40):
+            _, sample = self.sample("put_back_block", PUT_BACK, "train", None, random.Random(seed), inject_prob=1.0)
+            diff = sample["fed"] - torch.cat([torch.zeros_like(truth[:1]), truth[:-1]])
+            changed = diff.nonzero().tolist()
+            self.assertTrue(changed)
+            items = {j for _, j in changed}
+            self.assertEqual(len(items), 1)                                  # 只有一项出错
+            (j,) = items
+            first = min(t for t, _ in changed)
+            self.assertTrue((diff[first:, j] == diff[first, j]).all())        # 一直持续到末帧
+            self.assertIn(diff[first, j].item(), (-1, 1))
+            if diff[first, j] == -1:                                         # 漏检：恰好在那次完成之后开始
+                self.assertEqual(first, 2 * j + 3)
+            seen.add(diff[first, j].item())
+        self.assertEqual(seen, {-1, 1})
+
+    def test_warped_sample_labels_follow_frames(self):
+        _, full = self.sample("put_back_block", PUT_BACK)
+        _, warped = self.sample("put_back_block", PUT_BACK, "train", None, random.Random(3), pause_prob=1.0,
+                                speed_prob=1.0, keyframe_drop=0.0, keyframe_jitter=0)
+        self.assertGreater(len(warped["frames"]), 7)
+        rows = {(s, tuple(c.flatten().tolist()), p) for s, c, p in
+                zip(full["stage"].tolist(), full["count"], full["progress"].tolist(), strict=True)}
+        for s, c, p in zip(warped["stage"].tolist(), warped["count"], warped["progress"].tolist(), strict=True):
+            self.assertIn((s, tuple(c.flatten().tolist()), p), rows)
+        self.assertEqual(warped["count"][-1].sum(-1).tolist(), [1, 1, 1])
+        self.assertTrue(warped["count_mask"][-1].all())
+        self.assertEqual(warped["keyframes"].sum().item(), 3)   # 每次完成仍各有一个关键帧
+
+    def test_count_margin_ignores_far_thresholds(self):
+        _, sample = self.sample("put_back_block", PUT_BACK)
+        steps = len(sample["frames"])
+        count = torch.zeros(steps, 3, MAX_COUNT, requires_grad=True)
+        outputs = [{"stage": torch.zeros(4), "count": count[t], "progress": torch.zeros(21)} for t in range(steps)]
+        model = mock.Mock(special=torch.zeros(1), bins=torch.linspace(0, 1, 21))
+        loss, _ = sample_loss(model, outputs, sample, tiny_cfg(progress_bins=21), margin=2)
+        loss.backward()
+        # 末帧各项计数为 1：r ≤ 3 的门槛有梯度，r ≥ 4 没有；第 0 帧计数为 0：只有 r ≤ 2。
+        self.assertTrue((count.grad[-1, :, :3] != 0).all())
+        self.assertTrue((count.grad[-1, :, 3:] == 0).all())
+        self.assertTrue((count.grad[0, :, 2:] == 0).all() and (count.grad[0, :, :2] != 0).all())
 
     def test_train_sample_draws_demo_from_pool(self):
         dataset, sample = self.sample("put_back_block", PUT_BACK, "train", segment=3, rng=random.Random(0))
