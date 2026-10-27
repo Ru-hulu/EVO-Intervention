@@ -99,11 +99,13 @@ python -m mem_lite.datasets.prepare_stream \
   --task-prompt '将物品依次放入抽屉' \
   --model-path /models/Qwen3.5-4B \
   --output-dir /data/streamforest/train/episode \
-  --frame-stride 30 --device cuda
+  --sample-fps 5 --device cuda
 ```
 
-`frame_stride` 默认 1；30 FPS 视频取 30 表示每秒一次观测。
-它同时决定记忆更新和预测频率，在线部署应沿用训练频率。
+默认按 **5 FPS** 采样，每 0.2 秒一次同步三视角观测：25 FPS 视频每 5 帧取一帧，
+30 FPS 视频每 6 帧取一帧。不能整除时，取达到采样时刻的第一帧；源视频不足 5 FPS 时保留所有帧。
+采样同时决定记忆更新和预测频率，跳过的帧不进入记忆；在线部署应沿用训练频率。
+`--frame-stride` 可显式改用固定帧间隔，与 `--sample-fps` 互斥。
 窗口大小以输入观测帧为单位。`--memory-config` 可替换预算配置，
 `--max-pixels / --min-pixels` 控制记忆图像分辨率；这些设置随缓存和训练检查点保存。
 
@@ -150,6 +152,9 @@ pt = result['pt'][0].item()
 # 下一次继续调用同一个 predictor；主动重播同一视频时 predictor.reset()。
 ```
 
+调用方按检查点 `history_source['sample_fps']`（默认 5 FPS）提供同步观测，
+并传入原始视频帧号；`predictor` 每次调用都会更新记忆，不在内部限频。
+在线评估直接沿用缓存样本的帧号和采样频率。
 历史编码器与 M3 共享同一个冻结 ViT，不加载第二份语言模型。
 当前实现另编码一次主视角来更新记忆；在线延迟统计包含这次编码，不重算全部历史帧。
 

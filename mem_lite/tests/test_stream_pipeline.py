@@ -213,16 +213,23 @@ def write_video(path, color, count=10, rate=30):
             container.mux(packet)
 
 
-def test_video_preparation_cli_with_real_tiny_visual_weights(checkpoint, collator, origin, tmp_path, monkeypatch):
+@pytest.mark.parametrize("rate,sampling,indices,source", [
+    (25, [], [0, 5, 10], {"sample_fps": 5.0}),
+    (30, ["--sample-fps", "5"], [0, 6, 12], {"sample_fps": 5.0}),
+    (25, ["--frame-stride", "3"], [0, 3, 6, 9, 12], {"frame_stride": 3}),
+])
+def test_video_preparation_cli_with_real_tiny_visual_weights(
+    checkpoint, collator, origin, tmp_path, monkeypatch, rate, sampling, indices, source,
+):
     from transformers import AutoProcessor
 
     from mem_lite.datasets.prepare_stream import main
 
     videos = [tmp_path / f"{view}.mp4" for view in ("high", "left", "right")]
     for video, color in zip(videos, ("red", "green", "blue"), strict=True):
-        write_video(video, color)
+        write_video(video, color, count=13, rate=rate)
     progress = tmp_path / "progress.csv"
-    progress.write_text("frame_index,delta,pt\n" + "".join(f"{i},1,{i / 9}\n" for i in range(10)))
+    progress.write_text("frame_index,delta,pt\n" + "".join(f"{i},1,{i / 12}\n" for i in range(13)))
     config = tmp_path / "memory.json"
     config.write_text(json.dumps(origin["memory_config"]))
     collator.processor.save_pretrained(checkpoint[0])
@@ -230,16 +237,16 @@ def test_video_preparation_cli_with_real_tiny_visual_weights(checkpoint, collato
     monkeypatch.setattr("sys.argv", [
         "prepare_stream", "--videos", *map(str, videos), "--progress-csv", str(progress),
         "--task-prompt", "测试视频", "--model-path", str(checkpoint[0]), "--output-dir", str(output),
-        "--memory-config", str(config), "--frame-stride", "3", "--device", "cpu",
+        "--memory-config", str(config), *sampling, "--device", "cpu",
         "--max-pixels", "4096", "--min-pixels", "1024",
     ])
     main()
     dataset = M3Dataset([output])
-    assert [row["frame_index"] for row in dataset] == [0, 3, 6, 9]
-    assert [row["target_pt"] for row in dataset] == pytest.approx([0, 1 / 3, 2 / 3, 1])
+    assert [row["frame_index"] for row in dataset] == indices
+    assert [row["target_pt"] for row in dataset] == pytest.approx([index / 12 for index in indices])
     assert dataset[0]["history_tokens"] is None
-    assert dataset[3]["history_tokens"].shape[1] == checkpoint[1].config.vision_config.out_hidden_size
-    assert dataset.history_source["frame_stride"] == 3
+    assert dataset[-1]["history_tokens"].shape[1] == checkpoint[1].config.vision_config.out_hidden_size
+    assert all(dataset.history_source[key] == value for key, value in source.items())
     processor = AutoProcessor.from_pretrained(checkpoint[0], max_pixels=4096, local_files_only=True)
     stream = make_stream(checkpoint[1].model.visual, processor, dataset.history_source)
     for sample in dataset:

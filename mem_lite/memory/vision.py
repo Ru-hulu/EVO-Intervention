@@ -43,7 +43,7 @@ def verify_vision_source(model_path, history_source):
         raise ValueError("历史缓存的视觉权重与 Qwen 基座不一致，请使用原基座或重新构造缓存")
 
 
-def load_vision_encoder(model_path, device):
+def load_vision_encoder(model_path, device, dtype=None):
     """只读取Qwen3.5原始检查点的ViT/merger权重，不加载语言模型或LoRA。"""
     from accelerate import init_empty_weights
     from transformers import AutoConfig, AutoImageProcessor
@@ -55,9 +55,10 @@ def load_vision_encoder(model_path, device):
         model = Qwen3_5VisionModel._from_config(config, attn_implementation="sdpa")
     state = _vision_state(model_path)
     vision_hash = _vision_sha256(state)
-    model.load_state_dict(state, assign=True)
-    dtype = torch.bfloat16 if torch.device(device).type == "cuda" else torch.float32
-    model = model.to(device=device, dtype=dtype).requires_grad_(False).eval()
+    dtype = dtype or (torch.bfloat16 if torch.device(device).type == "cuda" else torch.float32)
+    # 与原生 from_pretrained 一致：只转换权重，非持久 RoPE 缓冲保持 FP32。
+    model.load_state_dict({key: tensor.to(dtype=dtype) for key, tensor in state.items()}, assign=True)
+    model = model.to(device=device).requires_grad_(False).eval()
     processor = AutoImageProcessor.from_pretrained(model_path, local_files_only=True)
     return model, processor, vision_hash
 

@@ -6,11 +6,11 @@ from pathlib import Path
 import pytest
 import torch
 from PIL import Image
-from transformers import Qwen2VLImageProcessor
+from transformers import Qwen2VLImageProcessor, Qwen3_5ForConditionalGeneration
 
 from mem_lite.memory import MemoryManager
 from mem_lite.memory.tome import merge_tokens
-from mem_lite.memory.vision import QwenFrameEncoder
+from mem_lite.memory.vision import QwenFrameEncoder, load_vision_encoder
 
 
 @pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
@@ -88,3 +88,25 @@ def test_qwen_rectangular_grids_freeze_and_batch_independence(checkpoint):
     assert not torch.allclose(together[0], later[0])
     temporal_dim = encoder.hidden_size // 4
     torch.testing.assert_close(together[0][:, temporal_dim:], later[0][:, temporal_dim:])
+
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+def test_standalone_visual_matches_native_loading_and_preserves_rope_precision(checkpoint, dtype):
+    config = checkpoint[1].config.vision_config
+    processor = Qwen2VLImageProcessor(
+        min_pixels=1024, max_pixels=4096, patch_size=config.patch_size,
+        temporal_patch_size=config.temporal_patch_size, merge_size=config.spatial_merge_size,
+    )
+    processor.save_pretrained(checkpoint[0])
+    standalone, _, _ = load_vision_encoder(checkpoint[0], "cpu", dtype=dtype)
+    native = Qwen3_5ForConditionalGeneration.from_pretrained(
+        checkpoint[0], dtype=dtype, attn_implementation="sdpa", local_files_only=True,
+    ).model.visual
+    assert next(standalone.parameters()).dtype == dtype
+    assert standalone.rotary_pos_emb.inv_freq.dtype == native.rotary_pos_emb.inv_freq.dtype == torch.float32
+    torch.testing.assert_close(standalone.rotary_pos_emb.inv_freq, native.rotary_pos_emb.inv_freq, atol=0, rtol=0)
+    image = Image.new("RGB", (64, 32), "red")
+    inputs = processor(images=[image], return_tensors="pt")
+    actual = QwenFrameEncoder(standalone)(inputs["pixel_values"], inputs["image_grid_thw"], [32])[0]
+    expected = QwenFrameEncoder(native)(inputs["pixel_values"], inputs["image_grid_thw"], [32])[0]
+    torch.testing.assert_close(actual, expected, atol=0, rtol=0)
