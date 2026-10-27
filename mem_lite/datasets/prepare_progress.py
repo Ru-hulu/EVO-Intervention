@@ -9,7 +9,8 @@ from time import perf_counter
 
 import numpy as np
 
-from mem_lite.datasets.m1_samples import read_annotation
+from mem_lite.datasets.annotations import read_annotation
+from mem_lite.memory.vision import load_vision_encoder
 
 
 def event_equal_progress(deltas, annotation, min_event_delta=1e-8):
@@ -53,45 +54,6 @@ def event_equal_progress(deltas, annotation, min_event_delta=1e-8):
             "state_description": stage["state_description"],
         })
     return progress, events
-
-
-def load_vision_encoder(model_path, device):
-    """只读取Qwen3.5原始检查点的ViT/merger权重，不加载语言模型或LoRA。"""
-    import torch
-    from accelerate import init_empty_weights
-    from safetensors import safe_open
-    from transformers import AutoConfig, AutoImageProcessor
-    from transformers.models.qwen3_5.modeling_qwen3_5 import Qwen3_5VisionModel
-
-    model_path = Path(model_path)
-    config = AutoConfig.from_pretrained(model_path, local_files_only=True).vision_config
-    # 只延迟分配参数；非持久RoPE缓冲必须按配置真实初始化，不能留在meta设备。
-    with init_empty_weights(include_buffers=False):
-        model = Qwen3_5VisionModel._from_config(config, attn_implementation="sdpa")
-    index_path = model_path / "model.safetensors.index.json"
-    if index_path.exists():
-        weight_map = json.loads(index_path.read_text())["weight_map"]
-        shards = sorted({name for key, name in weight_map.items() if key.startswith("model.visual.")})
-    else:
-        shards = ["model.safetensors"]
-    state = {}
-    digest = hashlib.sha256()
-    for shard in shards:
-        with safe_open(model_path / shard, framework="pt", device="cpu") as source:
-            for key in sorted(source.keys()):
-                if key.startswith("model.visual."):
-                    tensor = source.get_tensor(key)
-                    state[key.removeprefix("model.visual.")] = tensor
-    # 对实际使用的视觉权重取摘要，不重复读取整个语言模型分片。
-    for key, tensor in sorted(state.items()):
-        digest.update(key.encode())
-        digest.update(str((tensor.dtype, tuple(tensor.shape))).encode())
-        digest.update(tensor.contiguous().view(torch.uint8).numpy().tobytes())
-    model.load_state_dict(state, assign=True)
-    dtype = torch.bfloat16 if torch.device(device).type == "cuda" else torch.float32
-    model = model.to(device=device, dtype=dtype).requires_grad_(False).eval()
-    processor = AutoImageProcessor.from_pretrained(model_path, local_files_only=True)
-    return model, processor, digest.hexdigest()
 
 
 def encode_images(images, model, processor, max_pixels):

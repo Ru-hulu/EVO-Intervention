@@ -10,7 +10,6 @@ from transformers import Qwen2VLImageProcessor, Qwen3VLProcessor, Qwen3VLVideoPr
 
 from mem_lite.datasets.m3_inputs import M3Collator
 from mem_lite.models.m3_predictor import M3ProgressPredictor, adjacent_bin_targets
-from mem_lite.tests.test_state_decoder import checkpoint as checkpoint
 
 
 @pytest.fixture
@@ -35,7 +34,7 @@ def collator(checkpoint):
         tokenizer=AutoTokenizer.from_pretrained(checkpoint[0], local_files_only=True),
     )
     processor.chat_template = processor.tokenizer.chat_template
-    return M3Collator(processor, history_dim=16)
+    return M3Collator(processor, history_dim=16, history_capacity=128)
 
 
 def sample(history=None, prompt="点击按钮三次"):
@@ -62,7 +61,8 @@ def test_three_views_and_mixed_history_slots_keep_order_and_mask(collator):
     torch.testing.assert_close(stripped, plain)
     torch.testing.assert_close(batch["history_tokens"][0], history)
     absent = collator([sample()])
-    assert absent["history_tokens"] is None and not absent["history_mask"].any()
+    assert absent["history_tokens"].shape == (1, 128, 16)
+    assert not absent["history_valid_mask"].any() and not absent["history_mask"].any()
 
 
 def test_history_is_projected_continuously_and_positions_preserve_native_geometry(model, collator):
@@ -160,10 +160,17 @@ def test_soft_ce_and_target_never_enters_predictor_inputs(model, collator):
     torch.testing.assert_close(first["bin_logits"], second["bin_logits"])
 
 
-def test_autocast_keeps_continuous_progress_and_loss_in_float32(model, collator):
+@pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
+def test_training_and_inference_share_precision_and_keep_progress_in_float32(checkpoint, collator, dtype):
+    model = M3ProgressPredictor(checkpoint[0], history_dim=16, dtype=dtype,
+                                lora_rank=2, lora_alpha=4, lora_dropout=0, gradient_checkpointing=False)
     batch = collator([sample(torch.randn(128, 16))])
     with torch.autocast("cpu", dtype=torch.bfloat16):
         result = model(batch, torch.tensor([0.2375]))
+    model.eval()
+    with torch.no_grad():
+        predicted = model(batch)
+    torch.testing.assert_close(result["bin_logits"], predicted["bin_logits"], atol=0, rtol=0)
     assert result["pt"].dtype == result["bin_probs"].dtype == result["loss"].dtype == torch.float32
     expected = (result["bin_probs"].detach().double() * model.bin_centers.double()).sum(-1)
     torch.testing.assert_close(result["pt"].double(), expected, atol=1e-7, rtol=1e-7)
@@ -177,7 +184,7 @@ def test_input_contract_rejects_missing_views_bad_history_or_truncation(collator
     with pytest.raises(ValueError, match="3个视角"):
         collator([item])
     with pytest.raises(ValueError, match="history_tokens"):
-        collator([sample(torch.randn(64, 16))])
+        collator([sample(torch.randn(129, 16))])
     collator.max_sequence_length = 64
     with pytest.raises(ValueError, match="不能静默截断"):
         collator([sample(torch.randn(128, 16))])
@@ -187,3 +194,17 @@ def test_input_contract_rejects_missing_views_bad_history_or_truncation(collator
 def test_invalid_progress_labels_are_not_silently_clamped(target):
     with pytest.raises(ValueError, match="target_pt"):
         adjacent_bin_targets(target)
+
+
+def test_variable_history_lengths_ignore_all_padding_values(model, collator):
+    items = [sample(torch.randn(3, 16)), sample(torch.randn(9, 16)), sample()]
+    batch = collator(items)
+    assert batch["history_tokens"].shape == (3, 128, 16)
+    assert batch["history_valid_mask"].sum(1).tolist() == [3, 9, 0]
+    with torch.no_grad():
+        original = model(batch)["bin_logits"]
+        individual = torch.cat([model(collator([item]))["bin_logits"] for item in items])
+        batch["history_tokens"][~batch["history_valid_mask"]] = float("nan")
+        padded = model(batch)["bin_logits"]
+    torch.testing.assert_close(original, individual, atol=2e-6, rtol=2e-5)
+    torch.testing.assert_close(original, padded, atol=0, rtol=0)

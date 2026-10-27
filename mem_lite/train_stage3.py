@@ -1,4 +1,4 @@
-"""第三阶段：三视角 + 冻结历史缓存，只训练 M3 语言 LoRA、历史投影和进度头。"""
+"""三视角 + StreamForest 缓存，只训练语言 LoRA、历史投影和进度头。"""
 
 import argparse
 import json
@@ -15,10 +15,11 @@ from torch.utils.data import DataLoader, DistributedSampler
 from transformers import AutoProcessor
 
 from mem_lite.datasets.m3_dataset import M3Dataset, Stage3Collator
+from mem_lite.memory.vision import verify_vision_source
 from mem_lite.models.m3_predictor import M3ProgressPredictor
 
 DEFAULT_CONFIG = Path(__file__).parent / "configs" / "stage3_train.json"
-CHECKPOINT_FORMAT = "mem-lite-stage3-v1"
+CHECKPOINT_FORMAT = "mem-lite-streamforest-v1"
 
 
 def trainable_state(model):
@@ -61,7 +62,7 @@ def read_config(args, checkpoint=None):
         if value is not None:
             config[key] = value
     if not config["model_path"] or not config["sample_files"]:
-        raise ValueError("需要本地 Qwen3.5-4B 基座及已构造的 M3 样本")
+        raise ValueError("需要本地 Qwen3.5 基座及已构造的 StreamForest 样本")
     for key in ("epochs", "batch_size", "gradient_accumulation_steps", "learning_rate",
                 "log_every_steps", "save_every_steps", "max_grad_norm"):
         if config[key] <= 0:
@@ -80,6 +81,16 @@ def normalize_gradients(parameters, total_samples, world_size):
     for parameter in parameters:
         if parameter.grad is not None:
             parameter.grad.mul_(scale)
+
+
+def configure_history(config, dataset):
+    """从缓存元数据确定输入维度和容量，并随训练检查点保存。"""
+    configured = config.get("history_capacity")
+    if configured is not None and configured != dataset.history_capacity:
+        raise ValueError("history_capacity 与样本记忆预算不一致")
+    config["model"]["history_dim"] = dataset.history_dim
+    config["history_capacity"] = dataset.history_capacity
+    config["history_source"] = dataset.history_source
 
 
 def train(config, checkpoint=None):
@@ -111,16 +122,20 @@ def _train(config, checkpoint, rank, world_size, device):
     if checkpoint is not None and config["data_signature"] != dataset.signature:
         raise ValueError("M3 样本或历史缓存已改变；续训必须使用相同的数据及顺序")
     config["data_signature"] = dataset.signature
-    config["history_source"] = dataset.history_source
+    configure_history(config, dataset)
+    verify_vision_source(config["model_path"], dataset.history_source)
     sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, seed=config["seed"], shuffle=True)
     loader = DataLoader(
         dataset, batch_size=config["batch_size"], sampler=sampler,
-        collate_fn=Stage3Collator(processor, config["model"]["history_dim"], config["max_sequence_length"]),
+        collate_fn=Stage3Collator(processor, dataset.history_dim, config["max_sequence_length"],
+                                 config["history_capacity"]),
         num_workers=config["num_workers"], pin_memory=True, persistent_workers=False,
         multiprocessing_context="spawn" if config["num_workers"] > 0 else None,
         generator=torch.Generator().manual_seed(config["seed"] + rank),
     )
     model = M3ProgressPredictor(config["model_path"], **config["model"]).to(device)
+    if dataset.history_dim != model.qwen.config.vision_config.out_hidden_size:
+        raise ValueError("缓存的视觉特征维度与 Qwen 基座不一致")
     parameters = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(parameters, lr=config["learning_rate"], weight_decay=config["weight_decay"])
     epoch, next_batch, step = 0, 0, 0
@@ -128,7 +143,7 @@ def _train(config, checkpoint, rank, world_size, device):
         load_trainable_state(model, checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         epoch, next_batch, step = checkpoint["epoch"], checkpoint["next_batch"], checkpoint["step"]
-    # 首个事件前没有历史，某个 rank/微批次可能不使用 history_projection。
+    # 视频首帧没有历史，某个 rank/微批次可能不使用 history_projection。
     wrapped = (DistributedDataParallel(model, device_ids=[device.index], broadcast_buffers=False,
                                        find_unused_parameters=True) if world_size > 1 else model)
     if checkpoint is not None:
@@ -166,8 +181,7 @@ def _train(config, checkpoint, rank, world_size, device):
             update = microbatches == accumulation or epoch_finished
             synchronization = wrapped.no_sync() if world_size > 1 and not update else nullcontext()
             with synchronization:
-                with torch.autocast("cuda", dtype=torch.bfloat16):
-                    result = wrapped(inputs, target_pt)
+                result = wrapped(inputs, target_pt)
                 result["loss_sum"].backward()
             error = (result["pt"].detach() - target_pt).double()
             totals[0] += result["loss_sum"].detach().double()
@@ -216,7 +230,7 @@ def _train(config, checkpoint, rank, world_size, device):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
-    parser.add_argument("--model-path", help="原始本地 Qwen3.5-4B 基座")
+    parser.add_argument("--model-path", help="原始本地 Qwen3.5 基座")
     parser.add_argument("--sample-files", nargs="+")
     parser.add_argument("--output-dir")
     parser.add_argument("--epochs", type=int)
@@ -225,7 +239,7 @@ def main():
     args = parser.parse_args()
     checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True) if args.resume else None
     if checkpoint is not None and checkpoint.get("format") != CHECKPOINT_FORMAT:
-        parser.error("--resume 只接受第三阶段检查点；第二阶段检查点用于事先生成冻结历史")
+        parser.error("--resume 只接受 StreamForest 进度模型检查点")
     train(read_config(args, checkpoint), checkpoint)
 
 

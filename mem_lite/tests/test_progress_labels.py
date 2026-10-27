@@ -9,7 +9,6 @@ from PIL import Image
 from transformers import Qwen2VLImageProcessor
 
 from mem_lite.datasets.prepare_progress import encode_images, event_equal_progress, load_vision_encoder
-from mem_lite.tests.test_state_decoder import checkpoint as checkpoint
 
 
 def annotation(boundaries=(0, 3, 5, 8)):

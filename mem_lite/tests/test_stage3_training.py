@@ -11,11 +11,7 @@ import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
 from contextlib import nullcontext
 
-from mem_lite.models.frozen_history import FrozenEventMemory
-from mem_lite.models.stage2_model import Stage2Model
 from mem_lite.tests.test_m3_predictor import collator as collator, model as model, sample
-from mem_lite.tests.test_state_decoder import checkpoint as checkpoint
-from mem_lite.train_stage2 import trainable_state as stage2_state
 from mem_lite.train_stage3 import (
     DEFAULT_CONFIG,
     load_trainable_state,
@@ -24,47 +20,6 @@ from mem_lite.train_stage3 import (
     save_checkpoint,
     trainable_state,
 )
-
-
-@pytest.fixture
-def memory(checkpoint, tmp_path):
-    config = {
-        "m1": {"lora_rank": 2, "lora_alpha": 4, "lora_dropout": 0.2, "gradient_checkpointing": False},
-        "event_encoder": {"hidden_dim": 16, "num_heads": 2, "dropout": 0.2},
-        "m2_compressor": {"hidden_dim": 16, "num_heads": 2, "dropout": 0.2},
-    }
-    stage2 = Stage2Model(checkpoint[0], config["m1"], config["event_encoder"],
-                         config["m2_compressor"], dtype=torch.float32)
-    saved = tmp_path / "stage2.pt"
-    torch.save({"format": "mem-lite-stage2-v1", "config": config, "model": stage2_state(stage2)}, saved)
-    return FrozenEventMemory(checkpoint[0], saved, vision_batch_size=1, dtype=torch.float32), stage2
-
-
-def test_history_cache_is_frozen_causal_and_loads_stage2_weights(memory):
-    memory, stage2 = memory
-    memory.train()
-    assert not any(module.training for module in memory.modules())
-    assert not any(parameter.requires_grad for parameter in memory.parameters())
-    assert not hasattr(memory, "decoder")
-    for own, source in ((memory.event_encoder, stage2.event_encoder), (memory.compressor, stage2.compressor)):
-        for key, value in own.state_dict().items():
-            torch.testing.assert_close(value, source.state_dict()[key])
-    vision = memory.segmenter.qwen.config.vision_config
-    width = vision.in_channels * vision.temporal_patch_size * vision.patch_size**2
-    batch = {"pixel_values": torch.randn(12, width), "image_grid_thw": torch.tensor([[1, 2, 2]] * 3),
-             "event_frame_indices": [[0, 1], [2]]}
-    with patch.object(memory.segmenter, "forward", side_effect=AssertionError("不能调用切分语言模型")):
-        actual = memory(batch)
-        changed = {**batch, "pixel_values": batch["pixel_values"].clone()}
-        changed["pixel_values"][8:] += 10
-        future = memory(changed)
-        memory.vision_batch_size = 16
-        chunked = memory(batch)
-    assert actual.shape == (2, 128, 16) and not actual.requires_grad
-    torch.testing.assert_close(actual[0], future[0])
-    assert not torch.allclose(actual[1], future[1])
-    torch.testing.assert_close(actual, chunked, atol=1e-6, rtol=1e-5)
-    assert all(p.grad is None for p in memory.parameters())
 
 
 def test_no_history_batch_keeps_projection_unused_and_other_modules_trainable(model, collator):
@@ -99,7 +54,7 @@ def test_stage3_checkpoint_roundtrip_saves_only_own_trainable_weights(model, tmp
         save_checkpoint(model, optimizer, {"data_signature": "fixture", "seed": 42},
                         tmp_path, epoch=1, next_batch=3, step=7)
     saved = torch.load(tmp_path / "last.pt", weights_only=True)
-    assert saved["format"] == "mem-lite-stage3-v1"
+    assert saved["format"] == "mem-lite-streamforest-v1"
     assert (saved["epoch"], saved["next_batch"], saved["step"]) == (1, 3, 7)
     torch.testing.assert_close(saved["rng_by_rank"][0]["torch"], rng)
     assert set(saved["model"]) == {"m3_lora", "history_projection", "progress_head"}

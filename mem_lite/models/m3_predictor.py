@@ -26,7 +26,7 @@ class M3ProgressPredictor(nn.Module):
     """只训练语言LoRA、独立历史投影和线性进度头；M3持有自己的冻结ViT。"""
 
     def __init__(
-        self, model_path, history_dim=512, num_bins=101, dtype=torch.bfloat16,
+        self, model_path, history_dim=None, num_bins=101, dtype=torch.bfloat16,
         lora_rank=16, lora_alpha=32, lora_dropout=0.05, gradient_checkpointing=True,
     ):
         super().__init__()
@@ -51,6 +51,7 @@ class M3ProgressPredictor(nn.Module):
             )
         self.qwen.model.visual.eval()
         hidden_size = self.qwen.config.text_config.hidden_size
+        history_dim = history_dim or self.qwen.config.vision_config.out_hidden_size
         self.history_projection = nn.Linear(history_dim, hidden_size)
         self.progress_head = nn.Linear(hidden_size, num_bins)
         self.register_buffer("bin_centers", torch.linspace(0, 1, num_bins))
@@ -61,9 +62,14 @@ class M3ProgressPredictor(nn.Module):
         return self
 
     def forward(self, batch, target_pt=None):
+        # 训练、缓存评估和在线推理共用精度策略，不依赖调用方的 autocast。
+        with torch.autocast(self.qwen.device.type, dtype=self.qwen.dtype, enabled=self.qwen.dtype != torch.float32):
+            return self._forward(batch, target_pt)
+
+    def _forward(self, batch, target_pt=None):
         """接收M3Collator的batch；target_pt只计算软标签CE，不进入模型输入。
 
-        上游M1/事件编码器/M2在第三阶段冻结；这里截断历史输入的梯度。
+        历史视为冻结输入；只投影固定容量张量内的有效 tokens。
         不接状态文本解码器，不添加专家参考，不调用generate或词表输出头。
         """
         ids, attention = batch["input_ids"], batch["attention_mask"]
@@ -74,9 +80,9 @@ class M3ProgressPredictor(nn.Module):
             targets = adjacent_bin_targets(target_pt.to(ids.device), len(self.bin_centers))
         embeds = self.qwen.get_input_embeddings()(ids)
         history_mask = batch["history_mask"]
-        has_history = history_mask.any(dim=1)
-        if has_history.any():
-            history = batch["history_tokens"][has_history].detach()
+        valid = batch["history_valid_mask"]
+        if valid.any():
+            history = batch["history_tokens"][valid].detach()
             projected = self.history_projection(history.to(self.history_projection.weight.dtype))
             embeds = embeds.masked_scatter(history_mask[..., None], projected.to(embeds.dtype))
 

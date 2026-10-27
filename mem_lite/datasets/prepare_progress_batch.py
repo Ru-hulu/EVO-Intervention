@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from time import perf_counter
 
-from mem_lite.datasets.m1_samples import read_annotation
+from mem_lite.datasets.annotations import read_annotation
 from mem_lite.datasets.prepare_progress import file_sha256, load_vision_encoder, prepare_progress
 
 

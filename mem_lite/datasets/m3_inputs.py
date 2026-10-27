@@ -1,17 +1,18 @@
-"""M3 三视角与历史输入组织；不读取 PT 标签文件，不构造第三阶段数据集。"""
+"""三视角与固定容量历史张量；仅有效历史 tokens 进入 VLM 序列。"""
 
 import torch
 from torch.nn import functional as F
 
 
 class M3Collator:
-    """samples: task_prompt、同一时刻的3张images、可选[128, history_dim]历史。"""
+    """samples: task_prompt、同一时刻的3张images、可选[N, history_dim]历史。"""
 
-    def __init__(self, processor, history_dim=512, max_sequence_length=8192):
+    def __init__(self, processor, history_dim, max_sequence_length=8192, history_capacity=1008):
         self.processor = processor
         self.processor.tokenizer.padding_side = "left"
         self.history_dim = history_dim
         self.max_sequence_length = max_sequence_length
+        self.history_capacity = history_capacity
 
     def __call__(self, samples):
         prompts, images, histories = [], [], []
@@ -19,8 +20,9 @@ class M3Collator:
             if len(sample["images"]) != 3:
                 raise ValueError("M3 每条样本必须包含同一时刻的3个视角，不能用补图代替缺失视角")
             history = sample.get("history_tokens")
-            if history is not None and history.shape != (128, self.history_dim):
-                raise ValueError(f"history_tokens 应为 [128, {self.history_dim}]；尚无事件时传 None")
+            if history is not None and (history.ndim != 2 or history.shape[1] != self.history_dim
+                                        or len(history) > self.history_capacity):
+                raise ValueError(f"history_tokens 应为 [N, {self.history_dim}]，N 不超过 {self.history_capacity}")
             histories.append(history)
             # 三路图像保持调用方提供的固定视角顺序，不拼成一张图。
             content = [{"type": "text", "text": f"任务指令：{sample['task_prompt']}\n"}]
@@ -40,14 +42,15 @@ class M3Collator:
             keep = batch["attention_mask"][row].bool()
             ids, token_types = batch["input_ids"][row][keep], batch["mm_token_type_ids"][row][keep]
             history_mask = torch.zeros_like(ids, dtype=torch.bool)
-            if history is not None:
+            count = 0 if history is None else len(history)
+            if count:
                 # 历史插在任务文本之后、第一个原生图像块之前。占位ID不扩充词表，
                 # 在模型入口会全部替换为连续历史embedding，attention_mask保持为1。
                 start = (ids == vision_start_id).nonzero()[0, 0].item()
-                ids = torch.cat((ids[:start], ids.new_full((128,), tokenizer.pad_token_id), ids[start:]))
-                token_types = torch.cat((token_types[:start], token_types.new_zeros(128), token_types[start:]))
+                ids = torch.cat((ids[:start], ids.new_full((count,), tokenizer.pad_token_id), ids[start:]))
+                token_types = torch.cat((token_types[:start], token_types.new_zeros(count), token_types[start:]))
                 history_mask = torch.zeros_like(ids, dtype=torch.bool)
-                history_mask[start:start + 128] = True
+                history_mask[start:start + count] = True
             sequences.append(ids)
             types.append(token_types)
             history_masks.append(history_mask)
@@ -63,8 +66,13 @@ class M3Collator:
         ])
         batch["mm_token_type_ids"] = torch.stack([F.pad(ids, (width - len(ids), 0)) for ids in types])
         batch["history_mask"] = torch.stack([F.pad(mask, (width - len(mask), 0)) for mask in history_masks])
-        reference = next((history for history in histories if history is not None), None)
-        batch["history_tokens"] = None if reference is None else torch.stack([
-            history if history is not None else torch.zeros_like(reference) for history in histories
-        ])
+        # 在线历史留在原设备，避免 GPU→CPU→GPU 往返；入口统一搬运其余张量。
+        reference = next((history for history in histories if history is not None), torch.empty(0))
+        batch["history_tokens"] = reference.new_zeros(len(samples), self.history_capacity, self.history_dim)
+        batch["history_valid_mask"] = torch.zeros(len(samples), self.history_capacity, dtype=torch.bool)
+        for row, history in enumerate(histories):
+            if history is not None:
+                count = len(history)
+                batch["history_tokens"][row, :count] = history.detach()
+                batch["history_valid_mask"][row, :count] = True
         return batch

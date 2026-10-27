@@ -16,11 +16,12 @@
   "save_every_steps": 100,
   "seed": 42,
   "model": {
-    "history_dim": 512,
+    "history_dim": null,
     "num_bins": 101,
     "lora_rank": 16,
     "lora_alpha": 32,
     "lora_dropout": 0.05,
     "gradient_checkpointing": true
-  }
+  },
+  "history_capacity": null
 }

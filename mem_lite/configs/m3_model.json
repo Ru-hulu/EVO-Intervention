@@ -1,5 +1,5 @@
 {
-  "history_dim": 512,
+  "history_dim": null,
   "num_bins": 101,
   "lora_rank": 16,
   "lora_alpha": 32,
