@@ -5,13 +5,15 @@ python -m qwen_training.progress.visualize --checkpoint outputs/progress/run/tra
     --task swap_T --episode 49 [--split val] [--keyframes model] [--out swap_T_49.json]
 
 JSON 结构（viewer.html 读取）：
-- task、episode、instruction、steps（各项文字）、cameras、checkpoint、iteration、keyframes、max_count；
+- task、episode、instruction、steps（各项文字）、cameras、checkpoint、iteration、keyframes、max_count、count_mode；
 - frames：每一步一项，含 step（第几步）、index（原始帧号）、time（秒）、keyframe（这一步之后是否标为关键帧）、
   images（各视角的 JPEG data URL）、
   prediction：stage（预测项，J 表示不在列表里）、stage_probs [J+1]、count [J]（见 evaluate.predicted_counts）、
   count_probs [J][R]、expected [J]（Σ_r P(n_j ≥ r)）、progress；count_mode=event 时 count_probs 为预测次数的
-  "至少 r 次"编码、expected 即预测次数，另有 change_probs [J][3]（次数变化 −1、0、+1 的概率）；
-  truth：stage、count [J]、progress。
+  "至少 r 次"编码、expected 即预测次数；event 的直接输出是 change_probs [J][3]（−1、0、+1 的概率）与
+  change [J]，fed [J] 为这一步输入的计数，count 为 clamp(fed + change)；
+  truth：stage、count [J]、progress；event 另有 change（标注相邻帧之差）、
+  correction（训练目标：clamp(真值 − fed, −1, 1)）。
 """
 
 import argparse
@@ -53,8 +55,12 @@ def export(model, sample, keyframes="model", indices=None, fps=None, cameras=Non
     # （level：任一概率变化超过 δ；event：预测次数与这一步回传的次数不同）。
     if model.event:
         change = torch.stack([out["count"] for out in outputs]).float().softmax(-1)  # [T, J, 3]
+        fed = torch.stack([out["fed"] for out in outputs])
+        truth = sample["count"].sum(-1).long().to(fed.device)
+        truth_change = torch.cat([truth[:1], truth[1:] - truth[:-1]])
+        correction = (truth - fed).clamp(-1, 1)
         count = cumulative(counts)
-        changed = (counts != torch.stack([out["fed"] for out in outputs])).any(-1)
+        changed = (counts != fed).any(-1)
         changed[0] = False                                                              # rollout 从第 1 步起才判断
     else:
         count = torch.stack([out["count"] for out in outputs]).float().sigmoid()       # [T, J, R]
@@ -72,13 +78,18 @@ def export(model, sample, keyframes="model", indices=None, fps=None, cameras=Non
                            "count": counts[t].tolist(),
                            "count_probs": count[t].round(decimals=4).tolist(),
                            "expected": count[t].sum(-1).round(decimals=3).tolist(),
-                           **({"change_probs": change[t].round(decimals=4).tolist()} if model.event else {}),
+                           **({"change_probs": change[t].round(decimals=4).tolist(),
+                               "change": (change[t].argmax(-1) - 1).tolist(), "fed": fed[t].tolist()}
+                              if model.event else {}),
                            "progress": round(progress[t].item(), 4)},
             "truth": {"stage": int(sample["stage"][t]), "count": sample["count"][t].sum(-1).int().tolist(),
-                      "progress": round(float(sample["progress"][t]), 4)}})
+                      "progress": round(float(sample["progress"][t]), 4),
+                      **({"change": truth_change[t].tolist(), "correction": correction[t].tolist()}
+                         if model.event else {})}})
     return {"task": sample["task"], "episode": sample.get("episode"), "instruction": sample["instruction"],
             "steps": sample["steps"], "cameras": cameras or [f"view{i}" for i in range(len(sample["frames"][0]))],
-            "keyframes": keyframes, "max_count": MAX_COUNT, "frames": frames}
+            "keyframes": keyframes, "max_count": MAX_COUNT, "count_mode": "event" if model.event else "level",
+            "frames": frames}
 
 
 def main(argv=None):

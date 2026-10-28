@@ -459,6 +459,7 @@ class ModelTests(unittest.TestCase):
         model = self.make()
         sample = fake_sample(np.random.default_rng(0))
         result = json.loads(json.dumps(export(model, sample, "label", fps=5)))       # 能写成 JSON
+        self.assertEqual(result["count_mode"], "level")
         self.assertEqual(len(result["frames"]), len(sample["frames"]))
         self.assertEqual([frame["keyframe"] for frame in result["frames"]], sample["keyframes"].tolist())
         last = result["frames"][-1]
@@ -488,6 +489,16 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(states[0].keyframes, [1, 2, 3, 4, 5])
         self.assertEqual(counts[:, 0].tolist(), [1, 2, 3, 4, 5, 6])
         self.assertEqual(result["max_count"], MAX_COUNT)
+        self.assertEqual(result["count_mode"], "event")
+        self.assertEqual(result["frames"][0]["prediction"]["fed"], [0, 0])
+        for t, frame in enumerate(result["frames"]):
+            pred, truth = frame["prediction"], frame["truth"]
+            self.assertEqual(pred["change"], [1, 1])
+            self.assertEqual(pred["fed"], [t, t])
+            self.assertEqual(truth["correction"], [max(-1, min(1, n - t)) for n in truth["count"]])
+            previous = result["frames"][t - 1]["truth"]["count"] if t else [0, 0]
+            self.assertEqual(truth["change"], [n - p for n, p in zip(truth["count"], previous, strict=True)])
+        self.assertNotEqual(result["frames"][-1]["truth"]["change"], result["frames"][-1]["truth"]["correction"])
         last = result["frames"][-1]["prediction"]
         self.assertEqual(len(last["change_probs"][0]), 3)
         self.assertEqual(last["expected"], [float(n) for n in last["count"]])

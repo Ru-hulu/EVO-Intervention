@@ -107,7 +107,7 @@
       </div>
       <div class="side">
         <div class="card"><h2>[STG] 正在做哪一项</h2><div id="stage"></div></div>
-        <div class="card"><h2>[CNT] 每项已完成几次</h2><div id="count"></div></div>
+        <div class="card"><h2 id="count-title">[CNT]</h2><div id="count"></div></div>
         <div class="card"><h2>[P] 整体进度</h2><div id="progress"></div></div>
       </div>
     </div>
@@ -136,13 +136,16 @@
 
   function load(json) {
     data = json;
+    data.count_mode = data.count_mode || (data.frames[0].prediction.change_probs ? "event" : "level");
     index = 0;
     $("drop").hidden = true;
     $("app").hidden = false;
     $("meta").textContent = [`${data.task} · episode ${data.episode}`, `${data.frames.length} 步`,
+      `CNT：${data.count_mode === "event" ? "event · 本步变化 / 纠正" : "level · 累计计数"}`,
       `关键帧：${data.keyframes === "model" ? "模型触发（实际推理）" : data.keyframes === "label" ? "标注（oracle）" : "无"}`,
       data.iteration !== undefined ? `checkpoint 第 ${data.iteration} 次更新` : ""].filter(Boolean).join("　");
     $("instruction").textContent = `指令：${data.instruction}`;
+    $("count-title").textContent = data.count_mode === "event" ? "[CNT] 本步计数变化（event）" : "[CNT] 累计计数（level）";
     $("slider").max = data.frames.length - 1;
     drawChart();
     show(0);
@@ -186,13 +189,35 @@
     // [CNT]
     const table = el("table");
     const head = el("tr");
-    ["项", "预测", "标注", "说明与 P(n ≥ r)"].forEach((h) => head.append(el("th", {}, h)));
+    const eventMode = data.count_mode === "event";
+    (eventMode ? ["项", "本步 Δ", "纠正目标 Δ", "计数更新 / 标注", "P(−1 / 0 / +1)"]
+               : ["项", "预测", "标注", "说明与 P(n ≥ r)"]).forEach((h) => head.append(el("th", {}, h)));
     table.append(head);
     const shown = Math.min(data.max_count, Math.max(3, ...pred.count, ...truth.count) + 2);
     data.steps.forEach((text, j) => {
       const n = pred.count[j], m = truth.count[j], probs = pred.count_probs[j];
       const row = el("tr");
       row.append(el("td", { title: text }, `${j + 1}. ${text}`));
+      if (eventMode) {
+        const probabilities = pred.change_probs[j];
+        const fed = pred.fed?.[j] ?? (index ? data.frames[index - 1].prediction.count[j] : 0);
+        const change = pred.change?.[j] ?? (probabilities.indexOf(Math.max(...probabilities)) - 1);
+        const target = truth.correction?.[j] ?? Math.max(-1, Math.min(1, m - fed));
+        const actual = truth.change?.[j] ?? (m - (index ? data.frames[index - 1].truth.count[j] : 0));
+        const signed = (value) => value > 0 ? `+${value}` : String(value);
+        const delta = el("td", { class: "num" }, signed(change));
+        delta.append(el("span", { class: "badge " + (change === target ? "ok" : "err") }, change === target ? "✓" : "×"));
+        const correction = el("td", { class: "num" }, signed(target));
+        correction.append(el("div", { class: "explain" }, `标注事件 ${signed(actual)}`));
+        const updated = el("td", { class: "num" }, `${fed} → ${n}`);
+        updated.append(el("div", { class: "explain" }, `标注 ${m}`));
+        const scores = el("td");
+        probabilities.forEach((p, k) => scores.append(el(k - 1 === change ? "strong" : "div",
+          { class: "explain", style: "display:block;white-space:nowrap" }, `${signed(k - 1)}：${pct(p)}`)));
+        row.append(delta, correction, updated, scores);
+        table.append(row);
+        return;
+      }
       const predCell = el("td", { class: "num" }, String(n));
       predCell.append(el("span", { class: "badge " + (n === m ? "ok" : "err") },
                          n === m ? "✓" : n > m ? `多 ${n - m}` : `少 ${m - n}`));
@@ -217,7 +242,11 @@
     });
     const total = pred.count.reduce((a, b) => a + b, 0), totalTruth = truth.count.reduce((a, b) => a + b, 0);
     $("count").replaceChildren(table, el("div", { class: "explain", style: "margin-top:6px" },
-      `合计已完成 ${total} 个实例（标注 ${totalTruth} 个）。方格 r 的高度为 P(n ≥ r)，超过 50% 记为已完成；黑框为标注次数。`));
+      eventMode
+        ? `模型直接预测每项 −1 / 0 / +1；计数更新 = clamp(输入计数 + 预测 Δ, 0, ${data.max_count})。`
+          + `纠正目标 = clamp(本帧真值 − 输入计数, −1, 1)，可能不同于标注事件。更新后合计 ${total}（标注 ${totalTruth}）。`
+        : `模型直接输出 P(n ≥ r)，超过 50% 的门槛数为累计计数；合计 ${total}（标注 ${totalTruth}）。`
+          + "方格高度为门槛概率，黑框为标注次数。"));
 
     // [P]
     const diff = pred.progress - truth.progress;
