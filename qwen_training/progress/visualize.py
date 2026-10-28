@@ -2,7 +2,7 @@
 """把一条 episode 的逐步输出导出成 JSON，用 viewer.html 打开查看每一步的 [STG]、[CNT]、p。
 
 python -m qwen_training.progress.visualize --checkpoint outputs/progress/run/training/best.pt \
-    --task swap_T --episode 49 [--split val] [--keyframes model] [--out swap_T_49.json]
+    --task swap_T --episode 49 [--split val] [--keyframes model] [--pause] [--out swap_T_49.json]
 
 JSON 结构（viewer.html 读取）：
 - task、episode、instruction、steps（各项文字）、cameras、checkpoint、iteration、keyframes、max_count、count_mode；
@@ -14,6 +14,7 @@ JSON 结构（viewer.html 读取）：
   change [J]，fed [J] 为这一步输入的计数，count 为 clamp(fed + change)；
   truth：stage、count [J]、progress；event 另有 change（标注相邻帧之差）、
   correction（训练目标：clamp(真值 − fed, −1, 1)）。
+--pause：time 是加入停顿后的 5 Hz 测试时间，source_time/index 在停顿段内不变；pause_test 含逐段漂移。
 """
 
 import argparse
@@ -24,8 +25,8 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-from qwen_training.datasets.rmbench.labels import MAX_COUNT
-from qwen_training.progress.evaluate import predicted_counts
+from qwen_training.datasets.rmbench.labels import MAX_COUNT, SAMPLE_FPS
+from qwen_training.progress.evaluate import PAUSE, pause_drifts, pause_order, predicted_counts, take
 from qwen_training.progress.loss import autocast
 from qwen_training.progress.model import cumulative
 
@@ -40,9 +41,14 @@ def jpeg(image, quality=80):
 
 
 @torch.no_grad()
-def export(model, sample, keyframes="model", indices=None, fps=None, cameras=None):
+def export(model, sample, keyframes="model", indices=None, fps=None, cameras=None, pause=False):
     """逐步推理整条 sample，返回可写成 JSON 的字典。indices、fps 给出原始帧号和帧率，用于显示时间。"""
     cfg = model.cfg
+    segments = []
+    indices = indices or list(range(len(sample["frames"])))
+    if pause:
+        order, segments = pause_order(sample)
+        sample, indices = take(sample, order), [indices[t] for t in order]
     was_training = model.training
     model.eval()
     with autocast(cfg):
@@ -67,11 +73,18 @@ def export(model, sample, keyframes="model", indices=None, fps=None, cameras=Non
         changed = torch.cat([torch.zeros(1, dtype=torch.bool, device=count.device),
                              (count[1:] - count[:-1]).flatten(1).abs().amax(-1) > cfg.delta])
     marked = {"label": sample["keyframes"].tolist(), "model": changed.tolist()}.get(keyframes, [False] * len(outputs))
-    indices = indices or list(range(len(outputs)))
+    if pause:
+        expected = counts.sum(-1).float() if model.event else count.sum((-2, -1))
+        segments = pause_drifts(expected, progress, segments)
     frames = []
     for t, views in enumerate(sample["frames"]):
         frames.append({
-            "step": t, "index": indices[t], "time": round(indices[t] / fps, 3) if fps else t,
+            "step": t, "index": indices[t],
+            "time": round(t / SAMPLE_FPS, 3) if pause else round(indices[t] / fps, 3) if fps else t,
+            **({"source_time": round(indices[t] / fps, 3) if fps else indices[t],
+                "pause": next(({"segment": i + 1, "offset": t - s["start"], "length": PAUSE}
+                               for i, s in enumerate(segments) if s["start"] <= t <= s["end"]), None)}
+               if pause else {}),
             "keyframe": bool(marked[t]),
             "images": [jpeg(view) for view in views],
             "prediction": {"stage": int(stage[t].argmax()), "stage_probs": stage[t].round(decimals=4).tolist(),
@@ -86,10 +99,18 @@ def export(model, sample, keyframes="model", indices=None, fps=None, cameras=Non
                       "progress": round(float(sample["progress"][t]), 4),
                       **({"change": truth_change[t].tolist(), "correction": correction[t].tolist()}
                          if model.event else {})}})
-    return {"task": sample["task"], "episode": sample.get("episode"), "instruction": sample["instruction"],
+    result = {"task": sample["task"], "episode": sample.get("episode"), "instruction": sample["instruction"],
             "steps": sample["steps"], "cameras": cameras or [f"view{i}" for i in range(len(sample["frames"][0]))],
             "keyframes": keyframes, "max_count": MAX_COUNT, "count_mode": "event" if model.event else "level",
             "frames": frames}
+    if pause:
+        overall = {"pauses": len(segments)}
+        if segments:
+            overall.update({key: sum(s[key] for s in segments) / len(segments)
+                            for key in ("count_drift", "p_drift", "count_rate", "p_rate")})
+        result["pause_test"] = {"length": PAUSE, "sample_fps": SAMPLE_FPS, "segments": segments,
+                                "overall": overall}
+    return result
 
 
 def main(argv=None):
@@ -105,8 +126,11 @@ def main(argv=None):
     parser.add_argument("--split", default="val", choices=("train", "val"))
     parser.add_argument("--keyframes", default="model", choices=("model", "label", "none"),
                         help="model 为实际推理；label 用标注关键帧（oracle）")
+    parser.add_argument("--pause", action="store_true", help="按 evaluate.pause_test 的规则插入停顿并导出逐步预测")
     parser.add_argument("--out", help="默认写在 checkpoint 旁边：<task>_ep<episode>_<keyframes>.json")
     args = parser.parse_args(argv)
+    if args.pause and args.keyframes != "model":
+        parser.error("--pause 使用模型触发关键帧，与 evaluate.pause_test 一致")
 
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
     cfg = Config(**checkpoint["config"])
@@ -118,9 +142,11 @@ def main(argv=None):
     sample = dataset.sample(dataset.episodes.index((args.task, args.episode)), cfg)
     record = json.loads((dataset.labels / args.task / f"episode{args.episode}.json").read_text())
     result = export(model, sample, args.keyframes, [frame["index"] for frame in record["frames"]],
-                    record["source_fps"], list(CAMERAS))
+                    record["source_fps"], list(CAMERAS), pause=args.pause)
     result.update(checkpoint=str(args.checkpoint), iteration=checkpoint["iteration"])
-    out = Path(args.out or Path(args.checkpoint).with_name(f"{args.task}_ep{args.episode}_{args.keyframes}.json"))
+    suffix = "_pause" if args.pause else ""
+    name = f"{args.task}_ep{args.episode}_{args.keyframes}{suffix}.json"
+    out = Path(args.out or Path(args.checkpoint).with_name(name))
     out.write_text(json.dumps(result, ensure_ascii=False) + "\n")
     print(f"wrote {out}（{len(result['frames'])} 步），用 qwen_training/progress/viewer.html 打开")
 

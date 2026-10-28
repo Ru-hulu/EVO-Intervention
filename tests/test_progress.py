@@ -8,6 +8,7 @@ import random
 import tempfile
 import unittest
 from collections import Counter
+from itertools import pairwise
 from pathlib import Path
 from unittest import mock
 
@@ -519,6 +520,28 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(result["overall"]["pauses"], 2)      # 计数在第 2、5 步变化：停在第 1、3 步
         self.assertEqual(set(result["per_task"]), {"fake"})
         self.assertTrue(math.isfinite(result["overall"]["count_drift"]))
+
+    def test_pause_export_freezes_images_and_truth_on_expanded_timeline(self):
+        from qwen_training.progress.evaluate import PAUSE
+        from qwen_training.progress.visualize import export
+
+        sample = fake_sample(np.random.default_rng(0), grad_from=0)
+        result = export(self.make(), sample, indices=[0, 2, 4, 6, 8, 10], fps=10, pause=True)
+        frames, test = result["frames"], result["pause_test"]
+        self.assertEqual(len(frames), len(sample["frames"]) + 2 * PAUSE)
+        self.assertEqual(test["overall"]["pauses"], 2)
+        self.assertEqual([s["source_step"] for s in test["segments"]], [1, 3])
+        self.assertAlmostEqual(frames[-1]["time"], 9.0)
+        for segment in test["segments"]:
+            start, end = segment["start"], segment["end"]
+            self.assertAlmostEqual(frames[end]["time"] - frames[start]["time"], 4.0)
+            for frame in frames[start:end + 1]:
+                self.assertEqual(frame["images"], frames[start]["images"])
+                self.assertEqual(frame["truth"], frames[start]["truth"])
+                self.assertEqual(frame["index"], frames[start]["index"])
+                self.assertEqual(frame["source_time"], frames[start]["source_time"])
+            self.assertEqual(frames[end]["pause"]["offset"], PAUSE)
+        self.assertTrue(all(b["time"] > a["time"] for a, b in pairwise(frames)))
 
     def test_sync_of_item_scores(self):
         t = torch.arange(10.0)

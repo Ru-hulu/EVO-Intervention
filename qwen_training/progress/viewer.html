@@ -103,6 +103,7 @@
           <input type="range" id="slider" min="0" value="0">
         </div>
         <div id="position"></div>
+        <div id="pause-info" class="explain" hidden></div>
         <div class="views" id="views"></div>
       </div>
       <div class="side">
@@ -114,6 +115,7 @@
     <div class="card" id="chart-card">
       <h2>p 随时间变化（点击曲线跳到该步）</h2>
       <div class="legend"><span class="p">预测 p</span><span class="t">标注 p</span><span class="k">关键帧</span>
+        <span id="pause-legend" hidden style="color:var(--warn)">暖色区间：重复同一帧的 Pause Test</span>
         <span style="color:var(--muted)">背景色块：标注的当前项</span></div>
       <svg id="chart" role="img" aria-label="预测与标注的 p 随时间变化"></svg>
     </div>
@@ -141,11 +143,13 @@
     $("drop").hidden = true;
     $("app").hidden = false;
     $("meta").textContent = [`${data.task} · episode ${data.episode}`, `${data.frames.length} 步`,
+      data.pause_test ? `Pause Test：${data.pause_test.segments.length} 段，每段 ${data.pause_test.length / data.pause_test.sample_fps} 秒` : "",
       `CNT：${data.count_mode === "event" ? "event · 本步变化 / 纠正" : "level · 累计计数"}`,
       `关键帧：${data.keyframes === "model" ? "模型触发（实际推理）" : data.keyframes === "label" ? "标注（oracle）" : "无"}`,
       data.iteration !== undefined ? `checkpoint 第 ${data.iteration} 次更新` : ""].filter(Boolean).join("　");
     $("instruction").textContent = `指令：${data.instruction}`;
     $("count-title").textContent = data.count_mode === "event" ? "[CNT] 本步计数变化（event）" : "[CNT] 累计计数（level）";
+    $("pause-legend").hidden = !data.pause_test;
     $("slider").max = data.frames.length - 1;
     drawChart();
     show(0);
@@ -156,7 +160,19 @@
     const frame = data.frames[index], pred = frame.prediction, truth = frame.truth;
     $("slider").value = index;
     $("position").textContent = `第 ${index + 1} / ${data.frames.length} 步　t = ${frame.time} s　原始帧 ${frame.index}`
+      + (frame.source_time !== undefined ? `（原视频 ${frame.source_time} s）` : "")
       + (frame.keyframe ? "　· 这一步之后标为关键帧" : "");
+    $("pause-info").hidden = !data.pause_test;
+    if (data.pause_test) {
+      const hold = frame.pause, signed = (n) => `${n >= 0 ? "+" : ""}${n.toFixed(3)}`;
+      if (hold) {
+        const segment = data.pause_test.segments[hold.segment - 1];
+        $("pause-info").textContent = `停顿 ${hold.segment}：冻结三视角画面，额外重复 ${hold.offset}/${hold.length} 步。`
+          + `该段期望总计数漂移 ${signed(segment.count_drift)}，p 漂移 ${signed(segment.p_drift * 100)} 个百分点。`;
+      } else {
+        $("pause-info").textContent = "Pause Test：暖色区间内画面和真实标签固定，模型仍每 0.2 秒前向一次。";
+      }
+    }
 
     const views = $("views");
     views.replaceChildren(...frame.images.map((src, v) => {
@@ -292,6 +308,13 @@
         title.textContent = frames[start].truth.stage < data.steps.length ? `第 ${frames[start].truth.stage + 1} 项` : "";
         start = i;
       }
+    }
+    for (const [i, segment] of (data.pause_test?.segments || []).entries()) {
+      const left = x(frames[segment.start].time), right = x(frames[segment.end].time);
+      add("rect", { x: left, y: m.t, width: right - left, height: height - m.t - m.b,
+                    fill: "var(--warn)", opacity: 0.14 });
+      const label = add("text", { x: left + 2, y: m.t + 25, "font-size": 10, fill: "var(--warn)" });
+      label.textContent = `停顿 ${i + 1}`;
     }
     for (const p of [0, 0.25, 0.5, 0.75, 1]) {
       add("line", { x1: m.l, x2: width - m.r, y1: y(p), y2: y(p), stroke: "var(--line)" });

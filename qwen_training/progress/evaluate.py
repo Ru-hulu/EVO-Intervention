@@ -12,7 +12,7 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-from qwen_training.datasets.rmbench.labels import MAX_COUNT
+from qwen_training.datasets.rmbench.labels import MAX_COUNT, SAMPLE_FPS
 from qwen_training.progress.loss import autocast, sample_loss
 
 BUCKETS = 5   # 按真实次数分桶：0、1、2、3、≥4
@@ -111,6 +111,30 @@ def take(sample, order):
     return {**sample, "frames": [sample["frames"][i] for i in order], **{key: sample[key][index] for key in per_frame}}
 
 
+def pause_order(sample, length=PAUSE):
+    """计数变化之间的中点插入 length 个相同帧，返回原步序列与停顿区间（含首尾）。"""
+    changes = ((sample["count"][1:] != sample["count"][:-1]).flatten(1).any(-1).nonzero().flatten() + 1).tolist()
+    pauses = sorted({(a + b) // 2 for a, b in zip([0, *changes], changes, strict=False) if b - a >= 2})
+    order, segments = [], []
+    for t in range(len(sample["frames"])):
+        if t in pauses:
+            segments.append({"source_step": t, "start": len(order), "end": len(order) + length})
+        order += [t] * (length + 1 if t in pauses else 1)
+    return order, segments
+
+
+def pause_drifts(expected, progress, segments):
+    """逐停顿段的原始预测漂移；与可视化共用，次数为期望次数、p 为 0-1 比例。"""
+    result = []
+    for segment in segments:
+        start, end = segment["start"], segment["end"]
+        seconds = (end - start) / SAMPLE_FPS
+        count, p = (expected[end] - expected[start]).item(), (progress[end] - progress[start]).item()
+        result.append({**segment, "count_drift": count, "p_drift": p,
+                       "count_rate": count / seconds, "p_rate": p / seconds})
+    return result
+
+
 @torch.no_grad()
 def pause_test(model, dataset, cfg, episodes=0, length=PAUSE):
     """停顿测试：在每两次计数变化之间（及第一次之前）的中点，把那一帧重复 length 步，用模型关键帧逐步推理。
@@ -125,29 +149,23 @@ def pause_test(model, dataset, cfg, episodes=0, length=PAUSE):
     sums = defaultdict(lambda: defaultdict(float))
     for index in [i * len(dataset) // count for i in range(count)]:
         sample = dataset.sample(index, cfg)
-        changes = ((sample["count"][1:] != sample["count"][:-1]).flatten(1).any(-1).nonzero().flatten() + 1).tolist()
-        pauses = sorted({(a + b) // 2 for a, b in zip([0, *changes], changes, strict=False) if b - a >= 2})
-        order = []
-        for t in range(len(sample["frames"])):
-            order += [t] * (length + 1 if t in pauses else 1)
+        order, segments = pause_order(sample, length)
         with autocast(cfg):
             outputs = model.rollout(take(sample, order), keyframes="model")
         expected = predicted_counts(model, outputs).sum(-1).float() if model.event \
             else torch.stack([out["count"] for out in outputs]).float().sigmoid().sum((-2, -1))
         p = (F.softmax(torch.stack([out["progress"] for out in outputs]).float(), -1) * model.bins).sum(-1)
-        position = 0
-        for t in range(len(sample["frames"])):
-            if t in pauses:
-                for key in (sample["task"], None):
-                    sums[key]["pauses"] += 1
-                    sums[key]["count_drift"] += (expected[position + length] - expected[position]).item()
-                    sums[key]["p_drift"] += (p[position + length] - p[position]).item()
-            position += length + 1 if t in pauses else 1
+        for segment in pause_drifts(expected, p, segments):
+            for key in (sample["task"], None):
+                sums[key]["pauses"] += 1
+                sums[key]["count_drift"] += segment["count_drift"]
+                sums[key]["p_drift"] += segment["p_drift"]
     model.train(was_training)
 
     def average(total):
         drift = {key: total[key] / total["pauses"] for key in ("count_drift", "p_drift")}
-        return {**drift, "count_rate": drift["count_drift"] / (length / 5), "p_rate": drift["p_drift"] / (length / 5),
+        return {**drift, "count_rate": drift["count_drift"] / (length / SAMPLE_FPS),
+                "p_rate": drift["p_drift"] / (length / SAMPLE_FPS),
                 "pauses": int(total["pauses"])}
 
     overall = average(sums.pop(None))
