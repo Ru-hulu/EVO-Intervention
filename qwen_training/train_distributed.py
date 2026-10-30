@@ -1,4 +1,4 @@
-"""多卡按 epoch 训练：全局类别配额、独立验证集、终端日志、指定轮次保存。"""
+"""多卡13图窗口训练：六行答案统一 CE、按查询视频划分、指定轮次保存。"""
 
 import argparse
 import json
@@ -13,14 +13,13 @@ from torch import distributed as dist
 from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader, Sampler
 
-from qwen_training.dataloader import build_dataloaders
-from qwen_training.dataset import augment_training_images, collate_fn, prepare_training_batch
-from qwen_training.model import QwenProgressModel
-from qwen_training.prompts import INPUT_COMBINATIONS, MISMATCHED_PROMPTS
+from qwen_training.reference_dataset import build_reference_dataloaders, collate_reference_windows
+from qwen_training.reference_io import FORMAT_VERSION
+from qwen_training.reference_model import ReferenceProgressModel
 
 
 class GlobalBatchSampler(Sampler):
-    """全局类别配额只生成一次；末批过小时从前一批调剂，不丢弃或重复样本。"""
+    """全局随机顺序只生成一次；末批过小时从前一批调剂，不丢弃或重复窗口。"""
 
     def __init__(self, sampler, batch_size, rank, world_size, seed):
         self.sampler, self.batch_size = sampler, batch_size
@@ -54,28 +53,22 @@ class GlobalBatchSampler(Sampler):
         return len(self.batch_sizes)
 
 
-def add_metrics(totals, outputs, targets, combination_ids):
+def add_metrics(totals, outputs, targets):
     # 统一按所有有效答案 token 累计 CE；数值误差由自回归生成评估单独计算。
     totals[:3] += torch.stack((
         outputs.text_loss.detach().double() * outputs.text_tokens,
         outputs.text_tokens.double(),
         totals.new_tensor(len(targets["responses"])),
     ))
-    totals[3:] += torch.bincount(torch.tensor(combination_ids, device=totals.device),
-                                minlength=len(INPUT_COMBINATIONS))
 
 
 def collect_metrics(totals):
     totals = totals.clone()
     dist.all_reduce(totals)
     text_sum, token_count, count = totals[:3].tolist()
-    text_loss = text_sum / max(token_count, 1)
+    text_loss = text_sum / token_count if token_count else None
     return {
         "loss": text_loss, "text_ce": text_loss, "text_tokens": int(token_count), "samples": int(count),
-        "input_combination_counts": {
-            f"{mode}_{'memory' if keep else 'no_memory'}": int(n)
-            for (mode, keep, _), n in zip(INPUT_COMBINATIONS, totals[3:].tolist(), strict=True)
-        },
     }
 
 
@@ -96,21 +89,13 @@ def phase_batches(loader):
 
 
 @torch.no_grad()
-def evaluate(model, loader, args, rank, device):
+def evaluate(model, loader, device):
     model.eval()
-    totals = torch.zeros(3 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
-    for batch_index, (inputs, targets) in enumerate(phase_batches(loader)):
-        if args.gpu_image_processing:
-            inputs["images"] = inputs["images"].to(device, non_blocking=True)
-        # 每轮使用同一批验证视频、同一提示词；不做图像增强或类别重采样。
-        targets = prepare_training_batch(
-            inputs, mismatched_prompts=args.mismatched_prompts,
-            seed=args.seed + 1_000_000 + batch_index * dist.get_world_size() + rank,
-        )
+    totals = torch.zeros(3, dtype=torch.float64, device=device)
+    for inputs, targets in phase_batches(loader):
         with torch.autocast("cuda", dtype=torch.bfloat16):
-            visual = model.encode_history(inputs["images"], inputs["frame_mask"])
-            outputs = model(messages=inputs["messages"], **visual, **targets)
-        add_metrics(totals, outputs, targets, inputs["combination_ids"])
+            outputs = model(**inputs, **targets)
+        add_metrics(totals, outputs, targets)
     result = collect_metrics(totals)
     model.train()
     model.qwen.model.visual.eval()
@@ -119,43 +104,45 @@ def evaluate(model, loader, args, rank, device):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model-path", required=True)
-    parser.add_argument("--index-files", nargs="+", required=True)
+    parser.add_argument("--model-path")
+    parser.add_argument("--index-files", nargs="+", help="已准备的13图窗口 JSONL 索引")
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--epochs", type=int, default=8)
     parser.add_argument("--save-epochs", type=int, nargs="+", default=[3, 6, 8])
-    parser.add_argument("--global-batch-size", type=int, default=10)
-    parser.add_argument("--val-batch-size", type=int, default=5, help="每卡验证 batch，无梯度")
+    parser.add_argument("--global-batch-size", type=int, default=16)
+    parser.add_argument("--val-batch-size", type=int, default=1, help="每卡验证 batch，无梯度")
     parser.add_argument("--num-workers", type=int, default=2)
     parser.add_argument("--prefetch-factor", type=int, default=2,
-                        help="每个数据读取进程提前准备的 batch 数，降低视频解码时长波动")
+                        help="每个数据读取进程提前准备的图片窗口 batch 数")
     parser.add_argument("--gradient-checkpointing", action="store_true",
                         help="语言层使用非重入梯度检查点，以重算换取更低激活显存")
     parser.add_argument("--require-fast-kernels", action="store_true",
                         help="缺少 Qwen3.5 的 FLA/causal-conv1d 加速算子时提前报错")
-    parser.add_argument("--gpu-image-processing", action="store_true",
-                        help="将 uint8 帧整体传入本卡，在 GPU 上进行原有图像增强和预处理")
     parser.add_argument("--val-fraction", type=float, default=0.1)
+    parser.add_argument("--shuffle-probability", type=float, default=0.3,
+                        help="仅训练：有效帧前后两段交换的概率")
     parser.add_argument("--max-pixels", type=int, default=262144)
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--lora-rank", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=32)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--mismatched-prompts", nargs="+", default=list(MISMATCHED_PROMPTS),
-                        help="与实际装配任务语义不同的负任务提示词")
     parser.add_argument("--log-every", type=int, default=50)
     parser.add_argument("--resume", help="恢复本入口在 epoch 末尾保存的检查点")
     args = parser.parse_args()
     checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True) if args.resume else None
     if checkpoint:
-        if "progress_head" in checkpoint:
-            parser.error("旧回归头检查点不能直接续训，请使用文本进度检查点或重新训练")
+        if (checkpoint.get("config", {}).get("progress_format") != FORMAT_VERSION
+                or checkpoint.get("trainer") != "distributed"):
+            parser.error(f"需要本入口保存的 {FORMAT_VERSION} 检查点；旧 stage/MEM 检查点不能直接续训")
         for key, value in checkpoint["config"].items():
             if key not in {"epochs", "save_epochs", "output_dir", "resume", "num_workers", "prefetch_factor", "log_every"}:
                 setattr(args, key, value)
-    args.input_combinations = INPUT_COMBINATIONS
-    args.progress_format = "text_3dp"
+    args.progress_format = FORMAT_VERSION
+    if not args.model_path or not args.index_files:
+        parser.error("首次训练需要 --model-path 和 --index-files；恢复训练使用 --resume")
+    if args.lora_rank < 1:
+        parser.error("LoRA 训练要求 --lora-rank >= 1")
 
     if args.require_fast_kernels:
         from transformers.models.qwen3_5.modeling_qwen3_5 import is_fast_path_available
@@ -163,18 +150,21 @@ def main():
             parser.error("请先安装兼容的 flash-linear-attention 和 causal-conv1d")
 
     rank, world_size = int(os.environ["RANK"]), int(os.environ["WORLD_SIZE"])
+    if checkpoint and checkpoint["world_size"] != world_size:
+        parser.error("恢复训练时 GPU 数需与检查点一致")
     device = torch.device("cuda", int(os.environ["LOCAL_RANK"]))
     torch.cuda.set_device(device)
     dist.init_process_group("nccl", device_id=device)
     torch.manual_seed(args.seed)
 
-    # 复用现有视频划分与全局类别比例，只替换各卡的 batch 分配方式。
-    base_train, base_val = build_dataloaders(
+    # 查询原视频保持隔离；窗口采用普通随机顺序，不再采样旧语义阶段对。
+    base_train, base_val = build_reference_dataloaders(
         args.index_files, num_workers=0, val_fraction=args.val_fraction, seed=args.seed,
+        shuffle_probability=args.shuffle_probability,
     )
     sampler = GlobalBatchSampler(base_train.sampler, args.global_batch_size, rank, world_size, args.seed)
     options = dict(
-        num_workers=args.num_workers, collate_fn=collate_fn, pin_memory=True,
+        num_workers=args.num_workers, collate_fn=collate_reference_windows,
         multiprocessing_context="spawn" if args.num_workers else None,
         # 每阶段耗尽 loader 后退出 worker，避免训练和验证两套解码器/索引副本同时驻留。
         persistent_workers=False,
@@ -189,7 +179,7 @@ def main():
         batch_size=args.val_batch_size,
         generator=torch.Generator().manual_seed(args.seed + rank + 100), **options,
     )
-    model = QwenProgressModel(
+    model = ReferenceProgressModel(
         args.model_path, dtype=torch.bfloat16, freeze_backbone=True, max_pixels=args.max_pixels,
         lora_rank=args.lora_rank, lora_alpha=args.lora_alpha, lora_dropout=args.lora_dropout,
     ).to(device)
@@ -201,7 +191,6 @@ def main():
     for parameter in parameters:
         parameter.data = parameter.data.float()
     if checkpoint:
-        model.visual_adapter.load_state_dict(checkpoint["visual_adapter"])
         set_peft_model_state_dict(model.qwen, checkpoint["lora"])
     distributed_model = DistributedDataParallel(
         model, device_ids=[device.index], broadcast_buffers=False, gradient_as_bucket_view=True,
@@ -254,28 +243,22 @@ def main():
     for epoch in range(start_epoch, args.epochs):
         record_phase("before_train", epoch + 1)
         sampler.epoch = epoch
-        epoch_totals = torch.zeros(3 + len(INPUT_COMBINATIONS), dtype=torch.float64, device=device)
+        base_train.dataset.dataset.set_epoch(epoch)
+        epoch_totals = torch.zeros(3, dtype=torch.float64, device=device)
         window_totals = torch.zeros_like(epoch_totals)
         epoch_started = window_started = perf_counter()
         for batch_index, (inputs, targets) in enumerate(phase_batches(train_loader)):
-            seed = args.seed + step * world_size + rank
-            targets = prepare_training_batch(inputs, seed, mismatched_prompts=args.mismatched_prompts)
-            if args.gpu_image_processing:
-                inputs["images"] = inputs["images"].to(device, non_blocking=True)
-            inputs["images"] = augment_training_images(inputs["images"], inputs["state_pairs"], seed)
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast("cuda", dtype=torch.bfloat16):
-                with torch.no_grad():
-                    visual = model.encode_history(inputs["images"], inputs["frame_mask"])
-                outputs = distributed_model(messages=inputs["messages"], **visual, **targets)
+                outputs = distributed_model(**inputs, **targets)
                 token_count = outputs.text_tokens.double()
                 dist.all_reduce(token_count)
                 # DDP 对卡取平均；恢复为全局所有答案 token 的平均 CE。
                 loss = world_size * outputs.loss * outputs.text_tokens / token_count.clamp_min(1)
             loss.backward()
-            add_metrics(window_totals, outputs, targets, inputs["combination_ids"])
-            add_metrics(epoch_totals, outputs, targets, inputs["combination_ids"])
-            del outputs, visual, loss
+            add_metrics(window_totals, outputs, targets)
+            add_metrics(epoch_totals, outputs, targets)
+            del outputs, loss
             torch.nn.utils.clip_grad_norm_(parameters, 1.0, error_if_nonfinite=True)
             optimizer.step()
             step += 1
@@ -292,7 +275,7 @@ def main():
         record("train_epoch", metrics, epoch + 1)
         record_phase("before_validation", epoch + 1)
         validation_started = perf_counter()
-        metrics = evaluate(model, val_loader, args, rank, device)
+        metrics = evaluate(model, val_loader, device)
         metrics["seconds"] = perf_counter() - validation_started
         record("validation", metrics, epoch + 1)
         record_phase("after_validation", epoch + 1)
@@ -303,7 +286,7 @@ def main():
                 path = output / f"epoch-{epoch + 1:02d}.pt"
                 temporary = path.with_suffix(".pt.tmp")
                 torch.save({
-                    "visual_adapter": model.visual_adapter.state_dict(),
+                    "trainer": "distributed",
                     "lora": get_peft_model_state_dict(model.qwen, save_embedding_layers=False),
                     "optimizer": optimizer.state_dict(), "step": step, "epoch": epoch + 1,
                     "config": vars(args), "world_size": world_size, "rng_by_rank": rng_by_rank,

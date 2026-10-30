@@ -47,7 +47,8 @@ def save_checkpoint(model, optimizer, config, output_dir, epoch, next_batch, ste
         "format": CHECKPOINT_FORMAT, "model": trainable_state(model), "optimizer": optimizer.state_dict(),
         "config": config, "epoch": epoch, "next_batch": next_batch, "step": step, "rng_by_rank": rng_by_rank,
     }
-    names = ["last.pt", f"epoch-{epoch:02d}.pt"] if epoch_finished else ["last.pt"]
+    archive = epoch_finished and not config.get("keep_only_latest", False)
+    names = ["last.pt", f"epoch-{epoch:02d}.pt"] if archive else ["last.pt"]
     for name in names:
         temporary = output_dir / f"{name}.tmp"
         torch.save(state, temporary)
@@ -64,15 +65,27 @@ def read_config(args, checkpoint=None):
     if not config["model_path"] or not config["sample_files"]:
         raise ValueError("需要本地 Qwen3.5 基座及已构造的 StreamForest 样本")
     for key in ("epochs", "batch_size", "gradient_accumulation_steps", "learning_rate",
-                "log_every_steps", "save_every_steps", "max_grad_norm"):
+                "log_every_steps", "max_grad_norm"):
         if config[key] <= 0:
             raise ValueError(f"{key} 必须大于0")
+    for key in ("save_every_steps", "save_every_epochs"):
+        value = config.get(key, 1)
+        if value is not None and value < 1:
+            raise ValueError(f"{key} 必须为正整数或 null")
     if config["max_steps"] is not None and config["max_steps"] < 1:
         raise ValueError("max_steps 必须为正整数或 null")
     for key in ("model_path", "output_dir"):
         config[key] = str(Path(config[key]).expanduser().resolve())
     config["sample_files"] = [str(Path(path).expanduser().resolve()) for path in config["sample_files"]]
     return config
+
+
+def checkpoint_schedule(config, step, completed_epoch, epoch_finished, stop=False):
+    """步数快照与 epoch 存档分别控制；提前到达 max_steps 时仍保留最后状态。"""
+    steps, epochs = config["save_every_steps"], config.get("save_every_epochs", 1)
+    archive = bool(epoch_finished and epochs is not None and completed_epoch % epochs == 0)
+    due = bool(stop or archive or (steps is not None and step % steps == 0))
+    return due, archive
 
 
 def normalize_gradients(parameters, total_samples, world_size):
@@ -129,7 +142,8 @@ def _train(config, checkpoint, rank, world_size, device):
         dataset, batch_size=config["batch_size"], sampler=sampler,
         collate_fn=Stage3Collator(processor, dataset.history_dim, config["max_sequence_length"],
                                  config["history_capacity"]),
-        num_workers=config["num_workers"], pin_memory=True, persistent_workers=False,
+        num_workers=config["num_workers"], pin_memory=True,
+        persistent_workers=config.get("persistent_workers", False) and config["num_workers"] > 0,
         multiprocessing_context="spawn" if config["num_workers"] > 0 else None,
         generator=torch.Generator().manual_seed(config["seed"] + rank),
     )
@@ -137,7 +151,8 @@ def _train(config, checkpoint, rank, world_size, device):
     if dataset.history_dim != model.qwen.config.vision_config.out_hidden_size:
         raise ValueError("缓存的视觉特征维度与 Qwen 基座不一致")
     parameters = [p for p in model.parameters() if p.requires_grad]
-    optimizer = torch.optim.AdamW(parameters, lr=config["learning_rate"], weight_decay=config["weight_decay"])
+    optimizer = torch.optim.AdamW(parameters, lr=config["learning_rate"], weight_decay=config["weight_decay"],
+                                  fused=config.get("fused_optimizer", False))
     epoch, next_batch, step = 0, 0, 0
     if checkpoint is not None:
         load_trainable_state(model, checkpoint["model"])
@@ -215,8 +230,9 @@ def _train(config, checkpoint, rank, world_size, device):
                 print(json.dumps(record), flush=True)
                 with (output_dir / "train.jsonl").open("a", encoding="utf-8") as stream:
                     stream.write(json.dumps(record) + "\n")
-            if step % config["save_every_steps"] == 0 or epoch_finished or stop:
-                save_checkpoint(model, optimizer, config, output_dir, next_epoch, cursor, step, epoch_finished)
+            save, archive = checkpoint_schedule(config, step, next_epoch, epoch_finished, stop)
+            if save:
+                save_checkpoint(model, optimizer, config, output_dir, next_epoch, cursor, step, archive)
                 if world_size > 1:
                     dist.barrier()
             totals.zero_()

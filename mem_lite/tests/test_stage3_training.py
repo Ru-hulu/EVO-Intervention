@@ -1,6 +1,7 @@
 """第三阶段离线检查：缓存/冻结范围、损失归一化及断点读写，不执行训练循环。"""
 
 import json
+from contextlib import nullcontext
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -9,11 +10,13 @@ import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
-from contextlib import nullcontext
 
-from mem_lite.tests.test_m3_predictor import collator as collator, model as model, sample
+from mem_lite.tests.test_m3_predictor import collator as collator
+from mem_lite.tests.test_m3_predictor import model as model
+from mem_lite.tests.test_m3_predictor import sample
 from mem_lite.train_stage3 import (
     DEFAULT_CONFIG,
+    checkpoint_schedule,
     load_trainable_state,
     normalize_gradients,
     read_config,
@@ -83,6 +86,37 @@ def test_stage3_resume_preserves_model_and_optimization_config(tmp_path):
     assert updated["model"] == config["model"]
     assert updated["gradient_accumulation_steps"] == config["gradient_accumulation_steps"]
     assert updated["data_signature"] == "old-data"
+
+
+def test_latest_only_overwrites_checkpoint_without_epoch_archives(model, tmp_path):
+    optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad])
+    with patch("mem_lite.train_stage3.torch.cuda.get_rng_state", return_value=torch.tensor([1], dtype=torch.uint8)):
+        for epoch in (1, 2, 3):
+            save_checkpoint(model, optimizer, {"keep_only_latest": True}, tmp_path,
+                            epoch, 0, epoch * 10, epoch_finished=True)
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["last.pt"]
+    state = torch.load(tmp_path / "last.pt", weights_only=True)
+    assert state["epoch"] == 3 and state["step"] == 30 and state["next_batch"] == 0
+
+
+def test_three_epoch_archives_without_step_snapshots(tmp_path):
+    config = json.loads(DEFAULT_CONFIG.read_text())
+    config.update(model_path="/model", sample_files=["/samples"], epochs=6,
+                  save_every_steps=None, save_every_epochs=3)
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps(config))
+    args = SimpleNamespace(config=str(path), model_path=None, sample_files=None, output_dir=None,
+                           epochs=None, max_steps=None)
+    config = read_config(args)
+    saved = []
+    for step in range(1, 6 * 885 + 1):
+        due, archive = checkpoint_schedule(config, step, step // 885, step % 885 == 0)
+        if due:
+            saved.append((step, archive))
+    assert saved == [(2655, True), (5310, True)]
+    assert checkpoint_schedule(config, 101, 0, False, stop=True) == (True, False)
+    assert checkpoint_schedule({"save_every_steps": 100}, 100, 0, False) == (True, False)
+    assert checkpoint_schedule({"save_every_steps": 100}, 885, 1, True) == (True, True)
 
 
 class OptionalHistoryProbe(torch.nn.Module):

@@ -252,6 +252,7 @@ wandb/*
 !docs/model_zoo.md
 !docs/starVLA_guideline.md
 !docs/WM4A.md
+!qwen_training/REFERENCE_TRAINING.md
 
 
 logs/*
@@ -275,3 +276,8 @@ evo_intervention/model/framework/VLM4A/QwenGR00T_v2.py
 # Track le-wm training configuration files under the otherwise ignored data directory
 !le-wm/config/train/data/
 !le-wm/config/train/data/*.yaml
+
+# mem-lite source documentation and focused data tests
+!mem_lite/README.md
+!mem_lite/tests/
+!mem_lite/tests/*.py

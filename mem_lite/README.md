@@ -130,6 +130,8 @@ python -m mem_lite.train_stage3 \
 `configs/stage3_train.json` 中 `history_capacity` 和 `model.history_dim` 为 null，
 训练时从样本解析并写入检查点。只优化语言 LoRA、历史投影和进度头；视觉模块及记忆算法冻结。
 断点续训仍使用 `--resume /outputs/streamforest/last.pt`。
+`save_every_steps` 控制步数快照，设为 null 可关闭；`save_every_epochs` 默认 1。
+例如设为 3 时，只在第 3、6、9… 个 epoch 保存 epoch 存档，并更新 `last.pt`。
 新检查点格式为 `mem-lite-streamforest-v1`，不接受旧 M1/M2 或旧固定 128 tokens 的进度检查点。
 训练入口使用 CUDA BF16，支持 DDP、梯度累积和断点续训。
 预测模型内部统一训练与推理的 autocast 策略；记忆编码和 FP32 合并匹配不受外层 autocast 影响。
@@ -187,3 +189,37 @@ CPU 评估的 CUDA 显存字段为 null。无历史消融使用同一检查点�
 测试覆盖预算、因果性、自动重置、变长有效历史、padding 隔离、真实视频输入、
 FP32/BF16 缓存与在线一致性、未来帧替换、微型 Qwen 优化器更新及检查点重载；无需下载模型。
 这些离线测试不代表真实任务准确率或 GPU 实时性能。
+
+## 插螺钉恢复数据
+
+`prepare_recovery` 读取 `30FPS/`、`left_wrist/`、`right_wrist/`、`splitlable/` 和
+`delta/`，强制排除 `file-019`。它复用 `qwen_training.delta_to_progress.episode_to_progress`，
+按 `nowid/restid` 扣除失败后需要重做的任务贡献；不使用事件等权的单调进度算法。
+每轮单独归一化，JSON 中包含末帧的区间转换为 `[start_frame,end_frame)`，CSV 仍保留原视频帧号。
+片头准备、轮间空白和片尾空闲不进入单轮训练样本。
+
+```bash
+# CPU：三视角帧数/帧率/起始时间、delta 和标注校验；按原始视频划分。
+python -m mem_lite.datasets.prepare_recovery index \
+  --dataset-root /root/autodl-tmp/datasets/insert-screw-recover \
+  --output-dir /root/autodl-tmp/streamforest-data/insert-screw-recover \
+  --validation-videos 4 --seed 42
+
+# 冻结视觉推理（不更新模型参数）：一次加载视觉编码器，每轮独立构建历史。
+python -m mem_lite.datasets.prepare_recovery cache \
+  --prepared-dir /root/autodl-tmp/streamforest-data/insert-screw-recover \
+  --model-path /root/autodl-tmp/models/Qwen3.5-4B \
+  --cache-dir /root/autodl-tmp/streamforest-cache/insert-screw-recover \
+  --sample-fps 5 --device cuda
+
+# 缓存完成后再训练；验证集不会被写入训练配置。
+python -m mem_lite.train_stage3 \
+  --config /root/autodl-tmp/streamforest-cache/insert-screw-recover/train.config.json
+```
+
+当前 21 个可用原始视频分成 17 个训练视频（85 轮）和 4 个验证视频（20 轮）；
+固定验证视频为 `file-000/003/008/021`。同一视频的所有轮都留在同一划分。
+索引目录保存 `manifest.json`、`train.jsonl`、`validation.jsonl` 和逐轮 `progress.csv`。
+缓存以每轮首帧为空历史开始，无法读取该轮之外的帧；按 5 FPS 采样并额外保留每轮末帧，
+确保完成状态也被监督。原三视角视频不会被重编码或裁剪。
+缓存目录最后生成 `train.config.json` 与训练/验证各自的 `*.sample_files.json`。

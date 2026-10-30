@@ -1,0 +1,25 @@
+{
+  "model_path": "/root/autodl-tmp/models/Robometer-4B",
+  "train_data": "/root/autodl-tmp/Evo-Inter/results/robometer/5fps-window8/train.jsonl",
+  "validation_data": "/root/autodl-tmp/Evo-Inter/results/robometer/5fps-window8/validation.jsonl",
+  "output_dir": "/root/autodl-tmp/Evo-Inter/outputs/robometer/5fps-window8-lora",
+  "sample_fps": 5,
+  "window_size": 8,
+  "min_pixels": 4096,
+  "max_pixels": 65536,
+  "max_length": 4096,
+  "seed": 42,
+  "lora": {"rank": 16, "alpha": 32, "dropout": 0.05},
+  "training": {
+    "num_train_epochs": 3,
+    "per_device_train_batch_size": 8,
+    "per_device_eval_batch_size": 8,
+    "gradient_accumulation_steps": 1,
+    "learning_rate": 0.00002,
+    "warmup_ratio": 0.03,
+    "lr_scheduler_type": "cosine",
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "logging_steps": 10
+  }
+}

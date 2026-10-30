@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>专家轨迹 · 选帧</title>
+<style>
+:root{color-scheme:light;--bg:#f4f5f7;--ink:#202a36;--muted:#697586;--line:#dce1e7;--accent:#176956;--pale:#e9f5ef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:white;border-radius:8px;padding:8px 13px;color:var(--ink)}button:hover:not(:disabled){background:#edf1f4}button:disabled{opacity:.45;cursor:default}button.primary{background:var(--accent);color:white;border-color:var(--accent)}button.primary:hover:not(:disabled){background:#115342}button.active{background:var(--pale);border-color:var(--accent);color:var(--accent)}button:focus-visible,input:focus-visible{outline:3px solid #79bcae;outline-offset:2px}
+header{padding:24px 32px 19px;border-bottom:1px solid var(--line);background:white;display:flex;justify-content:space-between;gap:20px;align-items:center}h1{font-size:23px;letter-spacing:.02em;margin:0 0 4px;font-weight:650}.muted{color:var(--muted)}.badge{font-size:12px;border:1px solid var(--line);border-radius:30px;padding:5px 12px;white-space:nowrap}main{max-width:1400px;margin:auto;padding:22px 28px 28px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:22px}.panel{background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden}.preview-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}.frame-tag{font:600 14px ui-monospace,SFMono-Regular,monospace}.viewer{background:#19222b;display:flex;align-items:center;justify-content:center;min-height:240px;height:min(52vh,480px);position:relative}.viewer img{max-width:100%;max-height:100%;object-fit:contain}.viewer.loading img{opacity:.45}.loading-note{display:none;position:absolute;color:white}.viewer.loading .loading-note{display:block}.controls{padding:16px 18px}.scrubber{width:100%;accent-color:var(--accent);margin:0;display:block}.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:5px 0 14px}.actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.spacer{flex:1}.jump{display:flex;gap:7px;align-items:center;font-size:12px;margin-top:12px;color:var(--muted)}.jump input{width:82px;padding:6px;border:1px solid var(--line);border-radius:6px;color:var(--ink)}.keyboard{font-size:12px;margin-top:12px;color:var(--muted)}kbd{font:inherit;background:#f1f3f6;border-radius:3px;padding:1px 4px}.selected-panel{padding:18px;display:flex;flex-direction:column}h2{font-size:16px;margin:0}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}.count{color:var(--accent);font-weight:650}.hint{color:var(--muted);font-size:12px;margin:0 0 16px}.slots{display:grid;gap:9px;margin-bottom:16px}.slot{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;min-height:76px;padding:8px}.slot.empty{border-style:dashed;background:#fafbfc;color:#929aa5}.slot .number{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}.thumb-button{padding:0;border:0;border-radius:4px;width:78px;height:58px;background:#e5e9ed;overflow:hidden;flex-shrink:0}.thumb-button img{width:100%;height:100%;object-fit:contain}.slot-info{font-size:12px;flex:1}.slot-info strong{display:block;font-size:13px;font-weight:550}.remove{padding:4px 8px;border:0;color:var(--muted);font-size:19px}.slot.current{border-color:var(--accent);background:var(--pale)}.save{width:100%;margin-top:auto}.save-status{font-size:12px;min-height:36px;color:var(--muted);padding-top:9px;overflow-wrap:anywhere}.save-status.error{color:#b33f32}.save-status.success{color:var(--accent)}.strip-panel{margin-top:20px;padding:17px 18px}.filmstrip{display:flex;gap:9px;overflow-x:auto;padding:10px 2px 9px;scrollbar-width:thin}.film{padding:4px;min-width:91px;width:91px;position:relative;border-radius:7px}.film img{width:81px;height:61px;display:block;object-fit:contain;background:#e7e9ec}.film span{display:block;font-size:11px;margin-top:3px;color:var(--muted)}.film.current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.film.picked:after{content:'✓';position:absolute;right:5px;top:5px;background:var(--accent);color:white;border-radius:50%;width:17px;height:17px;font-size:11px;line-height:17px}.path{margin-top:16px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}.notice{font-size:12px;color:var(--muted)}.disabled{pointer-events:none;opacity:.6}#fatal{margin:20px;color:#b33f32}
+@media(max-width:820px){header{padding:18px}main{padding:15px}.layout{grid-template-columns:1fr}.selected-panel{padding:16px}.slots{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.viewer{height:auto;aspect-ratio:4/3;max-height:480px}.viewer img{height:100%;width:100%;object-fit:contain}.actions{gap:6px}.badge{display:none}}
+</style>
+</head>
+<body>
+<header><div><h1>专家轨迹 · 选帧</h1><div class="muted" id="subtitle">正在载入视频…</div></div><span class="badge">选择 5 帧 · 按时间自动排序</span></header>
+<div id="fatal" role="alert" hidden></div>
+<main id="app" hidden>
+<div class="layout">
+<section class="panel" aria-label="视频帧浏览">
+<div class="preview-head"><span class="frame-tag" id="frameInfo"></span><span class="muted" id="timeInfo"></span></div>
+<div class="viewer" id="viewer"><img id="preview" alt="当前浏览的视频帧"><span class="loading-note">载入中…</span></div>
+<div class="controls" id="browseControls">
+<input type="range" class="scrubber" id="scrubber" min="0" value="0" step="1" aria-label="视频帧时间轴">
+<div class="scale"><span>0.000 s</span><span id="endTime"></span></div>
+<div class="actions">
+<button id="backSecond" title="后退一秒">−1 秒</button><button id="backFrame" title="上一帧，左方向键">← 上一帧</button><button id="nextFrame" title="下一帧，右方向键">下一帧 →</button><button id="nextSecond" title="前进一秒">+1 秒</button>
+<span class="spacer"></span><button class="primary" id="toggle">选入专家轨迹</button>
+</div>
+<form class="jump" id="jumpForm"><label for="jumpFrame">跳到帧</label><input id="jumpFrame" type="number" min="0" step="1" value="0"><button type="submit">跳转</button><span id="frameRange"></span></form>
+<div class="keyboard"><kbd>←</kbd> <kbd>→</kbd> 逐帧 · <kbd>Shift + ← / →</kbd> 跳一秒 · <kbd>空格</kbd> 选择 / 移除 · <kbd>⌘ / Ctrl + Z</kbd> 撤销选择</div>
+</div>
+</section>
+<aside class="panel selected-panel" aria-label="所选专家参考帧">
+<div class="section-head"><h2>专家参考帧</h2><span class="count" id="count">0 / 5</span></div>
+<p class="hint">点击缩略图查看，点击 × 移除后可重新选择。</p>
+<div class="slots" id="slots"></div>
+<div style="margin-bottom:12px"><button id="undo">撤销选择</button></div>
+<button class="primary save" id="save" disabled>保存专家轨迹</button>
+<div class="save-status" id="status" role="status" aria-live="polite">请选择五帧，选择会自动暂存。</div>
+</aside>
+</div>
+<section class="panel strip-panel" aria-label="视频概览"><div class="section-head"><h2>时间概览</h2><span class="notice">每秒一张 · 点击定位后可逐帧微调</span></div><div class="filmstrip" id="filmstrip"></div></section>
+<div class="path" id="source"></div><div class="path" id="destination"></div>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let state, selected = [], saved = [], history = [], current = 0, displayed = -1, generation = 0, busy = false;
+let draftQueue = Promise.resolve();
+const same = (a,b) => a.length === b.length && a.every((v,i) => v === b[i]);
+const time = frame => (frame / state.fps).toFixed(3) + ' s';
+const frameUrl = frame => '/frames/' + frame + '.jpg';
+function status(message, kind='') { $('status').textContent = message; $('status').className = 'save-status ' + kind; }
+async function post(path, frames) {
+  const response = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json','X-Selection-Token':state.token}, body:JSON.stringify({frames})});
+  const data = await response.json();
+  if (!response.ok) throw Error(data.error || '请求失败');
+  return data;
+}
+function persist() {
+  const snapshot = selected.slice();
+  draftQueue = draftQueue.catch(() => {}).then(() => post('/api/draft', snapshot));
+  draftQueue.catch(error => status('暂存失败：' + error.message, 'error'));
+}
+function buttons() {
+  const picked = selected.includes(current);
+  $('toggle').textContent = picked ? '移除此帧' : selected.length === 5 ? '已选满 5 帧' : '选入专家轨迹';
+  $('toggle').classList.toggle('active', picked);
+  $('toggle').disabled = busy || displayed !== current || (!picked && selected.length === 5);
+  $('save').disabled = busy || selected.length !== 5;
+  $('undo').disabled = busy || !history.length;
+  $('backFrame').disabled = $('backSecond').disabled = busy || current === 0;
+  $('nextFrame').disabled = $('nextSecond').disabled = busy || current === state.frame_count - 1;
+  $('scrubber').disabled = $('jumpFrame').disabled = busy;
+}
+function render() {
+  $('count').textContent = selected.length + ' / 5';
+  $('slots').replaceChildren();
+  for (let i=0;i<5;i++) {
+    const slot = document.createElement('div');
+    const frame = selected[i];
+    slot.className = 'slot' + (frame === undefined ? ' empty' : frame === current ? ' current' : '');
+    const number = document.createElement('span'); number.className = 'number'; number.textContent = String(i+1).padStart(2,'0'); slot.append(number);
+    if (frame === undefined) {
+      const empty = document.createElement('span'); empty.textContent = '等待选择'; slot.append(empty);
+    } else {
+      const thumb = document.createElement('button'); thumb.className = 'thumb-button'; thumb.title = '查看第 ' + frame + ' 帧'; thumb.disabled = busy;
+      const img = document.createElement('img'); img.src = frameUrl(frame); img.alt = '参考帧 ' + (i+1); thumb.append(img); thumb.onclick = () => show(frame);
+      const info = document.createElement('div'); info.className = 'slot-info';
+      const label = document.createElement('strong'); label.textContent = time(frame);
+      const detail = document.createElement('span'); detail.textContent = 'frame ' + frame; info.append(label,detail);
+      const remove = document.createElement('button'); remove.className = 'remove'; remove.textContent = '×'; remove.setAttribute('aria-label','移除第 ' + frame + ' 帧'); remove.disabled = busy; remove.onclick = () => change(selected.filter(f => f !== frame));
+      slot.append(thumb,info,remove);
+    }
+    $('slots').append(slot);
+  }
+  document.querySelectorAll('.film').forEach(button => {
+    const frame = Number(button.dataset.frame);
+    button.classList.toggle('current', frame === current);
+    button.classList.toggle('picked', selected.includes(frame));
+    button.disabled = busy;
+  });
+  buttons();
+}
+function change(frames) {
+  if (busy) return;
+  history.push(selected.slice()); selected = frames.slice().sort((a,b) => a-b);
+  persist(); render();
+  status(same(selected,saved) && saved.length === 5 ? '当前选择与已保存的专家轨迹一致。' : selected.length === 5 ? '五帧已选齐，点击保存导出原始 PNG。' : '已选择 ' + selected.length + ' 帧；选择会自动暂存。');
+}
+function toggle() {
+  if ($('toggle').disabled) return;
+  change(selected.includes(current) ? selected.filter(f => f !== current) : [...selected,current]);
+}
+function undo() {
+  if (busy || !history.length) return;
+  selected = history.pop(); persist(); render(); status('已撤销上一次选择。');
+}
+function show(frame) {
+  if (busy) return;
+  current = Math.min(state.frame_count-1, Math.max(0, Math.round(frame)));
+  const request = ++generation, requestedFrame = current;
+  $('scrubber').value = $('jumpFrame').value = current;
+  $('frameInfo').textContent = 'FRAME ' + String(current).padStart(3,'0');
+  $('timeInfo').textContent = time(current);
+  $('viewer').classList.add('loading'); render();
+  const next = new Image();
+  next.onload = () => {
+    if (request !== generation) return;
+    $('preview').src = next.src; $('preview').alt = '第 ' + requestedFrame + ' 帧，' + time(requestedFrame);
+    displayed = requestedFrame; $('viewer').classList.remove('loading'); buttons();
+  };
+  next.onerror = () => { if(request === generation) { displayed = -1; $('viewer').classList.remove('loading'); status('无法载入视频帧，请检查本地服务。','error'); buttons(); } };
+  next.src = frameUrl(requestedFrame);
+}
+async function save() {
+  if (busy || selected.length !== 5) return;
+  busy = true; render(); $('save').textContent = '正在保存…'; status('正在从原视频导出五张 PNG…');
+  try {
+    await draftQueue.catch(() => {});
+    const result = await post('/api/save', selected);
+    saved = selected.slice(); status('已保存 5 张 PNG 和 selection.json。','success');
+    $('destination').textContent = '已保存清单：' + result.selection_file;
+  } catch(error) { status(error.message,'error'); }
+  finally { busy = false; $('save').textContent = '保存专家轨迹'; render(); }
+}
+async function init() {
+  const response = await fetch('/api/state');
+  if (!response.ok) throw Error('无法连接本地选帧服务');
+  state = await response.json(); selected = state.selected.slice(); saved = state.saved.slice();
+  $('subtitle').textContent = 'file-000.mp4 · 主视角 · 前 ' + state.seconds + ' 秒 · ' + state.fps + ' FPS';
+  $('scrubber').max = $('jumpFrame').max = state.frame_count - 1;
+  $('frameRange').textContent = '范围 0–' + (state.frame_count-1) + '（从 0 开始计数）';
+  $('endTime').textContent = time(state.frame_count-1);
+  $('source').textContent = '视频：' + state.video;
+  $('destination').textContent = '保存位置：' + state.output_dir;
+  const overview = [];
+  for (let i=0;i<state.frame_count;i+=Math.round(state.fps)) overview.push(i);
+  if (overview.at(-1) !== state.frame_count-1) overview.push(state.frame_count-1);
+  for (const frame of overview) {
+    const button = document.createElement('button'); button.className = 'film'; button.dataset.frame = frame; button.title = '查看第 ' + frame + ' 帧';
+    const img = document.createElement('img'); img.src = frameUrl(frame); img.alt = ''; img.loading = 'lazy';
+    const label = document.createElement('span'); label.textContent = time(frame); button.append(img,label); button.onclick = () => show(frame); $('filmstrip').append(button);
+  }
+  $('scrubber').oninput = event => show(Number(event.target.value));
+  $('backFrame').onclick = () => show(current-1); $('nextFrame').onclick = () => show(current+1);
+  $('backSecond').onclick = () => show(current-Math.round(state.fps)); $('nextSecond').onclick = () => show(current+Math.round(state.fps));
+  $('jumpForm').onsubmit = event => {event.preventDefault(); if($('jumpFrame').value !== '') show(Number($('jumpFrame').value));};
+  $('toggle').onclick = toggle; $('undo').onclick = undo; $('save').onclick = save;
+  document.addEventListener('keydown', event => {
+    if (busy || ['INPUT','TEXTAREA','SELECT'].includes(event.target.tagName)) return;
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault(); show(current + (event.key === 'ArrowRight' ? 1 : -1) * (event.shiftKey ? Math.round(state.fps) : 1));
+    } else if (event.code === 'Space' && event.target.tagName !== 'BUTTON') {event.preventDefault(); toggle();}
+    else if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') {event.preventDefault(); undo();}
+  });
+  $('app').hidden = false;
+  if (selected.length) status(same(selected,saved) && saved.length === 5 ? '已载入上次保存的五帧。' : '已恢复上次暂存的 ' + selected.length + ' 帧。');
+  show(0);
+}
+init().catch(error => { $('fatal').hidden = false; $('fatal').textContent = error.message; });
+</script>
+</body>
+</html>

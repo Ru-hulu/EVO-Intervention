@@ -1,4 +1,4 @@
-"""Generate stage text and progress on a saved held-out video split, without teacher forcing.
+"""Legacy MEM checkpoint evaluation on a saved held-out video split.
 
 Launch independent GPU shards with torchrun; no gradients or DDP synchronization is needed.
 Every sample is evaluated under both prompt modes, reusing its visual encoding.
@@ -73,6 +73,8 @@ def select_samples(samples, split, limit=0):
 
 
 def load_model(checkpoint, device):
+    if checkpoint.get("config", {}).get("progress_format", "").startswith("reference_window_"):
+        raise ValueError("六行参考轨迹模型请使用 qwen_training.infer_reference")
     if "progress_head" in checkpoint:
         raise ValueError("旧回归头检查点需使用旧版代码评估；当前模型从文本解析进度")
     config = checkpoint["config"]

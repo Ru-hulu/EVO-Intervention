@@ -50,14 +50,13 @@ def main():
                 )
             super().__init__(*loader_args, **loader_kwargs)
 
-    class MeasuredModel(training.QwenProgressModel):
+    class MeasuredModel(training.ReferenceProgressModel):
         def __init__(self, *model_args, **model_kwargs):
             super().__init__(*model_args, **model_kwargs)
             captured["model"] = self
             parameters = dict(self.named_parameters())
             names = {
                 "lora": next(n for n in parameters if "lora_B" in n),
-                "visual_adapter": "visual_adapter.1.weight",
             }
             captured["before"] = {
                 group: (name, parameters[name].detach().flatten()[:4096].float().cpu().clone())
@@ -69,7 +68,7 @@ def main():
     if int(os.environ["RANK"]) == 0:
         (output / "BENCHMARK_ONLY.json").write_text(json.dumps(vars(args), indent=2))
     training.DataLoader = LimitedLoader
-    training.QwenProgressModel = MeasuredModel
+    training.ReferenceProgressModel = MeasuredModel
     sys.argv = [sys.argv[0], *remaining, "--output-dir", args.output_dir,
                 "--epochs", str(args.benchmark_epochs), "--save-epochs", str(args.benchmark_epochs),
                 "--log-every", "1"]
@@ -90,7 +89,7 @@ def main():
     (output / f"rank-{result['rank']}.json").write_text(json.dumps(result, indent=2))
     print("BENCHMARK_GPU " + json.dumps(result), flush=True)
     if not all(0 < value < float("inf") for value in deltas.values()):
-        raise RuntimeError("LoRA 和视觉适配层必须都产生有限的参数更新")
+        raise RuntimeError("LoRA 必须产生有限的参数更新")
 
 
 if __name__ == "__main__":

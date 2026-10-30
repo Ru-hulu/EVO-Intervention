@@ -1,0 +1,53 @@
+{
+  "model_path": "/root/autodl-tmp/models/ProcVLM-2B",
+  "model_revision": "a7f5c18c6128a9c2a478a62ecc356f19f0e0bcf5",
+  "upstream_path": "/root/autodl-tmp/Evo-Inter/third_party/ProcVLM-377523a31f05bab9c0db5ac8b9edfa7b7f03968a",
+  "python": "/root/autodl-tmp/envs/procvlm/bin/python",
+  "sample_fps": 5,
+  "window_size": 8,
+  "view": "cam_high",
+  "padding": "repeat_first_frame",
+  "include_current_frame": true,
+  "attn_implementation": "sdpa",
+  "source_dataset": "/root/autodl-tmp/Evo-Inter/results/robobrain25/start-current-end_5fps",
+  "source_manifest": "/root/autodl-tmp/Evo-Inter/results/robobrain25/start-current-end_5fps/manifest.json",
+  "remaining_actions_manifest": "/root/autodl-tmp/Evo-Inter/results/procvlm/labels_7tasks_20261028/manifest.json",
+  "dataset_dir": "/root/autodl-tmp/Evo-Inter/results/procvlm/7tasks_5fps_w8_20261028",
+  "train_data": "/root/autodl-tmp/Evo-Inter/results/procvlm/7tasks_5fps_w8_20261028/train.jsonl",
+  "validation_data": "/root/autodl-tmp/Evo-Inter/results/procvlm/7tasks_5fps_w8_20261028/validation.jsonl",
+  "output_dir": "/root/autodl-tmp/Evo-Inter/outputs/procvlm/procvlm2b_7tasks_5fps_w8_e4_20261028_211408",
+  "min_pixels": 4096,
+  "max_pixels": 65536,
+  "max_length": 4096,
+  "seed": 42,
+  "gradient_checkpointing": false,
+  "dataloader_num_workers": 4,
+  "lora": {
+    "rank": 16,
+    "alpha": 32,
+    "dropout": 0.05
+  },
+  "value_head": {
+    "value_loss_weight": 0.1,
+    "value_dropout": 0.05,
+    "value_noise_std": 0.02,
+    "value_loss_type": "l1"
+  },
+  "inference": {
+    "max_new_tokens": 4096,
+    "enable_value_head": true
+  },
+  "training": {
+    "num_train_epochs": 4,
+    "per_device_train_batch_size": 8,
+    "per_device_eval_batch_size": 8,
+    "gradient_accumulation_steps": 1,
+    "learning_rate": 1e-05,
+    "warmup_ratio": 0.05,
+    "lr_scheduler_type": "linear",
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "logging_steps": 10,
+    "optim": "adamw_torch_fused"
+  }
+}
