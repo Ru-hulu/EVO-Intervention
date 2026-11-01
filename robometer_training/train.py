@@ -1,9 +1,10 @@
-"""Single-GPU progress LoRA training; runs only when explicitly invoked."""
+"""Single- or multi-GPU progress LoRA training; runs only when explicitly invoked."""
 import argparse
 import json
 import math
 from pathlib import Path
 import shutil
+import time
 
 import torch
 from transformers import Trainer, TrainerCallback, TrainingArguments, set_seed
@@ -24,7 +25,10 @@ class RunMonitor(TrainerCallback):
         logs = logs or {}
         if any(not math.isfinite(logs[k]) for k in ('loss', 'grad_norm', 'eval_loss') if k in logs):
             raise RuntimeError('Non-finite loss or gradient')
-        stats = {'step': state.global_step, 'epoch': state.epoch, **logs,
+        if not state.is_world_process_zero:
+            return
+        stats = {'step': state.global_step, 'total_steps': state.max_steps,
+                 'timestamp': time.time(), 'epoch': state.epoch, **logs,
                  'peak_allocated_gib': torch.cuda.max_memory_allocated() / 1024**3 if torch.cuda.is_available() else 0}
         output = Path(args.output_dir)
         output.mkdir(parents=True, exist_ok=True)
@@ -63,15 +67,20 @@ class ProgressTrainer(Trainer):
 
 
 def make_trainer(config, model, processor, *, output_dir=None, use_cpu=False):
+    options = dict(gradient_checkpointing=True, dataloader_num_workers=0)
+    options.update(config['training'])
+    workers = options['dataloader_num_workers']
+    options.setdefault('dataloader_persistent_workers', bool(workers))
+    options.setdefault('ddp_find_unused_parameters', False)
     arguments = TrainingArguments(
         output_dir=output_dir or config['output_dir'], use_cpu=use_cpu,
-        bf16=not use_cpu or model.model.dtype == torch.bfloat16, gradient_checkpointing=True,
+        bf16=not use_cpu or model.model.dtype == torch.bfloat16,
         gradient_checkpointing_kwargs={'use_reentrant': False},
         eval_strategy=config.get('eval_strategy', 'epoch'), save_strategy='epoch', save_total_limit=1,
         logging_nan_inf_filter=False, prediction_loss_only=False,
         remove_unused_columns=False, label_names=['labels'], report_to='none',
-        dataloader_num_workers=0, dataloader_pin_memory=not use_cpu, seed=config['seed'],
-        **config['training'])
+        dataloader_pin_memory=not use_cpu, seed=config['seed'],
+        **options)
     return ProgressTrainer(
         model=model, args=arguments, run_config=config,
         train_dataset=ProgressDataset(config['train_data']),
@@ -100,13 +109,16 @@ def main():
                 raise ValueError(f'Resume configuration differs: {key}')
     if not torch.cuda.is_available():
         raise RuntimeError('The training entry requires a CUDA GPU')
+    if config['training'].get('dataloader_num_workers', 0):
+        torch.multiprocessing.set_start_method('spawn', force=True)
     set_seed(config['seed'])
     processor = load_processor(config['model_path'], min_pixels=config['min_pixels'], max_pixels=config['max_pixels'])
     model, _ = load_model(config['model_path'], processor)
     attach_lora(model, **config['lora'])
     trainer = make_trainer(config, model, processor)
     output.mkdir(parents=True, exist_ok=True)
-    (output / 'run_config.json').write_text(json.dumps(config, indent=2))
+    if trainer.is_world_process_zero():
+        (output / 'run_config.json').write_text(json.dumps(config, indent=2))
     trainer.train(resume_from_checkpoint=str(args.resume_from_checkpoint) if args.resume_from_checkpoint else None)
     trainer.save_state()
 

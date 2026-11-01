@@ -1,10 +1,12 @@
 """Causal observation windows and shared training/inference preprocessing."""
 from collections import deque
+from functools import lru_cache
 import json
 from pathlib import Path
 
 from PIL import Image
 import torch
+from safetensors.torch import load_file
 
 from .model import progress_batch
 
@@ -39,6 +41,8 @@ class ProgressCollator:
         self.processor, self.max_length = processor, max_length
 
     def encode(self, rows, supervised=False):
+        if all('pixel_cache' in row for row in rows):
+            return self._cached_encode(rows, supervised)
         opened, examples = {}, []
         for row in rows:
             for path in row['image']:
@@ -53,5 +57,28 @@ class ProgressCollator:
             batch['labels'] = torch.tensor([row['pt'] for row in rows], dtype=torch.float32)
         return batch
 
+    def _cached_encode(self, rows, supervised):
+        features, pixels, grids = [], [], []
+        for row in rows:
+            cached = _episode_cache(row['pixel_cache'])
+            indices = torch.tensor(row['window_indices'])
+            pixels.append(cached['pixels'].index_select(0, indices).flatten(0, 1))
+            grids.append(cached['grids'].index_select(0, indices))
+            features.append({key[6:]: value.tolist() for key, value in cached.items()
+                             if key.startswith('input_')})
+        batch = dict(self.processor.tokenizer.pad(features, padding=True, return_tensors='pt'))
+        batch.update(pixel_values=torch.cat(pixels), image_grid_thw=torch.cat(grids))
+        if batch['input_ids'].shape[1] > self.max_length:
+            raise ValueError('Cached window exceeds max_length')
+        if supervised:
+            batch['labels'] = torch.tensor([row['pt'] for row in rows], dtype=torch.float32)
+        return batch
+
     def __call__(self, rows):
         return self.encode(rows, supervised=True)
+
+
+@lru_cache(maxsize=8)
+def _episode_cache(path):
+    # Safetensors maps the file; only the requested eight frames are copied.
+    return load_file(path)
