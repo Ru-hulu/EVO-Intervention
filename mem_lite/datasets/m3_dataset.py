@@ -9,6 +9,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from mem_lite.datasets.m3_inputs import M3Collator
+from mem_lite.datasets.views import fill_views
 
 VIEW_ORDER = ("cam_high", "cam_left_wrist", "cam_right_wrist")
 DATA_FORMAT = "streamforest-m3-data-v1"
@@ -61,8 +62,12 @@ class M3Dataset(Dataset):
             raise ValueError("PT 必须为 [0,1] 的有限数值")
         images = []
         for view in VIEW_ORDER:
+            if sample["images"][view] is None:
+                images.append(None)
+                continue
             with Image.open(directory / sample["images"][view]) as image:
                 images.append(image.convert("RGB"))
+        images = fill_views(images)
         history = None
         if self.load_history:
             if (sample["history"] is None) != (previous is None):

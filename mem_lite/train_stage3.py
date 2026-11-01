@@ -215,7 +215,16 @@ def _train(config, checkpoint, rank, world_size, device):
             step += 1
             next_epoch, cursor = (epoch + 1, 0) if epoch_finished else (epoch, batch_index + 1)
             stop = max_steps is not None and step >= max_steps
-            if rank == 0 and (step % config["log_every_steps"] == 0 or epoch_finished or stop):
+            log_due = step == 1 or step % config["log_every_steps"] == 0 or epoch_finished or stop
+            if log_due:
+                memory = torch.tensor([torch.cuda.max_memory_allocated(device) / 2**30,
+                                       torch.cuda.max_memory_reserved(device) / 2**30], device=device)
+                memory_by_rank = [torch.empty_like(memory) for _ in range(world_size)]
+                if world_size > 1:
+                    dist.all_gather(memory_by_rank, memory)
+                else:
+                    memory_by_rank = [memory]
+            if rank == 0 and log_due:
                 torch.cuda.synchronize(device)
                 seconds = perf_counter() - started
                 record = {
@@ -226,6 +235,8 @@ def _train(config, checkpoint, rank, world_size, device):
                     "pt_bias_pp": (100 * totals[4] / totals[1]).item(),
                     "samples_per_second": totals[1].item() / seconds,
                     "step_seconds": seconds, "grad_norm": norm.item(),
+                    "peak_allocated_gib_per_gpu": [float(v[0]) for v in memory_by_rank],
+                    "peak_reserved_gib_per_gpu": [float(v[1]) for v in memory_by_rank],
                 }
                 print(json.dumps(record), flush=True)
                 with (output_dir / "train.jsonl").open("a", encoding="utf-8") as stream:

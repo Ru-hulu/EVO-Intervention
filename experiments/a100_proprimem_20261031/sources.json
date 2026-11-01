@@ -1,0 +1,97 @@
+{
+  "source_host": "dev-modelarts-cnnorth9.huaweicloud.com",
+  "source_port": 30312,
+  "base_local_commit": "bed9a88e2aa7387c98d735fadcbfb5292a45be21",
+  "migrated_on": "2026-11-01",
+  "world_size": 4,
+  "forest_run": "/cache/cvpzhr/runs/forest-proprimem-e3-20261031-0009",
+  "robometer_run": "/cache/cvpzhr/runs/robometer-proprimem-e3-20261031_120045",
+  "robometer_upstream_commit": "352d160389daa964788de1ec933d1925f3a6de4f",
+  "all_file_hashes_verified": true,
+  "files": [
+    {
+      "local_path": "mem_lite/datasets/m3_dataset.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/datasets/m3_dataset.py",
+      "bytes": 4177,
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad"
+    },
+    {
+      "local_path": "mem_lite/datasets/m3_inputs.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/datasets/m3_inputs.py",
+      "bytes": 5109,
+      "sha256": "9671923362cef0b12c005e22a818a2b986c03bbf10dfcd72efcc6b045ba838c7"
+    },
+    {
+      "local_path": "mem_lite/datasets/prepare_stream.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/datasets/prepare_stream.py",
+      "bytes": 7989,
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804"
+    },
+    {
+      "local_path": "mem_lite/runtime.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/runtime.py",
+      "bytes": 2801,
+      "sha256": "a0b072380918c1d9170af9c1c684d862fd6e6810ac648b914826ee56e69fdc2d"
+    },
+    {
+      "local_path": "mem_lite/tests/test_m3_predictor.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/tests/test_m3_predictor.py",
+      "bytes": 11056,
+      "sha256": "95d5debf2cdbea4b98fc7346bcaa1558d61ed652f3b6cbf1af2bd49083c3c275"
+    },
+    {
+      "local_path": "mem_lite/train_stage3.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/train_stage3.py",
+      "bytes": 14108,
+      "sha256": "2d32a144c2e4db1063465d5f777726a21e99f33a4442f4a82fb1239924d66753"
+    },
+    {
+      "local_path": "mem_lite/datasets/prepare_proprimem.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/datasets/prepare_proprimem.py",
+      "bytes": 20593,
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7"
+    },
+    {
+      "local_path": "mem_lite/datasets/views.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/datasets/views.py",
+      "bytes": 518,
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249"
+    },
+    {
+      "local_path": "mem_lite/tests/test_partial_views.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/tests/test_partial_views.py",
+      "bytes": 3083,
+      "sha256": "cde7476dcfaf398bfeb8255c0b89505b0639e8240a50418a8193c8869c5060c6"
+    },
+    {
+      "local_path": "mem_lite/tests/test_proprimem_preparation.py",
+      "remote_path": "/cache/cvpzhr/code/forest-train3-20261031-0009/mem_lite/tests/test_proprimem_preparation.py",
+      "bytes": 1164,
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4"
+    },
+    {
+      "local_path": "experiments/a100_proprimem_20261031/forest/config.json",
+      "remote_path": "/cache/cvpzhr/runs/forest-proprimem-e3-20261031-0009/config.json",
+      "bytes": 101405,
+      "sha256": "3c4c04615e96b2d8a7cc62582dc986af5aafe8fac4d8314eeb9ab9a1add0f70c"
+    },
+    {
+      "local_path": "experiments/a100_proprimem_20261031/forest/environment-packages.json",
+      "remote_path": "/cache/cvpzhr/runs/forest-proprimem-e3-20261031-0009/environment-packages.json",
+      "bytes": 4103,
+      "sha256": "d7b8af956e2988147cdd4aeed3c7a1537514276978e2779a6af04e8c0470499a"
+    },
+    {
+      "local_path": "experiments/a100_proprimem_20261031/robometer/config.json",
+      "remote_path": "/cache/cvpzhr/runs/robometer-proprimem-e3-20261031_120045/config.json",
+      "bytes": 1151,
+      "sha256": "32f4535465ebfc3e3955162e63e4ff519e4e1abdcd1f6a528e46a6c1fcd7ce37"
+    },
+    {
+      "local_path": "experiments/a100_proprimem_20261031/robometer/environment.lock.txt",
+      "remote_path": "/cache/cvpzhr/runs/robometer-proprimem-e3-20261031_120045/environment.lock.txt",
+      "bytes": 2181,
+      "sha256": "8bcb2c8e3aa0266604b131db00c73e06931ba83c3df44b2dcb2e1568badf1898"
+    }
+  ]
+}

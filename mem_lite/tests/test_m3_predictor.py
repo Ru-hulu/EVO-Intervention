@@ -90,7 +90,10 @@ def test_history_is_projected_continuously_and_positions_preserve_native_geometr
 def test_no_history_matches_original_native_multimodal_path_and_never_generates(model, collator):
     batch = collator([sample(), sample(prompt="依次完成三次不同的按钮点击，然后结束任务")])
     with torch.no_grad():
-        reference = model.qwen.model(**{k: v for k, v in batch.items() if not k.startswith("history_")}, use_cache=False)
+        keep = batch["attention_mask"].any(0)
+        native_inputs = {k: (v[:, keep] if k in ("input_ids", "attention_mask", "mm_token_type_ids") else v)
+                         for k, v in batch.items() if not k.startswith("history_")}
+        reference = model.qwen.model(**native_inputs, use_cache=False)
         expected = model.progress_head(reference.last_hidden_state[:, -1]).softmax(-1)
         with patch.object(model.qwen.lm_head, "forward", side_effect=AssertionError("不能使用词表头")), \
                 patch.object(model.qwen, "generate", side_effect=AssertionError("不能生成文本")):
@@ -178,10 +181,10 @@ def test_training_and_inference_share_precision_and_keep_progress_in_float32(che
     assert model.history_projection.weight.grad.isfinite().all()
 
 
-def test_input_contract_rejects_missing_views_bad_history_or_truncation(collator):
+def test_input_contract_rejects_missing_main_view_bad_history_or_truncation(collator):
     item = sample()
-    item["images"].pop()
-    with pytest.raises(ValueError, match="3个视角"):
+    item["images"][0] = None
+    with pytest.raises(ValueError, match="主视角"):
         collator([item])
     with pytest.raises(ValueError, match="history_tokens"):
         collator([sample(torch.randn(129, 16))])

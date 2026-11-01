@@ -21,12 +21,16 @@ def iter_observations(videos, progress, frame_stride=None, *, sample_fps=5.0,
     """同步视角按 [start_frame,end_frame) 取单轮；保留原帧号和指定区间末帧。"""
     import av
 
-    if len(videos) != 3 or (frame_stride is not None and frame_stride < 1) or sample_fps <= 0:
-        raise ValueError("需要3个同步视角视频和正数采样频率/帧间隔")
+    if not 1 <= len(videos) <= 3 or videos[0] is None or (frame_stride is not None and frame_stride < 1) or sample_fps <= 0:
+        raise ValueError("需要主视角和最多两个同步副视角，以及正数采样频率/帧间隔")
+    videos = list(videos) + [None] * (3 - len(videos))
+    active = [index for index, path in enumerate(videos) if path is not None]
     if start_frame < 0 or (end_frame is not None and end_frame <= start_frame):
         raise ValueError("单轮帧范围必须为非空的 [start_frame, end_frame)")
     with ExitStack() as stack:
-        containers = [stack.enter_context(av.open(str(path))) for path in videos]
+        containers = [stack.enter_context(av.open(str(videos[index]))) for index in active]
+        for video in containers:
+            video.streams.video[0].codec_context.thread_count = 2
         rates = [float(video.streams.video[0].average_rate) for video in containers]
         if max(rates) - min(rates) > 1e-3:
             raise ValueError("三视角帧率不同，请先同步视频")
@@ -49,7 +53,10 @@ def iter_observations(videos, progress, frame_stride=None, *, sample_fps=5.0,
                         else relative >= next_sample * frame_step)
             last = end_frame is not None and index == end_frame - 1
             if selected or last:
-                yield {"frame_index": index, "images": [frame.to_image() for frame in frames], "pt": progress[index]}
+                images = [None, None, None]
+                for view, frame in zip(active, frames, strict=True):
+                    images[view] = frame.to_image()
+                yield {"frame_index": index, "images": images, "pt": progress[index]}
                 next_sample += 1
             if last:
                 break
@@ -71,7 +78,11 @@ def build_episode(observations, stream, output_dir, task_prompt, episode_id, his
             # PT 仅在落盘时保存，视觉编码和记忆维护不接收标签。
             history = stream.step(row["images"][0], frame_index, episode_id, task_prompt)
             image_paths = {}
-            for view, image in zip(VIEW_ORDER, row["images"], strict=True):
+            images = list(row["images"]) + [None] * (3 - len(row["images"]))
+            for view, image in zip(VIEW_ORDER, images, strict=True):
+                if image is None:
+                    image_paths[view] = None
+                    continue
                 relative = f"{view}/{frame_index:08d}.png"
                 image.save(output / relative)
                 image_paths[view] = relative
@@ -96,7 +107,7 @@ def build_episode(observations, stream, output_dir, task_prompt, episode_id, his
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--videos", nargs=3, required=True, metavar=("HIGH", "LEFT", "RIGHT"))
+    parser.add_argument("--videos", nargs="+", required=True, help="主视角及可选副视角；缺失槽位用 -")
     parser.add_argument("--progress-csv", required=True)
     parser.add_argument("--task-prompt", required=True)
     parser.add_argument("--episode-id")
@@ -112,6 +123,7 @@ def main():
     parser.add_argument("--min-pixels", type=int, default=4096)
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
+    args.videos = [None if path == "-" else path for path in args.videos]
     config = json.loads(Path(args.memory_config).read_text())
     visual, processor, vision_hash = load_vision_encoder(args.model_path, args.device)
     stream = StreamMemory(QwenFrameEncoder(visual), processor, config, args.max_pixels, args.min_pixels)

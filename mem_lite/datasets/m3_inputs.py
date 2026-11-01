@@ -3,6 +3,8 @@
 import torch
 from torch.nn import functional as F
 
+from mem_lite.datasets.views import fill_views
+
 
 class M3Collator:
     """samples: task_prompt、同一时刻的3张images、可选[N, history_dim]历史。"""
@@ -17,8 +19,7 @@ class M3Collator:
     def __call__(self, samples):
         prompts, images, histories = [], [], []
         for sample in samples:
-            if len(sample["images"]) != 3:
-                raise ValueError("M3 每条样本必须包含同一时刻的3个视角，不能用补图代替缺失视角")
+            views = fill_views(sample["images"])
             history = sample.get("history_tokens")
             if history is not None and (history.ndim != 2 or history.shape[1] != self.history_dim
                                         or len(history) > self.history_capacity):
@@ -26,7 +27,7 @@ class M3Collator:
             histories.append(history)
             # 三路图像保持调用方提供的固定视角顺序，不拼成一张图。
             content = [{"type": "text", "text": f"任务指令：{sample['task_prompt']}\n"}]
-            for index, image in enumerate(sample["images"]):
+            for index, image in enumerate(views):
                 content.extend([{"type": "image"}, {"type": "text", "text": f"（视角{index}）\n"}])
                 images.append(image)
             content.append({"type": "text", "text": "根据当前观测与已有历史信息，判断任务完成进度。"})
@@ -66,6 +67,10 @@ class M3Collator:
         ])
         batch["mm_token_type_ids"] = torch.stack([F.pad(ids, (width - len(ids), 0)) for ids in types])
         batch["history_mask"] = torch.stack([F.pad(mask, (width - len(mask), 0)) for mask in history_masks])
+        # 末尾补齐形状以减少重复编译，不移动有效token，避免改变线性注意力的分块位置。
+        extra = min(self.max_sequence_length, (width + 63) // 64 * 64) - width
+        for key in ("input_ids", "attention_mask", "mm_token_type_ids", "history_mask"):
+            batch[key] = F.pad(batch[key], (0, extra), value=tokenizer.pad_token_id if key == "input_ids" else 0)
         # 在线历史留在原设备，避免 GPU→CPU→GPU 往返；入口统一搬运其余张量。
         reference = next((history for history in histories if history is not None), torch.empty(0))
         batch["history_tokens"] = reference.new_zeros(len(samples), self.history_capacity, self.history_dim)

@@ -1,5 +1,6 @@
 # Project-local rules (placed first so the StarVLA rules below can re-include its own docs)
 media/
+/Material/
 tests/
 *.md
 

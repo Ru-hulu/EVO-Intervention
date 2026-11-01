@@ -1,0 +1,38 @@
+{
+  "model_path": "/cache/cvpzhr/models/Robometer-4B",
+  "train_data": "/cache/cvpzhr/datasets/robometer-proprimem-5fps-w8-20261031/train.jsonl",
+  "validation_data": "/cache/cvpzhr/datasets/robometer-proprimem-5fps-w8-20261031/validation.jsonl",
+  "output_dir": "/cache/cvpzhr/outputs/robometer-proprimem-e3-20261031_120045",
+  "sample_fps": 5,
+  "window_size": 8,
+  "min_pixels": 4096,
+  "max_pixels": 65536,
+  "max_length": 4096,
+  "seed": 42,
+  "lora": {
+    "rank": 16,
+    "alpha": 32,
+    "dropout": 0.05
+  },
+  "training": {
+    "num_train_epochs": 3,
+    "per_device_train_batch_size": 8,
+    "per_device_eval_batch_size": 8,
+    "gradient_accumulation_steps": 1,
+    "learning_rate": 2e-05,
+    "warmup_ratio": 0.03,
+    "lr_scheduler_type": "cosine",
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "logging_steps": 10,
+    "gradient_checkpointing": false,
+    "dataloader_num_workers": 4,
+    "dataloader_persistent_workers": true,
+    "dataloader_prefetch_factor": 2,
+    "optim": "adamw_torch_fused",
+    "ddp_find_unused_parameters": false,
+    "logging_first_step": true,
+    "disable_tqdm": true
+  },
+  "eval_strategy": "no"
+}

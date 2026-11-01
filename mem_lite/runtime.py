@@ -4,6 +4,7 @@ import torch
 from transformers import AutoProcessor
 
 from mem_lite.datasets.m3_inputs import M3Collator
+from mem_lite.datasets.views import fill_views
 from mem_lite.memory.stream import StreamMemory
 from mem_lite.memory.vision import QwenFrameEncoder, verify_vision_source
 from mem_lite.models.m3_predictor import M3ProgressPredictor
@@ -48,8 +49,7 @@ class StreamingProgressPredictor:
 
     @torch.no_grad()
     def __call__(self, images, frame_index, episode_id, task_prompt):
-        if len(images) != 3:
-            raise ValueError("在线预测需要固定顺序的3个视角")
+        images = fill_views(images)
         history = self.stream.step(images[0], frame_index, episode_id, task_prompt)
         inputs = self.collator([{"images": images, "task_prompt": task_prompt, "history_tokens": history}])
         result = self.model(to_device(inputs, self.device))
