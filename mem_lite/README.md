@@ -1,4 +1,9 @@
-# StreamForest 外部记忆与门控 cross-attention 进度预测
+# 进度预测与视频记忆
+
+`internmem-kvcache-VST` 分支新增 Qwen3.5-4B 的 VST KV-cache 记忆与分段训练。
+新方案、训练入口和缓存语义见 [VST.md](VST.md)。下文保留原有 Forest/cross-attention 基线说明。
+
+## StreamForest 外部记忆与门控 cross-attention 进度预测
 
 本分支已移除 M1 事件切分、事件编码器、M2 压缩、状态文本解码及对应训练和评估入口。
 新的记忆链路为：冻结 Qwen3.5 ViT/merger → 带时空位置的视觉 tokens → StreamForest。
