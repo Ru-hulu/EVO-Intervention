@@ -15,7 +15,7 @@ from transformers import AutoProcessor
 from mem_lite.datasets.vst_dataset import EpisodeWindows, WindowCollator
 from mem_lite.models.vst_predictor import VSTProgressPredictor
 
-CHECKPOINT_FORMAT = "mem-lite-qwen35-vst-kvcache-v1"
+CHECKPOINT_FORMAT = "mem-lite-qwen35-vst-qkv-shared-o-v2"
 
 
 def trainable_state(model):

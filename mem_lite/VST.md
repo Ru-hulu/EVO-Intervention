@@ -9,8 +9,11 @@
 - 冻结 Qwen3.5-4B 视觉编码器和 merger。当前三个视角完整编码，只有第三视角写入跨帧记忆。
 - 一个共享的可学习 VST 嵌入，在第三视角视觉 token 中每 8 个插入一次；不足 8 个的尾组也插入一个。
   当前实际 54/60/64 个视觉 token 分别得到 7/8/8 个 VST。
-- 32 层中的 8 个 full-attention 层各有独立的 VST Q/K/V/O 投影，从该层基座权重初始化；
-  保留 Qwen 的 Q/K normalization 和 query gate。普通 token 使用原投影与语言 LoRA。
+- 32 层中的 8 个 full-attention 层各有独立的 VST Q/K/V 投影，从该层基座权重复制初始化；
+  保留 Qwen 的 Q/K normalization 和 query gate。普通 token 使用原 Q/K/V 与语言 LoRA。
+  所有 token 共用原 O 投影（含语言 LoRA），与 Video-XL 官方训练参数 `--beacon_param q k v` 一致。
+  VST 专用投影共 209,715,200 参数，全模型共 242,441,317 可训练参数；FP32 参数、梯度及 Adam
+  两份状态相比独立 Q/K/V/O 减少 1.25 GiB。VST 数量与投影参数量无关。
 - 每层只保存 VST 的 K/V。K 在 Q/K normalization 之后、RoPE 之前保存；读取历史时重新赋予紧凑的
   VST 位置。当前帧保持原生三维图像位置，插入 VST 后平移后续位置，再加上已有历史 VST 数。
 - 24 个 linear-attention 层以每帧为独立序列，卷积和 recurrent state 都不跨帧传递。
@@ -51,7 +54,8 @@ python -m torch.distributed.run --standalone --nproc_per_node=3 \
 启用 fused AdamW；禁用大矩阵 math SDPA 回退，允许 flash/efficient SDPA。
 `gradient_checkpointing` 可取 true（所有层）、false（关闭）、`"full_attention"`（只重算完整注意力层）。
 默认按 A100 实测采用每卡 2 条流、8 帧窗口、关闭重算：6,000 历史 token / 320 当前 token 的
-长序列测试峰值约 63.2 GiB，约 10.3 帧/秒/卡。全层重算的每卡 4/8/12 流约 8.3–8.4 帧/秒/卡。
+共享 O 的长序列测试峰值约 62.3 GiB（reserved 63.9 GiB），约 10.37 帧/秒/卡；
+每卡 3 条流、仅重算 full-attention 层约 60.4 GiB、9.53 帧/秒/卡，因此默认保留更快的 2 流配置。
 这是单卡合成历史压测，正式多卡吞吐以训练日志为准。显存不足时可开启全层重算。
 `benchmark_vst.py` 的重复 KV 前缀仅用于压力测试，正式训练和验证均按真实顺序构建历史。
 
@@ -61,13 +65,14 @@ python -m torch.distributed.run --standalone --nproc_per_node=3 \
   -m mem_lite.evaluate_vst --checkpoint /path/to/last.pt --output-dir /path/to/validation
 ```
 
-检查点格式 `mem-lite-qwen35-vst-kvcache-v1` 保存可训练参数、optimizer、各 rank RNG、数据签名和组边界。
+检查点格式 `mem-lite-qwen35-vst-qkv-shared-o-v2` 保存可训练参数、optimizer、各 rank RNG、数据签名和组边界。
+旧版独立 Q/K/V/O 的 v1 检查点不兼容；本次共享 O 实验从原始基座重新训练。
 训练日志记录有效帧吞吐、数据等待、各卡峰值显存、历史 token 数、CE、PT MAE 和梯度范数。
 
 ## 精度验证
 
-真实 4B 模型中，窗口和逐帧路径的 FP32 最大 PT 差异为约 `6.26e-6`（0.00063 个百分点）；
-BF16 下对应差异约 0.59 个百分点。BF16 对批次形状有数值敏感性，独立重复同一帧也存在变化，
+共享 O 的真实 4B 模型中，窗口和逐帧路径的 FP32 最大 PT 差异为约 `6.85e-6`（0.00069 个百分点）；
+BF16 下对应差异约 1.45 个百分点。BF16 对批次形状有数值敏感性，独立重复同一帧也存在变化，
 原生基线已有类似现象。因此不承诺 BF16 下改变 batch/window 后逐位一致；精确因果和梯度等价性
 由多层微型 FP32 测试、真实 FP32 对照和固定形状未来帧隔离共同验证。
 真实 GPU 测试同时确认历史 K/V 能收到下一帧损失的梯度，detach 后可继续独立 backward。

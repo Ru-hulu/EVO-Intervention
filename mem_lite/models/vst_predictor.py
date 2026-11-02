@@ -49,13 +49,13 @@ class VSTCache:
 
 
 class VSTAttention(nn.Module):
-    """Native gated Qwen attention with separate dense projections for VST slots."""
+    """VST-specific Q/K/V with the native O projection shared by all tokens."""
 
     def __init__(self, native):
         super().__init__()
         self.native = native
         self.vst_projections = nn.ModuleDict()
-        for name in ("q_proj", "k_proj", "v_proj", "o_proj"):
+        for name in ("q_proj", "k_proj", "v_proj"):
             source = getattr(native, name)
             projection = nn.Linear(source.in_features, source.out_features, bias=source.bias is not None,
                                    device=source.weight.device, dtype=torch.float32)
@@ -102,7 +102,9 @@ class VSTAttention(nn.Module):
             dropout_p=self.native.attention_dropout if self.training else 0.0, scale=self.native.scaling,
         ).transpose(1, 2).reshape(n, seq, -1)
         attended = attended * gate.reshape(n, seq, -1).sigmoid()
-        return self.project("o_proj", attended, flat_indices), memory_key, memory_value
+        # Video-XL's released configuration specializes Q/K/V only. All tokens
+        # use the same native output projection, including its language LoRA.
+        return self.native.o_proj(attended), memory_key, memory_value
 
 
 class VSTProgressPredictor(nn.Module):

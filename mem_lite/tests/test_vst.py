@@ -65,6 +65,33 @@ def test_positions_and_vst_count(collator, checkpoint):
         assert batch["vst_indices"][row, -1] < image_positions[4]  # before both wrists
 
 
+def test_vst_qkv_are_independent_and_native_o_is_shared(model, collator):
+    batch = collator([sample(), sample("green")], 1, 2)
+    attention = model.qwen.model.language_model.layers[model.full_layers[0]].self_attn
+    assert set(attention.vst_projections) == {"q_proj", "k_proj", "v_proj"}
+    for name, projection in attention.vst_projections.items():
+        original = getattr(attention.native, name).weight
+        torch.testing.assert_close(projection.weight, original, atol=0, rtol=0)
+        assert projection.weight.data_ptr() != original.data_ptr()
+        assert projection.weight.requires_grad and not original.requires_grad
+    calls = []
+    def record_output(module, args, output):
+        calls.append(output)
+    handle = attention.native.o_proj.register_forward_hook(record_output)
+    try:
+        model(batch)
+    finally:
+        handle.remove()
+    # One shared O call covers every position, including all VST positions.
+    assert len(calls) == 1
+    assert calls[0].shape[:2] == batch["input_ids"].shape
+    calls[0][batch["vst_mask"]].square().sum().backward()
+    shared_lora = attention.native.o_proj.lora_B["default"].weight
+    assert shared_lora.grad is not None and shared_lora.grad.abs().sum() > 0
+    assert attention.native.o_proj.weight.grad is None
+    assert not any("vst_projections.o_proj" in name for name in trainable_state(model))
+
+
 def test_parallel_window_matches_sequential_with_padding_and_cached_prefix(model, collator):
     streams = [[sample("red"), sample("blue"), sample("green")],
                [sample("green", "较长的任务指令"), sample("red", "较长的任务指令"), sample("blue", "较长的任务指令")]]
@@ -208,3 +235,7 @@ def test_trainable_checkpoint_roundtrip(model, collator):
     torch.testing.assert_close(restored, expected, atol=0, rtol=0)
     with pytest.raises(ValueError, match="names"):
         load_trainable_state(model, {})
+    legacy = dict(state)
+    legacy["qwen.model.language_model.layers.1.self_attn.vst_projections.o_proj.weight"] = torch.zeros(1)
+    with pytest.raises(ValueError, match="names"):
+        load_trainable_state(model, legacy)

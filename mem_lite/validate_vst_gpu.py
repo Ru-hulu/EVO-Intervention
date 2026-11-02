@@ -30,6 +30,10 @@ def main():
     processor = AutoProcessor.from_pretrained(config["model_path"], max_pixels=config["max_pixels"], local_files_only=True)
     collator = VSTCollator(processor, config["compression_ratio"])
     model = VSTProgressPredictor(config["model_path"], **config["model"]).cuda().eval()
+    for i in model.full_layers:
+        assert set(model.qwen.model.language_model.layers[i].self_attn.vst_projections) == {"q_proj", "k_proj", "v_proj"}
+    trainable_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    vst_projection_parameters = sum(p.numel() for n, p in model.named_parameters() if ".vst_projections." in n)
     frames = [data[i] for i in range(3)]
     def batch(items, window=1):
         return device_batch(collator(items, 1, window), "cuda")
@@ -89,6 +93,8 @@ def main():
         fp32_error = (reference - sequential).abs().max().item()
         torch.testing.assert_close(reference, sequential, atol=2e-5, rtol=1e-5)
     report = {"status": "passed", "bf16_window_vs_sequential_max_pt_error": error,
+              "vst_projections": ["q", "k", "v"], "shared_output_projection": True,
+              "trainable_parameters": trainable_parameters, "vst_projection_parameters": vst_projection_parameters,
               "fp32_window_vs_sequential_max_pt_error": fp32_error,
               "future_frame_isolation": True, "vst_tokens_after_3_frames": counts,
               "full_attention_layers": model.full_layers, "previous_frame_key_grad_l1": key_grad,
