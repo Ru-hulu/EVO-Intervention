@@ -70,7 +70,7 @@ def test_collator_separates_targets_and_pads_to_capacity(prepared, collator):
     batcher = Stage3Collator(collator.processor, history_dim=16, history_capacity=8)
     batch = batcher(samples)
     torch.testing.assert_close(batch["target_pt"], torch.tensor([0.0, 0.1]))
-    assert batch["inputs"]["history_mask"].sum(1).tolist() == [0, 5]
+    assert "history_mask" not in batch["inputs"]
     assert batch["inputs"]["history_valid_mask"].sum(1).tolist() == [0, 5]
     assert batch["inputs"]["history_tokens"].shape == (2, 8, 16)
     assert batch["inputs"]["image_grid_thw"].shape == (6, 3)

@@ -18,7 +18,10 @@ from mem_lite.tests.test_stream_pipeline import make_stream, origin as origin, w
 @pytest.mark.parametrize("view_count", [1, 2, 3])
 def test_partial_views_cache_matches_online(checkpoint, collator, origin, tmp_path, view_count):
     model = M3ProgressPredictor(checkpoint[0], dtype=torch.float32, lora_rank=2, lora_alpha=4,
-                               lora_dropout=0, gradient_checkpointing=False).eval()
+                               lora_dropout=0, gradient_checkpointing=False,
+                               cross_attention_layers=(1,), cross_attention_dim=16, cross_attention_heads=2).eval()
+    with torch.no_grad():
+        model.memory_adapters["1"].gate.fill_(0.1)
     observations = [{"frame_index": i*6, "pt": i/2,
                      "images": [Image.new("RGB", (32, 32), c)
                                 for c in (color, "green", "blue")[:view_count]]}

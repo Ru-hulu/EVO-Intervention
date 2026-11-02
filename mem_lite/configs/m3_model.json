@@ -4,5 +4,12 @@
   "lora_rank": 16,
   "lora_alpha": 32,
   "lora_dropout": 0.05,
-  "gradient_checkpointing": true
+  "gradient_checkpointing": true,
+  "cross_attention_layers": [
+    8,
+    16,
+    24
+  ],
+  "cross_attention_dim": 512,
+  "cross_attention_heads": 8
 }

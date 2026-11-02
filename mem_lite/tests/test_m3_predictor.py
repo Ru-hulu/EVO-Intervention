@@ -1,4 +1,4 @@
-"""M3离线微型权重检查：三视角、历史插入、原生RoPE、分箱和梯度；不执行训练。"""
+"""M3离线微型权重检查：三视角、历史 cross-attention、原生RoPE、分箱和梯度；不执行训练。"""
 
 import math
 from unittest.mock import patch
@@ -14,10 +14,14 @@ from mem_lite.models.m3_predictor import M3ProgressPredictor, adjacent_bin_targe
 
 @pytest.fixture
 def model(checkpoint):
-    return M3ProgressPredictor(
+    result = M3ProgressPredictor(
         checkpoint[0], history_dim=16, dtype=torch.float32,
         lora_rank=2, lora_alpha=4, lora_dropout=0, gradient_checkpointing=False,
+        cross_attention_layers=(1,), cross_attention_dim=16, cross_attention_heads=2,
     ).eval()
+    with torch.no_grad():
+        result.memory_adapters["1"].gate.fill_(0.1)
+    return result
 
 
 @pytest.fixture
@@ -43,48 +47,34 @@ def sample(history=None, prompt="点击按钮三次"):
                        Image.new("RGB", (32, 64), "green")]}
 
 
-def test_three_views_and_mixed_history_slots_keep_order_and_mask(collator):
+def test_history_stays_outside_main_sequence(collator):
     history = torch.randn(128, 16)
     batch = collator([sample(history), sample()])
     assert batch["image_grid_thw"].shape == (6, 3)
-    torch.testing.assert_close(batch["image_grid_thw"][:3], batch["image_grid_thw"][3:])
-    assert batch["history_mask"].sum(1).tolist() == [128, 0]
-    assert batch["attention_mask"].sum(1).diff().item() == -128
-    assert batch["attention_mask"][batch["history_mask"]].eq(1).all()
-    assert batch["mm_token_type_ids"][batch["history_mask"]].eq(0).all()
-    mask = batch["history_mask"][0]
-    first_image = (batch["input_ids"][0] == 6).nonzero()[0, 0]
-    assert mask.nonzero()[-1, 0] + 1 == first_image
-    # 移除历史槽后，其余token与无历史样本完全一致，三张图都保持原位置关系。
-    stripped = batch["input_ids"][0][batch["attention_mask"][0].bool() & ~mask]
-    plain = batch["input_ids"][1][batch["attention_mask"][1].bool()]
-    torch.testing.assert_close(stripped, plain)
+    assert "history_mask" not in batch
+    assert batch["history_valid_mask"].sum(1).tolist() == [128, 0]
+    for key in ("input_ids", "attention_mask", "mm_token_type_ids"):
+        torch.testing.assert_close(batch[key][0], batch[key][1])
     torch.testing.assert_close(batch["history_tokens"][0], history)
     absent = collator([sample()])
     assert absent["history_tokens"].shape == (1, 128, 16)
-    assert not absent["history_valid_mask"].any() and not absent["history_mask"].any()
+    assert not absent["history_valid_mask"].any()
 
 
-def test_history_is_projected_continuously_and_positions_preserve_native_geometry(model, collator):
+def test_history_is_external_kv_and_does_not_shift_native_rope(model, collator):
     history = torch.randn(128, 16)
     batch = collator([sample(history)])
     with patch.object(model.qwen.model, "forward", wraps=model.qwen.model.forward) as native, torch.no_grad():
         model(batch)
     inputs = native.call_args.kwargs
-    torch.testing.assert_close(inputs["inputs_embeds"][batch["history_mask"]], model.history_projection(history))
-    mask = batch["history_mask"][0]
-    positions = inputs["position_ids"][:, 0, mask]
-    assert torch.equal(positions[0], positions[1]) and torch.equal(positions[1], positions[2])
-    assert positions.diff().eq(1).all()
+    assert "inputs_embeds" not in inputs
+    torch.testing.assert_close(inputs["memory_tokens"][0], history)
     plain = collator([sample()])
     base_positions, _ = model.qwen.model.get_rope_index(
         plain["input_ids"], plain["mm_token_type_ids"], image_grid_thw=plain["image_grid_thw"],
         attention_mask=plain["attention_mask"],
     )
-    # 每张图的空间RoPE几何不变，整体只被前置的128个历史位置平移。
-    image = batch["mm_token_type_ids"][0] == 1
-    plain_image = plain["mm_token_type_ids"][0] == 1
-    torch.testing.assert_close(inputs["position_ids"][:, 0, image], base_positions[:, 0, plain_image] + 128)
+    torch.testing.assert_close(inputs["position_ids"], base_positions)
 
 
 def test_no_history_matches_original_native_multimodal_path_and_never_generates(model, collator):
@@ -123,11 +113,12 @@ def test_training_scope_and_history_gradient_boundary(model, collator, checkpoin
     result = model(batch, torch.tensor([0.2375, 1.0]))
     result["loss"].backward()
     trainable = {name: p for name, p in model.named_parameters() if p.requires_grad}
-    assert all(name.startswith(("history_projection.", "progress_head.")) or
-               (name.startswith("qwen.model.language_model.layers.") and "lora_" in name) for name in trainable)
+    assert all(name.startswith("progress_head.") or
+               (name.startswith("qwen.model.language_model.layers.") and
+                ("lora_" in name or ".memory_attention." in name)) for name in trainable)
     assert all(p.grad is not None and p.grad.isfinite().all() for p in trainable.values())
     assert any(p.grad.abs().sum() > 0 for name, p in trainable.items() if "lora_" in name)
-    assert model.history_projection.weight.grad.abs().sum() > 0
+    assert model.memory_adapters["1"].k_proj.weight.grad.abs().sum() > 0
     assert model.progress_head.weight.grad.abs().sum() > 0
     assert history.grad is None
     assert all(p.grad is None for p in model.parameters() if not p.requires_grad)
@@ -166,7 +157,8 @@ def test_soft_ce_and_target_never_enters_predictor_inputs(model, collator):
 @pytest.mark.parametrize("dtype", [torch.float32, torch.bfloat16])
 def test_training_and_inference_share_precision_and_keep_progress_in_float32(checkpoint, collator, dtype):
     model = M3ProgressPredictor(checkpoint[0], history_dim=16, dtype=dtype,
-                                lora_rank=2, lora_alpha=4, lora_dropout=0, gradient_checkpointing=False)
+                                lora_rank=2, lora_alpha=4, lora_dropout=0, gradient_checkpointing=False,
+                                cross_attention_layers=(1,), cross_attention_dim=16, cross_attention_heads=2)
     batch = collator([sample(torch.randn(128, 16))])
     with torch.autocast("cpu", dtype=torch.bfloat16):
         result = model(batch, torch.tensor([0.2375]))
@@ -178,7 +170,7 @@ def test_training_and_inference_share_precision_and_keep_progress_in_float32(che
     expected = (result["bin_probs"].detach().double() * model.bin_centers.double()).sum(-1)
     torch.testing.assert_close(result["pt"].double(), expected, atol=1e-7, rtol=1e-7)
     result["loss"].backward()
-    assert model.history_projection.weight.grad.isfinite().all()
+    assert model.memory_adapters["1"].k_proj.weight.grad.isfinite().all()
 
 
 def test_input_contract_rejects_missing_main_view_bad_history_or_truncation(collator):
@@ -188,7 +180,7 @@ def test_input_contract_rejects_missing_main_view_bad_history_or_truncation(coll
         collator([item])
     with pytest.raises(ValueError, match="history_tokens"):
         collator([sample(torch.randn(129, 16))])
-    collator.max_sequence_length = 64
+    collator.max_sequence_length = 1
     with pytest.raises(ValueError, match="不能静默截断"):
         collator([sample(torch.randn(128, 16))])
 

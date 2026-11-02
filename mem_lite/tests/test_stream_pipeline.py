@@ -45,7 +45,10 @@ def observations():
 @pytest.fixture
 def pipeline(checkpoint, collator, origin, tmp_path, request):
     model = M3ProgressPredictor(checkpoint[0], dtype=getattr(request, "param", torch.float32), lora_rank=2, lora_alpha=4,
-                                lora_dropout=0, gradient_checkpointing=False).eval()
+                                lora_dropout=0, gradient_checkpointing=False,
+                                cross_attention_layers=(1,), cross_attention_dim=16, cross_attention_heads=2).eval()
+    with torch.no_grad():
+        model.memory_adapters["1"].gate.fill_(0.1)
     stream = make_stream(model.qwen.model.visual, collator.processor, origin)
     directory = tmp_path / "episode"
     build_episode(observations(), stream, directory, "依次完成操作", "episode", origin)
@@ -152,7 +155,8 @@ def test_real_optimizer_step_checkpoint_reload_and_stream_prediction(pipeline, c
     model, processor, dataset, _ = pipeline
     config = json.loads(DEFAULT_CONFIG.read_text())
     config.update(model_path=str(checkpoint[0]), max_pixels=4096)
-    config["model"].update(lora_rank=2, lora_alpha=4, lora_dropout=0, gradient_checkpointing=False)
+    config["model"].update(lora_rank=2, lora_alpha=4, lora_dropout=0, gradient_checkpointing=False,
+                           cross_attention_layers=(1,), cross_attention_dim=16, cross_attention_heads=2)
     configure_history(config, dataset)
     assert config["model"]["history_dim"] == model.qwen.config.vision_config.out_hidden_size
     assert config["history_capacity"] == dataset.history_capacity
@@ -160,13 +164,13 @@ def test_real_optimizer_step_checkpoint_reload_and_stream_prediction(pipeline, c
     batch = batcher([dataset[0], dataset[5]])
     model.train()
     optimizer = torch.optim.AdamW([parameter for parameter in model.parameters() if parameter.requires_grad], lr=1e-3)
-    before = model.history_projection.weight.detach().clone()
+    before = model.memory_adapters["1"].k_proj.weight.detach().clone()
     result = model(batch["inputs"], batch["target_pt"])
     result["loss"].backward()
-    assert model.history_projection.weight.grad.abs().sum() > 0
+    assert model.memory_adapters["1"].k_proj.weight.grad.abs().sum() > 0
     assert all(parameter.grad is None for parameter in model.qwen.model.visual.parameters())
     optimizer.step()
-    assert not torch.equal(before, model.history_projection.weight)
+    assert not torch.equal(before, model.memory_adapters["1"].k_proj.weight)
     model.eval()
     with torch.no_grad():
         expected = model(batch["inputs"])["pt"]

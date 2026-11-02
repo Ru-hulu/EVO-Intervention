@@ -1,9 +1,11 @@
-"""原生 Qwen3.5 三视角 ViT + 连续历史输入 + 进度分箱头；不生成文本。"""
+"""原生 Qwen3.5 当前三视角 + 层间门控历史 cross-attention + 进度分箱头。"""
 
 import torch
 from peft import LoraConfig, inject_adapter_in_model
 from torch import nn
 from transformers import Qwen3_5ForConditionalGeneration
+
+from .cross_attention import GatedHistoryAttention, HistoryDecoderLayer
 
 
 def adjacent_bin_targets(target_pt, num_bins=101):
@@ -23,11 +25,12 @@ def adjacent_bin_targets(target_pt, num_bins=101):
 
 
 class M3ProgressPredictor(nn.Module):
-    """只训练语言LoRA、独立历史投影和线性进度头；M3持有自己的冻结ViT。"""
+    """只训练语言 LoRA、历史 cross-attention 和进度头，视觉编码器冻结。"""
 
     def __init__(
         self, model_path, history_dim=None, num_bins=101, dtype=torch.bfloat16,
         lora_rank=16, lora_alpha=32, lora_dropout=0.05, gradient_checkpointing=True,
+        cross_attention_layers=(8, 16, 24), cross_attention_dim=512, cross_attention_heads=8,
     ):
         super().__init__()
         if num_bins < 2:
@@ -36,6 +39,11 @@ class M3ProgressPredictor(nn.Module):
             model_path, dtype=dtype, attn_implementation="sdpa", local_files_only=True,
         )
         self.qwen.requires_grad_(False)
+        layers = self.qwen.model.language_model.layers
+        self.cross_attention_layers = tuple(cross_attention_layers)
+        if (not self.cross_attention_layers or len(set(self.cross_attention_layers)) != len(self.cross_attention_layers)
+                or any(not isinstance(i, int) or not 1 <= i < len(layers) for i in self.cross_attention_layers)):
+            raise ValueError("cross_attention_layers 使用从1开始的层号，必须位于模型层之间且不重复")
         targets = [name for name, module in self.qwen.named_modules()
                    if name.startswith("model.language_model.layers.") and isinstance(module, nn.Linear)]
         inject_adapter_in_model(LoraConfig(
@@ -51,10 +59,18 @@ class M3ProgressPredictor(nn.Module):
             )
         self.qwen.model.visual.eval()
         hidden_size = self.qwen.config.text_config.hidden_size
-        history_dim = history_dim or self.qwen.config.vision_config.out_hidden_size
-        self.history_projection = nn.Linear(history_dim, hidden_size)
+        self.history_dim = history_dim or self.qwen.config.vision_config.out_hidden_size
+        for number in self.cross_attention_layers:
+            layers[number - 1] = HistoryDecoderLayer(layers[number - 1], GatedHistoryAttention(
+                hidden_size, self.history_dim, cross_attention_dim, cross_attention_heads,
+            ))
         self.progress_head = nn.Linear(hidden_size, num_bins)
         self.register_buffer("bin_centers", torch.linspace(0, 1, num_bins))
+
+    @property
+    def memory_adapters(self):
+        return {str(i): self.qwen.model.language_model.layers[i - 1].memory_attention
+                for i in self.cross_attention_layers}
 
     def train(self, mode=True):
         super().train(mode)
@@ -69,7 +85,7 @@ class M3ProgressPredictor(nn.Module):
     def _forward(self, batch, target_pt=None):
         """接收M3Collator的batch；target_pt只计算软标签CE，不进入模型输入。
 
-        历史视为冻结输入；只投影固定容量张量内的有效 tokens。
+        历史视为冻结的外部 KV 输入，不占主序列位置。
         不接状态文本解码器，不添加专家参考，不调用generate或词表输出头。
         """
         ids, attention = batch["input_ids"], batch["attention_mask"]
@@ -78,22 +94,15 @@ class M3ProgressPredictor(nn.Module):
             if target_pt.shape != (len(ids),):
                 raise ValueError("target_pt 必须与输入批次逐条对应，形状为 [batch_size]")
             targets = adjacent_bin_targets(target_pt.to(ids.device), len(self.bin_centers))
-        embeds = self.qwen.get_input_embeddings()(ids)
-        history_mask = batch["history_mask"]
-        valid = batch["history_valid_mask"]
-        if valid.any():
-            history = batch["history_tokens"][valid].detach()
-            projected = self.history_projection(history.to(self.history_projection.weight.dtype))
-            embeds = embeds.masked_scatter(history_mask[..., None], projected.to(embeds.dtype))
-
-        # inputs_embeds会使原模型无法从input_ids自动推导多模态位置。
-        # 在替换后的完整序列上重算原生3D RoPE，历史按文本位置、图像按空间位置编码。
+        # 主序列只含任务和当前图像，原生多模态 RoPE 不随历史长度平移。
         position_ids, _ = self.qwen.model.get_rope_index(
             ids, batch["mm_token_type_ids"], image_grid_thw=batch["image_grid_thw"], attention_mask=attention,
         )
         hidden = self.qwen.model(
-            inputs_embeds=embeds, attention_mask=attention, position_ids=position_ids,
+            input_ids=ids, attention_mask=attention, position_ids=position_ids,
             pixel_values=batch["pixel_values"], image_grid_thw=batch["image_grid_thw"],
+            memory_tokens=batch["history_tokens"].detach(), memory_valid_mask=batch["history_valid_mask"],
+            memory_query_mask=attention.bool(),
             use_cache=False, return_dict=True,
         ).last_hidden_state
         indices = torch.arange(ids.shape[1], device=ids.device).expand_as(attention)

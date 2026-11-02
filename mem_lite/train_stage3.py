@@ -1,4 +1,4 @@
-"""三视角 + StreamForest 缓存，只训练语言 LoRA、历史投影和进度头。"""
+"""三视角 + Forest 外部记忆，只训练语言 LoRA、门控 cross-attention 和进度头。"""
 
 import argparse
 import json
@@ -19,20 +19,20 @@ from mem_lite.memory.vision import verify_vision_source
 from mem_lite.models.m3_predictor import M3ProgressPredictor
 
 DEFAULT_CONFIG = Path(__file__).parent / "configs" / "stage3_train.json"
-CHECKPOINT_FORMAT = "mem-lite-streamforest-v1"
+CHECKPOINT_FORMAT = "mem-lite-streamforest-crossattn-v2"
 
 
 def trainable_state(model):
     return {
         "m3_lora": get_peft_model_state_dict(model.qwen, save_embedding_layers=False),
-        "history_projection": model.history_projection.state_dict(),
+        "memory_adapters": torch.nn.ModuleDict(model.memory_adapters).state_dict(),
         "progress_head": model.progress_head.state_dict(),
     }
 
 
 def load_trainable_state(model, state):
     set_peft_model_state_dict(model.qwen, state["m3_lora"])
-    model.history_projection.load_state_dict(state["history_projection"])
+    torch.nn.ModuleDict(model.memory_adapters).load_state_dict(state["memory_adapters"])
     model.progress_head.load_state_dict(state["progress_head"])
 
 
@@ -76,6 +76,8 @@ def read_config(args, checkpoint=None):
         raise ValueError("max_steps 必须为正整数或 null")
     for key in ("model_path", "output_dir"):
         config[key] = str(Path(config[key]).expanduser().resolve())
+    if isinstance(config["sample_files"], str):
+        config["sample_files"] = json.loads(Path(config["sample_files"]).expanduser().read_text())
     config["sample_files"] = [str(Path(path).expanduser().resolve()) for path in config["sample_files"]]
     return config
 
@@ -158,7 +160,7 @@ def _train(config, checkpoint, rank, world_size, device):
         load_trainable_state(model, checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         epoch, next_batch, step = checkpoint["epoch"], checkpoint["next_batch"], checkpoint["step"]
-    # 视频首帧没有历史，某个 rank/微批次可能不使用 history_projection。
+    # 视频首帧没有历史，某个 rank/微批次可能不使用 memory_adapters。
     wrapped = (DistributedDataParallel(model, device_ids=[device.index], broadcast_buffers=False,
                                        find_unused_parameters=True) if world_size > 1 else model)
     if checkpoint is not None:
@@ -266,7 +268,7 @@ def main():
     args = parser.parse_args()
     checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True) if args.resume else None
     if checkpoint is not None and checkpoint.get("format") != CHECKPOINT_FORMAT:
-        parser.error("--resume 只接受 StreamForest 进度模型检查点")
+        parser.error("--resume 只接受无额外序号编码的 Forest cross-attention v2 检查点")
     train(read_config(args, checkpoint), checkpoint)
 
 

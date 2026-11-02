@@ -1,4 +1,4 @@
-"""三视角与固定容量历史张量；仅有效历史 tokens 进入 VLM 序列。"""
+"""当前三视角主序列与独立历史 KV 张量，训练和在线推理共用。"""
 
 import torch
 from torch.nn import functional as F
@@ -37,28 +37,16 @@ class M3Collator:
             ))
         batch = dict(self.processor(text=prompts, images=images, return_tensors="pt", padding=True))
         tokenizer = self.processor.tokenizer
-        vision_start_id = tokenizer.convert_tokens_to_ids("<|vision_start|>")
-        sequences, types, history_masks = [], [], []
-        for row, history in enumerate(histories):
+        sequences, types = [], []
+        for row in range(len(samples)):
             keep = batch["attention_mask"][row].bool()
             ids, token_types = batch["input_ids"][row][keep], batch["mm_token_type_ids"][row][keep]
-            history_mask = torch.zeros_like(ids, dtype=torch.bool)
-            count = 0 if history is None else len(history)
-            if count:
-                # 历史插在任务文本之后、第一个原生图像块之前。占位ID不扩充词表，
-                # 在模型入口会全部替换为连续历史embedding，attention_mask保持为1。
-                start = (ids == vision_start_id).nonzero()[0, 0].item()
-                ids = torch.cat((ids[:start], ids.new_full((count,), tokenizer.pad_token_id), ids[start:]))
-                token_types = torch.cat((token_types[:start], token_types.new_zeros(count), token_types[start:]))
-                history_mask = torch.zeros_like(ids, dtype=torch.bool)
-                history_mask[start:start + count] = True
             sequences.append(ids)
             types.append(token_types)
-            history_masks.append(history_mask)
 
         width = max(len(ids) for ids in sequences)
         if width > self.max_sequence_length:
-            raise ValueError("M3 输入超过 max_sequence_length，不能静默截断历史或三视角观测")
+            raise ValueError("M3 输入超过 max_sequence_length，不能静默截断任务或三视角观测")
         batch["input_ids"] = torch.stack([
             F.pad(ids, (width - len(ids), 0), value=tokenizer.pad_token_id) for ids in sequences
         ])
@@ -66,10 +54,9 @@ class M3Collator:
             F.pad(torch.ones_like(ids), (width - len(ids), 0)) for ids in sequences
         ])
         batch["mm_token_type_ids"] = torch.stack([F.pad(ids, (width - len(ids), 0)) for ids in types])
-        batch["history_mask"] = torch.stack([F.pad(mask, (width - len(mask), 0)) for mask in history_masks])
         # 末尾补齐形状以减少重复编译，不移动有效token，避免改变线性注意力的分块位置。
         extra = min(self.max_sequence_length, (width + 63) // 64 * 64) - width
-        for key in ("input_ids", "attention_mask", "mm_token_type_ids", "history_mask"):
+        for key in ("input_ids", "attention_mask", "mm_token_type_ids"):
             batch[key] = F.pad(batch[key], (0, extra), value=tokenizer.pad_token_id if key == "input_ids" else 0)
         # 在线历史留在原设备，避免 GPU→CPU→GPU 往返；入口统一搬运其余张量。
         reference = next((history for history in histories if history is not None), torch.empty(0))

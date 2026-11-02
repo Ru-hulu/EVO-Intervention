@@ -18,7 +18,7 @@ def to_device(batch, device):
 def load_checkpoint(path, device="cuda", model_path=None):
     checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     if checkpoint["format"] != CHECKPOINT_FORMAT:
-        raise ValueError("需要 StreamForest 进度模型检查点")
+        raise ValueError("需要无额外序号编码的 Forest cross-attention v2 检查点，旧格式不能直接加载")
     config = checkpoint["config"]
     base = model_path or config["model_path"]
     verify_vision_source(base, config["history_source"])
@@ -39,8 +39,8 @@ class StreamingProgressPredictor:
             QwenFrameEncoder(model.qwen.model.visual), processor.image_processor,
             history_source["memory_config"], history_source["max_pixels"], history_source["min_pixels"],
         )
-        if model.history_projection.in_features != self.stream.encoder.hidden_size:
-            raise ValueError("历史投影维度与原生视觉特征不一致")
+        if model.history_dim != self.stream.encoder.hidden_size:
+            raise ValueError("历史特征维度与原生视觉特征不一致")
         self.collator = M3Collator(processor, self.stream.encoder.hidden_size, max_sequence_length,
                                   self.stream.memory.token_budget)
 

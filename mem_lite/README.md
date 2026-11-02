@@ -1,8 +1,9 @@
-# StreamForest 视觉记忆与进度预测
+# StreamForest 外部记忆与门控 cross-attention 进度预测
 
 本分支已移除 M1 事件切分、事件编码器、M2 压缩、状态文本解码及对应训练和评估入口。
 新的记忆链路为：冻结 Qwen3.5 ViT/merger → 带时空位置的视觉 tokens → StreamForest。
 记忆核心没有可训练参数，不需要旧阶段的检查点。
+本分支在 Qwen3.5-4B 的第 8、16、24 层之后读取历史 KV；历史不再拼进主输入序列。
 
 ## 文件布局
 
@@ -15,11 +16,12 @@ mem_lite/
     stream.py                跨调用保留状态、自动按视频/任务重置
     LICENSE.StreamForest     上游许可证
   configs/streamforest.json  记忆窗口与预算
-  models/m3_predictor.py     三视角 + 有效历史 tokens 的进度预测
+  models/m3_predictor.py     当前三视角 + 外部历史 KV 的进度预测
+  models/cross_attention.py  层间门控 cross-attention 与原生层包装
   datasets/prepare_stream.py 同步视频与 PT 标签构造训练样本
   datasets/m3_dataset.py    按需读取历史快照
   datasets/m3_inputs.py     固定容量历史张量和有效长度 mask
-  train_stage3.py           LoRA、历史投影与进度头训练
+  train_stage3.py           LoRA、cross-attention 与进度头训练
   runtime.py                检查点加载、持续在线预测
   evaluate.py               缓存/在线评估、延迟与显存统计
   tests/                     记忆核心、真实微型 Qwen 与进度回归测试
@@ -82,10 +84,29 @@ history_tokens = memory.get_memory_tokens()  # [N, encoder.hidden_size]；空历
 视频首帧历史为空，切换 `episode_id` 或任务指令会自动清空状态；相同视频重播需显式 `reset()`。
 
 M3 接收固定容量的 `history_tokens: [batch, capacity, D]` 和
-`history_valid_mask: [batch, capacity]`。不足部分补零；仅有效 tokens 经投影后插入 VLM。
-`history_mask` 标识它们在完整语言/图像序列中的位置，两种 mask 的有效数量一致。
-因此 padding 不占用历史语义位置，也不影响 Qwen 的多模态位置或线性注意力。
+`history_valid_mask: [batch, capacity]`。不足部分补零，历史只作为 cross-attention 的 K/V。
+主序列只含任务文本和当前三视角；不再创建历史占位符或 `history_mask`。
+因此主序列长度和原生图像 RoPE 不随历史长度改变。历史 padding 与无历史样本均显式屏蔽。
 D 从缓存元数据和 Qwen 原生视觉输出确定，不再写死为 512；默认容量为 1008。
+
+## 层间历史读取
+
+默认 `cross_attention_layers=[8,16,24]` 是从 1 开始的层号，模块位于该层完整 attention/MLP 之后。
+每个模块独立训练，Q 来自当前隐藏状态，K/V 来自冻结历史；内部维度 512、8 个头，输出投影回 2560 维。
+残差为 `hidden + tanh(gate) * cross_attention`；gate 初值为 0，初始行为与无历史路径一致。
+初次反向主要更新 gate，门控打开后 K/V、Q 和输出投影开始获得非零梯度。
+沿用语言 LoRA 与进度分箱头，ViT/merger 和 Forest 记忆维护继续冻结。
+
+历史 K/V 只使用原有 Forest 特征，保留编码器加入的原始帧号和空间位置编码，
+不再额外添加压缩后 token 的序号编码。既有视觉特征和 5 FPS 历史缓存直接复用，不重建 PT 或缓存。
+原生层仍可使用梯度检查点；历史通过 forward 参数传递，不使用跨调用可变 hooks。
+
+新检查点格式为 `mem-lite-streamforest-crossattn-v2`，保存语言 LoRA、三个完整 memory adapters 和进度头。
+旧 token 拼接模型及带额外序号编码的 cross-attention v1 预检检查点不直接兼容；正式训练从基座开始。
+训练、缓存评估、在线推理使用同一套实现。
+`configs/a100_crossattn_train.json` 复用 A100 的数据索引和 3 epoch / 每卡 batch 4 配置，
+输出到独立目录；仅为待运行配置，尚未进行真实模型训练或吞吐测试。
+`experiments/a100_proprimem_20261031/` 保留原拼接方案的历史配置，不应用本分支复现旧模型。
 
 ## 构造训练样本
 
@@ -128,11 +149,11 @@ python -m mem_lite.train_stage3 \
 ```
 
 `configs/stage3_train.json` 中 `history_capacity` 和 `model.history_dim` 为 null，
-训练时从样本解析并写入检查点。只优化语言 LoRA、历史投影和进度头；视觉模块及记忆算法冻结。
+训练时从样本解析并写入检查点。只优化语言 LoRA、门控 cross-attention 和进度头；视觉模块及记忆算法冻结。
 断点续训仍使用 `--resume /outputs/streamforest/last.pt`。
 `save_every_steps` 控制步数快照，设为 null 可关闭；`save_every_epochs` 默认 1。
 例如设为 3 时，只在第 3、6、9… 个 epoch 保存 epoch 存档，并更新 `last.pt`。
-新检查点格式为 `mem-lite-streamforest-v1`，不接受旧 M1/M2 或旧固定 128 tokens 的进度检查点。
+只接受 `mem-lite-streamforest-crossattn-v2` 检查点，不接受旧 token 拼接、带序号编码的 v1 或 M1/M2 检查点。
 训练入口使用 CUDA BF16，支持 DDP、梯度累积和断点续训。
 预测模型内部统一训练与推理的 autocast 策略；记忆编码和 FP32 合并匹配不受外层 autocast 影响。
 训练启动及检查点加载时，会核对缓存记录的视觉权重摘要，避免混用维度相同但权重不同的基座。

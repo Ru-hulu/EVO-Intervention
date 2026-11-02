@@ -11,6 +11,7 @@ import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
 
+from mem_lite.models.cross_attention import GatedHistoryAttention
 from mem_lite.tests.test_m3_predictor import collator as collator
 from mem_lite.tests.test_m3_predictor import model as model
 from mem_lite.tests.test_m3_predictor import sample
@@ -25,11 +26,11 @@ from mem_lite.train_stage3 import (
 )
 
 
-def test_no_history_batch_keeps_projection_unused_and_other_modules_trainable(model, collator):
+def test_no_history_batch_keeps_memory_unused_and_other_modules_trainable(model, collator):
     model.train()
     result = model(collator([sample(), sample()]), torch.tensor([0.0, 0.9]))
     result["loss_sum"].backward()
-    assert all(p.grad is None for p in model.history_projection.parameters())
+    assert all(p.grad is None for p in model.memory_adapters["1"].parameters())
     assert model.progress_head.weight.grad.abs().sum() > 0
     assert any(p.grad is not None and p.grad.abs().sum() > 0 for n, p in model.named_parameters() if "lora_" in n)
     assert all(p.grad is None for p in model.parameters() if not p.requires_grad)
@@ -57,10 +58,10 @@ def test_stage3_checkpoint_roundtrip_saves_only_own_trainable_weights(model, tmp
         save_checkpoint(model, optimizer, {"data_signature": "fixture", "seed": 42},
                         tmp_path, epoch=1, next_batch=3, step=7)
     saved = torch.load(tmp_path / "last.pt", weights_only=True)
-    assert saved["format"] == "mem-lite-streamforest-v1"
+    assert saved["format"] == "mem-lite-streamforest-crossattn-v2"
     assert (saved["epoch"], saved["next_batch"], saved["step"]) == (1, 3, 7)
     torch.testing.assert_close(saved["rng_by_rank"][0]["torch"], rng)
-    assert set(saved["model"]) == {"m3_lora", "history_projection", "progress_head"}
+    assert set(saved["model"]) == {"m3_lora", "memory_adapters", "progress_head"}
     assert all("lora_" in key for key in saved["model"]["m3_lora"])
     with torch.no_grad():
         for parameter in parameters:
@@ -120,26 +121,32 @@ def test_three_epoch_archives_without_step_snapshots(tmp_path):
 
 
 class OptionalHistoryProbe(torch.nn.Module):
-    """只验证DDP控制流的小模型，不替代M3的真实离线前向检查。"""
+    """真实历史读取模块和小型主干，检查不同rank/微批的空历史。"""
 
     def __init__(self):
         super().__init__()
-        self.main = torch.nn.Parameter(torch.tensor(1.0))
-        self.history = torch.nn.Parameter(torch.tensor(1.0))
+        self.main = torch.nn.Linear(8, 1)
+        self.history = GatedHistoryAttention(8, 8, 8, 2)
+        with torch.no_grad():
+            self.history.gate.fill_(0.2)
+        self.register_buffer("hidden", torch.randn(1, 3, 8))
+        self.register_buffer("memory", torch.randn(1, 4, 8))
 
     def forward(self, has_history):
-        loss = self.main * 2
-        if has_history:
-            loss = loss + self.history * 3
-        return {"loss_sum": loss}
+        valid = torch.full((1, 4), has_history, dtype=torch.bool)
+        hidden = self.history(self.hidden, self.memory, valid, torch.ones(1, 3, dtype=torch.bool))
+        return {"loss_sum": self.main(hidden).square().mean()}
 
 
 def ddp_history_worker(rank, rendezvous):
     torch.set_num_threads(1)
     dist.init_process_group("gloo", init_method=f"file://{rendezvous}", rank=rank, world_size=2)
     try:
+        torch.manual_seed(41)
         model = OptionalHistoryProbe()
         wrapped = DistributedDataParallel(model, broadcast_buffers=False, find_unused_parameters=True)
+        reference = OptionalHistoryProbe()
+        reference.load_state_dict(model.state_dict())
         # 依次覆盖：历史只出现在no_sync微批、只在末微批、跨rank不一致、全批无历史。
         patterns = (((True, False), (False, False)), ((False, True), (True, False)),
                     ((False, False), (False, False)))
@@ -149,10 +156,15 @@ def ddp_history_worker(rank, rendezvous):
                 with wrapped.no_sync() if microbatch == 0 else nullcontext():
                     wrapped(has_history)["loss_sum"].backward()
             normalize_gradients(list(model.parameters()), torch.tensor(4.0), world_size=2)
-            assert model.main.grad.item() == pytest.approx(2.0)
-            count = sum(sum(row) for row in pattern)
-            actual = model.history.grad.item() if model.history.grad is not None else 0.0
-            assert actual == pytest.approx(count * 3 / 4)
+            reference.zero_grad(set_to_none=True)
+            for rank_pattern in pattern:
+                for has_history in rank_pattern:
+                    (reference(has_history)["loss_sum"] / 4).backward()
+            for actual, expected in zip(model.parameters(), reference.parameters(), strict=True):
+                if expected.grad is None:
+                    assert actual.grad is None
+                else:
+                    torch.testing.assert_close(actual.grad, expected.grad, atol=1e-7, rtol=1e-5)
     finally:
         dist.destroy_process_group()
 
