@@ -32,12 +32,14 @@ def test_partial_views_cache_matches_online(checkpoint, collator, origin, tmp_pa
     dataset = M3Dataset([directory])
     batcher = Stage3Collator(collator.processor, dataset.history_dim, history_capacity=dataset.history_capacity)
     online = StreamingProgressPredictor(model, collator.processor, origin)
+    state = None
     for row, cached in zip(observations, dataset, strict=True):
         for i in range(view_count, 3):
             assert cached['images'][i].size == (64, 64)
             assert cached['images'][i].getbbox() is None
         with torch.no_grad():
-            expected = model(batcher([cached])['inputs'])
+            expected = model(batcher([cached])['inputs'], state=state)
+            state = expected['state']
             actual = online(row['images'], row['frame_index'], 'episode', 'task')
         torch.testing.assert_close(actual['pt'], expected['pt'])
     saved = [json.loads(line) for line in (directory/'samples.jsonl').read_text().splitlines()]

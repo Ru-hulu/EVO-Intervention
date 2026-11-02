@@ -11,15 +11,16 @@ import torch
 import torch.distributed as dist
 from peft import get_peft_model_state_dict, set_peft_model_state_dict
 from torch.nn.parallel import DistributedDataParallel
-from torch.utils.data import DataLoader, DistributedSampler
+from torch.utils.data import DataLoader
 from transformers import AutoProcessor
 
-from mem_lite.datasets.m3_dataset import M3Dataset, Stage3Collator
+from mem_lite.datasets.m3_dataset import M3Dataset
+from mem_lite.datasets.sequence import EpisodeWindows, EpisodeWindowSampler, SequenceCollator
 from mem_lite.memory.vision import verify_vision_source
 from mem_lite.models.m3_predictor import M3ProgressPredictor
 
 DEFAULT_CONFIG = Path(__file__).parent / "configs" / "stage3_train.json"
-CHECKPOINT_FORMAT = "mem-lite-streamforest-crossattn-v2"
+CHECKPOINT_FORMAT = "mem-lite-streamforest-crossattn-linear-v1"
 
 
 def trainable_state(model):
@@ -58,6 +59,7 @@ def save_checkpoint(model, optimizer, config, output_dir, epoch, next_batch, ste
 def read_config(args, checkpoint=None):
     config = (dict(checkpoint["config"]) if checkpoint is not None
               else json.loads(Path(args.config).read_text(encoding="utf-8")))
+    config.setdefault("sequence_window", 8)
     for key in ("model_path", "sample_files", "output_dir", "epochs", "max_steps"):
         value = getattr(args, key)
         if value is not None:
@@ -65,7 +67,7 @@ def read_config(args, checkpoint=None):
     if not config["model_path"] or not config["sample_files"]:
         raise ValueError("需要本地 Qwen3.5 基座及已构造的 StreamForest 样本")
     for key in ("epochs", "batch_size", "gradient_accumulation_steps", "learning_rate",
-                "log_every_steps", "max_grad_norm"):
+                "log_every_steps", "max_grad_norm", "sequence_window"):
         if config[key] <= 0:
             raise ValueError(f"{key} 必须大于0")
     for key in ("save_every_steps", "save_every_epochs"):
@@ -139,11 +141,12 @@ def _train(config, checkpoint, rank, world_size, device):
     config["data_signature"] = dataset.signature
     configure_history(config, dataset)
     verify_vision_source(config["model_path"], dataset.history_source)
-    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, seed=config["seed"], shuffle=True)
+    sampler = EpisodeWindowSampler(dataset, config["batch_size"], config["sequence_window"], rank,
+                                   world_size, config["seed"])
     loader = DataLoader(
-        dataset, batch_size=config["batch_size"], sampler=sampler,
-        collate_fn=Stage3Collator(processor, dataset.history_dim, config["max_sequence_length"],
-                                 config["history_capacity"]),
+        EpisodeWindows(dataset), batch_size=None, sampler=sampler,
+        collate_fn=SequenceCollator(processor, dataset.history_dim, config["max_sequence_length"],
+                                   config["history_capacity"]),
         num_workers=config["num_workers"], pin_memory=True,
         persistent_workers=config.get("persistent_workers", False) and config["num_workers"] > 0,
         multiprocessing_context="spawn" if config["num_workers"] > 0 else None,
@@ -176,7 +179,9 @@ def _train(config, checkpoint, rank, world_size, device):
         output_dir.mkdir(parents=True, exist_ok=True)
         (output_dir / "config.json").write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding="utf-8")
         print(json.dumps({"kind": "start", "world_size": world_size, "samples": len(dataset),
-                          "start_step": step, "trainable_parameters": sum(p.numel() for p in parameters)}), flush=True)
+                          "start_step": step, "video_batch_per_gpu": config["batch_size"],
+                          "sequence_window": config["sequence_window"], "update_at": "video_group_end",
+                          "trainable_parameters": sum(p.numel() for p in parameters)}), flush=True)
     if world_size > 1:
         dist.barrier()
     accumulation, max_steps = config["gradient_accumulation_steps"], config["max_steps"]
@@ -186,21 +191,28 @@ def _train(config, checkpoint, rank, world_size, device):
         sampler.set_epoch(epoch)
         totals = torch.zeros(5, device=device, dtype=torch.float64)  # CE和、样本数、绝对/平方/带符号误差和。
         microbatches, started = 0, perf_counter()
+        state = None
+        total_batches = len(loader)
         for batch_index, batch in enumerate(loader):
             if batch_index < next_batch:
                 started = perf_counter()
                 continue
-            inputs = {key: value.to(device, non_blocking=True) if torch.is_tensor(value) else value
-                      for key, value in batch["inputs"].items()}
+            if batch["reset"]:
+                state = None
+            elif state is None:
+                raise ValueError("断点必须位于视频组边界，不能从空状态恢复视频中段")
+            inputs = [{key: value.to(device, non_blocking=True) if torch.is_tensor(value) else value
+                       for key, value in frame.items()} for frame in batch["inputs"]]
             target_pt = batch["target_pt"].to(device, non_blocking=True)
-            microbatches += 1
-            epoch_finished = batch_index + 1 == len(loader)
-            update = microbatches == accumulation or epoch_finished
+            microbatches += int(batch["group_end"])
+            epoch_finished = batch_index + 1 == total_batches
+            update = batch["group_end"] and (microbatches == accumulation or epoch_finished)
             synchronization = wrapped.no_sync() if world_size > 1 and not update else nullcontext()
             with synchronization:
-                result = wrapped(inputs, target_pt)
+                result = wrapped(inputs, target_pt, state=state)
                 result["loss_sum"].backward()
-            error = (result["pt"].detach() - target_pt).double()
+            state = result["state"].detach()
+            error = (result["pt"].detach() - target_pt)[result["sample_valid"]].double()
             totals[0] += result["loss_sum"].detach().double()
             totals[1] += result["num_samples"]
             totals[2] += error.abs().sum()
@@ -268,7 +280,7 @@ def main():
     args = parser.parse_args()
     checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True) if args.resume else None
     if checkpoint is not None and checkpoint.get("format") != CHECKPOINT_FORMAT:
-        parser.error("--resume 只接受无额外序号编码的 Forest cross-attention v2 检查点")
+        parser.error("--resume 只接受 Forest cross-attention + Linear 状态记忆检查点")
     train(read_config(args, checkpoint), checkpoint)
 
 

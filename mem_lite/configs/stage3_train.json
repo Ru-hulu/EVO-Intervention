@@ -31,5 +31,6 @@
     "cross_attention_dim": 512,
     "cross_attention_heads": 8
   },
-  "history_capacity": null
+  "history_capacity": null,
+  "sequence_window": 8
 }

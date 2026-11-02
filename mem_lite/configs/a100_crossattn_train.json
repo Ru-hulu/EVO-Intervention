@@ -1,7 +1,7 @@
 {
   "model_path": "/cache/cvpzhr/models/Qwen3.5-4B",
   "sample_files": "/cache/cvpzhr/datasets/forest-proprimem-5fps-20261030/train.sample_files.json",
-  "output_dir": "/cache/cvpzhr/outputs/forest-proprimem-crossattn-e3",
+  "output_dir": "/cache/cvpzhr/outputs/forest-proprimem-crossattn-linear-e3",
   "epochs": 3,
   "max_steps": null,
   "batch_size": 4,
@@ -62,5 +62,6 @@
   "fused_optimizer": true,
   "keep_only_latest": true,
   "sequence_padding_multiple": 64,
-  "sequence_extra_padding_side": "right"
+  "sequence_extra_padding_side": "right",
+  "sequence_window": 8
 }

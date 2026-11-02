@@ -64,17 +64,18 @@ def test_history_stays_outside_main_sequence(collator):
 def test_history_is_external_kv_and_does_not_shift_native_rope(model, collator):
     history = torch.randn(128, 16)
     batch = collator([sample(history)])
-    with patch.object(model.qwen.model, "forward", wraps=model.qwen.model.forward) as native, torch.no_grad():
+    rotary = model.qwen.model.language_model.rotary_emb
+    memory = model.memory_adapters["1"]
+    with patch.object(rotary, "forward", wraps=rotary.forward) as native, \
+            patch.object(memory, "forward", wraps=memory.forward) as external, torch.no_grad():
         model(batch)
-    inputs = native.call_args.kwargs
-    assert "inputs_embeds" not in inputs
-    torch.testing.assert_close(inputs["memory_tokens"][0], history)
+    torch.testing.assert_close(external.call_args.args[1][0], history)
     plain = collator([sample()])
     base_positions, _ = model.qwen.model.get_rope_index(
         plain["input_ids"], plain["mm_token_type_ids"], image_grid_thw=plain["image_grid_thw"],
         attention_mask=plain["attention_mask"],
     )
-    torch.testing.assert_close(inputs["position_ids"], base_positions)
+    torch.testing.assert_close(native.call_args.args[1], base_positions)
 
 
 def test_no_history_matches_original_native_multimodal_path_and_never_generates(model, collator):

@@ -96,7 +96,8 @@ def test_checkpointing_matches_eager_across_multiple_pending_batches(model, coll
             torch.testing.assert_close(param.grad, other.grad, atol=2e-6, rtol=2e-5)
 
 
-@pytest.mark.parametrize("old_format", ["mem-lite-streamforest-v1", "mem-lite-streamforest-crossattn-v1"])
+@pytest.mark.parametrize("old_format", ["mem-lite-streamforest-v1", "mem-lite-streamforest-crossattn-v1",
+                                        "mem-lite-streamforest-crossattn-v2"])
 def test_old_checkpoint_is_rejected_before_loading_model(tmp_path, old_format):
     path = tmp_path / "old.pt"
     torch.save({"format": old_format}, path)

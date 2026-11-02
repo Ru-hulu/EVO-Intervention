@@ -187,7 +187,8 @@ def test_real_optimizer_step_checkpoint_reload_and_stream_prediction(pipeline, c
     second = dataset[1]
     actual = runner(second["images"], second["frame_index"], second["episode_id"], second["task_prompt"])
     with torch.no_grad():
-        expected = restored(batcher([second])["inputs"])
+        previous = restored(batcher([first])["inputs"])["state"]
+        expected = restored(batcher([second])["inputs"], state=previous)
     torch.testing.assert_close(actual["pt"], expected["pt"], atol=1e-6, rtol=1e-5)
     from mem_lite.evaluate import main
 
@@ -199,6 +200,51 @@ def test_real_optimizer_step_checkpoint_reload_and_stream_prediction(pipeline, c
     metrics = json.loads((output / "metrics.json").read_text())
     assert metrics["mode"] == "online" and metrics["num_samples"] == len(dataset)
     assert len((output / "predictions.jsonl").read_text().splitlines()) == len(dataset)
+
+
+def test_sequence_loader_and_online_match_including_resets_and_partial_windows(pipeline, tmp_path):
+    import shutil
+    from torch.utils.data import DataLoader
+    from mem_lite.datasets.sequence import EpisodeWindows, EpisodeWindowSampler, SequenceCollator
+
+    model, processor, _, directory = pipeline
+    with torch.no_grad():
+        model.qwen.model.language_model.layers[0].decoder.linear_attn.A_log.fill_(-6)
+    paths = []
+    for i, count in enumerate([8, 3, 5]):
+        dest = tmp_path / f"sequence-{i}"
+        shutil.copytree(directory, dest)
+        p = dest / "samples.jsonl"
+        p.write_text("\n".join(p.read_text().splitlines()[:count]) + "\n")
+        paths.append(dest)
+    dataset = M3Dataset(paths)
+    sampler = EpisodeWindowSampler(dataset, batch_size=2, window_size=3)
+    loader = DataLoader(EpisodeWindows(dataset), sampler=sampler, batch_size=None,
+                        collate_fn=SequenceCollator(processor, dataset.history_dim, 8192, dataset.history_capacity))
+    predictions, state = {}, None
+    with torch.no_grad():
+        for spec, batch in zip(sampler, loader, strict=True):
+            if batch["reset"]:
+                state = None
+            result = model(batch["inputs"], batch["target_pt"], state=state)
+            state = result["state"]
+            indices = [index for row in spec["indices"] for index in row]
+            assert int(result["num_samples"]) == sum(i is not None for i in indices)
+            for index, pt in zip(indices, result["pt"], strict=True):
+                if index is not None:
+                    predictions[index] = float(pt)
+    _, rows = evaluate(model, processor, dataset, online=True)
+    assert len(predictions) == len(rows) == 16
+    assert [predictions[i] for i in range(len(dataset))] == pytest.approx(
+        [row["predicted_pt"] for row in rows], abs=2e-6)
+    runner = StreamingProgressPredictor(model, processor, dataset.history_source)
+    first, second = dataset[0], dataset[1]
+    expected = runner(first["images"], 0, "a", "task")["pt"].clone()
+    runner(second["images"], 3, "a", "task")
+    changed = runner(first["images"], 0, "b", "task")["pt"]
+    torch.testing.assert_close(expected, changed, atol=0, rtol=0)
+    runner.reset()
+    torch.testing.assert_close(expected, runner(first["images"], 0, "b", "task")["pt"], atol=0, rtol=0)
 
 
 def write_video(path, color, count=10, rate=30):

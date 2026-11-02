@@ -17,6 +17,7 @@ from mem_lite.tests.test_m3_predictor import model as model
 from mem_lite.tests.test_m3_predictor import sample
 from mem_lite.train_stage3 import (
     DEFAULT_CONFIG,
+    CHECKPOINT_FORMAT,
     checkpoint_schedule,
     load_trainable_state,
     normalize_gradients,
@@ -58,7 +59,7 @@ def test_stage3_checkpoint_roundtrip_saves_only_own_trainable_weights(model, tmp
         save_checkpoint(model, optimizer, {"data_signature": "fixture", "seed": 42},
                         tmp_path, epoch=1, next_batch=3, step=7)
     saved = torch.load(tmp_path / "last.pt", weights_only=True)
-    assert saved["format"] == "mem-lite-streamforest-crossattn-v2"
+    assert saved["format"] == CHECKPOINT_FORMAT
     assert (saved["epoch"], saved["next_batch"], saved["step"]) == (1, 3, 7)
     torch.testing.assert_close(saved["rng_by_rank"][0]["torch"], rng)
     assert set(saved["model"]) == {"m3_lora", "memory_adapters", "progress_head"}

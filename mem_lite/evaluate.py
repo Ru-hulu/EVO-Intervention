@@ -23,6 +23,7 @@ def evaluate(model, processor, dataset, max_sequence_length=8192, online=False, 
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
     records = []
+    state, session = None, None
     for sample in dataset:
         # 读图/缓存 IO 不计入模型链路延迟；在线模式包括主视角编码和记忆维护。
         if device.type == "cuda":
@@ -32,10 +33,14 @@ def evaluate(model, processor, dataset, max_sequence_length=8192, online=False, 
             result = runner(sample["images"], sample["frame_index"], sample["episode_id"], sample["task_prompt"])
             history_length = result["history_length"]
         else:
+            current = (sample["episode_id"], sample["task_prompt"])
+            if current != session or without_history:
+                state, session = None, current
             if without_history:
                 sample = {**sample, "history_tokens": None}
             inputs = collator([sample])
-            result = model(to_device(inputs, device))
+            result = model(to_device(inputs, device), state=state)
+            state = result.pop("state")
             history_length = int(inputs["history_valid_mask"].sum())
         prediction = float(result["pt"][0])
         if device.type == "cuda":
@@ -66,7 +71,7 @@ def main():
     parser.add_argument("--model-path", help="迁移机器时覆盖同一基座的本地路径")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--online", action="store_true", help="按顺序重建记忆，不加载历史快照")
-    parser.add_argument("--without-history", action="store_true", help="对同一检查点做移除历史的消融")
+    parser.add_argument("--without-history", action="store_true", help="同时移除 Forest 历史与跨帧 Linear 状态")
     args = parser.parse_args()
     model, processor, config = load_checkpoint(args.checkpoint, args.device, args.model_path)
     dataset = M3Dataset(args.sample_files, config["model"]["history_dim"],

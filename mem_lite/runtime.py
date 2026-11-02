@@ -18,7 +18,7 @@ def to_device(batch, device):
 def load_checkpoint(path, device="cuda", model_path=None):
     checkpoint = torch.load(path, map_location="cpu", weights_only=True)
     if checkpoint["format"] != CHECKPOINT_FORMAT:
-        raise ValueError("需要无额外序号编码的 Forest cross-attention v2 检查点，旧格式不能直接加载")
+        raise ValueError("需要 Forest cross-attention + Linear 状态记忆检查点，旧 v2 格式不能直接加载")
     config = checkpoint["config"]
     base = model_path or config["model_path"]
     verify_vision_source(base, config["history_source"])
@@ -43,15 +43,20 @@ class StreamingProgressPredictor:
             raise ValueError("历史特征维度与原生视觉特征不一致")
         self.collator = M3Collator(processor, self.stream.encoder.hidden_size, max_sequence_length,
                                   self.stream.memory.token_budget)
+        self.linear_state = None
 
     def reset(self):
         self.stream.reset()
+        self.linear_state = None
 
     @torch.no_grad()
     def __call__(self, images, frame_index, episode_id, task_prompt):
         images = fill_views(images)
+        if (episode_id, task_prompt) != self.stream.session:
+            self.linear_state = None
         history = self.stream.step(images[0], frame_index, episode_id, task_prompt)
         inputs = self.collator([{"images": images, "task_prompt": task_prompt, "history_tokens": history}])
-        result = self.model(to_device(inputs, self.device))
+        result = self.model(to_device(inputs, self.device), state=self.linear_state)
+        self.linear_state = result.pop("state")
         result["history_length"] = 0 if history is None else len(history)
         return result
