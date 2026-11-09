@@ -1,0 +1,178 @@
+{
+  "status": "passed",
+  "only_data_paths_counts_and_derived_steps_changed": true,
+  "differences": {
+    "forest": [
+      {
+        "field": "data_signature",
+        "previous": "f9837a18b841a894bf1ad966ba6144baf547955fd36b2a4c9c38e7c644cd3f3c",
+        "current": "b63fe3e73c7f655393f73726f4c06c8ab36e6f513cfbd774a6b922ee5d658488"
+      },
+      {
+        "field": "expected_steps_per_epoch",
+        "previous": 600,
+        "current": 432
+      },
+      {
+        "field": "expected_total_steps",
+        "previous": 1800,
+        "current": 1296
+      },
+      {
+        "field": "output_dir",
+        "previous": "/cache/cvpzhr/outputs/forest-pencil-frombase-matched-e3-20261109",
+        "current": "/cache/cvpzhr/outputs/forest-flipcup-frombase-matched-e3-20261109"
+      },
+      {
+        "field": "run_protocol.robometer_reference",
+        "previous": "/cache/cvpzhr/setup/robometer-pencil-case-clean-e3-20261109/training.config.json",
+        "current": "/cache/cvpzhr/setup/forest-robometer-flipcup-official-e3-20261109/robometer/training.config.json"
+      },
+      {
+        "field": "run_protocol.task",
+        "previous": "pencil",
+        "current": "flipcup"
+      },
+      {
+        "field": "run_protocol.train_samples",
+        "previous": 10789,
+        "current": 7769
+      },
+      {
+        "field": "run_protocol.validation_samples",
+        "previous": 2177,
+        "current": 1744
+      },
+      {
+        "field": "sample_files",
+        "previous": [
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000001",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000002",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000003",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000004",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000005",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000006",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000007",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000008",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000009",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000010",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000011",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000012",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000013",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000014",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000015",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000016",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000017",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000018",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000019",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000020",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000021",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000022",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000023",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000024",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000025",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000026",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000027",
+          "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109/train/zipper-pencil-case-inspection/episode_000028"
+        ],
+        "current": [
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000000",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000001",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000002",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000003",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000004",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000005",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000006",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000007",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000008",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000009",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000010",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000011",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000012",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000013",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000014",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000015",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000016",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000017",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000018",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000019",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000020",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000021",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000022",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000023",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000024",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000025",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000026",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000027"
+        ]
+      },
+      {
+        "field": "setup_dir",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-pencil-official-e3-20261109/forest",
+        "current": "/cache/cvpzhr/setup/forest-robometer-flipcup-official-e3-20261109/forest"
+      }
+    ],
+    "robometer": [
+      {
+        "field": "cache_setup_dir",
+        "previous": "/cache/cvpzhr/setup/robometer-pencil-case-clean-cache-20261109",
+        "current": "/cache/cvpzhr/setup/robometer-flipcup-clean-e3-20261109"
+      },
+      {
+        "field": "eval_steps",
+        "previous": 1800,
+        "current": 1296
+      },
+      {
+        "field": "expected_steps",
+        "previous": 1800,
+        "current": 1296
+      },
+      {
+        "field": "expected_train_samples",
+        "previous": 10789,
+        "current": 7769
+      },
+      {
+        "field": "expected_validation_samples",
+        "previous": 2177,
+        "current": 1744
+      },
+      {
+        "field": "output_dir",
+        "previous": "/cache/cvpzhr/outputs/robometer-pencil-fromofficial-clean-2gpu-e3-20261109",
+        "current": "/cache/cvpzhr/outputs/robometer-flipcup-fromofficial-clean-2gpu-e3-20261109"
+      },
+      {
+        "field": "save_steps",
+        "previous": 600,
+        "current": 432
+      },
+      {
+        "field": "setup_dir",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-pencil-official-e3-20261109/robometer",
+        "current": "/cache/cvpzhr/setup/forest-robometer-flipcup-official-e3-20261109/robometer"
+      },
+      {
+        "field": "steps_per_epoch",
+        "previous": 600,
+        "current": 432
+      },
+      {
+        "field": "task",
+        "previous": "zipper-pencil-case-inspection",
+        "current": "flip-two-cups-left-to-right-with-recovery"
+      },
+      {
+        "field": "train_data",
+        "previous": "/cache/cvpzhr/datasets/robometer-pencil-case-5fps-h7-current3-clean-20261109/train.jsonl",
+        "current": "/cache/cvpzhr/datasets/robometer-flipcup-5fps-h7-current3-clean-20261109/train.jsonl"
+      },
+      {
+        "field": "validation_data",
+        "previous": "/cache/cvpzhr/datasets/robometer-pencil-case-5fps-h7-current3-clean-20261109/validation.jsonl",
+        "current": "/cache/cvpzhr/datasets/robometer-flipcup-5fps-h7-current3-clean-20261109/validation.jsonl"
+      }
+    ]
+  }
+}
