@@ -1,0 +1,8 @@
+{
+  "task": "drawer-inspection-close",
+  "prior_joint_forest_training": true,
+  "prior_standalone_forest_run_found": false,
+  "prior_robometer_run_found": false,
+  "prior_joint_setup": "/cache/cvpzhr/setup/forest-five-anomaly-20261109",
+  "existing_data_split_preserved": true
+}

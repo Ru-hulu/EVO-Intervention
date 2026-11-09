@@ -1,0 +1,25 @@
+{
+  "source_setup": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109/robometer",
+  "model_training_code_byte_identical": true,
+  "initialization_and_hyperparameters_unchanged": true,
+  "changes": "drawer dataset, output locations, derived sample/step counts, plot task names",
+  "code_files_sha256": {
+    "robometer_training/activate.sh": "a4aea27d223e72e59541463d3ea7eefcf9d339a4a34b8c5adb893e3ce8687544",
+    "robometer_training/check.py": "aea5a295afc187c8d708c4357c22859d5ec2471b046caeb2f54b5b74a1a4091a",
+    "robometer_training/check_environment.py": "b4c26b39900d8cbd42e9df68da012b7cdc7e07888a479e347af6540fa8b43c39",
+    "robometer_training/config.json": "f33bf44fab2d452053ec3b514b2d64aae201925f93becbad6bee179435eafaaf",
+    "robometer_training/data.py": "c455b0a8bfd3b9f9b05233eb039a57f0894697f527ca0dfcb06367c31f5fc737",
+    "robometer_training/evaluate.py": "e4af03101f8e6088213da6abeceb26874b6a0302db9fb2745e7c639a98c40530",
+    "robometer_training/model.py": "0d3f1487b1b81e6b00f936b9a5d0c2a5bd039860faec3fd882a25c79a25a5f6e",
+    "robometer_training/periodic.py": "092a575e70291974fe46744daf50a0f69633834f4143b27324b79a4c62e61ab3",
+    "robometer_training/plot_comparison.py": "a23d59643288bc29ee051b542651eb36d04fc89c6450289cc24287638e0cecd1",
+    "robometer_training/preflight.py": "ea817a8aaba439fdb57af4e42cb8a9d0d16ac74e31b7fb6761d8ca354f7ff845",
+    "robometer_training/prepare.py": "cfb9eb740c785bf9d264a7f8c51846390a4daee745b216dc5c24381b16a6e013",
+    "robometer_training/prepare_proprimem.py": "a6c0d4c57fd5652ec3f65365ca36e4a5b2beea1cb87fdf45831212aee0db3470",
+    "robometer_training/requirements.txt": "05ec5c48582b696517220f6b1e548f649083df38887b1f8474bcff6caae4be5c",
+    "robometer_training/seed_runtime.py": "723487c4d9cac64844917fbef60679e1180fca1f9880285405204daad461555f",
+    "robometer_training/setup_remote.sh": "71010d686954b45cb22928fd49b07da199cb80ec3c68ef17331c446eb203648b",
+    "robometer_training/tests/test_pipeline.py": "916043e887ee8ec36729a6e45e5ac81040b5b5f75476e7c479953b22847bad6f",
+    "robometer_training/train.py": "f8104d4eb0f3f6c6117659fd26b4c4fe69012de02fc92f264a7c7b8aaa13a1ff"
+  }
+}
