@@ -1,0 +1,74 @@
+{
+  "model_path": "/cache/cvpzhr/models/Qwen3.5-4B",
+  "sample_files": "/cache/cvpzhr/datasets/forest-screw-mixed-aug-5fps-20261103/train.sample_files.json",
+  "output_dir": "/cache/cvpzhr/outputs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845",
+  "epochs": 3,
+  "max_steps": null,
+  "batch_size": 32,
+  "gradient_accumulation_steps": 1,
+  "num_workers": 4,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "max_grad_norm": 1.0,
+  "max_pixels": 65536,
+  "max_sequence_length": 8192,
+  "log_every_steps": 10,
+  "save_every_steps": null,
+  "save_every_epochs": null,
+  "seed": 42,
+  "model": {
+    "history_dim": 2560,
+    "num_bins": 101,
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "gradient_checkpointing": false,
+    "cross_attention_layers": [
+      8,
+      16,
+      24
+    ],
+    "cross_attention_dim": 512,
+    "cross_attention_heads": 8
+  },
+  "history_capacity": 1008,
+  "persistent_workers": true,
+  "history_source": {
+    "method": "streamforest-v1",
+    "vision_sha256": "1cc7c705e96c07fb52bcb1fb32f5e05271cc249fbc619c1128fd4eddbea47aea",
+    "memory_config": {
+      "num_attention_heads": 1,
+      "st_memory_windows": [
+        1,
+        6
+      ],
+      "st_memory_tokens": [
+        64,
+        16
+      ],
+      "event_split_window": 4,
+      "long_memory_tokens_per_frame": 16,
+      "long_memory_tokens_quota": 800,
+      "sim_weight_g": 0.4,
+      "time_weight_a": 0.2,
+      "merge_weight_b": 0.4
+    },
+    "sample_fps": 5.0,
+    "include_episode_last_frame": true,
+    "max_pixels": 65536,
+    "min_pixels": 4096,
+    "view_policy": "main-first; missing auxiliary views use RGB black 64x64; v1"
+  },
+  "fused_optimizer": true,
+  "keep_only_latest": false,
+  "sequence_padding_multiple": 64,
+  "sequence_extra_padding_side": "right",
+  "init_checkpoint": "/cache/cvpzhr/outputs/forest-crossattn-v2-e3-20261101-210436/last.pt",
+  "validation_interval_epochs": 0.2,
+  "validation": {
+    "sample_files": "/cache/cvpzhr/datasets/forest-screw-mixed-aug-5fps-20261103/validation.sample_files.json",
+    "batch_size": 32,
+    "num_workers": 4,
+    "expected_samples": 21806
+  }
+}

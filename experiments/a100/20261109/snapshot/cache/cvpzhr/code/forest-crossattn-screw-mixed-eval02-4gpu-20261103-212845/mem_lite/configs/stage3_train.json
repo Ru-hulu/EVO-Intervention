@@ -1,0 +1,35 @@
+{
+  "model_path": null,
+  "sample_files": [],
+  "output_dir": "outputs/mem_lite/stage3",
+  "epochs": 1,
+  "max_steps": null,
+  "batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "num_workers": 2,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "max_grad_norm": 1.0,
+  "max_pixels": 65536,
+  "max_sequence_length": 8192,
+  "log_every_steps": 1,
+  "save_every_steps": 100,
+  "save_every_epochs": 1,
+  "seed": 42,
+  "model": {
+    "history_dim": null,
+    "num_bins": 101,
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "gradient_checkpointing": true,
+    "cross_attention_layers": [
+      8,
+      16,
+      24
+    ],
+    "cross_attention_dim": 512,
+    "cross_attention_heads": 8
+  },
+  "history_capacity": null
+}

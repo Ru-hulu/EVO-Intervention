@@ -1,0 +1,9 @@
+{
+  "branch": "externmem-histoken-crossAtten",
+  "base_commit": "6e0486412157f39401ae682a866555296f6e3c79",
+  "includes_uncommitted_cross_attention_changes": true,
+  "source_manifest": "source-manifest.json",
+  "ordinal_encoding": false,
+  "original_spatiotemporal_encoding": true,
+  "checkpoint_format": "mem-lite-streamforest-crossattn-v2"
+}

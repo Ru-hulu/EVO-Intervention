@@ -1,0 +1,1896 @@
+{
+  "captured_at": 1794208836.7151797,
+  "branch": "externmem-histoken-crossAtten",
+  "files": [
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/README.md",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/README.md",
+      "sha256": "f693791628c708a5559ece8a136ebd97233c61ce850b5020d2818922ec48f549",
+      "git_blob_sha": "dceda07545c30f120e2615f9e3c413f990e31feb",
+      "kind": "documentation"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/__init__.py",
+      "sha256": "ce281cd44dae1f490008a743442d1586b59190dc736ef4b833f7f88fa9835937",
+      "git_blob_sha": "f2e0c8e23037f2b54f0c8dacdc4e35ce226045e0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/evaluate.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/evaluate.py",
+      "sha256": "049ba88b26e0a44d75fbe23ef30171c02819dd0655a26c71e413359088085d6f",
+      "git_blob_sha": "6a2f82ad22cb53e55ab8e0941853ff9508a42238",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/requirements-data.txt",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/requirements-data.txt",
+      "sha256": "d9561391b42441ffb8d8a3ddc2831545af06f6359d26013f7d7091959cca194e",
+      "git_blob_sha": "1a16c0571dfe6fe7df3dcfbb8727545ae0b8ad84",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/requirements-train.txt",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/requirements-train.txt",
+      "sha256": "15cf63581f30d55938205c0c299a4b35cbeb5113b6ae8545bdfc089a696c70fc",
+      "git_blob_sha": "93cab32fb0ee8d8c6509c68cf6b29b339d9b951b",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/runtime.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/runtime.py",
+      "sha256": "cffbe1c8050e4db1f42f00ef6032d7d2d6e41e38204f95e2a499d6561337babf",
+      "git_blob_sha": "0ca575196e8c26089db2865b5af45e0f18b51a1e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/train_stage3.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/train_stage3.py",
+      "sha256": "7fab1c20efe49bfa0d086b38532f7d193ba4df4a1d8571dafcda6d8afc604d0c",
+      "git_blob_sha": "7904250a393ab31628c628753130e4abf3b503ad",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/a100_crossattn_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/a100_crossattn_train.json",
+      "sha256": "315cc12e5fadcf4e4b7d2b9de1bd04a5ee4a8c257a2c1f153861280c8457d7d7",
+      "git_blob_sha": "890d2c5ee631dfc2d39df4c7aadae4b32dfadd14",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/m3_model.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/m3_model.json",
+      "sha256": "aad6c2ed0417ff82d15f8459fe8360a5df82d7176fd8b1b4831d66ce2e3b6f5a",
+      "git_blob_sha": "d93fea5854713447dfab17f8e661ef02c6d6b0af",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/stage3_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/stage3_train.json",
+      "sha256": "9a21064df3864a381463b237fd30c45ae53b7d78863ff5a554a032c99de74cf8",
+      "git_blob_sha": "86df80614e743a0a2118723cc23d776ce16bfc10",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/streamforest.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/configs/streamforest.json",
+      "sha256": "fb33e878989fe95d114b32ed99727b920368ab2b300e037e38ef6929fb105d69",
+      "git_blob_sha": "f02b2b9761e8afbb2f3d5c64aaadb9100265c3eb",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/__init__.py",
+      "sha256": "4710a3c8e21446291bee32f8b86c23973c5a404a5a3a7be1b659d445d40dab0b",
+      "git_blob_sha": "863ae92209f87985329196e9b7b1a441acbe903d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/annotations.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/annotations.py",
+      "sha256": "3481a2ed5f8641b557e6d5ad3800d2f90e223175a991dcf800dd591a47597574",
+      "git_blob_sha": "a357c6d291645825b74aef42343e3d87280a6acf",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/m3_dataset.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/m3_dataset.py",
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad",
+      "git_blob_sha": "82d6f964365f1ce34fd1746b8d8019c3cadda56a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/m3_inputs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/m3_inputs.py",
+      "sha256": "1da6c2e4fa903d4d118bd554b6de9545969448d7a1876e7349725be955fb597e",
+      "git_blob_sha": "ff0f3db4ba670ae524a84e58bab08347abe29e86",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_progress.py",
+      "sha256": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+      "git_blob_sha": "2cc293d79f0afb70b96af5ed5ba1f4ae03fa60f5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_progress_batch.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_progress_batch.py",
+      "sha256": "99be9a0034be500533f43ea6bc686aa88bc576329b066cfd0c5600f4204798fc",
+      "git_blob_sha": "4c5bc2e5fff7e271da1a35d821e6ed6c2eb5968c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_proprimem.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_proprimem.py",
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7",
+      "git_blob_sha": "91bfc4a96d6785c18428dbd211c7b3fa2938c08e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_recovery.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_recovery.py",
+      "sha256": "471fab01b5af60f815b7916a97594ac5f0f72256d6b8043f24eda4d07263c1f2",
+      "git_blob_sha": "54cea943ac70efd01fe5bc74cba7c5b333852dc8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/prepare_stream.py",
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804",
+      "git_blob_sha": "eb31201fb6fb860ce77d58f3a0b08f7c02d20822",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/datasets/views.py",
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249",
+      "git_blob_sha": "fbeb9fb81e57ee5d149d20dbc0e61649bbe8e505",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/LICENSE.StreamForest",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/LICENSE.StreamForest",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "kind": "license"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/__init__.py",
+      "sha256": "8381e12d9f06339246c735462745a05f40338630d07cc4ef6a6265bd27e80fd5",
+      "git_blob_sha": "9e1f919e27243a2073f56e02c39825e35b1b4917",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/manager.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/manager.py",
+      "sha256": "25f0fc2955fd9f435b5626c09529185af6430594ddc5054d1635e025333c771a",
+      "git_blob_sha": "2867c7a33eca2cd6bc025103de3c7bc390ebb38a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/stream.py",
+      "sha256": "60c9af3fe686983a66fcd4466352c2dd9791e27367b72a51511a4ddacf1f89db",
+      "git_blob_sha": "4f7d5bc47823451ca6eb8121c77be6413eba60c9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/tome.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/tome.py",
+      "sha256": "bf1351dcdf0f55cf7b36924ccf114ff376fe38c6ba83ac46b43abc9057d65131",
+      "git_blob_sha": "b121e963c0ed6103b25fe7b9876ae4bdb28d7c01",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/vision.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/memory/vision.py",
+      "sha256": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b",
+      "git_blob_sha": "aec50dcc0f03e4c70c37f61a30c1a6ecb413a3d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/models/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/models/__init__.py",
+      "sha256": "8b9545b664dd7e62ed1d4c9e4a8173636f6adf309996b46dde34dc8d65050a78",
+      "git_blob_sha": "eceb615cb0e3ced74ee9bcee0612fb188cfe8c4a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/models/cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/models/cross_attention.py",
+      "sha256": "783acd1919e2a4269f5772748e23fb5b4488d0754dfafa813b21601b46955bde",
+      "git_blob_sha": "dacb0ea9d355241bb6b070f0f69a3de06ca9b383",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/models/m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/models/m3_predictor.py",
+      "sha256": "21d5d709c2aff227e9dde4c12f60b820641b76921177bb48f33174e380a787ef",
+      "git_blob_sha": "49b8a4f9b92c07ae7ac6f20aed73150e4e4634c7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/conftest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/conftest.py",
+      "sha256": "8e1b5ed2a6a95c6bf32fa22ee41f13de7395a20a85f609b03dc12f7f640109cc",
+      "git_blob_sha": "d7b73d9f5114b73614e7eba2a68073066da862b4",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_cross_attention.py",
+      "sha256": "3873e528cc2d833d902dd680e6b9cb77f9e41bcc7cc3b31ffcc120dea3248348",
+      "git_blob_sha": "e10548e7e8556e0741cdecade1c077605dda969e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_m3_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_m3_data.py",
+      "sha256": "c2513cdac15af23264f41ba0c13fe5113fa316d7d454d0a2b05ef602c3ccf959",
+      "git_blob_sha": "e82d0a95cd637fec82a633e3c72c8ebaf1e87c69",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_m3_predictor.py",
+      "sha256": "3498e8faa91ef7a88c5ca270cccb80cc677ab74dbfbc30a43086381263fa7b4a",
+      "git_blob_sha": "a3f2ed53a77c6e18175a9d6a372e237c9533f536",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_partial_views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_partial_views.py",
+      "sha256": "6b35bcb7c8bb970195b835e5a7ca60127f05d64b26aa30338d5607571f26e1a0",
+      "git_blob_sha": "3c3e15055c24a1fc3da60f08e3339b41b1a726d9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_progress_labels.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_progress_labels.py",
+      "sha256": "fc145b8308a85f9a52c735e180acc923518e0412d22fb50761f8757b94547702",
+      "git_blob_sha": "c97fe907dd3b15b3fd0be462e9fdf55b6d843502",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_proprimem_preparation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_proprimem_preparation.py",
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4",
+      "git_blob_sha": "73eccf54aad1a508fceafc5ed43089116157a913",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_recovery_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_recovery_data.py",
+      "sha256": "87351c8692372536ffb81b787b14b518fbb29438d31d1a2fbad4c25c964005c3",
+      "git_blob_sha": "3e4a04c129d013826b335ed46a54d103a9757a3d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_stage3_training.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_stage3_training.py",
+      "sha256": "3127dd5365501cb7d98fcc74d0182c75033b9013d0ca31a3ea39775cc69b7039",
+      "git_blob_sha": "0893b6944122c399bd1a8b46878008b8d93364d3",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_stream_pipeline.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_stream_pipeline.py",
+      "sha256": "5813b28fadec5c8a228880ebd32f1cf2725ca476372a39b496ac377fbf4f8dc8",
+      "git_blob_sha": "53cc4808879d1bd60c91f29089a920d6a0fd96c1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_streamforest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/mem_lite/tests/test_streamforest.py",
+      "sha256": "da9eef63581f11538d78cad16acaf66df5b081aa66f94f7e63443881201ebbc4",
+      "git_blob_sha": "f8445d1ecd130e509b9fe7b68056ba59063a5f29",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/qwen_training/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/qwen_training/__init__.py",
+      "sha256": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+      "git_blob_sha": "b00127713cc17f5828c7287287229667640df6de",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/qwen_training/delta_to_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-noordinal-check-20261101-201743/qwen_training/delta_to_progress.py",
+      "sha256": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+      "git_blob_sha": "c4b8737e2c8fac29e64e15cfaeb772caeff86efd",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/README.md",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/README.md",
+      "sha256": "6e9ad08bd54b5009680ad8a803dbe3ff1322493622ae1f42eaf8233ae87dc51d",
+      "git_blob_sha": "20830debb4a950d325b07e95c216d6b361495d1d",
+      "kind": "documentation"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/__init__.py",
+      "sha256": "ce281cd44dae1f490008a743442d1586b59190dc736ef4b833f7f88fa9835937",
+      "git_blob_sha": "f2e0c8e23037f2b54f0c8dacdc4e35ce226045e0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/evaluate.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/evaluate.py",
+      "sha256": "049ba88b26e0a44d75fbe23ef30171c02819dd0655a26c71e413359088085d6f",
+      "git_blob_sha": "6a2f82ad22cb53e55ab8e0941853ff9508a42238",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/requirements-data.txt",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/requirements-data.txt",
+      "sha256": "d9561391b42441ffb8d8a3ddc2831545af06f6359d26013f7d7091959cca194e",
+      "git_blob_sha": "1a16c0571dfe6fe7df3dcfbb8727545ae0b8ad84",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/requirements-train.txt",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/requirements-train.txt",
+      "sha256": "15cf63581f30d55938205c0c299a4b35cbeb5113b6ae8545bdfc089a696c70fc",
+      "git_blob_sha": "93cab32fb0ee8d8c6509c68cf6b29b339d9b951b",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/runtime.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/runtime.py",
+      "sha256": "625f6f16ce544eb4f08b191a74fa6525a244109a5eabe9b693127bdf02e815e9",
+      "git_blob_sha": "c1dbceefb4eeac55da51e81886aa59c498d24ddf",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/train_stage3.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/train_stage3.py",
+      "sha256": "c5b31a484d2d409f55bf0b7064f824c6d0abcc4317e818a2c4f07baeb6761b18",
+      "git_blob_sha": "cb57cfc69d0860c13d0f827350b908cbbe85c707",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/a100_crossattn_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/a100_crossattn_train.json",
+      "sha256": "315cc12e5fadcf4e4b7d2b9de1bd04a5ee4a8c257a2c1f153861280c8457d7d7",
+      "git_blob_sha": "890d2c5ee631dfc2d39df4c7aadae4b32dfadd14",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/m3_model.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/m3_model.json",
+      "sha256": "aad6c2ed0417ff82d15f8459fe8360a5df82d7176fd8b1b4831d66ce2e3b6f5a",
+      "git_blob_sha": "d93fea5854713447dfab17f8e661ef02c6d6b0af",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/stage3_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/stage3_train.json",
+      "sha256": "9a21064df3864a381463b237fd30c45ae53b7d78863ff5a554a032c99de74cf8",
+      "git_blob_sha": "86df80614e743a0a2118723cc23d776ce16bfc10",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/streamforest.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/configs/streamforest.json",
+      "sha256": "fb33e878989fe95d114b32ed99727b920368ab2b300e037e38ef6929fb105d69",
+      "git_blob_sha": "f02b2b9761e8afbb2f3d5c64aaadb9100265c3eb",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/__init__.py",
+      "sha256": "4710a3c8e21446291bee32f8b86c23973c5a404a5a3a7be1b659d445d40dab0b",
+      "git_blob_sha": "863ae92209f87985329196e9b7b1a441acbe903d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/annotations.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/annotations.py",
+      "sha256": "3481a2ed5f8641b557e6d5ad3800d2f90e223175a991dcf800dd591a47597574",
+      "git_blob_sha": "a357c6d291645825b74aef42343e3d87280a6acf",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/m3_dataset.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/m3_dataset.py",
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad",
+      "git_blob_sha": "82d6f964365f1ce34fd1746b8d8019c3cadda56a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/m3_inputs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/m3_inputs.py",
+      "sha256": "1da6c2e4fa903d4d118bd554b6de9545969448d7a1876e7349725be955fb597e",
+      "git_blob_sha": "ff0f3db4ba670ae524a84e58bab08347abe29e86",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_progress.py",
+      "sha256": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+      "git_blob_sha": "2cc293d79f0afb70b96af5ed5ba1f4ae03fa60f5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_progress_batch.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_progress_batch.py",
+      "sha256": "99be9a0034be500533f43ea6bc686aa88bc576329b066cfd0c5600f4204798fc",
+      "git_blob_sha": "4c5bc2e5fff7e271da1a35d821e6ed6c2eb5968c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_proprimem.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_proprimem.py",
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7",
+      "git_blob_sha": "91bfc4a96d6785c18428dbd211c7b3fa2938c08e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_recovery.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_recovery.py",
+      "sha256": "471fab01b5af60f815b7916a97594ac5f0f72256d6b8043f24eda4d07263c1f2",
+      "git_blob_sha": "54cea943ac70efd01fe5bc74cba7c5b333852dc8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/prepare_stream.py",
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804",
+      "git_blob_sha": "eb31201fb6fb860ce77d58f3a0b08f7c02d20822",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/datasets/views.py",
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249",
+      "git_blob_sha": "fbeb9fb81e57ee5d149d20dbc0e61649bbe8e505",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/LICENSE.StreamForest",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/LICENSE.StreamForest",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "kind": "license"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/__init__.py",
+      "sha256": "8381e12d9f06339246c735462745a05f40338630d07cc4ef6a6265bd27e80fd5",
+      "git_blob_sha": "9e1f919e27243a2073f56e02c39825e35b1b4917",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/manager.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/manager.py",
+      "sha256": "25f0fc2955fd9f435b5626c09529185af6430594ddc5054d1635e025333c771a",
+      "git_blob_sha": "2867c7a33eca2cd6bc025103de3c7bc390ebb38a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/stream.py",
+      "sha256": "60c9af3fe686983a66fcd4466352c2dd9791e27367b72a51511a4ddacf1f89db",
+      "git_blob_sha": "4f7d5bc47823451ca6eb8121c77be6413eba60c9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/tome.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/tome.py",
+      "sha256": "bf1351dcdf0f55cf7b36924ccf114ff376fe38c6ba83ac46b43abc9057d65131",
+      "git_blob_sha": "b121e963c0ed6103b25fe7b9876ae4bdb28d7c01",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/vision.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/memory/vision.py",
+      "sha256": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b",
+      "git_blob_sha": "aec50dcc0f03e4c70c37f61a30c1a6ecb413a3d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/models/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/models/__init__.py",
+      "sha256": "8b9545b664dd7e62ed1d4c9e4a8173636f6adf309996b46dde34dc8d65050a78",
+      "git_blob_sha": "eceb615cb0e3ced74ee9bcee0612fb188cfe8c4a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/models/cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/models/cross_attention.py",
+      "sha256": "b591720a997ea082fa46494aba7a40c4bab3f82148c425a0c980ff9cb1392476",
+      "git_blob_sha": "e789e8f8338149582068d79001200637eb282383",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/models/m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/models/m3_predictor.py",
+      "sha256": "21d5d709c2aff227e9dde4c12f60b820641b76921177bb48f33174e380a787ef",
+      "git_blob_sha": "49b8a4f9b92c07ae7ac6f20aed73150e4e4634c7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/conftest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/conftest.py",
+      "sha256": "8e1b5ed2a6a95c6bf32fa22ee41f13de7395a20a85f609b03dc12f7f640109cc",
+      "git_blob_sha": "d7b73d9f5114b73614e7eba2a68073066da862b4",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_cross_attention.py",
+      "sha256": "eee62799d637c66e8eab6c3a9a355a5ef5292342d375e258464aa82d8e86be0d",
+      "git_blob_sha": "986a4fada5c59f01f68083712ccf41491bddb009",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_m3_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_m3_data.py",
+      "sha256": "c2513cdac15af23264f41ba0c13fe5113fa316d7d454d0a2b05ef602c3ccf959",
+      "git_blob_sha": "e82d0a95cd637fec82a633e3c72c8ebaf1e87c69",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_m3_predictor.py",
+      "sha256": "3498e8faa91ef7a88c5ca270cccb80cc677ab74dbfbc30a43086381263fa7b4a",
+      "git_blob_sha": "a3f2ed53a77c6e18175a9d6a372e237c9533f536",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_partial_views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_partial_views.py",
+      "sha256": "6b35bcb7c8bb970195b835e5a7ca60127f05d64b26aa30338d5607571f26e1a0",
+      "git_blob_sha": "3c3e15055c24a1fc3da60f08e3339b41b1a726d9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_progress_labels.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_progress_labels.py",
+      "sha256": "fc145b8308a85f9a52c735e180acc923518e0412d22fb50761f8757b94547702",
+      "git_blob_sha": "c97fe907dd3b15b3fd0be462e9fdf55b6d843502",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_proprimem_preparation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_proprimem_preparation.py",
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4",
+      "git_blob_sha": "73eccf54aad1a508fceafc5ed43089116157a913",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_recovery_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_recovery_data.py",
+      "sha256": "87351c8692372536ffb81b787b14b518fbb29438d31d1a2fbad4c25c964005c3",
+      "git_blob_sha": "3e4a04c129d013826b335ed46a54d103a9757a3d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_stage3_training.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_stage3_training.py",
+      "sha256": "2f3d3642af236cfc9be3d0c67e12e5e448fa249d969bb579202ad5d7e608174b",
+      "git_blob_sha": "c8c51a975c8258cae60995bf7d6ada89b20595ad",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_stream_pipeline.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_stream_pipeline.py",
+      "sha256": "5813b28fadec5c8a228880ebd32f1cf2725ca476372a39b496ac377fbf4f8dc8",
+      "git_blob_sha": "53cc4808879d1bd60c91f29089a920d6a0fd96c1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_streamforest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/mem_lite/tests/test_streamforest.py",
+      "sha256": "da9eef63581f11538d78cad16acaf66df5b081aa66f94f7e63443881201ebbc4",
+      "git_blob_sha": "f8445d1ecd130e509b9fe7b68056ba59063a5f29",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/qwen_training/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/qwen_training/__init__.py",
+      "sha256": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+      "git_blob_sha": "b00127713cc17f5828c7287287229667640df6de",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/qwen_training/delta_to_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-preflight-20261101-174843/qwen_training/delta_to_progress.py",
+      "sha256": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+      "git_blob_sha": "c4b8737e2c8fac29e64e15cfaeb772caeff86efd",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/__init__.py",
+      "sha256": "ce281cd44dae1f490008a743442d1586b59190dc736ef4b833f7f88fa9835937",
+      "git_blob_sha": "f2e0c8e23037f2b54f0c8dacdc4e35ce226045e0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/evaluate.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/evaluate.py",
+      "sha256": "049ba88b26e0a44d75fbe23ef30171c02819dd0655a26c71e413359088085d6f",
+      "git_blob_sha": "6a2f82ad22cb53e55ab8e0941853ff9508a42238",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/periodic_validation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/periodic_validation.py",
+      "sha256": "207d66ecc965d24052d24f8f99296c4effdf9c125b03b69289efb8f161195a85",
+      "git_blob_sha": "8f58f79d7826a0229491a3350a6351aeba7cd891",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/runtime.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/runtime.py",
+      "sha256": "cffbe1c8050e4db1f42f00ef6032d7d2d6e41e38204f95e2a499d6561337babf",
+      "git_blob_sha": "0ca575196e8c26089db2865b5af45e0f18b51a1e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/train_stage3.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/train_stage3.py",
+      "sha256": "9a697240092fc7324144cd6a751fa8f55ac1f9e2c9db09d01c57a0c5c489d725",
+      "git_blob_sha": "4db667aaa307c8c04812a43a98f69a47f9502dd8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/a100_crossattn_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/a100_crossattn_train.json",
+      "sha256": "315cc12e5fadcf4e4b7d2b9de1bd04a5ee4a8c257a2c1f153861280c8457d7d7",
+      "git_blob_sha": "890d2c5ee631dfc2d39df4c7aadae4b32dfadd14",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/m3_model.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/m3_model.json",
+      "sha256": "aad6c2ed0417ff82d15f8459fe8360a5df82d7176fd8b1b4831d66ce2e3b6f5a",
+      "git_blob_sha": "d93fea5854713447dfab17f8e661ef02c6d6b0af",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/stage3_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/stage3_train.json",
+      "sha256": "9a21064df3864a381463b237fd30c45ae53b7d78863ff5a554a032c99de74cf8",
+      "git_blob_sha": "86df80614e743a0a2118723cc23d776ce16bfc10",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/streamforest.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/configs/streamforest.json",
+      "sha256": "fb33e878989fe95d114b32ed99727b920368ab2b300e037e38ef6929fb105d69",
+      "git_blob_sha": "f02b2b9761e8afbb2f3d5c64aaadb9100265c3eb",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/__init__.py",
+      "sha256": "4710a3c8e21446291bee32f8b86c23973c5a404a5a3a7be1b659d445d40dab0b",
+      "git_blob_sha": "863ae92209f87985329196e9b7b1a441acbe903d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/annotations.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/annotations.py",
+      "sha256": "3481a2ed5f8641b557e6d5ad3800d2f90e223175a991dcf800dd591a47597574",
+      "git_blob_sha": "a357c6d291645825b74aef42343e3d87280a6acf",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/m3_dataset.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/m3_dataset.py",
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad",
+      "git_blob_sha": "82d6f964365f1ce34fd1746b8d8019c3cadda56a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/m3_inputs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/m3_inputs.py",
+      "sha256": "1da6c2e4fa903d4d118bd554b6de9545969448d7a1876e7349725be955fb597e",
+      "git_blob_sha": "ff0f3db4ba670ae524a84e58bab08347abe29e86",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_progress.py",
+      "sha256": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+      "git_blob_sha": "2cc293d79f0afb70b96af5ed5ba1f4ae03fa60f5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_progress_batch.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_progress_batch.py",
+      "sha256": "99be9a0034be500533f43ea6bc686aa88bc576329b066cfd0c5600f4204798fc",
+      "git_blob_sha": "4c5bc2e5fff7e271da1a35d821e6ed6c2eb5968c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_proprimem.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_proprimem.py",
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7",
+      "git_blob_sha": "91bfc4a96d6785c18428dbd211c7b3fa2938c08e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_recovery.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_recovery.py",
+      "sha256": "471fab01b5af60f815b7916a97594ac5f0f72256d6b8043f24eda4d07263c1f2",
+      "git_blob_sha": "54cea943ac70efd01fe5bc74cba7c5b333852dc8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_recovery_pairs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_recovery_pairs.py",
+      "sha256": "18a561c048c6c248e7d6fc64a5ceffc2c0fdc9859cb82aeddecea47b1476535c",
+      "git_blob_sha": "0cc82d7cd52d6c61df08a4e8b4b161e1347d3d7c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_screw_mixed.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_screw_mixed.py",
+      "sha256": "f80db43b7c7b798274ac0748207d762979a29925bf9cefe64b83e92dd1ddcc63",
+      "git_blob_sha": "8bb978a43289a0e439fed0c6889b7f03048a3bf5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/prepare_stream.py",
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804",
+      "git_blob_sha": "eb31201fb6fb860ce77d58f3a0b08f7c02d20822",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/validate_recovery_pairs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/validate_recovery_pairs.py",
+      "sha256": "c174a7d53719a22ee2543ab708c628eabb32a950319cb8bdf3f61d691ce7a979",
+      "git_blob_sha": "8a250d1e314a76434a09232f200d837e4a677129",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/datasets/views.py",
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249",
+      "git_blob_sha": "fbeb9fb81e57ee5d149d20dbc0e61649bbe8e505",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/__init__.py",
+      "sha256": "8381e12d9f06339246c735462745a05f40338630d07cc4ef6a6265bd27e80fd5",
+      "git_blob_sha": "9e1f919e27243a2073f56e02c39825e35b1b4917",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/manager.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/manager.py",
+      "sha256": "25f0fc2955fd9f435b5626c09529185af6430594ddc5054d1635e025333c771a",
+      "git_blob_sha": "2867c7a33eca2cd6bc025103de3c7bc390ebb38a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/stream.py",
+      "sha256": "60c9af3fe686983a66fcd4466352c2dd9791e27367b72a51511a4ddacf1f89db",
+      "git_blob_sha": "4f7d5bc47823451ca6eb8121c77be6413eba60c9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/tome.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/tome.py",
+      "sha256": "bf1351dcdf0f55cf7b36924ccf114ff376fe38c6ba83ac46b43abc9057d65131",
+      "git_blob_sha": "b121e963c0ed6103b25fe7b9876ae4bdb28d7c01",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/vision.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/memory/vision.py",
+      "sha256": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b",
+      "git_blob_sha": "aec50dcc0f03e4c70c37f61a30c1a6ecb413a3d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/models/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/models/__init__.py",
+      "sha256": "8b9545b664dd7e62ed1d4c9e4a8173636f6adf309996b46dde34dc8d65050a78",
+      "git_blob_sha": "eceb615cb0e3ced74ee9bcee0612fb188cfe8c4a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/models/cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/models/cross_attention.py",
+      "sha256": "783acd1919e2a4269f5772748e23fb5b4488d0754dfafa813b21601b46955bde",
+      "git_blob_sha": "dacb0ea9d355241bb6b070f0f69a3de06ca9b383",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/models/m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/models/m3_predictor.py",
+      "sha256": "21d5d709c2aff227e9dde4c12f60b820641b76921177bb48f33174e380a787ef",
+      "git_blob_sha": "49b8a4f9b92c07ae7ac6f20aed73150e4e4634c7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/conftest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/conftest.py",
+      "sha256": "8e1b5ed2a6a95c6bf32fa22ee41f13de7395a20a85f609b03dc12f7f640109cc",
+      "git_blob_sha": "d7b73d9f5114b73614e7eba2a68073066da862b4",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_cross_attention.py",
+      "sha256": "3873e528cc2d833d902dd680e6b9cb77f9e41bcc7cc3b31ffcc120dea3248348",
+      "git_blob_sha": "e10548e7e8556e0741cdecade1c077605dda969e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_m3_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_m3_data.py",
+      "sha256": "c2513cdac15af23264f41ba0c13fe5113fa316d7d454d0a2b05ef602c3ccf959",
+      "git_blob_sha": "e82d0a95cd637fec82a633e3c72c8ebaf1e87c69",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_m3_predictor.py",
+      "sha256": "3498e8faa91ef7a88c5ca270cccb80cc677ab74dbfbc30a43086381263fa7b4a",
+      "git_blob_sha": "a3f2ed53a77c6e18175a9d6a372e237c9533f536",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_partial_views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_partial_views.py",
+      "sha256": "6b35bcb7c8bb970195b835e5a7ca60127f05d64b26aa30338d5607571f26e1a0",
+      "git_blob_sha": "3c3e15055c24a1fc3da60f08e3339b41b1a726d9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_periodic_validation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_periodic_validation.py",
+      "sha256": "a99ffab68c071090a2156960924b5e37c92f156157956829de928c76d4a68c1d",
+      "git_blob_sha": "746c8b0f2fe3966a956d4942ce88558d720be0ee",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_progress_labels.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_progress_labels.py",
+      "sha256": "fc145b8308a85f9a52c735e180acc923518e0412d22fb50761f8757b94547702",
+      "git_blob_sha": "c97fe907dd3b15b3fd0be462e9fdf55b6d843502",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_proprimem_preparation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_proprimem_preparation.py",
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4",
+      "git_blob_sha": "73eccf54aad1a508fceafc5ed43089116157a913",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_recovery_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_recovery_data.py",
+      "sha256": "87351c8692372536ffb81b787b14b518fbb29438d31d1a2fbad4c25c964005c3",
+      "git_blob_sha": "3e4a04c129d013826b335ed46a54d103a9757a3d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_recovery_pairs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_recovery_pairs.py",
+      "sha256": "959aed31c0570b9616d904b39952dc8cbef75fc59eafbc2f270ca6aad3a02e82",
+      "git_blob_sha": "b680b142020c9bcb4c8b1cd44d5d0ce8bf0f0e2f",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_screw_mixed_augmentation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_screw_mixed_augmentation.py",
+      "sha256": "c6ce32fd707d0eae713fbb7678a0017d4bf4633502e9bb65f6f3d80a7738d4d3",
+      "git_blob_sha": "9e41d399d320b6e8633502996657e6bac784a7fe",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_stage3_training.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_stage3_training.py",
+      "sha256": "e159dc3980fb95ad506148b0d778bb3d9f5c454aa459b936a9e9c34ea82992bc",
+      "git_blob_sha": "e80a0c12b7f475d846906b0d9f689d9f21bb1067",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_stream_pipeline.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_stream_pipeline.py",
+      "sha256": "5813b28fadec5c8a228880ebd32f1cf2725ca476372a39b496ac377fbf4f8dc8",
+      "git_blob_sha": "53cc4808879d1bd60c91f29089a920d6a0fd96c1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_streamforest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/mem_lite/tests/test_streamforest.py",
+      "sha256": "da9eef63581f11538d78cad16acaf66df5b081aa66f94f7e63443881201ebbc4",
+      "git_blob_sha": "f8445d1ecd130e509b9fe7b68056ba59063a5f29",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/qwen_training/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/qwen_training/__init__.py",
+      "sha256": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+      "git_blob_sha": "b00127713cc17f5828c7287287229667640df6de",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/qwen_training/delta_to_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/qwen_training/delta_to_progress.py",
+      "sha256": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+      "git_blob_sha": "c4b8737e2c8fac29e64e15cfaeb772caeff86efd",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/pyproject.toml",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/pyproject.toml",
+      "sha256": "c4c9a9d2d20b3032582cf5a1ad03707125ac2d3c2758b8dd34666601c6ccb038",
+      "git_blob_sha": "e458409ddebfe9ddf3c7b1b0626184ac4144fb85",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/README.md",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/README.md",
+      "sha256": "f693791628c708a5559ece8a136ebd97233c61ce850b5020d2818922ec48f549",
+      "git_blob_sha": "dceda07545c30f120e2615f9e3c413f990e31feb",
+      "kind": "documentation"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/__init__.py",
+      "sha256": "ce281cd44dae1f490008a743442d1586b59190dc736ef4b833f7f88fa9835937",
+      "git_blob_sha": "f2e0c8e23037f2b54f0c8dacdc4e35ce226045e0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/evaluate.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/evaluate.py",
+      "sha256": "049ba88b26e0a44d75fbe23ef30171c02819dd0655a26c71e413359088085d6f",
+      "git_blob_sha": "6a2f82ad22cb53e55ab8e0941853ff9508a42238",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/requirements-data.txt",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/requirements-data.txt",
+      "sha256": "d9561391b42441ffb8d8a3ddc2831545af06f6359d26013f7d7091959cca194e",
+      "git_blob_sha": "1a16c0571dfe6fe7df3dcfbb8727545ae0b8ad84",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/requirements-train.txt",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/requirements-train.txt",
+      "sha256": "15cf63581f30d55938205c0c299a4b35cbeb5113b6ae8545bdfc089a696c70fc",
+      "git_blob_sha": "93cab32fb0ee8d8c6509c68cf6b29b339d9b951b",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/runtime.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/runtime.py",
+      "sha256": "cffbe1c8050e4db1f42f00ef6032d7d2d6e41e38204f95e2a499d6561337babf",
+      "git_blob_sha": "0ca575196e8c26089db2865b5af45e0f18b51a1e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/train_stage3.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/train_stage3.py",
+      "sha256": "7fab1c20efe49bfa0d086b38532f7d193ba4df4a1d8571dafcda6d8afc604d0c",
+      "git_blob_sha": "7904250a393ab31628c628753130e4abf3b503ad",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/a100_crossattn_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/a100_crossattn_train.json",
+      "sha256": "315cc12e5fadcf4e4b7d2b9de1bd04a5ee4a8c257a2c1f153861280c8457d7d7",
+      "git_blob_sha": "890d2c5ee631dfc2d39df4c7aadae4b32dfadd14",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/m3_model.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/m3_model.json",
+      "sha256": "aad6c2ed0417ff82d15f8459fe8360a5df82d7176fd8b1b4831d66ce2e3b6f5a",
+      "git_blob_sha": "d93fea5854713447dfab17f8e661ef02c6d6b0af",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/stage3_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/stage3_train.json",
+      "sha256": "9a21064df3864a381463b237fd30c45ae53b7d78863ff5a554a032c99de74cf8",
+      "git_blob_sha": "86df80614e743a0a2118723cc23d776ce16bfc10",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/streamforest.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/configs/streamforest.json",
+      "sha256": "fb33e878989fe95d114b32ed99727b920368ab2b300e037e38ef6929fb105d69",
+      "git_blob_sha": "f02b2b9761e8afbb2f3d5c64aaadb9100265c3eb",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/__init__.py",
+      "sha256": "4710a3c8e21446291bee32f8b86c23973c5a404a5a3a7be1b659d445d40dab0b",
+      "git_blob_sha": "863ae92209f87985329196e9b7b1a441acbe903d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/annotations.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/annotations.py",
+      "sha256": "3481a2ed5f8641b557e6d5ad3800d2f90e223175a991dcf800dd591a47597574",
+      "git_blob_sha": "a357c6d291645825b74aef42343e3d87280a6acf",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/m3_dataset.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/m3_dataset.py",
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad",
+      "git_blob_sha": "82d6f964365f1ce34fd1746b8d8019c3cadda56a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/m3_inputs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/m3_inputs.py",
+      "sha256": "1da6c2e4fa903d4d118bd554b6de9545969448d7a1876e7349725be955fb597e",
+      "git_blob_sha": "ff0f3db4ba670ae524a84e58bab08347abe29e86",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_progress.py",
+      "sha256": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+      "git_blob_sha": "2cc293d79f0afb70b96af5ed5ba1f4ae03fa60f5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_progress_batch.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_progress_batch.py",
+      "sha256": "99be9a0034be500533f43ea6bc686aa88bc576329b066cfd0c5600f4204798fc",
+      "git_blob_sha": "4c5bc2e5fff7e271da1a35d821e6ed6c2eb5968c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_proprimem.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_proprimem.py",
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7",
+      "git_blob_sha": "91bfc4a96d6785c18428dbd211c7b3fa2938c08e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_recovery.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_recovery.py",
+      "sha256": "471fab01b5af60f815b7916a97594ac5f0f72256d6b8043f24eda4d07263c1f2",
+      "git_blob_sha": "54cea943ac70efd01fe5bc74cba7c5b333852dc8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/prepare_stream.py",
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804",
+      "git_blob_sha": "eb31201fb6fb860ce77d58f3a0b08f7c02d20822",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/datasets/views.py",
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249",
+      "git_blob_sha": "fbeb9fb81e57ee5d149d20dbc0e61649bbe8e505",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/LICENSE.StreamForest",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/LICENSE.StreamForest",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "kind": "license"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/__init__.py",
+      "sha256": "8381e12d9f06339246c735462745a05f40338630d07cc4ef6a6265bd27e80fd5",
+      "git_blob_sha": "9e1f919e27243a2073f56e02c39825e35b1b4917",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/manager.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/manager.py",
+      "sha256": "25f0fc2955fd9f435b5626c09529185af6430594ddc5054d1635e025333c771a",
+      "git_blob_sha": "2867c7a33eca2cd6bc025103de3c7bc390ebb38a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/stream.py",
+      "sha256": "60c9af3fe686983a66fcd4466352c2dd9791e27367b72a51511a4ddacf1f89db",
+      "git_blob_sha": "4f7d5bc47823451ca6eb8121c77be6413eba60c9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/tome.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/tome.py",
+      "sha256": "bf1351dcdf0f55cf7b36924ccf114ff376fe38c6ba83ac46b43abc9057d65131",
+      "git_blob_sha": "b121e963c0ed6103b25fe7b9876ae4bdb28d7c01",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/vision.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/memory/vision.py",
+      "sha256": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b",
+      "git_blob_sha": "aec50dcc0f03e4c70c37f61a30c1a6ecb413a3d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/models/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/models/__init__.py",
+      "sha256": "8b9545b664dd7e62ed1d4c9e4a8173636f6adf309996b46dde34dc8d65050a78",
+      "git_blob_sha": "eceb615cb0e3ced74ee9bcee0612fb188cfe8c4a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/models/cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/models/cross_attention.py",
+      "sha256": "783acd1919e2a4269f5772748e23fb5b4488d0754dfafa813b21601b46955bde",
+      "git_blob_sha": "dacb0ea9d355241bb6b070f0f69a3de06ca9b383",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/models/m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/models/m3_predictor.py",
+      "sha256": "21d5d709c2aff227e9dde4c12f60b820641b76921177bb48f33174e380a787ef",
+      "git_blob_sha": "49b8a4f9b92c07ae7ac6f20aed73150e4e4634c7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/conftest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/conftest.py",
+      "sha256": "8e1b5ed2a6a95c6bf32fa22ee41f13de7395a20a85f609b03dc12f7f640109cc",
+      "git_blob_sha": "d7b73d9f5114b73614e7eba2a68073066da862b4",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_cross_attention.py",
+      "sha256": "3873e528cc2d833d902dd680e6b9cb77f9e41bcc7cc3b31ffcc120dea3248348",
+      "git_blob_sha": "e10548e7e8556e0741cdecade1c077605dda969e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_m3_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_m3_data.py",
+      "sha256": "c2513cdac15af23264f41ba0c13fe5113fa316d7d454d0a2b05ef602c3ccf959",
+      "git_blob_sha": "e82d0a95cd637fec82a633e3c72c8ebaf1e87c69",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_m3_predictor.py",
+      "sha256": "3498e8faa91ef7a88c5ca270cccb80cc677ab74dbfbc30a43086381263fa7b4a",
+      "git_blob_sha": "a3f2ed53a77c6e18175a9d6a372e237c9533f536",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_partial_views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_partial_views.py",
+      "sha256": "6b35bcb7c8bb970195b835e5a7ca60127f05d64b26aa30338d5607571f26e1a0",
+      "git_blob_sha": "3c3e15055c24a1fc3da60f08e3339b41b1a726d9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_progress_labels.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_progress_labels.py",
+      "sha256": "fc145b8308a85f9a52c735e180acc923518e0412d22fb50761f8757b94547702",
+      "git_blob_sha": "c97fe907dd3b15b3fd0be462e9fdf55b6d843502",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_proprimem_preparation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_proprimem_preparation.py",
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4",
+      "git_blob_sha": "73eccf54aad1a508fceafc5ed43089116157a913",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_recovery_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_recovery_data.py",
+      "sha256": "87351c8692372536ffb81b787b14b518fbb29438d31d1a2fbad4c25c964005c3",
+      "git_blob_sha": "3e4a04c129d013826b335ed46a54d103a9757a3d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_stage3_training.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_stage3_training.py",
+      "sha256": "3127dd5365501cb7d98fcc74d0182c75033b9013d0ca31a3ea39775cc69b7039",
+      "git_blob_sha": "0893b6944122c399bd1a8b46878008b8d93364d3",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_stream_pipeline.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_stream_pipeline.py",
+      "sha256": "5813b28fadec5c8a228880ebd32f1cf2725ca476372a39b496ac377fbf4f8dc8",
+      "git_blob_sha": "53cc4808879d1bd60c91f29089a920d6a0fd96c1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_streamforest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/mem_lite/tests/test_streamforest.py",
+      "sha256": "da9eef63581f11538d78cad16acaf66df5b081aa66f94f7e63443881201ebbc4",
+      "git_blob_sha": "f8445d1ecd130e509b9fe7b68056ba59063a5f29",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/qwen_training/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/qwen_training/__init__.py",
+      "sha256": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+      "git_blob_sha": "b00127713cc17f5828c7287287229667640df6de",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/qwen_training/delta_to_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/forest-crossattn-v2-e3-20261101-210436/qwen_training/delta_to_progress.py",
+      "sha256": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+      "git_blob_sha": "c4b8737e2c8fac29e64e15cfaeb772caeff86efd",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/__init__.py",
+      "sha256": "ce281cd44dae1f490008a743442d1586b59190dc736ef4b833f7f88fa9835937",
+      "git_blob_sha": "f2e0c8e23037f2b54f0c8dacdc4e35ce226045e0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/evaluate.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/evaluate.py",
+      "sha256": "049ba88b26e0a44d75fbe23ef30171c02819dd0655a26c71e413359088085d6f",
+      "git_blob_sha": "6a2f82ad22cb53e55ab8e0941853ff9508a42238",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/runtime.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/runtime.py",
+      "sha256": "cffbe1c8050e4db1f42f00ef6032d7d2d6e41e38204f95e2a499d6561337babf",
+      "git_blob_sha": "0ca575196e8c26089db2865b5af45e0f18b51a1e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/train_stage3.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/train_stage3.py",
+      "sha256": "25b127849498ff2a1ea913112017b71d0869a644e8f9016787b10f91c8777c28",
+      "git_blob_sha": "1fbace203613700803fcab34e09013977ace5e3f",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/a100_crossattn_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/a100_crossattn_train.json",
+      "sha256": "315cc12e5fadcf4e4b7d2b9de1bd04a5ee4a8c257a2c1f153861280c8457d7d7",
+      "git_blob_sha": "890d2c5ee631dfc2d39df4c7aadae4b32dfadd14",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/m3_model.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/m3_model.json",
+      "sha256": "aad6c2ed0417ff82d15f8459fe8360a5df82d7176fd8b1b4831d66ce2e3b6f5a",
+      "git_blob_sha": "d93fea5854713447dfab17f8e661ef02c6d6b0af",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/stage3_train.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/stage3_train.json",
+      "sha256": "9a21064df3864a381463b237fd30c45ae53b7d78863ff5a554a032c99de74cf8",
+      "git_blob_sha": "86df80614e743a0a2118723cc23d776ce16bfc10",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/streamforest.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/configs/streamforest.json",
+      "sha256": "fb33e878989fe95d114b32ed99727b920368ab2b300e037e38ef6929fb105d69",
+      "git_blob_sha": "f02b2b9761e8afbb2f3d5c64aaadb9100265c3eb",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/__init__.py",
+      "sha256": "4710a3c8e21446291bee32f8b86c23973c5a404a5a3a7be1b659d445d40dab0b",
+      "git_blob_sha": "863ae92209f87985329196e9b7b1a441acbe903d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/annotations.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/annotations.py",
+      "sha256": "3481a2ed5f8641b557e6d5ad3800d2f90e223175a991dcf800dd591a47597574",
+      "git_blob_sha": "a357c6d291645825b74aef42343e3d87280a6acf",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/m3_dataset.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/m3_dataset.py",
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad",
+      "git_blob_sha": "82d6f964365f1ce34fd1746b8d8019c3cadda56a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/m3_inputs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/m3_inputs.py",
+      "sha256": "1da6c2e4fa903d4d118bd554b6de9545969448d7a1876e7349725be955fb597e",
+      "git_blob_sha": "ff0f3db4ba670ae524a84e58bab08347abe29e86",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_progress.py",
+      "sha256": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+      "git_blob_sha": "2cc293d79f0afb70b96af5ed5ba1f4ae03fa60f5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_progress_batch.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_progress_batch.py",
+      "sha256": "99be9a0034be500533f43ea6bc686aa88bc576329b066cfd0c5600f4204798fc",
+      "git_blob_sha": "4c5bc2e5fff7e271da1a35d821e6ed6c2eb5968c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_proprimem.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_proprimem.py",
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7",
+      "git_blob_sha": "91bfc4a96d6785c18428dbd211c7b3fa2938c08e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_recovery.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_recovery.py",
+      "sha256": "471fab01b5af60f815b7916a97594ac5f0f72256d6b8043f24eda4d07263c1f2",
+      "git_blob_sha": "54cea943ac70efd01fe5bc74cba7c5b333852dc8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_recovery_pairs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_recovery_pairs.py",
+      "sha256": "18a561c048c6c248e7d6fc64a5ceffc2c0fdc9859cb82aeddecea47b1476535c",
+      "git_blob_sha": "0cc82d7cd52d6c61df08a4e8b4b161e1347d3d7c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_screw_mixed.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_screw_mixed.py",
+      "sha256": "f80db43b7c7b798274ac0748207d762979a29925bf9cefe64b83e92dd1ddcc63",
+      "git_blob_sha": "8bb978a43289a0e439fed0c6889b7f03048a3bf5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/prepare_stream.py",
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804",
+      "git_blob_sha": "eb31201fb6fb860ce77d58f3a0b08f7c02d20822",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/validate_recovery_pairs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/validate_recovery_pairs.py",
+      "sha256": "c174a7d53719a22ee2543ab708c628eabb32a950319cb8bdf3f61d691ce7a979",
+      "git_blob_sha": "8a250d1e314a76434a09232f200d837e4a677129",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/datasets/views.py",
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249",
+      "git_blob_sha": "fbeb9fb81e57ee5d149d20dbc0e61649bbe8e505",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/__init__.py",
+      "sha256": "8381e12d9f06339246c735462745a05f40338630d07cc4ef6a6265bd27e80fd5",
+      "git_blob_sha": "9e1f919e27243a2073f56e02c39825e35b1b4917",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/manager.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/manager.py",
+      "sha256": "25f0fc2955fd9f435b5626c09529185af6430594ddc5054d1635e025333c771a",
+      "git_blob_sha": "2867c7a33eca2cd6bc025103de3c7bc390ebb38a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/stream.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/stream.py",
+      "sha256": "60c9af3fe686983a66fcd4466352c2dd9791e27367b72a51511a4ddacf1f89db",
+      "git_blob_sha": "4f7d5bc47823451ca6eb8121c77be6413eba60c9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/tome.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/tome.py",
+      "sha256": "bf1351dcdf0f55cf7b36924ccf114ff376fe38c6ba83ac46b43abc9057d65131",
+      "git_blob_sha": "b121e963c0ed6103b25fe7b9876ae4bdb28d7c01",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/vision.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/memory/vision.py",
+      "sha256": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b",
+      "git_blob_sha": "aec50dcc0f03e4c70c37f61a30c1a6ecb413a3d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/models/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/models/__init__.py",
+      "sha256": "8b9545b664dd7e62ed1d4c9e4a8173636f6adf309996b46dde34dc8d65050a78",
+      "git_blob_sha": "eceb615cb0e3ced74ee9bcee0612fb188cfe8c4a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/models/cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/models/cross_attention.py",
+      "sha256": "783acd1919e2a4269f5772748e23fb5b4488d0754dfafa813b21601b46955bde",
+      "git_blob_sha": "dacb0ea9d355241bb6b070f0f69a3de06ca9b383",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/models/m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/models/m3_predictor.py",
+      "sha256": "21d5d709c2aff227e9dde4c12f60b820641b76921177bb48f33174e380a787ef",
+      "git_blob_sha": "49b8a4f9b92c07ae7ac6f20aed73150e4e4634c7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/conftest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/conftest.py",
+      "sha256": "8e1b5ed2a6a95c6bf32fa22ee41f13de7395a20a85f609b03dc12f7f640109cc",
+      "git_blob_sha": "d7b73d9f5114b73614e7eba2a68073066da862b4",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_cross_attention.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_cross_attention.py",
+      "sha256": "3873e528cc2d833d902dd680e6b9cb77f9e41bcc7cc3b31ffcc120dea3248348",
+      "git_blob_sha": "e10548e7e8556e0741cdecade1c077605dda969e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_m3_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_m3_data.py",
+      "sha256": "c2513cdac15af23264f41ba0c13fe5113fa316d7d454d0a2b05ef602c3ccf959",
+      "git_blob_sha": "e82d0a95cd637fec82a633e3c72c8ebaf1e87c69",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_m3_predictor.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_m3_predictor.py",
+      "sha256": "3498e8faa91ef7a88c5ca270cccb80cc677ab74dbfbc30a43086381263fa7b4a",
+      "git_blob_sha": "a3f2ed53a77c6e18175a9d6a372e237c9533f536",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_partial_views.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_partial_views.py",
+      "sha256": "6b35bcb7c8bb970195b835e5a7ca60127f05d64b26aa30338d5607571f26e1a0",
+      "git_blob_sha": "3c3e15055c24a1fc3da60f08e3339b41b1a726d9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_progress_labels.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_progress_labels.py",
+      "sha256": "fc145b8308a85f9a52c735e180acc923518e0412d22fb50761f8757b94547702",
+      "git_blob_sha": "c97fe907dd3b15b3fd0be462e9fdf55b6d843502",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_proprimem_preparation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_proprimem_preparation.py",
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4",
+      "git_blob_sha": "73eccf54aad1a508fceafc5ed43089116157a913",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_recovery_data.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_recovery_data.py",
+      "sha256": "87351c8692372536ffb81b787b14b518fbb29438d31d1a2fbad4c25c964005c3",
+      "git_blob_sha": "3e4a04c129d013826b335ed46a54d103a9757a3d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_recovery_pairs.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_recovery_pairs.py",
+      "sha256": "959aed31c0570b9616d904b39952dc8cbef75fc59eafbc2f270ca6aad3a02e82",
+      "git_blob_sha": "b680b142020c9bcb4c8b1cd44d5d0ce8bf0f0e2f",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_screw_mixed_augmentation.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_screw_mixed_augmentation.py",
+      "sha256": "c6ce32fd707d0eae713fbb7678a0017d4bf4633502e9bb65f6f3d80a7738d4d3",
+      "git_blob_sha": "9e41d399d320b6e8633502996657e6bac784a7fe",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_stage3_training.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_stage3_training.py",
+      "sha256": "04ec1e56853a1a4aba0dc3372ce9bcbd9e7855fbbbee654eba160cd178ec91f3",
+      "git_blob_sha": "ef4206e5423e663ff82f07c13fba6d7ef37b22e5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_stream_pipeline.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_stream_pipeline.py",
+      "sha256": "5813b28fadec5c8a228880ebd32f1cf2725ca476372a39b496ac377fbf4f8dc8",
+      "git_blob_sha": "53cc4808879d1bd60c91f29089a920d6a0fd96c1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_streamforest.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/mem_lite/tests/test_streamforest.py",
+      "sha256": "da9eef63581f11538d78cad16acaf66df5b081aa66f94f7e63443881201ebbc4",
+      "git_blob_sha": "f8445d1ecd130e509b9fe7b68056ba59063a5f29",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/qwen_training/__init__.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/qwen_training/__init__.py",
+      "sha256": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+      "git_blob_sha": "b00127713cc17f5828c7287287229667640df6de",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/qwen_training/delta_to_progress.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/screw-mixed-aug-cache-20261103/qwen_training/delta_to_progress.py",
+      "sha256": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+      "git_blob_sha": "c4b8737e2c8fac29e64e15cfaeb772caeff86efd",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/setup/screw-mixed-aug-20261103/forest-initial-config.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/setup/screw-mixed-aug-20261103/forest-initial-config.json",
+      "sha256": "434acd53230c15080008b40e9bf0e4a70a4933310428e4faa2bb3a88313d1029",
+      "git_blob_sha": "08c485bd84815b068c8142a0acbbca6b8c3aa5d9",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/setup/screw-mixed-aug-20261103/run_cache_build.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/setup/screw-mixed-aug-20261103/run_cache_build.py",
+      "sha256": "34441438f89f3c245523b3138c6ca72756425486571fd721f7081e7568ba11dd",
+      "git_blob_sha": "34da31ba91b70cbe4b17ae5b8fd4737150727cff",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-noordinal-check-20261101-201743/gpu_check.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-noordinal-check-20261101-201743/gpu_check.py",
+      "sha256": "09fada7bc5acb307f9dcbbfe65a841d2703b467b1124b5d935659cd7482e9bf8",
+      "git_blob_sha": "2c1e4aa64e946f5c80f168f0a946f61bab7e713a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-preflight-20261101-174843/check_batch_numerics.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-preflight-20261101-174843/check_batch_numerics.py",
+      "sha256": "a5c0f5f9bce94a25195dbb2d88ab6076c0f84148b1a8c4efe3b21d40d04b9e07",
+      "git_blob_sha": "3a91f4d0855693e082872b237d3c77a436e90937",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-preflight-20261101-174843/run.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-preflight-20261101-174843/run.py",
+      "sha256": "883b0f24c7d8d68bf39247c2acd4fa0ef7d20df95ce4a0ea14f92c74adc8bc67",
+      "git_blob_sha": "ea2e7aaad529120b6949cee9eed13c29f4b536e8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-preflight-20261101-174843/validate.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-preflight-20261101-174843/validate.py",
+      "sha256": "87f280c34f7ef598d71ec384ba38807b2f6f46f8e60ee9c9c5e5c0c003af093c",
+      "git_blob_sha": "6b892ca5088af7692e27d9c33789d5e1f1529b3e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/config.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/config.json",
+      "sha256": "02ec191082e83ffa32141af83bbb6a0027232a4f7307a60761d1bbb39ec3f05c",
+      "git_blob_sha": "c9ac53b2fa63d926b04e83f4c7ba9e9d8e0ad7ff",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/render_loss_curve.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/render_loss_curve.py",
+      "sha256": "90647991426f70a40af72c9a6090056884005912c3ca4e8bb013975f9f4dd852",
+      "git_blob_sha": "ae46f0096fed54df5a76b51c35013914664ea253",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/run_training.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/run_training.py",
+      "sha256": "f7c06882d17bb1cd829968dda83074a39b73cd8ee80132ac7853e8e01056dc02",
+      "git_blob_sha": "48eb09e0975e5a8d4e958fe87b269b5fcecf53df",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/preflight/config.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-screw-mixed-eval02-4gpu-20261103-212845/preflight/config.json",
+      "sha256": "af32c7700a00fcce0de3872d922e221c98b0d26c59c74a451b4929c0a903cb04",
+      "git_blob_sha": "c6ebb74e702a3b1aa876f2aff2ee62999d7862b3",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/config.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/config.json",
+      "sha256": "faa2176a6d39ea2e58654583b8cd347f88db30402ade16587113b9eda46bd5b9",
+      "git_blob_sha": "aa11f62b46e7c5ef0a3db0c6425b3ce9c7ee4c94",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/plot_loss.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/plot_loss.py",
+      "sha256": "750a894d0bfb8ed8b2d26e9b98afdd522202674ff43008c104d9cf4ea68b22cc",
+      "git_blob_sha": "18e5dd8b86d8f0bb4b2c6c13215b75d829475507",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/run_training.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/run_training.py",
+      "sha256": "63a8d8efd6c224c1d4c7965df6ede5370a309ce34ef4bcf4c2abcdf3574d277d",
+      "git_blob_sha": "facfb68192802915dc6500eac60170c928ca2834",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/source.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/source.json",
+      "sha256": "dcb19643f0c8ada8e375afa288c5fa318029fb353130d744c465598c51debd4d",
+      "git_blob_sha": "9f2fdbe22f326d274046d75632a3622a51778805",
+      "kind": "code_provenance"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/validate.py",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/validate.py",
+      "sha256": "d86675abe633f89cdd3862de27a68e17dc37e45aeb8ac57d9341243e8f8284d5",
+      "git_blob_sha": "2aabcb67179e7ccd7feebce23d8be38f2429c052",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/preflight/config.json",
+      "branch": "externmem-histoken-crossAtten",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/forest-crossattn-v2-e3-20261101-210436/preflight/config.json",
+      "sha256": "d5c7bf170c1f8c46f9ca2029eb4713a2e7bbeb030524349e69c1f79bda8ad3c2",
+      "git_blob_sha": "96836619a91a816c7eaeb389d4a3cab8b6f8df52",
+      "kind": "configuration"
+    }
+  ],
+  "source_only": true,
+  "source_byte_hashes_preserved": true
+}
