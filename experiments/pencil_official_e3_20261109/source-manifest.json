@@ -1,0 +1,262 @@
+{
+  "remote_setup": "/cache/cvpzhr/setup/forest-robometer-pencil-official-e3-20261109",
+  "task": "forest",
+  "files": [
+    {
+      "path": "experiments/pencil_official_e3_20261109/.gitignore",
+      "sha256": "6783125c7cb518d9229d640f73ebe20a3aeb31b1ceee1d7c063e6436afc4596b",
+      "git_blob_sha": "d92dc9c7040ec30a67b81fff66de83a801c633ff"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/README.md",
+      "sha256": "00247b2c0ff9fd8d3ce995d1750e3959d6c98a251d3456ea0571857a1a9dac9a",
+      "git_blob_sha": "778017ce395b9e4f1c905dd87faa1d3b6a6336f2"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/README.md",
+      "sha256": "6a67ddee919776215f311dc9aa65df43114c0e399eac2cd24cf1e42e33cd7ec4",
+      "git_blob_sha": "558f22197a19877e9df95d6e670cc47635cf9ece"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/__init__.py",
+      "sha256": "ce281cd44dae1f490008a743442d1586b59190dc736ef4b833f7f88fa9835937",
+      "git_blob_sha": "f2e0c8e23037f2b54f0c8dacdc4e35ce226045e0"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/configs/m3_model.json",
+      "sha256": "d3037587ebda72d056e85511784b22850ac257960b66ffd2319d469772c797c3",
+      "git_blob_sha": "fd66e56cf421e7b30bb9d261251edaa044b05e01"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/configs/stage3_train.json",
+      "sha256": "39150fc1860e8a6be8463ee50be314537d3b4ca25b821308d59cdf04b62bb05b",
+      "git_blob_sha": "22a573528d2edd5abf6414dae08f2ddb86f5ea38"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/configs/streamforest.json",
+      "sha256": "fb33e878989fe95d114b32ed99727b920368ab2b300e037e38ef6929fb105d69",
+      "git_blob_sha": "f02b2b9761e8afbb2f3d5c64aaadb9100265c3eb"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/__init__.py",
+      "sha256": "4710a3c8e21446291bee32f8b86c23973c5a404a5a3a7be1b659d445d40dab0b",
+      "git_blob_sha": "863ae92209f87985329196e9b7b1a441acbe903d"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/annotations.py",
+      "sha256": "3481a2ed5f8641b557e6d5ad3800d2f90e223175a991dcf800dd591a47597574",
+      "git_blob_sha": "a357c6d291645825b74aef42343e3d87280a6acf"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/m3_dataset.py",
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad",
+      "git_blob_sha": "82d6f964365f1ce34fd1746b8d8019c3cadda56a"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/m3_inputs.py",
+      "sha256": "9671923362cef0b12c005e22a818a2b986c03bbf10dfcd72efcc6b045ba838c7",
+      "git_blob_sha": "181f117d1a0833971229d12a922e8183b0a1e4dd"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/prepare_progress.py",
+      "sha256": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+      "git_blob_sha": "2cc293d79f0afb70b96af5ed5ba1f4ae03fa60f5"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/prepare_progress_batch.py",
+      "sha256": "99be9a0034be500533f43ea6bc686aa88bc576329b066cfd0c5600f4204798fc",
+      "git_blob_sha": "4c5bc2e5fff7e271da1a35d821e6ed6c2eb5968c"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/prepare_proprimem.py",
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7",
+      "git_blob_sha": "91bfc4a96d6785c18428dbd211c7b3fa2938c08e"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/prepare_recovery.py",
+      "sha256": "471fab01b5af60f815b7916a97594ac5f0f72256d6b8043f24eda4d07263c1f2",
+      "git_blob_sha": "54cea943ac70efd01fe5bc74cba7c5b333852dc8"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/prepare_stream.py",
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804",
+      "git_blob_sha": "eb31201fb6fb860ce77d58f3a0b08f7c02d20822"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/datasets/views.py",
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249",
+      "git_blob_sha": "fbeb9fb81e57ee5d149d20dbc0e61649bbe8e505"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/evaluate.py",
+      "sha256": "049ba88b26e0a44d75fbe23ef30171c02819dd0655a26c71e413359088085d6f",
+      "git_blob_sha": "6a2f82ad22cb53e55ab8e0941853ff9508a42238"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/memory/__init__.py",
+      "sha256": "8381e12d9f06339246c735462745a05f40338630d07cc4ef6a6265bd27e80fd5",
+      "git_blob_sha": "9e1f919e27243a2073f56e02c39825e35b1b4917"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/memory/manager.py",
+      "sha256": "25f0fc2955fd9f435b5626c09529185af6430594ddc5054d1635e025333c771a",
+      "git_blob_sha": "2867c7a33eca2cd6bc025103de3c7bc390ebb38a"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/memory/stream.py",
+      "sha256": "60c9af3fe686983a66fcd4466352c2dd9791e27367b72a51511a4ddacf1f89db",
+      "git_blob_sha": "4f7d5bc47823451ca6eb8121c77be6413eba60c9"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/memory/tome.py",
+      "sha256": "bf1351dcdf0f55cf7b36924ccf114ff376fe38c6ba83ac46b43abc9057d65131",
+      "git_blob_sha": "b121e963c0ed6103b25fe7b9876ae4bdb28d7c01"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/memory/vision.py",
+      "sha256": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b",
+      "git_blob_sha": "aec50dcc0f03e4c70c37f61a30c1a6ecb413a3d1"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/models/__init__.py",
+      "sha256": "8b9545b664dd7e62ed1d4c9e4a8173636f6adf309996b46dde34dc8d65050a78",
+      "git_blob_sha": "eceb615cb0e3ced74ee9bcee0612fb188cfe8c4a"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/models/m3_predictor.py",
+      "sha256": "d5bdb2cedefbd698f12b67bf1ed4e2fdb2caaf186eddd868e6a3b2a55c762a9e",
+      "git_blob_sha": "f6459cd1580e1a8efd47a90fe1d5b145a519983a"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/periodic_validation.py",
+      "sha256": "f8c4ab7c1f0b143df4226fa52c12fa7883d08ff05e80baf6a01574279e47eba6",
+      "git_blob_sha": "73ba14c96c617e57fe1d56b27e830ff805aa43c2"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/runtime.py",
+      "sha256": "a0b072380918c1d9170af9c1c684d862fd6e6810ac648b914826ee56e69fdc2d",
+      "git_blob_sha": "9a1edca83f9d0bf72aa0fd0154838899aa06e343"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/conftest.py",
+      "sha256": "8e1b5ed2a6a95c6bf32fa22ee41f13de7395a20a85f609b03dc12f7f640109cc",
+      "git_blob_sha": "d7b73d9f5114b73614e7eba2a68073066da862b4"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_m3_data.py",
+      "sha256": "8098c11d41df3db313ca14fdf894ebb364071e76a0fb99fc5b3b7e783f0aa9d6",
+      "git_blob_sha": "32afae4164bb17dd62bec53ef4dd0bd2206407a7"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_m3_predictor.py",
+      "sha256": "95d5debf2cdbea4b98fc7346bcaa1558d61ed652f3b6cbf1af2bd49083c3c275",
+      "git_blob_sha": "c03198eb6a48dc28a99168a8053de96c7195f0c6"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_partial_views.py",
+      "sha256": "cde7476dcfaf398bfeb8255c0b89505b0639e8240a50418a8193c8869c5060c6",
+      "git_blob_sha": "c09c6c651566818bf1a6c0649d9fc6023daeab58"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_periodic_validation.py",
+      "sha256": "db7ae7567138b25b2e4ef612f52075af66458ed01ad04d63543a02b467b4bee4",
+      "git_blob_sha": "cb54854b26450838ea9bd1e80b29d5dc0b238efd"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_progress_labels.py",
+      "sha256": "fc145b8308a85f9a52c735e180acc923518e0412d22fb50761f8757b94547702",
+      "git_blob_sha": "c97fe907dd3b15b3fd0be462e9fdf55b6d843502"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_proprimem_preparation.py",
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4",
+      "git_blob_sha": "73eccf54aad1a508fceafc5ed43089116157a913"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_recovery_data.py",
+      "sha256": "87351c8692372536ffb81b787b14b518fbb29438d31d1a2fbad4c25c964005c3",
+      "git_blob_sha": "3e4a04c129d013826b335ed46a54d103a9757a3d"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_stage3_training.py",
+      "sha256": "3e9e94826bd13f3b92ef18f560d0deb4515c5c4738f04b8e7e8c34e35921f7ec",
+      "git_blob_sha": "6e75877b16ef0db8d3e3f6d693f68029f9457c55"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_stream_pipeline.py",
+      "sha256": "598cb6c4eef2be8de6bcb5355103ebaf3bcc1bbbe87b62b85ee44dd3f7c20fb8",
+      "git_blob_sha": "5744166d77ea0bd1919091863d69199dfb9b4920"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/tests/test_streamforest.py",
+      "sha256": "da9eef63581f11538d78cad16acaf66df5b081aa66f94f7e63443881201ebbc4",
+      "git_blob_sha": "f8445d1ecd130e509b9fe7b68056ba59063a5f29"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/mem_lite/train_stage3.py",
+      "sha256": "2a38fdee08f7a523d1f801a5d4b4e9ed2775e6ca242b1e85adcb1aebbc454165",
+      "git_blob_sha": "727a0b43e15aeace0ed4bcbc6c4e377fc7253787"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/qwen_training/__init__.py",
+      "sha256": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+      "git_blob_sha": "b00127713cc17f5828c7287287229667640df6de"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/code/qwen_training/delta_to_progress.py",
+      "sha256": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+      "git_blob_sha": "c4b8737e2c8fac29e64e15cfaeb772caeff86efd"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/evaluate_final.py",
+      "sha256": "50c1d62070e7afcc7f86a7db815222553d75172fc5c4525c13a86059dda832df",
+      "git_blob_sha": "0de2c5200c9ddf95cd104973a57d0df7c23a2ba6"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/plot_validation.py",
+      "sha256": "9d87d502a638ff6939aaad914f8e8d05872d1aa7bb2d475e19ba98bf9116f2a7",
+      "git_blob_sha": "7cde274c024fb7fca1ba6bce74524fe25d7531f5"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/source-provenance.json",
+      "sha256": "011d307f778baaf1690447498523c4f375ccb7074dae9d29a1bea0dafeac8d22",
+      "git_blob_sha": "290488a3987b13563de126c8c37918c540fffd32"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/training.config.json",
+      "sha256": "971a259ae772d85e42d19e00f7344b59f095d8611541c1bfecb4126884525ba8",
+      "git_blob_sha": "72edec75edbcc5fd843cdf56fff578b3b6545c60"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/forest/verify_checkpoints.py",
+      "sha256": "3dad5b69e81c0d62e7518399b678024ed65755ef169a7d693916f36ed21e9571",
+      "git_blob_sha": "14210a28f989dba87fd43661fc35a77688829b01"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/launch-policy.json",
+      "sha256": "efe0b39a98cd5ddaafaed4a39e9c8d5332d7959b6cb5a6167d2c364c3e03262c",
+      "git_blob_sha": "703045815d932d24e3e4e5e2f7b3260ec957b647"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/pipeline.py",
+      "sha256": "27d9f215ddcfacd81d515f8f99000e689e9f80072753254e103f7d2460422b94",
+      "git_blob_sha": "30058372abf05b3b5bcfe91a6e8ffdc6a9977bc2"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/preflight.json",
+      "sha256": "ab1da72c7f76fab6c36879981ebd17d01999611585c46c6a8801e220be78cd77",
+      "git_blob_sha": "2dbe8915c1b4af7cf0efa374c6c717b7c6071397"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/preflight.py",
+      "sha256": "37a948f86d2435232800e741294de04dca9a2315b37231453234b23803ed018c",
+      "git_blob_sha": "68b3e66aa5ba7cda12e3bdc07c849d7f52e25c55"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/prepare_remote.py",
+      "sha256": "6ab9e1661db18e670c3fffbdcd9a3d186c0cc487d7e928499034817c5d69786f",
+      "git_blob_sha": "f7963bbcc033ebd3788ece6e8433c7e3e54570d1"
+    }
+  ],
+  "data_payloads_included": false
+}

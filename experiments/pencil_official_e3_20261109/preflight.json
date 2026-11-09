@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "splits": {
+    "train": {
+      "episodes": 28,
+      "samples": 10789,
+      "both_models_same_frames_and_pt": true
+    },
+    "validation": {
+      "episodes": 7,
+      "samples": 2177,
+      "both_models_same_frames_and_pt": true
+    }
+  },
+  "checked_cache_files": 90762,
+  "source_labels_preserved": true,
+  "augmentation": "none",
+  "official_robometer_repository": "robometer/Robometer-4B",
+  "official_revision": "beef63bc914c5c189329d49c6d712d96d632aa34",
+  "official_weight_sha256": {
+    "model-00001-of-00002.safetensors": "2cfa81761595f6b10bd079736eb32bdeeeb0b49224619411bd511d9d1f1171a4",
+    "model-00002-of-00002.safetensors": "a25be9713ccc3cb14738be76ef6665742093d70323ec026ea70e8fa843a342be"
+  },
+  "forest_initialization": "fresh Qwen3.5-4B; no fine-tuned checkpoint",
+  "previous_results_preserved": true,
+  "seconds": 11.420966625213623
+}
