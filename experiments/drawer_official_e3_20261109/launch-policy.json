@@ -1,0 +1,48 @@
+{
+  "tasks": {
+    "forest": {
+      "gpus": [
+        0,
+        1
+      ],
+      "setup_dir": "/cache/cvpzhr/setup/forest-robometer-drawer-official-e3-20261109/forest",
+      "output_dir": "/cache/cvpzhr/outputs/forest-drawer-frombase-matched-e3-20261109",
+      "evaluation_dir": "/cache/cvpzhr/evaluations/forest-drawer-frombase-matched-e3-cleanval-20261109",
+      "python": "/cache/cvpzhr/envs/forest/bin/python",
+      "initialization": "fresh Qwen3.5-4B"
+    },
+    "robometer": {
+      "gpus": [
+        2,
+        3
+      ],
+      "setup_dir": "/cache/cvpzhr/setup/forest-robometer-drawer-official-e3-20261109/robometer",
+      "output_dir": "/cache/cvpzhr/outputs/robometer-drawer-fromofficial-clean-2gpu-e3-20261109",
+      "evaluation_dir": "/cache/cvpzhr/outputs/robometer-drawer-fromofficial-clean-2gpu-e3-20261109/evaluation",
+      "python": "/cache/cvpzhr/envs/robometer/bin/python",
+      "initialization": "official Robometer-4B"
+    }
+  },
+  "epochs": 3,
+  "train_episodes": 21,
+  "train_samples": 3138,
+  "validation_episodes": 6,
+  "validation_samples": 719,
+  "global_batch_size": 18,
+  "learning_rate": 0.0001,
+  "warmup_ratio": 0.03,
+  "scheduler": "cosine",
+  "seed": 42,
+  "augmentation": "none",
+  "configuration_choice": "User requested previous spray official/base experiment unchanged except drawer dataset",
+  "save_each_epoch": true,
+  "final_evaluation_epoch": 3,
+  "smoke_weights_reused": false,
+  "preserve_previous_results": true,
+  "robometer_upstream": "/cache/cvpzhr/code/robometer-current3-w8-e1-20261104/third_party/robometer-352d160389daa964788de1ec933d1925f3a6de4f",
+  "previous_experiment": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109",
+  "steps_per_epoch": 175,
+  "total_steps": 525,
+  "task": "drawer-inspection-close",
+  "preserve_original_pt_rollbacks": true
+}

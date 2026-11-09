@@ -1,0 +1,183 @@
+{
+  "status": "passed",
+  "only_data_paths_counts_and_derived_steps_changed": true,
+  "differences": {
+    "forest": [
+      {
+        "field": "data_signature",
+        "previous": "d9ae6102b6286eaf512019fdafd594869bf0ada21754667bc7a8c47550c7d296",
+        "current": "568b20b68451d520f2096c62d4af5169de1f1dcdfd1976dd9fc883a75f187f94"
+      },
+      {
+        "field": "expected_steps_per_epoch",
+        "previous": 412,
+        "current": 175
+      },
+      {
+        "field": "expected_total_steps",
+        "previous": 1236,
+        "current": 525
+      },
+      {
+        "field": "output_dir",
+        "previous": "/cache/cvpzhr/outputs/forest-spray-frombase-matched-e3-20261109",
+        "current": "/cache/cvpzhr/outputs/forest-drawer-frombase-matched-e3-20261109"
+      },
+      {
+        "field": "run_protocol.robometer_reference",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109/robometer/training.config.json",
+        "current": "/cache/cvpzhr/setup/forest-robometer-drawer-official-e3-20261109/robometer/training.config.json"
+      },
+      {
+        "field": "run_protocol.task",
+        "previous": "spray",
+        "current": "drawer"
+      },
+      {
+        "field": "run_protocol.train_episodes",
+        "previous": 25,
+        "current": 21
+      },
+      {
+        "field": "run_protocol.train_samples",
+        "previous": 7416,
+        "current": 3138
+      },
+      {
+        "field": "run_protocol.validation_episodes",
+        "previous": 7,
+        "current": 6
+      },
+      {
+        "field": "run_protocol.validation_samples",
+        "previous": 1919,
+        "current": 719
+      },
+      {
+        "field": "sample_files",
+        "previous": [
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000001",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000002",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000003",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000004",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000005",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000006",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000007",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000009",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000010",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000011",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000013",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000014",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000016",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000017",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000018",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000019",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000020",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000021",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000022",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000023",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000024",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000025",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000026",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000027",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000028"
+        ],
+        "current": [
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000001",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000002",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000003",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000005",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000007",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000009",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000010",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000011",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000012",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000013",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000014",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000015",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000017",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000019",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000020",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000021",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000022",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000023",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000024",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000025",
+          "/cache/cvpzhr/datasets/forest-drawer-5fps-no-augmentation-20261109/train/drawer-inspection-close/episode_000027"
+        ]
+      },
+      {
+        "field": "setup_dir",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109/forest",
+        "current": "/cache/cvpzhr/setup/forest-robometer-drawer-official-e3-20261109/forest"
+      }
+    ],
+    "robometer": [
+      {
+        "field": "cache_setup_dir",
+        "previous": "/cache/cvpzhr/setup/robometer-inspect-spray-clean-e3-20261109",
+        "current": "/cache/cvpzhr/setup/robometer-drawer-clean-cache-20261109"
+      },
+      {
+        "field": "eval_steps",
+        "previous": 1236,
+        "current": 525
+      },
+      {
+        "field": "expected_steps",
+        "previous": 1236,
+        "current": 525
+      },
+      {
+        "field": "expected_train_samples",
+        "previous": 7416,
+        "current": 3138
+      },
+      {
+        "field": "expected_validation_episodes",
+        "previous": 7,
+        "current": 6
+      },
+      {
+        "field": "expected_validation_samples",
+        "previous": 1919,
+        "current": 719
+      },
+      {
+        "field": "output_dir",
+        "previous": "/cache/cvpzhr/outputs/robometer-spray-fromofficial-clean-2gpu-e3-20261109",
+        "current": "/cache/cvpzhr/outputs/robometer-drawer-fromofficial-clean-2gpu-e3-20261109"
+      },
+      {
+        "field": "save_steps",
+        "previous": 412,
+        "current": 175
+      },
+      {
+        "field": "setup_dir",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109/robometer",
+        "current": "/cache/cvpzhr/setup/forest-robometer-drawer-official-e3-20261109/robometer"
+      },
+      {
+        "field": "steps_per_epoch",
+        "previous": 412,
+        "current": 175
+      },
+      {
+        "field": "task",
+        "previous": "inspect-spray-bottles",
+        "current": "drawer-inspection-close"
+      },
+      {
+        "field": "train_data",
+        "previous": "/cache/cvpzhr/datasets/robometer-inspect-spray-5fps-h7-current3-clean-20261109/train.jsonl",
+        "current": "/cache/cvpzhr/datasets/robometer-drawer-5fps-h7-current3-clean-20261109/train.jsonl"
+      },
+      {
+        "field": "validation_data",
+        "previous": "/cache/cvpzhr/datasets/robometer-inspect-spray-5fps-h7-current3-clean-20261109/validation.jsonl",
+        "current": "/cache/cvpzhr/datasets/robometer-drawer-5fps-h7-current3-clean-20261109/validation.jsonl"
+      }
+    ]
+  }
+}
