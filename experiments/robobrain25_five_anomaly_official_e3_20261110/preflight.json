@@ -1,0 +1,116 @@
+{
+  "status": "passed",
+  "official_weights_sha256": {
+    ".gitattributes": "11ad7efa24975ee4b0c3c3a38ed18737f0658a5f75a0a96787b576a78a023361",
+    "README.md": "3d6a9b0cd4b563e62b131d15ecec8ddc62859756ca40244fc577e5f937577731",
+    "chat_template.json": "6f8a6a55027e3da5160105556cda5dd69f6423f1c32645f6730d32de7773d0c4",
+    "config.json": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d",
+    "generation_config.json": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44",
+    "merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+    "model.safetensors": "e2f6e3c372f4ef76afb5e9e28ec56679944fcc3b4f2ce2ebda8b21264e96eb2f",
+    "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+    "tokenizer.json": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+    "tokenizer_config.json": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399",
+    "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+    "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "official_revision": "ec4b3bf5e969b48ad17df432b479c10402a0079b",
+  "counts": {
+    "pencil": {
+      "train": {
+        "episodes": 28,
+        "samples": 10789
+      },
+      "validation": {
+        "episodes": 7,
+        "samples": 2177
+      }
+    },
+    "flipcup": {
+      "train": {
+        "episodes": 28,
+        "samples": 7769
+      },
+      "validation": {
+        "episodes": 7,
+        "samples": 1744
+      }
+    },
+    "spray": {
+      "train": {
+        "episodes": 25,
+        "samples": 7416
+      },
+      "validation": {
+        "episodes": 7,
+        "samples": 1919
+      }
+    },
+    "pour": {
+      "train": {
+        "episodes": 22,
+        "samples": 6164
+      },
+      "validation": {
+        "episodes": 6,
+        "samples": 1437
+      }
+    },
+    "drawer": {
+      "train": {
+        "episodes": 21,
+        "samples": 3138
+      },
+      "validation": {
+        "episodes": 6,
+        "samples": 719
+      }
+    }
+  },
+  "sources": {
+    "pencil": {
+      "episodes.json": "1bf0d5f805357cf23aefd3494090086c5a3021d7c1b58e8a18f6462e92fccc25",
+      "train.jsonl": "602e25e4415fc3bdf3fc577c08bd7873551c512aac638c1cb9c52694963ac32a",
+      "validation.jsonl": "43f4194e0f0100c10da1ef3a6cf707139d1dd4df5f6daebe968e81022c7cf18b"
+    },
+    "flipcup": {
+      "episodes.json": "175b65f479574f7033804144075073d91e254b675f1ea4c9d86fff3aab274fdb",
+      "train.jsonl": "0fa22c645cd042f2e6e773d3c9eb76b5cf2987a96e2a9456cb415882594f0aaf",
+      "validation.jsonl": "d8aebeeb94f4b1616ea83035df456075eac04c7f05671684053e975613fa2056"
+    },
+    "spray": {
+      "episodes.json": "083ac1a216b6278f4b3a8e21a961665e8da6f38dcc46d9c4d9ea7db306e1999d",
+      "train.jsonl": "ebedd5e397eb8f1be58d158680b805e6fbba696a9c71ceacb458032aaa8a4218",
+      "validation.jsonl": "7ca03a6037fb20237248d2522100cf31775bee600e294d5ec10ac6905ef123f5"
+    },
+    "pour": {
+      "episodes.json": "9ed7668dba635eef4223b4fd5bb5239539e90633de361c8b5c7cd735f484645a",
+      "train.jsonl": "617ab6ad4f03fb366aaec78328b12e432711e61d4737806613640220b63815a3",
+      "validation.jsonl": "cce9d42308b4ab4be934c4dd7e04091fcd8bb3e2752fb40658547f95f407a1a7"
+    },
+    "drawer": {
+      "episodes.json": "19bf28ea89b39610d1ce5a73dae1eccb04ef9c9d2805706898dc17bf60b4eccc",
+      "train.jsonl": "a7e58ec7c2d800dfc499b73b21f5e3364a72da5c1b929703a87345238fe65f9d",
+      "validation.jsonl": "ef34607c5df0cbab80877abcae6ea4327778b9dbad014fd9661a2703131314b4"
+    }
+  },
+  "code_sha256": {
+    "pipeline.py": "354631ff8706efd831145848d940a0c5e88e97934c8a20289f70fcac87dd2a81",
+    "train_run.py": "ac698d4559f1780edc53e476d2d583f30817800cb24515b85ea47784fa474309",
+    "evaluate_final.py": "9adb3418f0d0c1df5a0ce8297c25ed939f70469b7a4fe6bd5d822588676e6296",
+    "grm.py": "6e90f0b78d6e233c1fceb2ac230ded5ed9bb6e2fe102bb6051fe1ab370385655",
+    "metrics.py": "7c705803aed7302b56d3db997cdf5e811ba52531d2c4d0ff6f1cd942c6c2b8d4",
+    "common.py": "264e5647190f61226582d58cd9e39ae4f401e7275bf01bcbedc1fec61acc5817",
+    "preflight.py": "8c34f45d25f19b6d08aaf820ee5f224ea089feb91c66d3181a38477e449eb3d4",
+    "setup_configs.py": "7d2d6ff9b304ae50a971ecc5ff6eab53ac0f76937d671a76e1016fd0eb902932",
+    "prepare_cache.py": "7d21af87570ec747fb7c547f1e27535b95e997ec0bfb55603dc3596f548d5160",
+    "train.py": "9eb87ca9919d1ce52b4000c257652f5d7c472178e7d287da1a3e8709b0727c40",
+    "plot_final.py": "bc5e5146c043ff2cf9079b2839eb6358ca7d002b16556706bdeaf075c9ad5a9e",
+    "periodic.py": "6956a7517519341c4e81b0fed253fa300868a7108a1b5dc6cb30c71bd8b499a0",
+    "prompt_template.txt": "cc7a465c614d71ebdc29ea129e4386a44a6d41c58e6ecbb2ba8043303e683b11"
+  },
+  "native_GRM_unchanged": true,
+  "existing_model_results_preserved": true,
+  "uses_future_goal_reference": true,
+  "created_at": 1794244274.8833792
+}

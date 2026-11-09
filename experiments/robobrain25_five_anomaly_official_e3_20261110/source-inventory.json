@@ -1,0 +1,29 @@
+{
+  "source_setup": "/cache/cvpzhr/setup/robobrain25-five-anomaly-official-e3-20261110",
+  "files_sha256": {
+    "README.md": "61ec8c20bf29073b1aab2045d1d2da32ec0e551c1524f087893eaefda161337b",
+    "common.py": "264e5647190f61226582d58cd9e39ae4f401e7275bf01bcbedc1fec61acc5817",
+    "drawer/config.json": "9bac02b822bd496ffba9f7551b55c5fd457120459b2904df0dbcc6ad9329ac92",
+    "evaluate_final.py": "9adb3418f0d0c1df5a0ce8297c25ed939f70469b7a4fe6bd5d822588676e6296",
+    "flipcup/config.json": "ebcea612c36ee9e90bc01cb7ad16c7708bcd1bb40f4611c13ed92a3100a52b44",
+    "flipcup/execution.config.json": "768281a83aa8e8b6815744f9c60af6e1d8b181d0b86e62670d69cfbf8d98067e",
+    "grm.py": "6e90f0b78d6e233c1fceb2ac230ded5ed9bb6e2fe102bb6051fe1ab370385655",
+    "launch-policy.json": "2f9bcea978fdb4515ce7043dc11dc2451feb72064e1f421dec7ea601dc84d675",
+    "metrics.py": "7c705803aed7302b56d3db997cdf5e811ba52531d2c4d0ff6f1cd942c6c2b8d4",
+    "pencil/config.json": "125b2d43d8df124dbef7e31c3cfe109bcf0d9002a6d9eb66b43fed3a74b50fc3",
+    "pencil/execution.config.json": "83056d0ef6b485af6e1512c5f7bd87be6d4cbc3617edbd2f496ce03717d579d0",
+    "periodic.py": "6956a7517519341c4e81b0fed253fa300868a7108a1b5dc6cb30c71bd8b499a0",
+    "pipeline.py": "354631ff8706efd831145848d940a0c5e88e97934c8a20289f70fcac87dd2a81",
+    "plot_final.py": "bc5e5146c043ff2cf9079b2839eb6358ca7d002b16556706bdeaf075c9ad5a9e",
+    "pour/config.json": "f2cec8e83e669d2552f7d14075a048f0ec8879577c70a5127288a48e25153d69",
+    "preflight.json": "3fbfe070ca01ac0f90f1403f0bceda52a0faedbc56a8f848d6fbe6c040c20a6d",
+    "preflight.py": "8c34f45d25f19b6d08aaf820ee5f224ea089feb91c66d3181a38477e449eb3d4",
+    "prepare_cache.py": "7d21af87570ec747fb7c547f1e27535b95e997ec0bfb55603dc3596f548d5160",
+    "prompt_template.txt": "cc7a465c614d71ebdc29ea129e4386a44a6d41c58e6ecbb2ba8043303e683b11",
+    "setup_configs.py": "7d2d6ff9b304ae50a971ecc5ff6eab53ac0f76937d671a76e1016fd0eb902932",
+    "spray/config.json": "7ad3b2282871e49ef0fd75d4c37ae270c6ca7c89d15645535aaf52f7669aee27",
+    "train.py": "9eb87ca9919d1ce52b4000c257652f5d7c472178e7d287da1a3e8709b0727c40",
+    "train_run.py": "ac698d4559f1780edc53e476d2d583f30817800cb24515b85ea47784fa474309",
+    "upstream.json": "c2793708e8fd0e4406d7f4676564457dbb3e6ce6292caa5718bf47b673b5ed46"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "repository": "FlagOpen/Robo-Dopamine",
+  "path": "dataset/utils/1_generate_data.py",
+  "blob_sha": "0522028f9a09fe34dbad52e5821e11307e089eb1",
+  "prompt_changes": [
+    "Fix BEFORE to episode start and use same-episode first/final main-view references",
+    "Align text-format instructions with official label code's one-decimal percentages"
+  ]
+}

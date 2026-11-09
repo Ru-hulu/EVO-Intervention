@@ -1,0 +1,70 @@
+{
+  "model_path": "/cache/cvpzhr/models/RoboBrain2.5-4B",
+  "data_dir": "/cache/cvpzhr/datasets/robobrain25-pencil-grm8-clean-20261110",
+  "output_dir": "/cache/cvpzhr/outputs/robobrain25-pencil-fromofficial-clean-2gpu-e3-20261110",
+  "input_contract": "grm-forward-same-episode-goal-8images-v1",
+  "uses_future_goal_reference": true,
+  "seed": 42,
+  "min_pixels": 4096,
+  "max_pixels": 65536,
+  "max_length": 4096,
+  "max_new_tokens": 32,
+  "lora": {
+    "rank": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "training": {
+    "num_train_epochs": 3,
+    "per_device_train_batch_size": 3,
+    "per_device_eval_batch_size": 9,
+    "gradient_accumulation_steps": 3,
+    "learning_rate": 0.0001,
+    "warmup_ratio": 0.03,
+    "lr_scheduler_type": "cosine",
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "logging_steps": 10,
+    "dataloader_num_workers": 4,
+    "dataloader_persistent_workers": true,
+    "optim": "adamw_torch_fused",
+    "ddp_timeout": 1800,
+    "logging_first_step": true,
+    "disable_tqdm": true,
+    "dataloader_prefetch_factor": 2,
+    "gradient_checkpointing": false
+  },
+  "configuration_status": "user_confirmed",
+  "reference_world_size": 2,
+  "reference_global_batch_size": 18,
+  "model_revision": "ec4b3bf5e969b48ad17df432b479c10402a0079b",
+  "launch_authorization": "User confirmed two concurrent tasks, two GPUs each, independent official starts, 3 epochs, global batch18, lr1e-4 warmup3%+cosine, no augmentation; save each epoch and validate/plot epoch3 only",
+  "setup_dir": "/cache/cvpzhr/setup/robobrain25-five-anomaly-official-e3-20261110/pencil",
+  "task": "pencil",
+  "task_id": "zipper-pencil-case-inspection",
+  "initial_checkpoint": null,
+  "initialization_policy": "official_weights_fresh_lora",
+  "augmentation": "none",
+  "counts": {
+    "train": {
+      "episodes": 28,
+      "samples": 10789
+    },
+    "validation": {
+      "episodes": 7,
+      "samples": 2177
+    }
+  },
+  "steps_per_epoch": 600,
+  "total_steps": 1800,
+  "audit_dir": "/cache/cvpzhr/setup/robobrain25-five-anomaly-official-e3-20261110/pencil"
+}

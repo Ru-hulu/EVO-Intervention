@@ -1,0 +1,50 @@
+{
+  "tasks": [
+    "pencil",
+    "flipcup",
+    "spray",
+    "pour",
+    "drawer"
+  ],
+  "parallel_tasks": 2,
+  "gpu_pairs": [
+    [
+      0,
+      1
+    ],
+    [
+      2,
+      3
+    ]
+  ],
+  "independent_official_initialization": true,
+  "official_revision": "ec4b3bf5e969b48ad17df432b479c10402a0079b",
+  "epochs": 3,
+  "global_batch": 18,
+  "lr": 0.0001,
+  "warmup": 0.03,
+  "schedule": "cosine",
+  "augmentation": "none",
+  "validation": "epoch3 only, saved before evaluation",
+  "all_epoch_checkpoints_retained": true,
+  "uses_future_goal_reference": true,
+  "smoke_candidates": [
+    {
+      "microbatch": 9,
+      "accumulation": 1,
+      "gradient_checkpointing": false
+    },
+    {
+      "microbatch": 3,
+      "accumulation": 3,
+      "gradient_checkpointing": false
+    },
+    {
+      "microbatch": 3,
+      "accumulation": 3,
+      "gradient_checkpointing": true
+    }
+  ],
+  "smoke_weights_never_reused": true,
+  "other_tasks_not_interrupted": true
+}
