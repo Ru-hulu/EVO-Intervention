@@ -1,0 +1,48 @@
+{
+  "initial_checkpoint": "/cache/cvpzhr/evaluations/forest-robometer-e1-augval-pearson-20261105/forest-epoch1.pt",
+  "initial_checkpoint_sha256": "eb058649e5504134e82f5ca4c5be7835501d38557b18cb22367a5d927db6bec8",
+  "tasks": {
+    "pencil": {
+      "setup_dir": "/cache/cvpzhr/setup/forest-pencil-spray-frome1-robomatched-20261109/pencil",
+      "cache_dir": "/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109",
+      "output_dir": "/cache/cvpzhr/outputs/forest-pencil-frome1-robomatched-e3-20261109",
+      "evaluation_dir": "/cache/cvpzhr/evaluations/forest-pencil-frome1-e3-cleanval-20261109",
+      "gpu_ids": [
+        0,
+        1
+      ],
+      "counts": [
+        28,
+        10789,
+        7,
+        2177
+      ],
+      "expected_steps_per_epoch": 600,
+      "expected_total_steps": 1800,
+      "robometer_cache": "/cache/cvpzhr/datasets/robometer-pencil-case-5fps-h7-current3-clean-20261109"
+    },
+    "spray": {
+      "setup_dir": "/cache/cvpzhr/setup/forest-pencil-spray-frome1-robomatched-20261109/spray",
+      "cache_dir": "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109",
+      "output_dir": "/cache/cvpzhr/outputs/forest-spray-frome1-robomatched-e3-20261109",
+      "evaluation_dir": "/cache/cvpzhr/evaluations/forest-spray-frome1-e3-cleanval-20261109",
+      "gpu_ids": [
+        2,
+        3
+      ],
+      "counts": [
+        25,
+        7416,
+        7,
+        1919
+      ],
+      "expected_steps_per_epoch": 464,
+      "expected_total_steps": 1392,
+      "robometer_cache": "/cache/cvpzhr/datasets/robometer-inspect-spray-5fps-h7-current3-clean-20261109"
+    }
+  },
+  "delete_old_results_authorized": true,
+  "use_only_idle_assigned_gpus": true,
+  "epochs": 3,
+  "final_evaluation_epoch": 3
+}

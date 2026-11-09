@@ -1,0 +1,58 @@
+{
+  "authorized_at": 1794162528.2609434,
+  "monitor_interval_minutes": 10,
+  "predecessor": "/cache/cvpzhr/setup/forest-s01-order102-expand120-20261109/status.json",
+  "predecessor_must_complete_successfully": true,
+  "automatic_cache_and_training": false,
+  "epochs": 3,
+  "save_every_epochs": 1,
+  "retain_all_epoch_checkpoints": true,
+  "evaluation_epoch": 3,
+  "intermediate_validation": false,
+  "fresh_initialization": true,
+  "base": "/cache/cvpzhr/models/Qwen3.5-4B",
+  "learning_rate": 0.0001,
+  "lr_schedule": "constant",
+  "gpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "cache_workers_per_gpu": 4,
+  "throughput_benchmark": {
+    "batch_candidates": [
+      4,
+      8,
+      12,
+      16,
+      24,
+      32
+    ],
+    "workers_candidates": [
+      4,
+      8
+    ],
+    "max_reserved_gib_per_gpu": 68,
+    "training_like_steps_per_candidate": 16,
+    "benchmark_weights_reused": false
+  },
+  "evaluation": {
+    "tasks": 5,
+    "episodes": 33,
+    "samples": 7996,
+    "clean_validation": true,
+    "mae": "frame weighted",
+    "pearson": "episode equal mean of defined values with constant count"
+  },
+  "source_code_unchanged": true,
+  "cpu_tests_passed": 4,
+  "files_sha256": {
+    "pipeline.py": "a0a30e0937601675cc0c78610a1e5962a4cb68c5d2e243864c4c1f588374fefb",
+    "evaluate_final.py": "2f4fd57d80ebc2f6c69a618877f283910ff3253cd51f5d45fd9dfda3fe54b181",
+    "verify_checkpoints.py": "ee8f2e2760547bc51c8c649c2c635935bc965426e73b180ae12cf3a79d553515"
+  },
+  "heartbeat_automation_id": "forest",
+  "superseded_by": "/cache/cvpzhr/setup/forest-spray-no-augmentation-20261109",
+  "superseded_reason": "User requested delete prior training results and rebuild spray-only caches with no augmentation"
+}

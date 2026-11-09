@@ -1,0 +1,134 @@
+"""Wait for the authorized predecessor, cache, benchmark, fresh 3-epoch Forest, final evaluation."""
+from pathlib import Path
+import os,sys,json,time,subprocess,fcntl,hashlib,statistics,traceback,argparse,math
+S=Path(__file__).resolve().parent
+D=Path('/cache/cvpzhr/datasets/forest-five-anomaly-5fps-static-jitter-seed42-20261109')
+OUT=Path('/cache/cvpzhr/outputs/forest-five-anomaly-frombase-e3-20261109')
+EVAL=Path('/cache/cvpzhr/evaluations/forest-five-anomaly-e3-cleanval-20261109')
+PRE=Path('/cache/cvpzhr/setup/forest-s01-order102-expand120-20261109/status.json')
+PYTHON='/cache/cvpzhr/envs/forest/bin/python'
+def read(p):return json.loads(Path(p).read_text())
+def save(p,x):
+ p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);tmp=p.with_suffix(p.suffix+'.tmp');tmp.write_text(json.dumps(x,ensure_ascii=False,indent=2,allow_nan=False)+'\n');tmp.replace(p)
+def alive(pid):
+ try:os.kill(int(pid),0);return True
+ except (ProcessLookupError,ValueError,TypeError):return False
+
+def gpu_state():
+ raw=subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.used,utilization.gpu','--format=csv,noheader,nounits'],text=True)
+ return [dict(zip(['index','memory_mib','utilization'],map(int,line.split(',')))) for line in raw.strip().splitlines()]
+def gpu_idle():
+ rows=gpu_state();return len(rows)==4 and all(x['memory_mib']<2000 and x['utilization']<10 for x in rows)
+def records(p):
+ if not Path(p).exists():return []
+ result=[]
+ for line in Path(p).read_text().splitlines():
+  try:result.append(json.loads(line))
+  except json.JSONDecodeError:pass
+ return result
+
+def main():
+ lock=(S/'pipeline.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ state={'pid':os.getpid(),'started_at':time.time(),'setup':str(S),'output_dir':str(OUT),'evaluation_dir':str(EVAL),'predecessor_status':str(PRE),'automatic_training_start':True,'epochs':3,'evaluate_epoch':3,'gpus':[0,1,2,3]}
+ def update(phase,**kw):state.update(phase=phase,updated_at=time.time(),**kw);save(S/'status.json',state)
+ env=dict(os.environ,CUDA_VISIBLE_DEVICES='0,1,2,3',PYTHONPATH=str(S/'code'),OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',TOKENIZERS_PARALLELISM='false',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',PYTORCH_CUDA_ALLOC_CONF='expandable_segments:True')
+ def run(cmd,log,phase,allow_failure=False,timeout=None):
+  update(phase,command=cmd,log=str(log),child_pid=None)
+  with Path(log).open('a') as f:
+   child=subprocess.Popen(cmd,cwd=S,env=env,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
+   update(phase,child_pid=child.pid);started=time.time()
+   while child.poll() is None:
+    if timeout is not None and time.time()-started>timeout:
+     # Only our bounded benchmark process group; never touch the predecessor/other jobs.
+     import signal
+     os.killpg(child.pid,signal.SIGTERM)
+     try:child.wait(timeout=30)
+     except subprocess.TimeoutExpired:os.killpg(child.pid,signal.SIGKILL);child.wait()
+     raise RuntimeError(f'Owned benchmark exceeded {timeout}s: {log}')
+    extra={}
+    if phase=='training':
+     rr=records(OUT/'train.jsonl')
+     if rr:extra={'last_training_record':rr[-1]}
+     extra['saved_epochs']=[i for i in range(1,4) if (OUT/f'epoch-{i:02d}.pt').exists()]
+    elif phase=='building_caches' and (S/'cache-status.json').exists():extra={'cache_status':read(S/'cache-status.json')}
+    update(phase,**extra);time.sleep(10)
+  update(phase,child_pid=None,returncode=child.returncode)
+  if child.returncode and not allow_failure:raise RuntimeError(f'{phase} exited {child.returncode}; see {log}')
+  return child.returncode
+ def torchrun(module_or_script,args,module=False):
+  return [PYTHON,'-u','-m','torch.distributed.run','--standalone','--nproc_per_node=4']+(['-m'] if module else [])+[module_or_script]+args
+ try:
+  update('waiting_for_existing_training')
+  while True:
+   pre=read(PRE);phase=pre.get('phase','unknown')
+   if phase in ['failed','training_failed']:raise RuntimeError(f'Predecessor failed; not starting automatically: {pre}')
+   if phase=='completed':
+    assert pre.get('returncode',0)==0
+    if not alive(pre.get('training_pid')):break
+   if phase not in ['completed','archiving'] and not alive(pre.get('controller_pid')) and not alive(pre.get('training_pid')):
+    raise RuntimeError('Predecessor processes vanished without a successful completion status')
+   update('waiting_for_existing_training',predecessor=pre);time.sleep(10)
+  update('waiting_for_idle_gpus',predecessor=pre)
+  while True:
+   if gpu_idle():
+    time.sleep(10)
+    if gpu_idle():break
+   update('waiting_for_idle_gpus',gpu_state=gpu_state());time.sleep(10)
+  # Refuse a duplicate fresh training run; a failed run must be explicitly inspected/resumed.
+  if (OUT/'last.pt').exists():raise RuntimeError('Own checkpoint already exists; inspect before resuming, never overwrite a completed run')
+  run([PYTHON,'-u',str(S/'run_cache.py'),'--gpus','0','1','2','3','--workers-per-gpu','4','--wait-idle'],S/'cache-controller.log','building_caches')
+  ready=read(D/'cache-ready.json');assert ready['status']=='completed' and ready['train_episodes']==124 and ready['validation_episodes']==33
+  cfg=read(S/'training.config.prepared.json')
+  assert cfg['epochs']==3 and cfg['learning_rate']==1e-4
+  assert read(D/'train.sample_files.json')==cfg['sample_files']
+  assert read(D/'validation.sample_files.json')==cfg['validation_sample_files']
+  val_files=cfg.pop('validation_sample_files');cfg.pop('validation_suite_by_episode');cfg.pop('validation_interval_epochs')
+  cfg.update(keep_only_latest=False,save_every_epochs=1,save_every_steps=None,max_steps=None,epochs=3)
+  cfg['run_protocol']={'initialization':'fresh Qwen3.5-4B + new LoRA/history adapter/progress head','validation':'final epoch 3 only; clean 33 episodes, 7996 observations','checkpoint_archive':'each completed epoch, retained','lr_schedule':'constant 1e-4','predecessor':str(PRE),'data_plan_sha256':read(D/'plan.json')['plan_sha256']}
+  save(S/'evaluation.config.json',{'sample_files':val_files,'checkpoint':str(OUT/'epoch-03.pt'),'output_dir':str(EVAL),'expected_samples':7996,'expected_episodes':33})
+  benchmarks=[]
+  def bench(batch,workers):
+   label=f'b{batch}-w{workers}';root=S/'benchmarks'/label;root.mkdir(parents=True,exist_ok=True)
+   if (root/'train.jsonl').exists():raise RuntimeError(f'Benchmark already exists: {root}; inspect before rerun')
+   trial=dict(cfg,batch_size=batch,num_workers=workers,max_steps=16,log_every_steps=1,output_dir=str(root),keep_only_latest=True)
+   path=S/'benchmarks'/f'{label}.config.json';save(path,trial)
+   rc=run(torchrun('mem_lite.train_stage3',['--config',str(path)],True),root/'run.log','benchmarking',True,1200)
+   rr=records(root/'train.jsonl');text=(root/'run.log').read_text()
+   if rc:
+    if 'out of memory' not in text.lower():raise RuntimeError(f'Non-OOM benchmark failure: {root}/run.log')
+    result={'batch_size':batch,'num_workers':workers,'status':'oom','output_dir':str(root)}
+   else:
+    assert len(rr)>=16 and all(math.isfinite(x['loss']) for x in rr)
+    stable=[x for x in rr if x['step']>=7];peak=max(max(x['peak_reserved_gib_per_gpu']) for x in rr)
+    result={'batch_size':batch,'num_workers':workers,'status':'passed' if peak<=68 else 'insufficient_memory_margin','samples_per_second':sum(x['samples'] for x in stable)/sum(x['step_seconds'] for x in stable),'peak_reserved_gib':peak,'output_dir':str(root)}
+   benchmarks.append(result);save(S/'benchmark-results.json',{'trials':benchmarks});return result
+  for batch in [4,8,12,16,24,32]:
+   result=bench(batch,4)
+   if result['status']!='passed':break
+  valid=[x for x in benchmarks if x['status']=='passed'];assert valid,'No stable batch with at least 12 GiB memory headroom'
+  best=max(valid,key=lambda x:x['samples_per_second'])
+  result=bench(best['batch_size'],8)
+  if result['status']=='passed' and result['samples_per_second']>best['samples_per_second']*1.02:best=result
+  # Verify checkpoint restoration and all five tasks before fresh training.
+  smoke=S/'smoke-evaluation';smoke_args=['--checkpoint',str(Path(best['output_dir'])/'last.pt'),'--output',str(smoke),'--batch-size',str(best['batch_size']),'--workers','4','--smoke']
+  run(torchrun(str(S/'evaluate_final.py'),smoke_args),S/'smoke-evaluation.log','smoke_evaluation')
+  run([PYTHON,str(S/'evaluate_final.py'),*smoke_args,'--aggregate'],S/'smoke-evaluation-aggregate.log','smoke_evaluation')
+  smoke_result=read(smoke/'metrics.json');assert len(smoke_result['by_task'])==5 and smoke_result['overall']['episodes']==33
+  cfg.update(batch_size=best['batch_size'],num_workers=best['num_workers'],log_every_steps=10,output_dir=str(OUT))
+  cfg['benchmark_selection']=best;save(S/'training.config.json',cfg)
+  steps=math.ceil(math.ceil(39831/4)/cfg['batch_size'])*3
+  save(S/'benchmark-selection.json',{'selected':best,'trials':benchmarks,'expected_optimizer_steps':steps,'estimated_training_seconds':39831*3/best['samples_per_second'],'fresh_initialization_after_benchmark':True})
+  # Recheck no unrelated GPU job appeared during the handoff.
+  update('waiting_for_idle_gpus_before_training')
+  while not gpu_idle():time.sleep(10)
+  run(torchrun('mem_lite.train_stage3',['--config',str(S/'training.config.json')],True),S/'train.log','training')
+  archives=[OUT/f'epoch-{i:02d}.pt' for i in range(1,4)];assert all(p.is_file() and p.stat().st_size>1000000 for p in archives)
+  run([PYTHON,str(S/'verify_checkpoints.py')],S/'checkpoint-verification.log','verifying_checkpoints')
+  args=['--checkpoint',str(OUT/'epoch-03.pt'),'--output',str(EVAL),'--batch-size',str(best['batch_size']),'--workers',str(best['num_workers'])]
+  run(torchrun(str(S/'evaluate_final.py'),args),S/'evaluation.log','evaluating_epoch3')
+  run([PYTHON,str(S/'evaluate_final.py'),*args,'--aggregate'],S/'evaluation-aggregate.log','aggregating_evaluation')
+  metrics=read(EVAL/'metrics.json');assert metrics['coverage_complete'] and metrics['overall']['frames']==7996 and metrics['overall']['episodes']==33
+  update('completed',metrics_path=str(EVAL/'metrics.json'),metrics={'overall':metrics['overall'],'by_task':metrics['by_task']},saved_epochs=[1,2,3],finished_at=time.time())
+ except BaseException as e:
+  update('failed',failed_phase=state.get('phase'),error=repr(e),traceback=traceback.format_exc());raise
+if __name__=='__main__':main()

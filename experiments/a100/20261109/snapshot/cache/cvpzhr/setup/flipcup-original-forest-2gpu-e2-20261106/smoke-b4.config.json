@@ -1,0 +1,84 @@
+{
+  "model_path": "/cache/cvpzhr/models/Qwen3.5-4B",
+  "sample_files": [
+    "/cache/cvpzhr/setup/flipcup-original-forest-2gpu-e2-20261106/smoke-data/train/normal",
+    "/cache/cvpzhr/setup/flipcup-original-forest-2gpu-e2-20261106/smoke-data/train/recovery"
+  ],
+  "output_dir": "/cache/cvpzhr/setup/flipcup-original-forest-2gpu-e2-20261106/smoke-b4",
+  "epochs": 1,
+  "max_steps": 2,
+  "batch_size": 4,
+  "gradient_accumulation_steps": 2,
+  "num_workers": 0,
+  "learning_rate": 0.0001,
+  "weight_decay": 0.01,
+  "max_grad_norm": 1.0,
+  "max_pixels": 65536,
+  "max_sequence_length": 8192,
+  "log_every_steps": 1,
+  "save_every_steps": null,
+  "save_every_epochs": 1,
+  "seed": 42,
+  "model": {
+    "history_dim": 2560,
+    "num_bins": 101,
+    "lora_rank": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "gradient_checkpointing": false
+  },
+  "history_capacity": 1008,
+  "persistent_workers": false,
+  "history_source": {
+    "method": "streamforest-v1",
+    "vision_sha256": "1cc7c705e96c07fb52bcb1fb32f5e05271cc249fbc619c1128fd4eddbea47aea",
+    "memory_config": {
+      "num_attention_heads": 1,
+      "st_memory_windows": [
+        1,
+        6
+      ],
+      "st_memory_tokens": [
+        64,
+        16
+      ],
+      "event_split_window": 4,
+      "long_memory_tokens_per_frame": 16,
+      "long_memory_tokens_quota": 800,
+      "sim_weight_g": 0.4,
+      "time_weight_a": 0.2,
+      "merge_weight_b": 0.4
+    },
+    "sample_fps": 5.0,
+    "include_episode_last_frame": true,
+    "max_pixels": 65536,
+    "min_pixels": 4096,
+    "view_policy": "main-first; missing auxiliary views use RGB black 64x64; v1"
+  },
+  "fused_optimizer": true,
+  "keep_only_latest": true,
+  "sequence_padding_multiple": 64,
+  "sequence_extra_padding_side": "right",
+  "validation_interval_epochs": 0.5,
+  "validation_batch_size": 4,
+  "validation_num_workers": 2,
+  "preparation_hashes": {
+    "/cache/cvpzhr/setup/forest-proprimem-cap50-20261103/cache-plan.json": "ee96e1ae6119a200df3360ad128c7f67f842f49883ae55683409cf54d761fb08",
+    "/cache/cvpzhr/setup/forest-proprimem-cap50-20261103/augmentation-policy.json": "c5fcb99ed5f2e23e331585a5295635003ccbbc91f701336a52293a59399b23d2",
+    "/cache/cvpzhr/datasets/forest-proprimem-cap50-5fps-20261103/report.json": "d87e198c3c428ef7492e118b5854394360f5e2ab9f16731db8774b7f9a4bc619",
+    "/cache/cvpzhr/datasets/forest-proprimem-cap50-5fps-static-jitter-seed42-20261104/report.json": "d2d8ea2a55d1a0fecbaf6073ea6536e8b819c0c12facb957b531e2a55f7ae379",
+    "/cache/cvpzhr/datasets/forest-proprimem-cap50-5fps-static-jitter-seed42-20261104/train.sample_files.json": "295bfc318cfa4519556bfcd7e2d13ec5b0589b26273f2d489440b8721896cc12",
+    "/cache/cvpzhr/datasets/forest-proprimem-cap50-5fps-20261103/validation.sample_files.json": "2e657f24731bb49d4bf2f90d79646cb2f63f494f26f3f2f5103f9327e5fc7df3"
+  },
+  "init_checkpoint": "/cache/cvpzhr/outputs/forest-original-cap50-static-jitter-e3-20261104/last.pt",
+  "rolling_checkpoints": true,
+  "validation": {
+    "sample_files": [
+      "/cache/cvpzhr/setup/flipcup-original-forest-2gpu-e2-20261106/smoke-data/validation/normal",
+      "/cache/cvpzhr/setup/flipcup-original-forest-2gpu-e2-20261106/smoke-data/validation/recovery"
+    ],
+    "expected_samples": 8,
+    "batch_size": 4,
+    "num_workers": 0
+  }
+}

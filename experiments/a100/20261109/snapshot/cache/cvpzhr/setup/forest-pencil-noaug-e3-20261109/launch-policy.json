@@ -1,0 +1,31 @@
+{
+  "epochs": 3,
+  "initialization": "fresh Qwen3.5-4B",
+  "learning_rate": 0.0001,
+  "schedule": "constant",
+  "max_training_gpus": 2,
+  "cache_gpu_selection": "currently free one or two GPUs",
+  "batch_candidates": [
+    4,
+    6
+  ],
+  "max_reserved_gib": 68,
+  "benchmark_weights_reused": false,
+  "save_every_epoch": true,
+  "evaluate_epoch": 3,
+  "plot_all_validation_videos": true,
+  "counts": {
+    "train": {
+      "episodes": 28,
+      "samples": 10789
+    },
+    "validation": {
+      "episodes": 7,
+      "samples": 2177
+    }
+  },
+  "augmentation_enabled": false,
+  "automatic_training_start": true,
+  "raw_labels_unchanged": true,
+  "heartbeat_automation_id": "pencil-forest"
+}

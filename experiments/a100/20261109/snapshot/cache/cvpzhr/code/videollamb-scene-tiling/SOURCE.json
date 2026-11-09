@@ -1,0 +1,11 @@
+{
+  "repository": "bigai-nlco/VideoLLaMB",
+  "commit": "962837c5b310559de18b375eaee20561123bb54c",
+  "path": "llava/model/multimodal_projector/self_segment.py",
+  "url": "https://github.com/bigai-nlco/VideoLLaMB/blob/962837c5b310559de18b375eaee20561123bb54c/llava/model/multimodal_projector/self_segment.py",
+  "git_blob_sha": "b90121b0f65d5f694f15fce4faa0d146812bca7e",
+  "unmodified": true,
+  "dependency": "torch",
+  "license_status": "No license file found in the pinned repository tree and no license declaration found in its README.",
+  "sha256": "39e929c39ee2bd892f80071f354b5533be6f0abeb31056b64c7a99ab51c96f07"
+}

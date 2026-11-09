@@ -1,0 +1,117 @@
+"""Available GPU cache generation -> two-GPU benchmark/train -> final evaluation and plots."""
+from pathlib import Path
+import os,sys,json,time,subprocess,fcntl,traceback,hashlib,math,signal
+S=Path(__file__).resolve().parent
+D=Path('/cache/cvpzhr/datasets/forest-pencil-5fps-no-augmentation-20261109')
+OUT=Path('/cache/cvpzhr/outputs/forest-pencil-frombase-noaug-e3-20261109')
+EVAL=Path('/cache/cvpzhr/evaluations/forest-pencil-e3-noaug-val-20261109')
+PYTHON='/cache/cvpzhr/envs/forest/bin/python'
+def read(p):return json.loads(Path(p).read_text())
+def save(p,x):
+ p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);tmp=p.with_suffix(p.suffix+'.tmp');tmp.write_text(json.dumps(x,ensure_ascii=False,indent=2,allow_nan=False)+'\n');tmp.replace(p)
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def gpu_info():
+ raw=subprocess.check_output(['nvidia-smi','--query-gpu=index,uuid,memory.used,utilization.gpu','--format=csv,noheader,nounits'],text=True)
+ occupied=set(x.strip() for x in subprocess.check_output(['nvidia-smi','--query-compute-apps=gpu_uuid','--format=csv,noheader,nounits'],text=True).splitlines())
+ return {int(x[0]):{'memory_mib':int(x[2]),'utilization':int(x[3]),'occupied':x[1].strip() in occupied} for line in raw.splitlines() if (x:=line.split(','))}
+def free_gpus(info):return sorted(g for g,x in info.items() if x['memory_mib']<2000 and x['utilization']<10 and not x['occupied'])
+def records(path):
+ if not Path(path).exists():return []
+ result=[]
+ for line in Path(path).read_text().splitlines():
+  try:result.append(json.loads(line))
+  except json.JSONDecodeError:pass
+ return result
+
+def main():
+ lock=(S/'pipeline.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ state={'pid':os.getpid(),'started_at':time.time(),'epochs':3,'world_size':2,'task':'zipper-pencil-case-inspection','augmentation_enabled':False,'output_dir':str(OUT),'evaluation_dir':str(EVAL),'automatic_training_start':True}
+ def update(phase,**kw):state.update(phase=phase,updated_at=time.time(),**kw);save(S/'status.json',state)
+ base_env=dict(os.environ,PYTHONPATH=str(S/'code'),OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',TOKENIZERS_PARALLELISM='false',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',PYTORCH_CUDA_ALLOC_CONF='expandable_segments:True')
+ def select_gpus(minimum,maximum,phase):
+  while True:
+   info=gpu_info();free=free_gpus(info)
+   if len(free)>=minimum:
+    chosen=free[:maximum];time.sleep(5);again=free_gpus(gpu_info())
+    if all(g in again for g in chosen):return chosen
+   update(phase,gpu_state=info);time.sleep(10)
+ def run(command,log,phase,gpus=None,allow_oom=False,timeout=None):
+  env=dict(base_env,CUDA_VISIBLE_DEVICES=','.join(map(str,gpus)) if gpus is not None else '')
+  update(phase,command=command,log=str(log),child_pid=None)
+  with Path(log).open('a') as f:
+   child=subprocess.Popen(command,cwd=S,env=env,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
+   update(phase,child_pid=child.pid);started=time.time()
+   while child.poll() is None:
+    if timeout and time.time()-started>timeout:
+     os.killpg(child.pid,signal.SIGTERM)
+     try:child.wait(timeout=20)
+     except subprocess.TimeoutExpired:os.killpg(child.pid,signal.SIGKILL);child.wait()
+     raise RuntimeError(f'Owned benchmark exceeded {timeout}s: {log}')
+    extra={}
+    if phase=='training':
+     rr=records(OUT/'train.jsonl')
+     if rr:extra['last_training_record']=rr[-1]
+     extra['saved_epochs']=[i for i in range(1,4) if (OUT/f'epoch-{i:02d}.pt').exists()]
+    elif phase=='building_caches' and (S/'cache-status.json').exists():extra['cache_status']=read(S/'cache-status.json')
+    elif phase=='evaluating_epoch3':extra['evaluated_samples']=sum(read(p).get('samples',0) for p in EVAL.glob('worker-*.json'))
+    update(phase,**extra);time.sleep(10)
+  update(phase,child_pid=None,returncode=child.returncode)
+  if child.returncode:
+   if allow_oom and 'out of memory' in Path(log).read_text().lower():return child.returncode
+   raise RuntimeError(f'{phase} exited {child.returncode}; see {log}')
+  return 0
+ def torchrun(target,args,module=False):return [PYTHON,'-u','-m','torch.distributed.run','--standalone','--nproc_per_node=2']+(['-m'] if module else [])+[target]+args
+ try:
+  update('preflight');assert read(S/'preflight.json')['status']=='passed'
+  for rel,digest in read(S/'run-files-sha256.json').items():assert sha(S/rel)==digest,rel
+  assert not (OUT/'last.pt').exists(),'Existing run must be explicitly inspected before resume'
+  cache_gpus=select_gpus(1,2,'waiting_for_cache_gpu');workers_per_gpu=8 if len(cache_gpus)==1 else 4
+  update('building_caches',cache_gpus=cache_gpus,cache_workers_per_gpu=workers_per_gpu)
+  # Cache children bind physical indices themselves; expose the full physical device enumeration to their controller.
+  cache_cmd=[PYTHON,'-u',str(S/'run_cache.py'),'--gpus',*map(str,cache_gpus),'--workers-per-gpu',str(workers_per_gpu)]
+  run(cache_cmd,S/'cache-controller.log','building_caches',list(range(4)))
+  ready=read(D/'cache-ready.json');assert ready['status']=='completed' and ready['counts']=={'train':{'episodes':28,'samples':10789},'validation':{'episodes':7,'samples':2177}}
+  run([PYTHON,str(S/'validate_training_inputs.py')],S/'training-input-validation.log','validating_training_inputs')
+  cfg=read(S/'training.config.prepared.json');assert cfg['sample_files']==read(D/'train.sample_files.json')
+  cfg['data_signature']=read(S/'training-input-validation.json')['train_signature']
+  trials=[]
+  for batch in [4,6]:
+   gpus=select_gpus(2,2,'waiting_for_two_gpus')
+   root=S/'benchmarks'/f'batch-{batch}';root.mkdir(parents=True,exist_ok=True);assert not (root/'train.jsonl').exists()
+   trial=dict(cfg,batch_size=batch,max_steps=16,log_every_steps=1,output_dir=str(root),keep_only_latest=True)
+   config_path=root/'config.input.json';save(config_path,trial)
+   update('benchmarking',benchmark_batch=batch,training_gpus=gpus)
+   rc=run(torchrun('mem_lite.train_stage3',['--config',str(config_path)],True),root/'run.log','benchmarking',gpus,True,1200)
+   if rc:result={'batch_size':batch,'status':'oom','gpu_ids':gpus}
+   else:
+    rr=records(root/'train.jsonl');assert len(rr)>=16 and all(math.isfinite(x['loss']) for x in rr)
+    stable=[x for x in rr if x['step']>=7];peak=max(max(x['peak_reserved_gib_per_gpu']) for x in rr)
+    result={'batch_size':batch,'status':'passed' if peak<=68 else 'insufficient_memory_margin','gpu_ids':gpus,'samples_per_second':sum(x['samples'] for x in stable)/sum(x['step_seconds'] for x in stable),'peak_reserved_gib':peak}
+   trials.append(result);save(S/'benchmark-results.json',{'trials':trials})
+  valid=[x for x in trials if x['status']=='passed'];assert valid,'No safe batch size'
+  best=valid[0]
+  for candidate in valid[1:]:
+   if candidate['samples_per_second']>best['samples_per_second']*1.02:best=candidate
+  cfg.update(batch_size=best['batch_size'],max_steps=None,keep_only_latest=False,log_every_steps=10,output_dir=str(OUT));cfg['benchmark_selection']=best
+  gpus=select_gpus(2,2,'waiting_for_two_gpus');cfg['run_protocol'].update(gpus=gpus,global_batch_size=2*cfg['batch_size'],benchmark_weights_reused=False)
+  save(S/'training.config.json',cfg);steps_per_epoch=math.ceil(math.ceil(10789/2)/cfg['batch_size'])
+  save(S/'benchmark-selection.json',{'selected':best,'trials':trials,'steps_per_epoch':steps_per_epoch,'total_steps':steps_per_epoch*3,'training_gpus':gpus,'fresh_initialization_after_benchmark':True})
+  state.update(training_gpus=gpus,batch_size=cfg['batch_size'],global_batch_size=cfg['batch_size']*2,steps_per_epoch=steps_per_epoch,total_steps=steps_per_epoch*3,training_started_at=time.time())
+  run(torchrun('mem_lite.train_stage3',['--config',str(S/'training.config.json')],True),S/'train.log','training',gpus)
+  state['training_finished_at']=time.time()
+  run([PYTHON,str(S/'verify_checkpoints.py')],S/'checkpoint-verification.log','verifying_checkpoints')
+  # Evaluation also stays within two currently unused GPUs.
+  eval_gpus=select_gpus(2,2,'waiting_for_evaluation_gpus');state.update(evaluation_gpus=eval_gpus,evaluation_started_at=time.time())
+  args=['--checkpoint',str(OUT/'epoch-03.pt'),'--output',str(EVAL),'--batch-size',str(best['batch_size']),'--workers','4']
+  run(torchrun(str(S/'evaluate_final.py'),args),S/'evaluation.log','evaluating_epoch3',eval_gpus)
+  run([PYTHON,str(S/'evaluate_final.py'),*args,'--aggregate'],S/'evaluation-aggregate.log','aggregating_evaluation')
+  metrics=read(EVAL/'metrics.json');assert metrics['coverage_complete'] and metrics['overall']['episodes']==7 and metrics['overall']['frames']==2177
+  run([PYTHON,str(S/'plot_validation.py')],S/'plotting.log','plotting_validation')
+  assert read(EVAL/'curves/manifest.json')['status']=='passed' and (EVAL/'curves/overview.png').is_file() and (EVAL/'curves/forest-pencil-validation-curves.zip').is_file()
+  update('completed',finished_at=time.time(),saved_epochs=[1,2,3],metrics_path=str(EVAL/'metrics.json'),metrics=metrics['overall'],curve_path=str(EVAL/'curves/overview.png'),curve_bundle=str(EVAL/'curves/forest-pencil-validation-curves.zip'))
+ except BaseException as e:update('failed',failed_phase=state.get('phase'),error=repr(e),traceback=traceback.format_exc());raise
+if __name__=='__main__':main()

@@ -1,0 +1,75 @@
+"""Two-GPU fresh Forest training for spray only; archive each epoch, evaluate epoch 3."""
+from pathlib import Path
+import os,sys,json,time,subprocess,fcntl,traceback,hashlib,math
+S=Path(__file__).resolve().parent
+D=Path('/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109')
+OUT=Path('/cache/cvpzhr/outputs/forest-spray-frombase-noaug-e3-20261109')
+EVAL=Path('/cache/cvpzhr/evaluations/forest-spray-e3-noaug-val-20261109')
+PYTHON='/cache/cvpzhr/envs/forest/bin/python'
+def read(p):return json.loads(Path(p).read_text())
+def save(p,x):
+ p=Path(p);p.parent.mkdir(parents=True,exist_ok=True);tmp=p.with_suffix(p.suffix+'.tmp');tmp.write_text(json.dumps(x,ensure_ascii=False,indent=2,allow_nan=False)+'\n');tmp.replace(p)
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def gpu_info():
+ text=subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.used,utilization.gpu','--format=csv,noheader,nounits'],text=True)
+ return {int(x[0]):{'memory_mib':int(x[1]),'utilization':int(x[2])} for line in text.splitlines() if (x:=line.split(','))}
+def last_record(p):
+ if not p.exists():return None
+ with p.open('rb') as f:
+  f.seek(max(0,p.stat().st_size-20000));lines=f.read().decode(errors='replace').splitlines()
+ for line in reversed(lines):
+  try:return json.loads(line)
+  except json.JSONDecodeError:pass
+
+def main():
+ lock=(S/'controller.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ state={'pid':os.getpid(),'started_at':time.time(),'gpus':[2,3],'world_size':2,'epochs':3,'steps_per_epoch':927,'total_steps':2781,'output_dir':str(OUT),'evaluation_dir':str(EVAL),'augmentation_enabled':False,'task':'inspect-spray-bottles'}
+ def update(phase,**kw):state.update(phase=phase,updated_at=time.time(),**kw);save(S/'status.json',state)
+ env=dict(os.environ,CUDA_VISIBLE_DEVICES='2,3',PYTHONPATH=str(S/'code'),OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',TOKENIZERS_PARALLELISM='false',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',PYTORCH_CUDA_ALLOC_CONF='expandable_segments:True')
+ def run(command,log,phase):
+  update(phase,command=command,log=str(log),child_pid=None)
+  with Path(log).open('a') as f:
+   child=subprocess.Popen(command,cwd=S,env=env,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT,start_new_session=True)
+   update(phase,child_pid=child.pid)
+   while child.poll() is None:
+    extra={}
+    if phase=='training':
+     row=last_record(OUT/'train.jsonl')
+     if row:extra['last_training_record']=row
+     extra['saved_epochs']=[i for i in range(1,4) if (OUT/f'epoch-{i:02d}.pt').exists()]
+    elif phase=='evaluating_epoch3':
+     workers=[read(p) for p in EVAL.glob('worker-*.json')];extra['evaluated_samples']=sum(w.get('samples',0) for w in workers)
+    update(phase,**extra);time.sleep(10)
+  update(phase,child_pid=None,returncode=child.returncode)
+  if child.returncode:raise RuntimeError(f'{phase} exited {child.returncode}; see {log}')
+ def torchrun(target,args,module=False):
+  return [PYTHON,'-u','-m','torch.distributed.run','--standalone','--nproc_per_node=2']+(['-m'] if module else [])+[target]+args
+ try:
+  update('preflight');cfg=read(S/'training.config.json');pre=read(S/'preflight.json');ready=read(D/'cache-ready.json')
+  assert pre['status']=='passed' and ready['status']=='completed' and ready['augmentation_enabled'] is False
+  assert ready['counts']=={'train':{'episodes':25,'samples':7416},'validation':{'episodes':7,'samples':1919}}
+  assert cfg['epochs']==3 and cfg['batch_size']==4 and cfg['gradient_accumulation_steps']==1 and cfg['learning_rate']==1e-4
+  assert cfg['sample_files']==read(D/'train.sample_files.json') and not cfg.get('validation_sample_files')
+  for rel,digest in read(S/'run-files-sha256.json').items():assert sha(S/rel)==digest,rel
+  assert not (OUT/'last.pt').exists() and not (OUT/'train.jsonl').exists(),'Refusing to overwrite an existing run'
+  update('waiting_for_gpus_2_3')
+  while True:
+   info=gpu_info()
+   if all(info[g]['memory_mib']<2000 and info[g]['utilization']<10 for g in [2,3]):break
+   update('waiting_for_gpus_2_3',gpu_state={str(g):info[g] for g in [2,3]});time.sleep(10)
+  state['training_started_at']=time.time()
+  run(torchrun('mem_lite.train_stage3',['--config',str(S/'training.config.json')],True),S/'train.log','training')
+  state['training_finished_at']=time.time()
+  run([PYTHON,str(S/'verify_checkpoints.py')],S/'checkpoint-verification.log','verifying_checkpoints')
+  args=['--checkpoint',str(OUT/'epoch-03.pt'),'--output',str(EVAL),'--batch-size','4','--workers','4']
+  state['evaluation_started_at']=time.time()
+  run(torchrun(str(S/'evaluate_final.py'),args),S/'evaluation.log','evaluating_epoch3')
+  run([PYTHON,str(S/'evaluate_final.py'),*args,'--aggregate'],S/'evaluation-aggregate.log','aggregating_evaluation')
+  metrics=read(EVAL/'metrics.json');assert metrics['coverage_complete'] and metrics['overall']['frames']==1919 and metrics['overall']['episodes']==7 and len(metrics['by_task'])==1
+  update('completed',finished_at=time.time(),saved_epochs=[1,2,3],metrics_path=str(EVAL/'metrics.json'),metrics=metrics['overall'])
+ except BaseException as e:update('failed',failed_phase=state.get('phase'),error=repr(e),traceback=traceback.format_exc());raise
+if __name__=='__main__':main()
