@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.log
+smoke/
+*.lock
+status.json
+launcher.json
+initialization-rank*.json
+checkpoint-verification.json
