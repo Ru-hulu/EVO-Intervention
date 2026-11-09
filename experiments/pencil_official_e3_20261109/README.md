@@ -1,0 +1,9 @@
+# Pencil-case recovery: official/base initialization, three epochs
+
+User-confirmed settings match the latest Forest/Robometer comparison: 28 training episodes (10,789 observations), seven validation episodes (2,177 observations), unchanged original PT, 5 FPS, no artificial augmentation, seed 42, effective batch 18, peak learning rate 1e-4, 3% warmup and cosine decay. Each model uses two GPUs, keeps all three epoch checkpoints and evaluates only the final epoch after saving it.
+
+Forest starts from `/cache/cvpzhr/models/Qwen3.5-4B` with fresh LoRA/history projection/progress head. Robometer starts from the exact published `robometer/Robometer-4B` revision `beef63bc914c5c189329d49c6d712d96d632aa34`, preserves the official progress head and adds fresh language LoRA. Neither uses a Count/Order/State or anomaly-task fine-tuned checkpoint. Smoke-test weights are discarded before formal initialization.
+
+This is the source snapshot of `/cache/cvpzhr/setup/forest-robometer-pencil-official-e3-20261109`. The `forest/` files are on `externmem-histoken-streamforest`; `robometer/` files are on `main`; controller and configuration are shared. Original absolute paths are preserved for reproducibility. Data/cache/model/checkpoint/output payloads are excluded. The existing datasets and model dependencies must be restored separately before use. The controller is already running remotely: do not launch a duplicate.
+
+GPU assignment: Forest 0/1, per-GPU microbatch 3, accumulation 3; Robometer 2/3, per-GPU microbatch 9, accumulation 1. Idle-GPU checks and process locks prevent this controller from intentionally sharing busy GPUs. Both final evaluations produce frame-weighted MAE and episode-equal mean Pearson, report undefined correlations, and generate all seven validation curves. Initialization audits, model-shard checksums and validation coverage checks are part of the run.

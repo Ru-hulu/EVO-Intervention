@@ -1,0 +1,12 @@
+smoke/
+__pycache__/
+*.pyc
+*.log
+*.pt
+*.safetensors
+*.png
+*.csv
+*.jsonl
+status.json
+launcher.json
+*lock

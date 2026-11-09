@@ -1,0 +1,147 @@
+{
+  "remote_setup": "/cache/cvpzhr/setup/forest-robometer-pencil-official-e3-20261109",
+  "task": "robometer",
+  "files": [
+    {
+      "path": "experiments/pencil_official_e3_20261109/.gitignore",
+      "sha256": "6783125c7cb518d9229d640f73ebe20a3aeb31b1ceee1d7c063e6436afc4596b",
+      "git_blob_sha": "d92dc9c7040ec30a67b81fff66de83a801c633ff"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/README.md",
+      "sha256": "00247b2c0ff9fd8d3ce995d1750e3959d6c98a251d3456ea0571857a1a9dac9a",
+      "git_blob_sha": "778017ce395b9e4f1c905dd87faa1d3b6a6336f2"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/launch-policy.json",
+      "sha256": "efe0b39a98cd5ddaafaed4a39e9c8d5332d7959b6cb5a6167d2c364c3e03262c",
+      "git_blob_sha": "703045815d932d24e3e4e5e2f7b3260ec957b647"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/pipeline.py",
+      "sha256": "27d9f215ddcfacd81d515f8f99000e689e9f80072753254e103f7d2460422b94",
+      "git_blob_sha": "30058372abf05b3b5bcfe91a6e8ffdc6a9977bc2"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/preflight.json",
+      "sha256": "ab1da72c7f76fab6c36879981ebd17d01999611585c46c6a8801e220be78cd77",
+      "git_blob_sha": "2dbe8915c1b4af7cf0efa374c6c717b7c6071397"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/preflight.py",
+      "sha256": "37a948f86d2435232800e741294de04dca9a2315b37231453234b23803ed018c",
+      "git_blob_sha": "68b3e66aa5ba7cda12e3bdc07c849d7f52e25c55"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/prepare_remote.py",
+      "sha256": "6ab9e1661db18e670c3fffbdcd9a3d186c0cc487d7e928499034817c5d69786f",
+      "git_blob_sha": "f7963bbcc033ebd3788ece6e8433c7e3e54570d1"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/check.py",
+      "sha256": "aea5a295afc187c8d708c4357c22859d5ec2471b046caeb2f54b5b74a1a4091a",
+      "git_blob_sha": "0d356eee1c77dcf80e8e69f1d76cbc383254b148"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/check_environment.py",
+      "sha256": "b4c26b39900d8cbd42e9df68da012b7cdc7e07888a479e347af6540fa8b43c39",
+      "git_blob_sha": "f3483c59624562d1ddcc2960db8251abc830aa3b"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/config.json",
+      "sha256": "f33bf44fab2d452053ec3b514b2d64aae201925f93becbad6bee179435eafaaf",
+      "git_blob_sha": "fc5e422e23f6a038b308e13f1b3b0e53dc0fea5f"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/data.py",
+      "sha256": "c455b0a8bfd3b9f9b05233eb039a57f0894697f527ca0dfcb06367c31f5fc737",
+      "git_blob_sha": "7468c7f900090729abf0c42cf94790f07f0191c6"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/evaluate.py",
+      "sha256": "e4af03101f8e6088213da6abeceb26874b6a0302db9fb2745e7c639a98c40530",
+      "git_blob_sha": "48880c0b63a6e3ddc87e14e890969dee593707f1"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/model.py",
+      "sha256": "0d3f1487b1b81e6b00f936b9a5d0c2a5bd039860faec3fd882a25c79a25a5f6e",
+      "git_blob_sha": "5046a1fe2c5dd4a745d5abf535b17962d7b66738"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/periodic.py",
+      "sha256": "092a575e70291974fe46744daf50a0f69633834f4143b27324b79a4c62e61ab3",
+      "git_blob_sha": "dcb2951a77d7947e08cf98ff0a675db097de9f6a"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/plot_comparison.py",
+      "sha256": "a23d59643288bc29ee051b542651eb36d04fc89c6450289cc24287638e0cecd1",
+      "git_blob_sha": "6dacbd626881f836593080d8fd053751359eac2d"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/preflight.py",
+      "sha256": "ea817a8aaba439fdb57af4e42cb8a9d0d16ac74e31b7fb6761d8ca354f7ff845",
+      "git_blob_sha": "20819fb0e5bc337fbbff970f77731482b98cc7fb"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/prepare.py",
+      "sha256": "cfb9eb740c785bf9d264a7f8c51846390a4daee745b216dc5c24381b16a6e013",
+      "git_blob_sha": "c279451f2d87c9785390a6d592e63d8dbcd90083"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/prepare_proprimem.py",
+      "sha256": "a6c0d4c57fd5652ec3f65365ca36e4a5b2beea1cb87fdf45831212aee0db3470",
+      "git_blob_sha": "a541d0a95e7a8e14cf176390ebcaae95cc5b107e"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/requirements.txt",
+      "sha256": "05ec5c48582b696517220f6b1e548f649083df38887b1f8474bcff6caae4be5c",
+      "git_blob_sha": "0a8e923d35e2c68e01bdd7509854e6d1b76dc6a9"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/seed_runtime.py",
+      "sha256": "723487c4d9cac64844917fbef60679e1180fca1f9880285405204daad461555f",
+      "git_blob_sha": "dfebd1f147266eb35bf489bdb6ab9c93c700f802"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/tests/test_pipeline.py",
+      "sha256": "916043e887ee8ec36729a6e45e5ac81040b5b5f75476e7c479953b22847bad6f",
+      "git_blob_sha": "0a28b5393e3325eb034522fbc659db015c716b36"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/code/robometer_training/train.py",
+      "sha256": "f8104d4eb0f3f6c6117659fd26b4c4fe69012de02fc92f264a7c7b8aaa13a1ff",
+      "git_blob_sha": "338b07a2a60a013634d726522a50b49c14628cf9"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/plot_validation_curves.py",
+      "sha256": "57b6477c75b9062f1f4dc4510d399f1d4a3b85a5d674af484f6be3bf29ba0860",
+      "git_blob_sha": "6ad549d47b252f63ac0d8662a5751a0506b2539e"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/postprocess_validation.py",
+      "sha256": "9440c59aa3264c851b68a5f14c5449f72419a25e828e4937b9ac9d251a749259",
+      "git_blob_sha": "0b77385fb1460b215575e2a81cedd46e2ff369d7"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/source-provenance.json",
+      "sha256": "026e5d921dc41c5cace7046476ed30ad8ba63e3bb4d552cad364e09b245fa84f",
+      "git_blob_sha": "fc9fd37aeeddc126b08a1d5e3e5e68acd89af235"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/train_official.py",
+      "sha256": "6f19ef6505f2e91c4354137473f19c5bbd08e82ad274435cce8d17f22f39e76f",
+      "git_blob_sha": "84fe2ddb63008c06b7ff0db9d4c6eaacf2acaac0"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/training.config.json",
+      "sha256": "c65cea04a08a473c81997c4e04f82ec2679a7ef750b9a368255199067ec2ea0d",
+      "git_blob_sha": "c4616abaf619ec41b3ea4e04ee85ba7b8f83be3d"
+    },
+    {
+      "path": "experiments/pencil_official_e3_20261109/robometer/verify_robometer.py",
+      "sha256": "c1d6b93d6f94b0c90966b698abf7376e697ea31e54d0762a275b402507ac75b2",
+      "git_blob_sha": "ce8f3a8c046539b31ba2471a8ef3350ecb1add33"
+    }
+  ],
+  "data_payloads_included": false
+}
