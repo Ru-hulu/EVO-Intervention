@@ -1,0 +1,180 @@
+{
+  "status": "passed",
+  "only_data_paths_counts_and_derived_steps_changed": true,
+  "differences": {
+    "forest": [
+      {
+        "field": "data_signature",
+        "previous": "b63fe3e73c7f655393f73726f4c06c8ab36e6f513cfbd774a6b922ee5d658488",
+        "current": "d9ae6102b6286eaf512019fdafd594869bf0ada21754667bc7a8c47550c7d296"
+      },
+      {
+        "field": "expected_steps_per_epoch",
+        "previous": 432,
+        "current": 412
+      },
+      {
+        "field": "expected_total_steps",
+        "previous": 1296,
+        "current": 1236
+      },
+      {
+        "field": "output_dir",
+        "previous": "/cache/cvpzhr/outputs/forest-flipcup-frombase-matched-e3-20261109",
+        "current": "/cache/cvpzhr/outputs/forest-spray-frombase-matched-e3-20261109"
+      },
+      {
+        "field": "run_protocol.robometer_reference",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-flipcup-official-e3-20261109/robometer/training.config.json",
+        "current": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109/robometer/training.config.json"
+      },
+      {
+        "field": "run_protocol.task",
+        "previous": "flipcup",
+        "current": "spray"
+      },
+      {
+        "field": "run_protocol.train_episodes",
+        "previous": 28,
+        "current": 25
+      },
+      {
+        "field": "run_protocol.train_samples",
+        "previous": 7769,
+        "current": 7416
+      },
+      {
+        "field": "run_protocol.validation_samples",
+        "previous": 1744,
+        "current": 1919
+      },
+      {
+        "field": "sample_files",
+        "previous": [
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000000",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000001",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000002",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000003",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000004",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000005",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000006",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000007",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000008",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000009",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000010",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000011",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000012",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000013",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000014",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000015",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000016",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000017",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000018",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000019",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000020",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000021",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000022",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000023",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000024",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000025",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000026",
+          "/cache/cvpzhr/datasets/forest-flipcup-5fps-no-augmentation-20261109/train/flip-two-cups-left-to-right-with-recovery/episode_000027"
+        ],
+        "current": [
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000001",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000002",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000003",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000004",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000005",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000006",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000007",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000009",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000010",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000011",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000013",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000014",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000016",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000017",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000018",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000019",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000020",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000021",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000022",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000023",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000024",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000025",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000026",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000027",
+          "/cache/cvpzhr/datasets/forest-spray-5fps-no-augmentation-20261109/train/inspect-spray-bottles/episode_000028"
+        ]
+      },
+      {
+        "field": "setup_dir",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-flipcup-official-e3-20261109/forest",
+        "current": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109/forest"
+      }
+    ],
+    "robometer": [
+      {
+        "field": "cache_setup_dir",
+        "previous": "/cache/cvpzhr/setup/robometer-flipcup-clean-e3-20261109",
+        "current": "/cache/cvpzhr/setup/robometer-inspect-spray-clean-e3-20261109"
+      },
+      {
+        "field": "eval_steps",
+        "previous": 1296,
+        "current": 1236
+      },
+      {
+        "field": "expected_steps",
+        "previous": 1296,
+        "current": 1236
+      },
+      {
+        "field": "expected_train_samples",
+        "previous": 7769,
+        "current": 7416
+      },
+      {
+        "field": "expected_validation_samples",
+        "previous": 1744,
+        "current": 1919
+      },
+      {
+        "field": "output_dir",
+        "previous": "/cache/cvpzhr/outputs/robometer-flipcup-fromofficial-clean-2gpu-e3-20261109",
+        "current": "/cache/cvpzhr/outputs/robometer-spray-fromofficial-clean-2gpu-e3-20261109"
+      },
+      {
+        "field": "save_steps",
+        "previous": 432,
+        "current": 412
+      },
+      {
+        "field": "setup_dir",
+        "previous": "/cache/cvpzhr/setup/forest-robometer-flipcup-official-e3-20261109/robometer",
+        "current": "/cache/cvpzhr/setup/forest-robometer-spray-official-e3-20261109/robometer"
+      },
+      {
+        "field": "steps_per_epoch",
+        "previous": 432,
+        "current": 412
+      },
+      {
+        "field": "task",
+        "previous": "flip-two-cups-left-to-right-with-recovery",
+        "current": "inspect-spray-bottles"
+      },
+      {
+        "field": "train_data",
+        "previous": "/cache/cvpzhr/datasets/robometer-flipcup-5fps-h7-current3-clean-20261109/train.jsonl",
+        "current": "/cache/cvpzhr/datasets/robometer-inspect-spray-5fps-h7-current3-clean-20261109/train.jsonl"
+      },
+      {
+        "field": "validation_data",
+        "previous": "/cache/cvpzhr/datasets/robometer-flipcup-5fps-h7-current3-clean-20261109/validation.jsonl",
+        "current": "/cache/cvpzhr/datasets/robometer-inspect-spray-5fps-h7-current3-clean-20261109/validation.jsonl"
+      }
+    ]
+  }
+}
