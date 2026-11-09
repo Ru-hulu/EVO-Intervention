@@ -1,0 +1,198 @@
+"""第三阶段离线检查：缓存/冻结范围、损失归一化及断点读写，不执行训练循环。"""
+
+import json
+from contextlib import nullcontext
+from types import SimpleNamespace
+from unittest.mock import patch
+
+import pytest
+import torch
+import torch.distributed as dist
+import torch.multiprocessing as mp
+from torch.nn.parallel import DistributedDataParallel
+
+from mem_lite.models.cross_attention import GatedHistoryAttention
+from mem_lite.tests.test_m3_predictor import collator as collator
+from mem_lite.tests.test_m3_predictor import model as model
+from mem_lite.tests.test_m3_predictor import sample
+from mem_lite.train_stage3 import (
+    DEFAULT_CONFIG,
+    CHECKPOINT_FORMAT,
+    checkpoint_schedule,
+    initialize_weights,
+    load_trainable_state,
+    normalize_gradients,
+    read_config,
+    save_checkpoint,
+    trainable_state,
+)
+
+
+def test_finetune_initialization_loads_weights_without_old_training_state(model, tmp_path):
+    config = {"lora_rank": 2}
+    expected = {name: {key: value.clone() for key, value in part.items()}
+                for name, part in trainable_state(model).items()}
+    path = tmp_path / "initial.pt"
+    torch.save({"format": CHECKPOINT_FORMAT, "model": expected, "config": {"model": config},
+                "epoch": 3, "step": 216, "optimizer": {"must_not_restore": True}}, path)
+    optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=2e-5)
+    with torch.no_grad():
+        for parameter in model.parameters():
+            if parameter.requires_grad:
+                parameter.add_(1)
+    result = initialize_weights(model, path, config)
+    assert result["epoch"] == 3 and result["step"] == 216
+    assert not optimizer.state and optimizer.param_groups[0]["lr"] == 2e-5
+    for name, part in trainable_state(model).items():
+        for key, value in part.items():
+            torch.testing.assert_close(value, expected[name][key])
+    with pytest.raises(ValueError, match="lora_rank"):
+        initialize_weights(model, path, {"lora_rank": 3})
+
+
+def test_no_history_batch_keeps_memory_unused_and_other_modules_trainable(model, collator):
+    model.train()
+    result = model(collator([sample(), sample()]), torch.tensor([0.0, 0.9]))
+    result["loss_sum"].backward()
+    assert all(p.grad is None for p in model.memory_adapters["1"].parameters())
+    assert model.progress_head.weight.grad.abs().sum() > 0
+    assert any(p.grad is not None and p.grad.abs().sum() > 0 for n, p in model.named_parameters() if "lora_" in n)
+    assert all(p.grad is None for p in model.parameters() if not p.requires_grad)
+
+
+def test_sample_normalization_handles_partial_microbatches_and_rank_average():
+    parameter = torch.nn.Parameter(torch.tensor(2.0))
+    # 两个rank各自含不等大小微批，DDP先按rank取平均；最终按实际样本数归一化。
+    parameter.grad = torch.tensor((7.0 + 11.0) / 2)
+    unused = torch.nn.Parameter(torch.tensor(1.0))
+    normalize_gradients([parameter, unused], torch.tensor(5.0), world_size=2)
+    assert parameter.grad.item() == pytest.approx(18 / 5)
+    assert unused.grad is None
+
+
+def test_stage3_checkpoint_roundtrip_saves_only_own_trainable_weights(model, tmp_path):
+    parameters = [p for p in model.parameters() if p.requires_grad]
+    optimizer = torch.optim.AdamW(parameters, lr=2e-4)
+    optimizer.state[parameters[0]] = {"step": torch.tensor(7.0), "exp_avg": torch.full_like(parameters[0], 0.125),
+                                      "exp_avg_sq": torch.full_like(parameters[0], 0.25)}
+    before = {name: {key: value.clone() for key, value in part.items()}
+              for name, part in trainable_state(model).items()}
+    rng = torch.get_rng_state()
+    with patch("mem_lite.train_stage3.torch.cuda.get_rng_state", return_value=torch.tensor([1], dtype=torch.uint8)):
+        save_checkpoint(model, optimizer, {"data_signature": "fixture", "seed": 42},
+                        tmp_path, epoch=1, next_batch=3, step=7)
+    saved = torch.load(tmp_path / "last.pt", weights_only=True)
+    assert saved["format"] == CHECKPOINT_FORMAT
+    assert (saved["epoch"], saved["next_batch"], saved["step"]) == (1, 3, 7)
+    torch.testing.assert_close(saved["rng_by_rank"][0]["torch"], rng)
+    assert set(saved["model"]) == {"m3_lora", "memory_adapters", "progress_head"}
+    assert all("lora_" in key for key in saved["model"]["m3_lora"])
+    with torch.no_grad():
+        for parameter in parameters:
+            parameter.add_(1)
+    load_trainable_state(model, saved["model"])
+    optimizer.state.clear()
+    optimizer.load_state_dict(saved["optimizer"])
+    for name, part in trainable_state(model).items():
+        for key, value in part.items():
+            torch.testing.assert_close(value, before[name][key])
+    restored = optimizer.state[parameters[0]]
+    assert restored["step"] == 7 and restored["exp_avg"].eq(0.125).all()
+    assert restored["exp_avg_sq"].eq(0.25).all()
+
+
+def test_stage3_resume_preserves_model_and_optimization_config(tmp_path):
+    config = json.loads(DEFAULT_CONFIG.read_text())
+    config.update(model_path="/model", sample_files=["/samples"], data_signature="old-data")
+    args = SimpleNamespace(model_path=None, sample_files=[str(tmp_path / "migrated")], output_dir=str(tmp_path),
+                           epochs=4, max_steps=100, config="/must-not-read.json")
+    updated = read_config(args, {"config": config})
+    assert updated["epochs"] == 4 and updated["max_steps"] == 100
+    assert updated["model"] == config["model"]
+    assert updated["gradient_accumulation_steps"] == config["gradient_accumulation_steps"]
+    assert updated["data_signature"] == "old-data"
+
+
+def test_latest_only_overwrites_checkpoint_without_epoch_archives(model, tmp_path):
+    optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad])
+    with patch("mem_lite.train_stage3.torch.cuda.get_rng_state", return_value=torch.tensor([1], dtype=torch.uint8)):
+        for epoch in (1, 2, 3):
+            save_checkpoint(model, optimizer, {"keep_only_latest": True}, tmp_path,
+                            epoch, 0, epoch * 10, epoch_finished=True)
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["last.pt"]
+    state = torch.load(tmp_path / "last.pt", weights_only=True)
+    assert state["epoch"] == 3 and state["step"] == 30 and state["next_batch"] == 0
+
+
+def test_three_epoch_archives_without_step_snapshots(tmp_path):
+    config = json.loads(DEFAULT_CONFIG.read_text())
+    config.update(model_path="/model", sample_files=["/samples"], epochs=6,
+                  save_every_steps=None, save_every_epochs=3)
+    path = tmp_path / "config.json"
+    path.write_text(json.dumps(config))
+    args = SimpleNamespace(config=str(path), model_path=None, sample_files=None, output_dir=None,
+                           epochs=None, max_steps=None)
+    config = read_config(args)
+    saved = []
+    for step in range(1, 6 * 885 + 1):
+        due, archive = checkpoint_schedule(config, step, step // 885, step % 885 == 0)
+        if due:
+            saved.append((step, archive))
+    assert saved == [(2655, True), (5310, True)]
+    assert checkpoint_schedule(config, 101, 0, False, stop=True) == (True, False)
+    assert checkpoint_schedule({"save_every_steps": 100}, 100, 0, False) == (True, False)
+    assert checkpoint_schedule({"save_every_steps": 100}, 885, 1, True) == (True, True)
+
+
+class OptionalHistoryProbe(torch.nn.Module):
+    """真实历史读取模块和小型主干，检查不同rank/微批的空历史。"""
+
+    def __init__(self):
+        super().__init__()
+        self.main = torch.nn.Linear(8, 1)
+        self.history = GatedHistoryAttention(8, 8, 8, 2)
+        with torch.no_grad():
+            self.history.gate.fill_(0.2)
+        self.register_buffer("hidden", torch.randn(1, 3, 8))
+        self.register_buffer("memory", torch.randn(1, 4, 8))
+
+    def forward(self, has_history):
+        valid = torch.full((1, 4), has_history, dtype=torch.bool)
+        hidden = self.history(self.hidden, self.memory, valid, torch.ones(1, 3, dtype=torch.bool))
+        return {"loss_sum": self.main(hidden).square().mean()}
+
+
+def ddp_history_worker(rank, rendezvous):
+    torch.set_num_threads(1)
+    dist.init_process_group("gloo", init_method=f"file://{rendezvous}", rank=rank, world_size=2)
+    try:
+        torch.manual_seed(41)
+        model = OptionalHistoryProbe()
+        wrapped = DistributedDataParallel(model, broadcast_buffers=False, find_unused_parameters=True)
+        reference = OptionalHistoryProbe()
+        reference.load_state_dict(model.state_dict())
+        # 依次覆盖：历史只出现在no_sync微批、只在末微批、跨rank不一致、全批无历史。
+        patterns = (((True, False), (False, False)), ((False, True), (True, False)),
+                    ((False, False), (False, False)))
+        for pattern in patterns:
+            wrapped.zero_grad(set_to_none=True)
+            for microbatch, has_history in enumerate(pattern[rank]):
+                with wrapped.no_sync() if microbatch == 0 else nullcontext():
+                    wrapped(has_history)["loss_sum"].backward()
+            normalize_gradients(list(model.parameters()), torch.tensor(4.0), world_size=2)
+            reference.zero_grad(set_to_none=True)
+            for rank_pattern in pattern:
+                for has_history in rank_pattern:
+                    (reference(has_history)["loss_sum"] / 4).backward()
+            for actual, expected in zip(model.parameters(), reference.parameters(), strict=True):
+                if expected.grad is None:
+                    assert actual.grad is None
+                else:
+                    torch.testing.assert_close(actual.grad, expected.grad, atol=1e-7, rtol=1e-5)
+    finally:
+        dist.destroy_process_group()
+
+
+def test_ddp_optional_history_and_accumulation(tmp_path):
+    # 两个CPU进程，仅forward/backward及all-reduce，不调用优化器或任何训练入口。
+    mp.spawn(ddp_history_worker, args=(str(tmp_path / "gloo"),), nprocs=2, join=True)

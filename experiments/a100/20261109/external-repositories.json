@@ -1,0 +1,100 @@
+[
+  {
+    "path": "/cache/robot-baselines/dependencies/EventVLA",
+    "upstream": "https://github.com/InternRobotics/EventVLA.git",
+    "base_commit": "a4e02f741f78ab01eb76f6a0bc6685f72f60ed24",
+    "modified_code": [
+      "RoboTwin-Mem/task_config/_eval_step_limit.yml"
+    ],
+    "untracked_code": [
+      "RoboTwin-Mem/envs/place_block_mat.py"
+    ]
+  },
+  {
+    "path": "/cache/robot-baselines/dependencies/curobo-v0.7.8",
+    "upstream": "https://github.com/NVlabs/curobo.git",
+    "base_commit": "d64c4b005459db10c5dd867d8b30a87d5bda9bdb",
+    "modified_code": [],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/dependencies/imprint-lerobot",
+    "upstream": "https://github.com/huggingface/lerobot.git",
+    "base_commit": "0cf864870cf29f4738d3ade893e6fd13fbd7cdb5",
+    "modified_code": [],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/dependencies/pytorch3d",
+    "upstream": "https://github.com/facebookresearch/pytorch3d.git",
+    "base_commit": "75ebeeaea0908c5527e7b1e305fbc7681382db47",
+    "modified_code": [],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/repos/LIBERO",
+    "upstream": "https://github.com/Lifelong-Robot-Learning/LIBERO.git",
+    "base_commit": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+    "modified_code": [],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/repos/LIBERO-Mem",
+    "upstream": "https://github.com/libero-mem/libero-mem.git",
+    "base_commit": "0eee0defa4024e51511b6e15a79f30e9620209de",
+    "modified_code": [],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/repos/RMBench",
+    "upstream": "https://github.com/RoboTwin-Platform/RMBench.git",
+    "base_commit": "7d1cdfc7661c273a7a5c5f6126e2d1a7f0a3f4b7",
+    "modified_code": [],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/repos/RoboDojo",
+    "upstream": "https://github.com/RoboDojo-Benchmark/RoboDojo.git",
+    "base_commit": "f57e1633ffed59761bc8e568cfe7530c4b33381c",
+    "modified_code": [
+      "src/eval_client/main.py"
+    ],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/repos/RoboDojo/XPolicyLab",
+    "upstream": "https://github.com/XPolicyLab/XPolicyLab.git",
+    "base_commit": "5d0be1499634d3176258c8f2e31f5fe816497b0a",
+    "modified_code": [],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/repos/SimpleMemVLA",
+    "upstream": "https://github.com/OpenBMB/SimpleMemVLA.git",
+    "base_commit": "453d6ec293e63318bbc2bce545d0b9256ab1bc51",
+    "modified_code": [
+      "configs/sft_params.py",
+      "scripts/train.sh",
+      "simplememvla/benchmarks/__init__.py"
+    ],
+    "untracked_code": [
+      "simplememvla/benchmarks/real_robot.py"
+    ]
+  },
+  {
+    "path": "/cache/robot-baselines/repos/imprint",
+    "upstream": "https://github.com/amazon-far/imprint.git",
+    "base_commit": "252ae09fcc2a94874fe0876d15142fe483ac553f",
+    "modified_code": [
+      "benchmarks/rmbench/eval/run_local.py"
+    ],
+    "untracked_code": []
+  },
+  {
+    "path": "/cache/robot-baselines/repos/robomme_policy_learning",
+    "upstream": "https://github.com/RoboMME/robomme_policy_learning.git",
+    "base_commit": "ac846a9a4aec841e483b1dc5d620dfe426bde853",
+    "modified_code": [],
+    "untracked_code": []
+  }
+]

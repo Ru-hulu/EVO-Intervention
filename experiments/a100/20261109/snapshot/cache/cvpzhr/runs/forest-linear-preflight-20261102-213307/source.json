@@ -1,0 +1,14 @@
+{
+  "commit": "ad785a4128ed0862742e888338349f4d42b27dff",
+  "archive_sha256": "e6283641eceee4c21ada24d8929b8254058e427164ee531bcf4250f7b794a0ab",
+  "code": "/cache/cvpzhr/code/forest-linear-preflight-ad785a4-20261102-213307",
+  "files": {
+    "preflight.py": "9e9a62d9f7ca851f97e4dc995ea33ec4cfe0a13be71dbc87e2d9e5f7c48f2cb5",
+    "runner.py": "999ec51e51ee1f0ed453435a21bd55a6384850e87d578e35a15a907c2a20ef54"
+  },
+  "additional_source_files": {
+    "qwen_training/__init__.py": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+    "qwen_training/delta_to_progress.py": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+    "qwen_training/LICENSE": "6ca01970c4e66d2d5bebd0a00b55de5b4081017e0f0c97ddb415cda28e3e8ffa"
+  }
+}
