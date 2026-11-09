@@ -1,0 +1,792 @@
+{
+  "captured_at": 1794208836.7151797,
+  "branch": "internmem-kvcache-VST",
+  "files": [
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/source.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/source.json",
+      "sha256": "e5cb4d689f3931a04207731f992a81db7387d36fce8a8958b7333cf915bdd9f3",
+      "git_blob_sha": "aa0c940c64565f1413d5c5669c5005bfe11125e5",
+      "kind": "code_provenance"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/README.md",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/README.md",
+      "sha256": "e0dc9cd240a6f069207a50d693849ccfe77a36420615b049ed278f9ed9a19af6",
+      "git_blob_sha": "ce897ce5b792202cf9a46d5fccfa028fab445d69",
+      "kind": "documentation"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/__init__.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/__init__.py",
+      "sha256": "ce281cd44dae1f490008a743442d1586b59190dc736ef4b833f7f88fa9835937",
+      "git_blob_sha": "f2e0c8e23037f2b54f0c8dacdc4e35ce226045e0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/benchmark_vst.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/benchmark_vst.py",
+      "sha256": "90baa3e4871ac62d5bc80d9fd1bbcce5407fc465545081d4f7ec9f6a9dabb181",
+      "git_blob_sha": "4ab60c6fc75c3bf3b68c7bf14cbccc75c3f08144",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/evaluate.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/evaluate.py",
+      "sha256": "049ba88b26e0a44d75fbe23ef30171c02819dd0655a26c71e413359088085d6f",
+      "git_blob_sha": "6a2f82ad22cb53e55ab8e0941853ff9508a42238",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/evaluate_vst.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/evaluate_vst.py",
+      "sha256": "09b4fa4f35091927aeadcc29ad37f60e906334f4c31ae74cc45816b18e7642b7",
+      "git_blob_sha": "b993b358012c2b59a997332ba5fa4c3d2fb5c0a7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/requirements-data.txt",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/requirements-data.txt",
+      "sha256": "d9561391b42441ffb8d8a3ddc2831545af06f6359d26013f7d7091959cca194e",
+      "git_blob_sha": "1a16c0571dfe6fe7df3dcfbb8727545ae0b8ad84",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/requirements-train.txt",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/requirements-train.txt",
+      "sha256": "15cf63581f30d55938205c0c299a4b35cbeb5113b6ae8545bdfc089a696c70fc",
+      "git_blob_sha": "93cab32fb0ee8d8c6509c68cf6b29b339d9b951b",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/run_vst_experiment.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/run_vst_experiment.py",
+      "sha256": "a8bbb723905d8e30ff2a702649095962f7f49c8dbd48c51851e0898a5303b00b",
+      "git_blob_sha": "55696127437bd28f0b0f774a049559dc1378f41f",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/runtime.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/runtime.py",
+      "sha256": "cffbe1c8050e4db1f42f00ef6032d7d2d6e41e38204f95e2a499d6561337babf",
+      "git_blob_sha": "0ca575196e8c26089db2865b5af45e0f18b51a1e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/train_stage3.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/train_stage3.py",
+      "sha256": "7fab1c20efe49bfa0d086b38532f7d193ba4df4a1d8571dafcda6d8afc604d0c",
+      "git_blob_sha": "7904250a393ab31628c628753130e4abf3b503ad",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/train_vst.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/train_vst.py",
+      "sha256": "0e4076ab42c6d42488fc9a16cb87dfc75008ec4ed523c3e1501126608ad70fef",
+      "git_blob_sha": "d898ec0caee4cf125dfbce8725f38bf2e07e559c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/validate_vst_gpu.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/validate_vst_gpu.py",
+      "sha256": "6f72ac9df21bd8763dcc830212f003895efaca40e7ac6deb5cb2a6a3a6e3060b",
+      "git_blob_sha": "fc691d700d11cb52c40b739e20fcdec7ba4cae4e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/vst_runtime.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/vst_runtime.py",
+      "sha256": "26fe38ff37725d5dfc1ae2a59adfc6b95012962624e0627364faf5f9b81cd0d3",
+      "git_blob_sha": "ae0b617218cab6b2e4c7f6e1c9651252ae96cd40",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/a100_crossattn_train.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/a100_crossattn_train.json",
+      "sha256": "315cc12e5fadcf4e4b7d2b9de1bd04a5ee4a8c257a2c1f153861280c8457d7d7",
+      "git_blob_sha": "890d2c5ee631dfc2d39df4c7aadae4b32dfadd14",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/a100_vst_train.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/a100_vst_train.json",
+      "sha256": "fe10891523641f0b86e4177d89579235684525b275218719d78597cb40a7a76a",
+      "git_blob_sha": "c194eeac3eedd648aab3e60deb1a57eb3388b91a",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/m3_model.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/m3_model.json",
+      "sha256": "aad6c2ed0417ff82d15f8459fe8360a5df82d7176fd8b1b4831d66ce2e3b6f5a",
+      "git_blob_sha": "d93fea5854713447dfab17f8e661ef02c6d6b0af",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/stage3_train.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/stage3_train.json",
+      "sha256": "9a21064df3864a381463b237fd30c45ae53b7d78863ff5a554a032c99de74cf8",
+      "git_blob_sha": "86df80614e743a0a2118723cc23d776ce16bfc10",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/streamforest.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/configs/streamforest.json",
+      "sha256": "fb33e878989fe95d114b32ed99727b920368ab2b300e037e38ef6929fb105d69",
+      "git_blob_sha": "f02b2b9761e8afbb2f3d5c64aaadb9100265c3eb",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/__init__.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/__init__.py",
+      "sha256": "4710a3c8e21446291bee32f8b86c23973c5a404a5a3a7be1b659d445d40dab0b",
+      "git_blob_sha": "863ae92209f87985329196e9b7b1a441acbe903d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/annotations.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/annotations.py",
+      "sha256": "3481a2ed5f8641b557e6d5ad3800d2f90e223175a991dcf800dd591a47597574",
+      "git_blob_sha": "a357c6d291645825b74aef42343e3d87280a6acf",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/m3_dataset.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/m3_dataset.py",
+      "sha256": "533d0187395c0c0ad95fca1fedd2048949c1513c0eb47ccfd41a1532fa4028ad",
+      "git_blob_sha": "82d6f964365f1ce34fd1746b8d8019c3cadda56a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/m3_inputs.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/m3_inputs.py",
+      "sha256": "1da6c2e4fa903d4d118bd554b6de9545969448d7a1876e7349725be955fb597e",
+      "git_blob_sha": "ff0f3db4ba670ae524a84e58bab08347abe29e86",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_progress.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_progress.py",
+      "sha256": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+      "git_blob_sha": "2cc293d79f0afb70b96af5ed5ba1f4ae03fa60f5",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_progress_batch.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_progress_batch.py",
+      "sha256": "99be9a0034be500533f43ea6bc686aa88bc576329b066cfd0c5600f4204798fc",
+      "git_blob_sha": "4c5bc2e5fff7e271da1a35d821e6ed6c2eb5968c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_proprimem.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_proprimem.py",
+      "sha256": "f34ba695a4171b934dbb6cd66827ea2e86775fb7c90fb75a6f119e23d07735d7",
+      "git_blob_sha": "91bfc4a96d6785c18428dbd211c7b3fa2938c08e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_recovery.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_recovery.py",
+      "sha256": "471fab01b5af60f815b7916a97594ac5f0f72256d6b8043f24eda4d07263c1f2",
+      "git_blob_sha": "54cea943ac70efd01fe5bc74cba7c5b333852dc8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_stream.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/prepare_stream.py",
+      "sha256": "0b0c367fecf2f99720b74e6c53dff360c2d8e29ae8b4571fa5a6d12bf1b94804",
+      "git_blob_sha": "eb31201fb6fb860ce77d58f3a0b08f7c02d20822",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/views.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/views.py",
+      "sha256": "0dbf9a19aa0f7d5aceb7c75b38f89b4779a56d5f6c961900d7c732f484db6249",
+      "git_blob_sha": "fbeb9fb81e57ee5d149d20dbc0e61649bbe8e505",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/vst_dataset.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/datasets/vst_dataset.py",
+      "sha256": "0975a22cdcdb8458be95a2985a67b94dfc6e6c8c751df3184bda0faba1657519",
+      "git_blob_sha": "72705de80868ca4b386195656b213e418f99db3d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/LICENSE.StreamForest",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/LICENSE.StreamForest",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob_sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "kind": "license"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/__init__.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/__init__.py",
+      "sha256": "8381e12d9f06339246c735462745a05f40338630d07cc4ef6a6265bd27e80fd5",
+      "git_blob_sha": "9e1f919e27243a2073f56e02c39825e35b1b4917",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/manager.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/manager.py",
+      "sha256": "25f0fc2955fd9f435b5626c09529185af6430594ddc5054d1635e025333c771a",
+      "git_blob_sha": "2867c7a33eca2cd6bc025103de3c7bc390ebb38a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/stream.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/stream.py",
+      "sha256": "60c9af3fe686983a66fcd4466352c2dd9791e27367b72a51511a4ddacf1f89db",
+      "git_blob_sha": "4f7d5bc47823451ca6eb8121c77be6413eba60c9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/tome.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/tome.py",
+      "sha256": "bf1351dcdf0f55cf7b36924ccf114ff376fe38c6ba83ac46b43abc9057d65131",
+      "git_blob_sha": "b121e963c0ed6103b25fe7b9876ae4bdb28d7c01",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/vision.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/memory/vision.py",
+      "sha256": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b",
+      "git_blob_sha": "aec50dcc0f03e4c70c37f61a30c1a6ecb413a3d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/__init__.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/__init__.py",
+      "sha256": "8b9545b664dd7e62ed1d4c9e4a8173636f6adf309996b46dde34dc8d65050a78",
+      "git_blob_sha": "eceb615cb0e3ced74ee9bcee0612fb188cfe8c4a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/cross_attention.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/cross_attention.py",
+      "sha256": "783acd1919e2a4269f5772748e23fb5b4488d0754dfafa813b21601b46955bde",
+      "git_blob_sha": "dacb0ea9d355241bb6b070f0f69a3de06ca9b383",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/m3_predictor.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/m3_predictor.py",
+      "sha256": "21d5d709c2aff227e9dde4c12f60b820641b76921177bb48f33174e380a787ef",
+      "git_blob_sha": "49b8a4f9b92c07ae7ac6f20aed73150e4e4634c7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/vst_predictor.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/models/vst_predictor.py",
+      "sha256": "7a2848070b91116bbddc7314a6aa52906d1243a53eb405e84a13fe7205549683",
+      "git_blob_sha": "d0316b3f65970bcfeea1e12ee3f49933296e025c",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/conftest.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/conftest.py",
+      "sha256": "8e1b5ed2a6a95c6bf32fa22ee41f13de7395a20a85f609b03dc12f7f640109cc",
+      "git_blob_sha": "d7b73d9f5114b73614e7eba2a68073066da862b4",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_cross_attention.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_cross_attention.py",
+      "sha256": "3873e528cc2d833d902dd680e6b9cb77f9e41bcc7cc3b31ffcc120dea3248348",
+      "git_blob_sha": "e10548e7e8556e0741cdecade1c077605dda969e",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_m3_data.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_m3_data.py",
+      "sha256": "c2513cdac15af23264f41ba0c13fe5113fa316d7d454d0a2b05ef602c3ccf959",
+      "git_blob_sha": "e82d0a95cd637fec82a633e3c72c8ebaf1e87c69",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_m3_predictor.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_m3_predictor.py",
+      "sha256": "3498e8faa91ef7a88c5ca270cccb80cc677ab74dbfbc30a43086381263fa7b4a",
+      "git_blob_sha": "a3f2ed53a77c6e18175a9d6a372e237c9533f536",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_partial_views.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_partial_views.py",
+      "sha256": "6b35bcb7c8bb970195b835e5a7ca60127f05d64b26aa30338d5607571f26e1a0",
+      "git_blob_sha": "3c3e15055c24a1fc3da60f08e3339b41b1a726d9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_progress_labels.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_progress_labels.py",
+      "sha256": "fc145b8308a85f9a52c735e180acc923518e0412d22fb50761f8757b94547702",
+      "git_blob_sha": "c97fe907dd3b15b3fd0be462e9fdf55b6d843502",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_proprimem_preparation.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_proprimem_preparation.py",
+      "sha256": "b327c2fe9ebb1a9c0952e5f7972b3532a9460f7b3dfe92364a6551a0862e32a4",
+      "git_blob_sha": "73eccf54aad1a508fceafc5ed43089116157a913",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_recovery_data.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_recovery_data.py",
+      "sha256": "87351c8692372536ffb81b787b14b518fbb29438d31d1a2fbad4c25c964005c3",
+      "git_blob_sha": "3e4a04c129d013826b335ed46a54d103a9757a3d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_stage3_training.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_stage3_training.py",
+      "sha256": "3127dd5365501cb7d98fcc74d0182c75033b9013d0ca31a3ea39775cc69b7039",
+      "git_blob_sha": "0893b6944122c399bd1a8b46878008b8d93364d3",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_stream_pipeline.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_stream_pipeline.py",
+      "sha256": "5813b28fadec5c8a228880ebd32f1cf2725ca476372a39b496ac377fbf4f8dc8",
+      "git_blob_sha": "53cc4808879d1bd60c91f29089a920d6a0fd96c1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_streamforest.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_streamforest.py",
+      "sha256": "da9eef63581f11538d78cad16acaf66df5b081aa66f94f7e63443881201ebbc4",
+      "git_blob_sha": "f8445d1ecd130e509b9fe7b68056ba59063a5f29",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_vst.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/mem_lite/tests/test_vst.py",
+      "sha256": "796b7e627a98fabceb1baae46c260186572d4fbc07f2e1744ced0217bc9dd64f",
+      "git_blob_sha": "0a01ade99e32fd99dc92508bbded34fecaa18598",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/LICENSE",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/LICENSE",
+      "sha256": "6ca01970c4e66d2d5bebd0a00b55de5b4081017e0f0c97ddb415cda28e3e8ffa",
+      "git_blob_sha": "c636f73528f042c33c1e9a502a0f685316e44a11",
+      "kind": "license"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/__init__.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/__init__.py",
+      "sha256": "e23b428be9beb49388d5a5768e3e6d6c7d3a8a2b51d571e73d26eade32a92e44",
+      "git_blob_sha": "b00127713cc17f5828c7287287229667640df6de",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_closed_loop.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_closed_loop.py",
+      "sha256": "6c71b4f780a0eee389f0474c78bc4db0cd4e552ba2671325fed0f30a78c1dc08",
+      "git_blob_sha": "25b861e5774ca7185a4809af26043b615c8f8162",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_distributed.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_distributed.py",
+      "sha256": "e8a93ee8490c3833ffa80005c51bd72ba0e12beb6398c9bf40d9ba98c982f858",
+      "git_blob_sha": "ce47d53ab97885be1b1e82a0995e0392a643e7a2",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_rollout_draft.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_rollout_draft.py",
+      "sha256": "ad8c8c40ae736f7b729915ca78364ed6c225aedcd5d6e6e4860ee17b8684a908",
+      "git_blob_sha": "b415d97fd31dfcefaeb2aa84696974c7c330f911",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_rollout_sequence.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/benchmark_rollout_sequence.py",
+      "sha256": "155238f31560d937b8bd3dc79965c3cfb395cd469c5debe8a89320c80ccda981",
+      "git_blob_sha": "992d6dd7a5517e9a56f11f6bce73d90a2572c74d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/build_reference_index.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/build_reference_index.py",
+      "sha256": "aa318cf44c6cd0c0a41fa1c0e35760bda699c390a41fa5efe715d46832b30f9b",
+      "git_blob_sha": "d285b1a563bc1c463562f16a57918011ea05e37d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/build_sample_index.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/build_sample_index.py",
+      "sha256": "87fb90f611498b055c8c2689b6597b2f61898b9720bfc4490edd4ca93741f555",
+      "git_blob_sha": "a7173b70a3ec74c1d3e260c3adbebafd09c0c897",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/closed_loop_report.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/closed_loop_report.py",
+      "sha256": "8b65d86649ee7b0a74db11dc22e383285589c2181c7d215e9505ae16ba9fa611",
+      "git_blob_sha": "3b373b3f671b9639325796dff7e1ffcc8b617078",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/closed_loop_rollout.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/closed_loop_rollout.py",
+      "sha256": "534a35a0fd6eb014cba075a409abf0bbb970c7caca9eeeb80a8a9c033cdbb179",
+      "git_blob_sha": "9522a8dda356525d3a34a99b72802cc1ca411ddd",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/collect_validation_rollout.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/collect_validation_rollout.py",
+      "sha256": "2ebfb54df088a9a057a12faad18a6f0ff3486bd3b1439bacec6bad95fa33fdaf",
+      "git_blob_sha": "eda84c707660cf823268a1536534373465398eef",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/dataloader.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/dataloader.py",
+      "sha256": "243befde55dbdcaf057228fceb9fd29293bb04fb5035599c2a74af719995b97a",
+      "git_blob_sha": "8e921bf32dee8dd30b559665d4670c63dea385d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/dataset.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/dataset.py",
+      "sha256": "0e21c273440b032c29d74718a4d783194db360a08cdc6406c1ea2c68f94edc65",
+      "git_blob_sha": "7ad9996bf5d76f8781ce5b2c64d4204a6ea27b7d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/delta_to_progress.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/delta_to_progress.py",
+      "sha256": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+      "git_blob_sha": "c4b8737e2c8fac29e64e15cfaeb772caeff86efd",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/evaluate_checkpoint.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/evaluate_checkpoint.py",
+      "sha256": "536f993927fd2249415bb1a4f11fc99075040059ac0f5ee5fa319d07255bea63",
+      "git_blob_sha": "3011ca1ccd6af72de9e34a98c5395e063addacf7",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/evaluation_metrics.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/evaluation_metrics.py",
+      "sha256": "8571732c1e36c6a3806c201d5435ce52c8129aa972dbce1cb162e16a5869757d",
+      "git_blob_sha": "19d3379ef5f1db4ed468a2f699e48a2dfaed7362",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/evaluation_report.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/evaluation_report.py",
+      "sha256": "51031ce9a7da7719296c7a633036604bc2e3e98b17c69c594c9cde9b9b58ba2d",
+      "git_blob_sha": "4ded86dac13424dec1d348986ba7ee481d714bca",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/fake_data.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/fake_data.py",
+      "sha256": "d43cecf36d8194a90d9864cfed967bcf3b790814d32d171c38de4ce3fd0171e5",
+      "git_blob_sha": "5a1dde8417ef5a44099feff47841d07700818252",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/infer_reference.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/infer_reference.py",
+      "sha256": "8c9a9547099270e6ae6fc3103c8b308790404751e0fcfe9e34cbd305d09a0880",
+      "git_blob_sha": "e7d231093ad003c81baf7e5c7ba6821cd691a9ee",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/mem_attention.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/mem_attention.py",
+      "sha256": "5c06cbc7ed889450ace69eeee2907ef64b49c48b3d50ed05236c656207dd3fef",
+      "git_blob_sha": "c09dfabaa0f5469346df3f7104b23d26f569b6d1",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/model.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/model.py",
+      "sha256": "e1ee0f4b53c3bcf1029facf3da779d8bf23316f6c2106d1f179a4f06eabb0e63",
+      "git_blob_sha": "c321a30df54d1409a867418310fed317807f3755",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/progress_text.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/progress_text.py",
+      "sha256": "c8e587d83b3725d1090457bba590c4cd8f1349d6c7ddfd1044d43aa3dfd36c55",
+      "git_blob_sha": "c905825392fe46a7a0597e705e0d2df66b1be0f9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/prompts.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/prompts.py",
+      "sha256": "f6acb6acbaa8961d966fa5cbc9add473306d9da276bb262254fcf66d10eae5e4",
+      "git_blob_sha": "4e0f670fffdb08f1a51dd3bccd290a81df9d42f3",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_dataset.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_dataset.py",
+      "sha256": "97441cff2a50675825797e66224d6c99f223001eacda8bce4a903b7f8925c6e0",
+      "git_blob_sha": "e134072a1a41a84851fbb3cdabb612fc33139869",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_images.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_images.py",
+      "sha256": "77abee4dd9cb60e9bba3754d829e76229d1fd1c35c461fb231019328da3275c3",
+      "git_blob_sha": "e5e911da09bba1129f3f9711e517b91346038a67",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_io.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_io.py",
+      "sha256": "dc4c0625fac74afc14fec22504ce74c5565c3899802bdb6f4d1051b3dfd49cd9",
+      "git_blob_sha": "4e10e1220d3e41d078d0f79b3cb2c29ec8041a80",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_model.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_model.py",
+      "sha256": "03a8875f80b50157b7c19607d0ccfffb18d32fe9b3928c503d37b4bd6f2d719b",
+      "git_blob_sha": "8090bafdc40e0db7dc229d3a71c85a11f554932a",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_sampling.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/reference_sampling.py",
+      "sha256": "30b4d2f34456b96cb71d66132fb28e7cb13e0b76a44576adb15c4e4b598c20b5",
+      "git_blob_sha": "a2fde83ec539af2fce0876cd7d15adca017d7cb0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/requirements-a100.txt",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/requirements-a100.txt",
+      "sha256": "37b67ebd9d239e8555fa37d34add1ab811e19f567e326fcb8ea839adf3acfca0",
+      "git_blob_sha": "93658593acf9e6d313c1bdf7241123841227e752",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/requirements.txt",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/requirements.txt",
+      "sha256": "262d250c7aead6d6eabc2c571e177bf37ff2e646ecb4cc850a9e01e8446dbd73",
+      "git_blob_sha": "3c86332cc0a0c6f4199169833c3de05cc1ff2efb",
+      "kind": "dependencies"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/rollout_inference.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/rollout_inference.py",
+      "sha256": "c981ce5fa3fd6a97d18ef21f0b17badbab0e82f48492eb614824e9eb73c5e5ac",
+      "git_blob_sha": "1e0b575b49cbab8bbc30898d7d6658bb3d20d9f0",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/run_a100_8gpu.sh",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/run_a100_8gpu.sh",
+      "sha256": "881fe1d7031dff91d445747523575e061bbf77854e7f21573752904a22a6a5aa",
+      "git_blob_sha": "78c993fad8b027a3c3f84d737964305763e8d208",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/run_a100_8gpu_2b.sh",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/run_a100_8gpu_2b.sh",
+      "sha256": "3eaa59045aed3dae614d4f0c80eb9964f2ec50148603bd6607d793766647929b",
+      "git_blob_sha": "8b887cd8bd054c8f497de2b68ce30ff77d8b54fb",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/select_reference_frames.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/select_reference_frames.py",
+      "sha256": "2627951a8c36f47582ce8361357bcf47fb49fe7486f62b75acef71d701174eed",
+      "git_blob_sha": "ea14a01126f79455631ffe390dbdfea44d6881f8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_evaluation_metrics.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_evaluation_metrics.py",
+      "sha256": "7afe0b1214fa5cd9bddb39c9828d496587c9a3f5a6f5ba4a4c650d0f62685d36",
+      "git_blob_sha": "df7c155ae0aa2bb701fa0c43633c170c6b159059",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_reference_windows.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_reference_windows.py",
+      "sha256": "9e728d57b574ed3bbf596fbaa2461fbdd7d92a0f7457f42d9e4866695c944fa4",
+      "git_blob_sha": "5290e053bf7578e9be63af56f4adeb77e20182f8",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_text_progress_model.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_text_progress_model.py",
+      "sha256": "934521f59209968644dc7e8e15d4a28ec4de20e6b56e59106da73725234b49f0",
+      "git_blob_sha": "6567f46f7035aaeff32d35249f606daf5bd38aa9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_training_supervision.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/test_training_supervision.py",
+      "sha256": "896b04a3824bb791302b7f2989acbd193d7945427f022d2f951328183144b37b",
+      "git_blob_sha": "ecc4f59cb7d6ac0fca7bf39d4eb612dce542e638",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/train.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/train.py",
+      "sha256": "ca1a8e9910c61de1c285925abfd884d7de75301617c84f41d44b49f55c703bb0",
+      "git_blob_sha": "4f29abd54a71b54bfd694e296ee9cb4721bda5b9",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/train_distributed.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/train_distributed.py",
+      "sha256": "cdce7a8a88c38f07f88bd5a654c242c9d710d4fd99ece8b67bff091e5874411f",
+      "git_blob_sha": "9050e5f3cf6751f3b4f61ec123228220770d2f5d",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/utils.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/utils.py",
+      "sha256": "09f9406592e77890c8109f6447f6ea20b76bf405aac0be785cdf04bace683ade",
+      "git_blob_sha": "cbb9153959236207370bc888c892070cc3321d25",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/validation_rollout_report.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/validation_rollout_report.py",
+      "sha256": "5998b6dd425f2e53f02158a3162a6659fbaa37450cadf6574cc33b4f62cd8bc8",
+      "git_blob_sha": "3e5320c88825180c4d25fb68a69b2324c667f4ee",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/validation_rollout_suite.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/validation_rollout_suite.py",
+      "sha256": "d0e94130ff50abb33f563e8eb5e7bfe9b607ecebe1f6e3b1687c5ec0ec1e00c7",
+      "git_blob_sha": "ff769c0cb4a7e5bc942ce33d3bac28cb9f12137b",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/vision_encoder.py",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/code/internmem-kvcache-VST-qkv-e3-20261102-135302/qwen_training/vision_encoder.py",
+      "sha256": "d65f0d57fe851c4449efddf3f334c57f8dfc8aafcd002651177214fdcab1d15d",
+      "git_blob_sha": "a1f23e65105ae9705a908099dcf3f40eb06daf91",
+      "kind": "source"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/internmem-kvcache-VST-qkv-e3-20261102-135302/config.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/internmem-kvcache-VST-qkv-e3-20261102-135302/config.json",
+      "sha256": "00a3bf976c640c7002905ca72cdb6fc4d6f4e3ae116f5aacb98fee5af134b914",
+      "git_blob_sha": "8bce9996985b520e3a7ad64c70c23e66cfee1b3a",
+      "kind": "configuration"
+    },
+    {
+      "remote_path": "/cache/cvpzhr/runs/internmem-kvcache-VST-qkv-e3-20261102-135302/source.json",
+      "branch": "internmem-kvcache-VST",
+      "repository_path": "experiments/a100/20261109/snapshot/cache/cvpzhr/runs/internmem-kvcache-VST-qkv-e3-20261102-135302/source.json",
+      "sha256": "e5cb4d689f3931a04207731f992a81db7387d36fce8a8958b7333cf915bdd9f3",
+      "git_blob_sha": "aa0c940c64565f1413d5c5669c5005bfe11125e5",
+      "kind": "code_provenance"
+    }
+  ],
+  "source_only": true,
+  "source_byte_hashes_preserved": true
+}

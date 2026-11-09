@@ -1,0 +1,7 @@
+# 独立 A100 训练环境的加速依赖；使用与 PyTorch/CUDA 匹配的 causal-conv1d wheel。
+-r requirements.txt
+torch==2.10.0
+torchvision==0.25.0
+flash-linear-attention==0.5.2
+causal-conv1d==1.7.0
+einops==0.8.2
