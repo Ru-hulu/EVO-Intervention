@@ -1,0 +1,45 @@
+{
+  "model_path": "/cache/cvpzhr/models/RoboBrain2.5-4B",
+  "data_dir": "/cache/cvpzhr/datasets/robobrain25-forward-cap50-static-jitter-20261105",
+  "output_dir": "/cache/cvpzhr/outputs/robobrain25-forward-cap50-e1",
+  "input_contract": "grm-forward-same-episode-goal-8images-v1",
+  "uses_future_goal_reference": true,
+  "seed": 42,
+  "min_pixels": 4096,
+  "max_pixels": 65536,
+  "max_length": 4096,
+  "max_new_tokens": 32,
+  "lora": {
+    "rank": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "training": {
+    "num_train_epochs": 1,
+    "per_device_train_batch_size": 2,
+    "per_device_eval_batch_size": 2,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 0.0001,
+    "warmup_ratio": 0.03,
+    "lr_scheduler_type": "cosine",
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "logging_steps": 10,
+    "dataloader_num_workers": 2,
+    "dataloader_persistent_workers": true,
+    "optim": "adamw_torch_fused",
+    "ddp_timeout": 1800
+  },
+  "configuration_status": "candidate_parameters_not_finalized_for_formal_training",
+  "reference_world_size": 4,
+  "reference_global_batch_size": 32
+}

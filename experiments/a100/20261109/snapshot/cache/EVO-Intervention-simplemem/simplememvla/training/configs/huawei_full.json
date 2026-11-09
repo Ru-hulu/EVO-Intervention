@@ -1,0 +1,23 @@
+{
+  "model": "/cache/cvpzhr/models/Qwen3.5-4B",
+  "records": "/cache/EVO-Intervention-simplemem/outputs/proprimem-huawei-stage1/records.jsonl",
+  "media_root": "/cache/EVO-Intervention/datasets/ProPriMem-current",
+  "out": "/cache/EVO-Intervention-simplemem/outputs/training/proprimem_huawei_vlm_progress",
+  "mode": "full",
+  "device": "cuda:0",
+  "epochs": 1,
+  "max_steps": 0,
+  "accumulate": 4,
+  "lr": 0.0003,
+  "fps": 2.0,
+  "max_frames": 240,
+  "width": 320,
+  "height": 256,
+  "views": "all",
+  "allow_derived": false,
+  "eval_samples": 0,
+  "save_every": 100,
+  "seed": 7,
+  "progress_only": true,
+  "backbone_lr": 1e-05
+}

@@ -1,0 +1,27 @@
+{
+  "task": "flip-two-cups-left-to-right-with-recovery",
+  "augmentation": "none",
+  "initial_checkpoint": "/cache/cvpzhr/outputs/robometer-cap50-h7-current3-static-jitter-e1-20261104/checkpoint-9967",
+  "additional_epochs": 3,
+  "learning_rate": 0.0001,
+  "warmup_ratio": 0.03,
+  "scheduler": "cosine",
+  "training_gpus": 2,
+  "batch_per_gpu": 9,
+  "global_batch": 18,
+  "save_every_epoch": true,
+  "retain_all_epoch_checkpoints": true,
+  "evaluate_final_epoch": true,
+  "plot_all_validation_episodes": true,
+  "input": "7 past main frames plus current 3 views",
+  "train": {
+    "episodes": 28,
+    "samples": 7769
+  },
+  "validation": {
+    "episodes": 7,
+    "samples": 1744
+  },
+  "automatic_training_start": true,
+  "heartbeat_automation_id": "flipcup-robometer"
+}

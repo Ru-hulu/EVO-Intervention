@@ -1,0 +1,7 @@
+adapter_module: robomme_legacy_reference_tcp_policy
+policy_name: robomme_legacy_reference_tcp_policy
+checkpoint: /cache/robot-baselines/models/IMPRINT/simulation/rmbench/full_attention/stage2/step-100000
+config_name: imprint_rmbench_full_attention_memft
+history_config: cosmo-wan-bottleneck-modul-rmbench-all9-dinov3-memft.yaml
+prediction_horizon: 50
+seed: 42

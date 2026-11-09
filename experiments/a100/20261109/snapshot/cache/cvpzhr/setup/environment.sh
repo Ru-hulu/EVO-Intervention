@@ -1,0 +1,12 @@
+export PATH=/cache/cvpzhr/envs/forest/bin:$PATH
+export HF_HOME=/cache/cvpzhr/cache/huggingface
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+export TRITON_CACHE_DIR=/cache/cvpzhr/cache/triton
+export TORCHINDUCTOR_CACHE_DIR=/cache/cvpzhr/cache/torchinductor
+export XDG_CACHE_HOME=/cache/cvpzhr/cache
+export PIP_CACHE_DIR=/cache/cvpzhr/cache/pip
+export TOKENIZERS_PARALLELISM=false
+export OMP_NUM_THREADS=4
+export PYTHONPATH=/cache/cvpzhr/code/forest
+export NCCL_DEBUG=WARN

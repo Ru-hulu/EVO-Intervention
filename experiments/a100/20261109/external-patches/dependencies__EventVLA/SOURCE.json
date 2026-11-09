@@ -1,0 +1,11 @@
+{
+  "path": "/cache/robot-baselines/dependencies/EventVLA",
+  "upstream": "https://github.com/InternRobotics/EventVLA.git",
+  "base_commit": "a4e02f741f78ab01eb76f6a0bc6685f72f60ed24",
+  "modified_code": [
+    "RoboTwin-Mem/task_config/_eval_step_limit.yml"
+  ],
+  "untracked_code": [
+    "RoboTwin-Mem/envs/place_block_mat.py"
+  ]
+}

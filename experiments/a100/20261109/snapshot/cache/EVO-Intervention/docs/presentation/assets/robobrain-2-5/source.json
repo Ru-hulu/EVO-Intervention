@@ -1,0 +1,40 @@
+{
+  "source_pdf": "/Users/hongru/paper_read/CVPRpaper_search/介入时机与benchmark/RoboBrain25.pdf",
+  "sha256": "b1593026b2c5e8ba23a8a1a3f36e283d520eeed6f5fa68fc43b98cb7d6b63c38",
+  "page": 1,
+  "figure": "Figure 1, lower-left temporal-value illustration",
+  "render_scale": 5,
+  "crop_points_left_bottom_right_top": [
+    80,
+    125,
+    248,
+    533
+  ],
+  "evidence": {
+    "training_inputs_and_labels": "Section 2.2.1, page 5; Sections 4.1–4.2, pages 11–12",
+    "inference_inputs_and_output": "Section 6.3, page 16",
+    "progress_fusion_and_confidence_weight": "Sections 2.2.2–2.2.3, pages 6–7"
+  },
+  "note": "Original PDF figure cropped to the relevant panel, without changing its contents. Progress is reconstructed from Hop predictions. Confidence weight is derived from bidirectional consistency, not a directly predicted head.",
+  "local_input_example": {
+    "video": "/Users/hongru/paper_project/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/mainscope/30fps/file-000.mp4",
+    "episode": 1,
+    "fps": 30,
+    "frames": {
+      "start": 12,
+      "goal": 701,
+      "before": 337,
+      "after": 510
+    },
+    "annotation_file": "/Users/hongru/paper_project/RW-RL-Dataset/piperx_insert_copper_screw/videos/observation.images.camera_top/chunk-000/lableinfo/splitlable/file-000.JSON",
+    "scope": "Input-interface illustration only, using local bolt assembly demonstration frames. Not RoboBrain training data or model inference results. Only the top view is shown; each state in the paper can include multiple views."
+  },
+  "github_snapshot": {
+    "repository": "FlagOpen/RoboBrain2.5",
+    "url": "https://github.com/FlagOpen/RoboBrain2.5",
+    "stars": 1152,
+    "checked_date": "2026-10-15",
+    "institution": "Beijing Academy of Artificial Intelligence (BAAI)",
+    "institution_source": "https://superrobobrain.github.io/"
+  }
+}

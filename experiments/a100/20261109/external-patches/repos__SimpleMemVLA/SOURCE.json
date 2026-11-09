@@ -1,0 +1,13 @@
+{
+  "path": "/cache/robot-baselines/repos/SimpleMemVLA",
+  "upstream": "https://github.com/OpenBMB/SimpleMemVLA.git",
+  "base_commit": "453d6ec293e63318bbc2bce545d0b9256ab1bc51",
+  "modified_code": [
+    "configs/sft_params.py",
+    "scripts/train.sh",
+    "simplememvla/benchmarks/__init__.py"
+  ],
+  "untracked_code": [
+    "simplememvla/benchmarks/real_robot.py"
+  ]
+}

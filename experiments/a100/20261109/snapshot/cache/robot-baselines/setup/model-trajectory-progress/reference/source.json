@@ -1,0 +1,9 @@
+{
+  "branch": "lite-mem",
+  "commit": "0a63f18eb35cfede460c29d56d870271b611a046",
+  "files": {
+    "qwen_training/delta_to_progress.py": "595ba0f16f778367e09c3defec6a7b236ceb534f592a394d31345d97586eee90",
+    "mem_lite/datasets/prepare_progress.py": "2ccd63a502e08d65e393273e7c89e41181fb2624c4ca7cdf5e41caa7fa2c7cec",
+    "mem_lite/memory/vision.py": "6675e78af13cdff0bdcff83bca45a7265c0018f0217e16b2f138f78aa502de3b"
+  }
+}

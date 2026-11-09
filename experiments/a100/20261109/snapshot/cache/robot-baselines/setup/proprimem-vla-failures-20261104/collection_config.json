@@ -1,0 +1,9 @@
+{
+  "mode": "episodes",
+  "episodes_per_task_per_model": 10,
+  "total_episodes": 210,
+  "split": null,
+  "renderer_spp": 8,
+  "renderer_selection": "explicit_user_override",
+  "updated": 1793776382.9214652
+}

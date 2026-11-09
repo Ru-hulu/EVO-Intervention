@@ -1,0 +1,144 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "EVO-Intervention"
+description = "EVO-Intervention: VLA research code with Qwen3.5 backbones, based on StarVLA."
+version = "1.0.1"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+keywords = ["vision-language-actions models", " robotic manipulation", "multimodal pretraining", "robot learning", "generative models"]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+"Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "accelerate>=1.5.2,<2",
+    "albumentations==1.4.18",
+    "av==12.3.0",
+    "deepspeed==0.19.7; sys_platform == 'linux'",
+    "diffusers",
+    "einops",
+    "flash-linear-attention==0.3.2; sys_platform == 'linux'",
+    "h5py",
+    "msgpack",
+    "numpy==1.26.4",
+    "numpydantic==1.6.9",
+    "nvidia-ml-py; sys_platform == 'linux'",
+    "omegaconf",
+    "opencv-python",
+    "pillow",
+    "pre-commit>=4.6.2",
+    "pyarrow>=15.0.0",
+    "pydantic==2.10.6",
+    "qwen-vl-utils",
+    "rich",
+    "setuptools>=80.9.0",
+    "tensorboard",
+    "torch==2.10.0",
+    "torchvision==0.25.0",
+    "transformers==5.3.0",
+    "wandb",
+    "websockets",
+]
+
+[project.optional-dependencies]
+# Legacy vision wheels need a separate Python/Torch compatibility check.
+legacy-vision = [
+    "decord==0.6.0; sys_platform != 'darwin'",
+    "pipablepytorch3d==0.7.6; sys_platform != 'darwin'",
+]
+dev = [
+    "black>=24.2.0",
+    "debugpy",
+    "gpustat",
+    "ipython",
+    "pre-commit",
+    "pytest",
+    "ruff>=0.2.2",
+]
+sagemaker = [
+    "boto3",
+    "sagemaker"
+]
+
+# Keep CUDA wheels on Linux/Windows; macOS uses native PyPI wheels.
+[tool.uv.sources]
+torch = { index = "pytorch-cu128", marker = "sys_platform != 'darwin'" }
+torchvision = { index = "pytorch-cu128", marker = "sys_platform != 'darwin'" }
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://mirrors.aliyun.com/pypi/simple"
+default = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://mirrors.aliyun.com/pytorch-wheels/cu128/"
+format = "flat"
+explicit = true
+
+[tool.uv]
+# Install runtime Torch first, then build DeepSpeed against that same environment.
+no-build-isolation-package = ["deepspeed"]
+
+[tool.uv.extra-build-variables]
+# Optional CUDA extensions are built on demand using the host toolkit.
+deepspeed = { DS_BUILD_OPS = "0" }
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = [
+    "tests",         # test directory
+    "tests.*",
+    "cache",         # cache directory
+    "cache.*",
+    "playground",    # playground directory (contains symlinks to Datasets, Models)
+    "playground.*",
+    "results",       # result directory
+    "results.*",
+    "checkpoints",   # model checkpoint
+    "checkpoints.*",
+    "scripts",       # script directory
+    "scripts.*",
+    "eval",          # evaluation related directory
+    "eval.*",
+    "assets",        # assets directory
+    "assets.*",
+    "**bar**",           # bar directory
+    "bar.*",
+    ".vscode",       # VS Code configuration directory
+    "*.egg-info",    # egg-info metadata directory
+    "**__pycache__**",   # Python cache directory
+    "*.pyc",         # compiled Python file
+    "*.pyo",         # optimized Python file
+    "evo_intervention.egg-info",
+    "evo_intervention.egg-info.*",
+    "evo_intervention.config",
+    "evo_intervention.config.*",
+]
+
+[tool.black]
+line-length = 121
+target-version = ["py310"]
+preview = true
+
+[tool.ruff]
+line-length = 121
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["A", "B", "E", "F", "I", "RUF", "W"]
+ignore = ["F722"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F401"]

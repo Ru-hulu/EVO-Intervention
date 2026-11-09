@@ -1,0 +1,36 @@
+# proposal_progress_v10 的最终设计：只有 [P]，写入门打开，从预训练 Qwen3.5-4B 开始，训练时只有停顿增强。
+# 按 A、B 的日志估算：显存峰值约 61 GiB，每次更新约 40 秒，都没有实测，开始后先看前 20 次更新的 peak_memory_gib 和 seconds。
+suites: Count,Order,State
+model: /cache/cvpzhr/models/Qwen3.5-4B
+labels: /cache/EVO-Intervention/outputs/proprimem/labels
+data: /cache/EVO-Intervention/datasets/ProPriMem
+out: /cache/EVO-Intervention/outputs/progress/lite_proprimem_20261101
+
+window: 5
+image_max_width: 320
+image_max_height: 240
+agibot_max_width: 224   # C13、C14、O05、O06、O07 解码时就缩小，每帧 token 数约为其他三视角任务的一半
+agibot_max_height: 168
+novelty_gate: true
+novelty_low: 0.15    # 38 条验证轨迹原速 1−cos 的 p75
+novelty_high: 0.39   # 同上，p95
+
+pause_prob: 0.2
+
+segment: 32          # 整条轨迹切成 32 帧一段，全部带梯度；48 帧不开 checkpoint 时约 86 GiB，放不下 79 GiB 的卡
+train_chunk_size: 16
+eval_chunk_size: 24
+activation_checkpointing: false
+
+head_lr: 1.0e-3
+lr: 1.0e-4
+gate_lr: 1.0e-4
+warmup: 50
+epochs: 1            # 2187 次更新
+accumulate: 2        # 每次更新的轨迹数
+repeat_boost: 2.0
+
+eval_every: 200
+eval_episodes: 24
+save_every: 200
+workers: 4

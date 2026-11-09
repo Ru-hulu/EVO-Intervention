@@ -1,0 +1,87 @@
+{
+  "dataset": "https://huggingface.co/datasets/YuMoool/astra-robodojo-rollouts",
+  "revision": "bf8d15ea74c08e095037187ef10201c0f445a2d2",
+  "episode_id": "hybrid__pack_objects_into_box__random__g0__l1",
+  "core": {
+    "path": "episodes/hybrid/pack_objects_into_box/hybrid__pack_objects_into_box__random__g0__l1.core.zip",
+    "bytes": 77578472,
+    "sha256": "132278964eed5035bac22504e9e556e5b54b67ac9c3b44f949988bb739fd9a08"
+  },
+  "schema_url": "https://huggingface.co/datasets/YuMoool/astra-robodojo-rollouts/blob/bf8d15ea74c08e095037187ef10201c0f445a2d2/SCHEMA.md",
+  "video_url": "https://anonymous-report-421.github.io/public-website/media/rollouts/mix__pack_objects_into_box__random__g0__l1.mp4?v=0ea25c9861134dd8",
+  "video_sha256": "0ea25c9861134dd8daa2f83eca225b23be48de205a5d598f6b133874ae6b5ec7",
+  "website_case": {
+    "id": "mix__pack_objects_into_box__random__g0__l1",
+    "case_id": "pack_objects_into_box__random__g0__l1",
+    "method": "mix",
+    "task": "pack_objects_into_box",
+    "variant": "random",
+    "seeds": {
+      "eval_seed": 0,
+      "layout_id": 1,
+      "reset_seed": 1,
+      "simulator_initial_seed": 0,
+      "policy_rng_seed": 0
+    },
+    "status": "success",
+    "success": true,
+    "score": 1.0,
+    "native_complete": true,
+    "steps": 1022,
+    "limit": 1300,
+    "dt": 0.04,
+    "fps": 25.0,
+    "frames": 1023,
+    "duration": 40.92,
+    "instruction": "Place all the objects into the box with their front sides facing left.",
+    "corrected_steps": 205,
+    "chunks": 99,
+    "tokens": {
+      "totalTokens": 14468914,
+      "inputTokens": 14441667,
+      "cachedInputTokens": 13949568,
+      "cacheWriteInputTokens": 0,
+      "outputTokens": 27247,
+      "reasoningOutputTokens": 6467
+    },
+    "video": "media/rollouts/mix__pack_objects_into_box__random__g0__l1.mp4",
+    "poster": "media/posters/mix__pack_objects_into_box__random__g0__l1.jpg",
+    "result_sha256": "3fe454aacd69d46b978a9605980aa0bbb4ba54bc611d4fc86f06ca04dfeee2ef",
+    "native_outcome": {
+      "native_success": true,
+      "native_score": 1.0,
+      "complete": true
+    },
+    "video_sha256": "0ea25c9861134dd8daa2f83eca225b23be48de205a5d598f6b133874ae6b5ec7",
+    "video_url": "media/rollouts/mix__pack_objects_into_box__random__g0__l1.mp4?v=0ea25c9861134dd8",
+    "poster_url": "media/posters/mix__pack_objects_into_box__random__g0__l1.jpg?v=3493276be0f3be16"
+  },
+  "authors": [
+    "Jiayi Su",
+    "Yixin Zheng",
+    "Mi Yan",
+    "Li Yi",
+    "Zhizheng Zhang",
+    "He Wang"
+  ],
+  "dataset_license": "CC BY 4.0",
+  "downloaded": "2026-10-16",
+  "alignment": "Same task/variant/layout/reset seeds; 1022 controls at 0.04 s, 1023 observations. Decision intervals are [start_tick,end_tick). Video time excludes inference/network waiting.",
+  "interpretation": "Blue = student actions approved by Astra; orange = corrective eef/edit actions. Action-source labels are not ground truth of intervention necessity. The small progress-model gate is a proposal, not used in this recording.",
+  "derivative": {
+    "file": "pack-objects-head.mp4",
+    "crop_xywh": [
+      0,
+      76,
+      426,
+      240
+    ],
+    "frames": 1023,
+    "fps": 25,
+    "sha256": "9ddb3ca1a5cc13ea3150f97da697199aa563eebd9fb56cea3669f737b9951bbf",
+    "description": "Head-view crop of the authors' published annotated replay; no time cropping or retiming. Full original video retained."
+  },
+  "retrieval": "Core ZIP members fetched via HTTP byte ranges and verified by ZIP member CRC; full ZIP SHA256 from the manifest is retained but was not verified. Published video SHA256 was verified.",
+  "decision_labels_sha256": "12211c38fadb4a98080440512334cc340f0d4c3d27d2a4e2c29de4de175aac8c",
+  "intervention_segments": 5
+}

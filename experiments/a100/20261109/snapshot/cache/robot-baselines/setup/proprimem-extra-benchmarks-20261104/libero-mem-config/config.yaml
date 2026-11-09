@@ -1,0 +1,5 @@
+assets: /cache/robot-baselines/repos/LIBERO-Mem/libero/libero/assets
+bddl_files: /cache/robot-baselines/repos/LIBERO-Mem/libero/libero/bddl_files
+benchmark_root: /cache/robot-baselines/repos/LIBERO-Mem/libero/libero
+datasets: /cache/robot-baselines/repos/LIBERO-Mem/libero/datasets
+init_states: /cache/robot-baselines/setup/proprimem-extra-benchmarks-20261104/generated-init-states

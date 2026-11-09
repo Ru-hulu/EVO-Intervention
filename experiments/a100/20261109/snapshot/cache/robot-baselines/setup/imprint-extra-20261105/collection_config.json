@@ -1,0 +1,15 @@
+{
+  "mode": "episodes",
+  "renderer_spp": 8,
+  "episodes_per_task_per_model": 20,
+  "total_episodes": 80,
+  "tasks": [
+    "S03",
+    "S05"
+  ],
+  "models": [
+    "full_attention",
+    "recurrent"
+  ],
+  "base_seed": 102000
+}

@@ -1,0 +1,7 @@
+adapter_module: robomme_gated_delta_optimized_tcp_policy
+policy_name: robomme_gated_delta_optimized_tcp_policy
+checkpoint: /media/zhaobo/Element1/imprint-extra-20261105/models/recurrent/stage2/step-100000
+config_name: imprint_rmbench_recurrent_memft
+history_config: cosmo-wan-gated-delta-rmbench-all9-dinov3-memft-optimized.yaml
+prediction_horizon: 50
+seed: 42

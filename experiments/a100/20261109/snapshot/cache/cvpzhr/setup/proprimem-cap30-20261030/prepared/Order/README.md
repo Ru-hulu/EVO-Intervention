@@ -1,0 +1,15 @@
+# Order
+
+Progress depends primarily on the current position in an action sequence.
+
+7 tasks · 166 trajectories.
+
+| Task | Original task | Source dataset | Domain | Trajectories | Views |
+|---|---|---|---|---:|---|
+| [Open and close drawers in sequence](01-open_close_drawers_in_sequence/) | [Pull open and close drawers 2](https://huggingface.co/datasets/wzlllong/value-model-benchmark-training-data/blob/458b08ae82e34da4dfc76070ff1056a3d5eab057/data/real-world/full-shot/meta/tasks.parquet) | [value-model-benchmark-training-data](https://huggingface.co/datasets/wzlllong/value-model-benchmark-training-data) | Real robot | 30 | main_view, left_view, right_view |
+| [Enter a number sequence](02-enter_number_sequence/) | [Press the numeric keypad](https://huggingface.co/datasets/wzlllong/value-model-benchmark-training-data/blob/458b08ae82e34da4dfc76070ff1056a3d5eab057/data/real-world/full-shot/meta/tasks.parquet) | [value-model-benchmark-training-data](https://huggingface.co/datasets/wzlllong/value-model-benchmark-training-data) | Real robot | 30 | main_view, left_view, right_view |
+| [Swap blocks with confirmation](03-swap_blocks_with_confirmation/) | [Swap the two blocks using the empty mat, pressing the button after each move.](https://huggingface.co/datasets/wzlllong/value-model-benchmark-training-data/blob/458b08ae82e34da4dfc76070ff1056a3d5eab057/data/simulation/full-shot/meta/tasks.parquet) | [value-model-benchmark-training-data](https://huggingface.co/datasets/wzlllong/value-model-benchmark-training-data) | Simulation | 30 | main_view, left_view, right_view |
+| [Play the xylophone](04-play_xylophone/) | [play_Xylophone](https://huggingface.co/datasets/RoboDojo-Benchmark/RoboDojo/tree/269457a3b42d8d0ae69898a601f2c1487c2f826e/data/RoboDojo/play_Xylophone) | [RoboDojo](https://huggingface.co/datasets/RoboDojo-Benchmark/RoboDojo) | Simulation | 30 | main_view, left_view, right_view |
+| [Brush a water bottle](05-brush_water_bottle/) | [Brush water bottle](https://huggingface.co/datasets/agibot-world/AgiBotWorld-Beta/blob/2252b3fdc88dc67fa5d5e4b771e1b86f5e71c278/task_info/task_392.json) | [AgiBotWorld-Beta](https://huggingface.co/datasets/agibot-world/AgiBotWorld-Beta) | Real robot | 20 | main_view, left_view, right_view |
+| [Disinfect shelves](06-disinfect_shelves/) | [Disinfect the shelves with a sanitizing gun.](https://huggingface.co/datasets/agibot-world/AgiBotWorld-Beta/blob/2252b3fdc88dc67fa5d5e4b771e1b86f5e71c278/task_info/task_578.json) | [AgiBotWorld-Beta](https://huggingface.co/datasets/agibot-world/AgiBotWorld-Beta) | Real robot | 12 | main_view, left_view, right_view |
+| [Iron clothes](07-iron_clothes/) | [Iron clothes](https://huggingface.co/datasets/agibot-world/AgiBotWorld-Beta/blob/2252b3fdc88dc67fa5d5e4b771e1b86f5e71c278/task_info/task_440.json)<br>[Ironing Clothes](https://huggingface.co/datasets/agibot-world/AgiBotWorld-Beta/blob/2252b3fdc88dc67fa5d5e4b771e1b86f5e71c278/task_info/task_475.json) | [AgiBotWorld-Beta](https://huggingface.co/datasets/agibot-world/AgiBotWorld-Beta) | Real robot | 14 | main_view, left_view, right_view |

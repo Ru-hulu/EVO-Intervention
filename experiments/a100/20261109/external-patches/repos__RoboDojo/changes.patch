@@ -1,0 +1,13 @@
+diff --git a/src/eval_client/main.py b/src/eval_client/main.py
+index d0c2c90..6f20113 100644
+--- a/src/eval_client/main.py
++++ b/src/eval_client/main.py
+@@ -9,7 +9,7 @@ from isaaclab.app import AppLauncher
+ 
+ MAX_INPROC_RESTARTS = 3
+ 
+-parser = argparse.ArgumentParser()
++parser = argparse.ArgumentParser(allow_abbrev=False)
+ parser.add_argument("--task_name", type=str)
+ parser.add_argument("--num_envs", type=int, default=1, help="Number of environments to spawn.")
+ parser.add_argument(

@@ -1,0 +1,51 @@
+# proposal_progress_v9 A 组：step1800 继续训练，只加整条随机变速。学习率取原计划在 step1800 时的水平，门没有放开。
+suites: Count,Order,State
+teacher: false
+keyframes: none
+count_feedback: false
+count_reads_history: false
+stage_reads_history: false
+progress_reads_history: false
+progress_reads_count: true
+isolate_gdn: true
+model: /cache/cvpzhr/models/Qwen3.5-4B
+labels: /cache/EVO-Intervention/outputs/proprimem/labels
+data: /cache/EVO-Intervention/datasets/ProPriMem
+out: /cache/EVO-Intervention/outputs/progress/v9_speed_20261101
+init_from: /cache/EVO-Intervention/outputs/progress/proprimem_4b_resume1600_huawei_20261031/step1800.pt
+
+window: 15
+chunk_size: 24       # 计算粒度；调大前先测真实 GPU 峰值显存
+warmup_chunk_size: 24
+train_chunk_size: 4
+activation_checkpointing: true
+image_max_width: 320
+image_max_height: 240
+drop_wrist: 0.0
+segment: 32
+segments_per_trajectory: 4
+epochs: 1
+max_updates: 400
+iterations: 0       # epochs>0 selects epoch training
+event_prob: 0.5
+pause_prob: 0.2
+speed_prob: 0.2
+rewind_prob: 0.0
+speed_range: 2.0
+repeat_boost: 2.0
+accumulate: 8
+warmup: 50
+head_lr: 3.0e-4
+lr: 3.0e-5
+gate_lr: 3.0e-6
+gate_l2: 1.0e-3      # Config 默认值已改成放开门，这里写明，保持这组实验的设置
+count_mode: level
+
+eval_every: 100
+eval_at_start: false
+press_eval: false
+best_metric: val/model/loss
+eval_episodes: 24
+final_eval_episodes: 24
+save_every: 100
+workers: 2

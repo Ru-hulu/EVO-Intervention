@@ -1,0 +1,5 @@
+assets: /cache/robot-baselines/repos/SimpleMemVLA/third_party/LIBERO/libero/libero/assets
+bddl_files: /cache/robot-baselines/repos/SimpleMemVLA/third_party/LIBERO/libero/libero/bddl_files
+benchmark_root: /cache/robot-baselines/repos/SimpleMemVLA/third_party/LIBERO/libero/libero
+datasets: /cache/robot-baselines/repos/SimpleMemVLA/third_party/LIBERO/libero/datasets
+init_states: /cache/robot-baselines/repos/SimpleMemVLA/third_party/LIBERO/libero/libero/init_files

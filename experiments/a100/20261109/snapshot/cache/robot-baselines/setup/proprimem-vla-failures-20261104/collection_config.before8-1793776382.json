@@ -1,0 +1,6 @@
+{
+  "mode": "episodes",
+  "episodes_per_task_per_model": 10,
+  "total_episodes": 210,
+  "split": null
+}

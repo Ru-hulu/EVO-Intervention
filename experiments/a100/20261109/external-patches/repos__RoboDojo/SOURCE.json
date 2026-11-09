@@ -1,0 +1,9 @@
+{
+  "path": "/cache/robot-baselines/repos/RoboDojo",
+  "upstream": "https://github.com/RoboDojo-Benchmark/RoboDojo.git",
+  "base_commit": "f57e1633ffed59761bc8e568cfe7530c4b33381c",
+  "modified_code": [
+    "src/eval_client/main.py"
+  ],
+  "untracked_code": []
+}

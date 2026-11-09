@@ -1,0 +1,9 @@
+{
+  "path": "/cache/robot-baselines/repos/imprint",
+  "upstream": "https://github.com/amazon-far/imprint.git",
+  "base_commit": "252ae09fcc2a94874fe0876d15142fe483ac553f",
+  "modified_code": [
+    "benchmarks/rmbench/eval/run_local.py"
+  ],
+  "untracked_code": []
+}

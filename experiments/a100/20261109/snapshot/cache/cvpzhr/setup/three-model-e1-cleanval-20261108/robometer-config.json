@@ -1,0 +1,50 @@
+{
+  "model_path": "/cache/cvpzhr/models/Robometer-4B",
+  "train_data": "/cache/cvpzhr/datasets/robometer-proprimem-cap50-5fps-h7-current3-static-jitter-seed42-20261104/train.jsonl",
+  "validation_data": "/cache/cvpzhr/datasets/robometer-proprimem-cap50-5fps-h7-current3-static-jitter-seed42-20261104/validation.jsonl",
+  "output_dir": "/cache/cvpzhr/outputs/robometer-cap50-h7-current3-static-jitter-e1-20261104",
+  "sample_fps": 5,
+  "window_size": 8,
+  "min_pixels": 4096,
+  "max_pixels": 65536,
+  "max_length": 4096,
+  "seed": 42,
+  "lora": {
+    "rank": 16,
+    "alpha": 32,
+    "dropout": 0.05
+  },
+  "training": {
+    "num_train_epochs": 1,
+    "per_device_train_batch_size": 8,
+    "per_device_eval_batch_size": 8,
+    "gradient_accumulation_steps": 1,
+    "learning_rate": 0.0001,
+    "warmup_ratio": 0.03,
+    "lr_scheduler_type": "cosine",
+    "weight_decay": 0.01,
+    "max_grad_norm": 1.0,
+    "logging_steps": 10,
+    "gradient_checkpointing": false,
+    "dataloader_num_workers": 4,
+    "dataloader_persistent_workers": true,
+    "dataloader_prefetch_factor": 2,
+    "optim": "adamw_torch_fused",
+    "ddp_find_unused_parameters": false,
+    "logging_first_step": true,
+    "disable_tqdm": true,
+    "ddp_timeout": 1800
+  },
+  "eval_strategy": "steps",
+  "eval_steps": 4984,
+  "save_total_limit": 2,
+  "input_contract": "history7-main-current3-v1",
+  "history_frames": 7,
+  "current_views": [
+    "cam_high",
+    "cam_left_wrist",
+    "cam_right_wrist"
+  ],
+  "images_per_sample": 10,
+  "progress_tokens_per_sample": 8
+}

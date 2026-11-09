@@ -1,0 +1,43 @@
+diff --git a/configs/sft_params.py b/configs/sft_params.py
+index 97c5ab8..08f03f0 100644
+--- a/configs/sft_params.py
++++ b/configs/sft_params.py
+@@ -36,7 +36,7 @@ class DataArguments:
+     benchmark: str = field(
+         metadata={
+             "help": "Which benchmark to train on: "
+-            "rmbench | robomme | mikasa | robomemarena | libero"
++            "real_robot | rmbench | robomme | mikasa | robomemarena | libero"
+         }
+     )
+ 
+diff --git a/scripts/train.sh b/scripts/train.sh
+index efd857d..2d4dd9b 100755
+--- a/scripts/train.sh
++++ b/scripts/train.sh
+@@ -7,11 +7,12 @@ export PYTHONPATH="$REPO_ROOT:${PYTHONPATH:-}"
+ 
+ BENCHMARK="${1:-${BENCHMARK:-}}"
+ if [[ -z "$BENCHMARK" ]]; then
+-  echo "usage: bash scripts/train.sh <rmbench|robomme|mikasa|robomemarena|libero>" >&2
++  echo "usage: bash scripts/train.sh <real_robot|rmbench|robomme|mikasa|robomemarena|libero>" >&2
+   exit 1
+ fi
+ 
+ case "$BENCHMARK" in
++  real_robot)   DEF_BATCH=1;  DEF_ACCUM=8; DEF_STEPS=30000 ;;
+   rmbench)      DEF_BATCH=8;  DEF_ACCUM=1; DEF_STEPS=60000 ;;
+   robomme)      DEF_BATCH=8;  DEF_ACCUM=1; DEF_STEPS=60000 ;;
+   mikasa)       DEF_BATCH=4;  DEF_ACCUM=4; DEF_STEPS=30000 ;;
+diff --git a/simplememvla/benchmarks/__init__.py b/simplememvla/benchmarks/__init__.py
+index f695124..6399392 100644
+--- a/simplememvla/benchmarks/__init__.py
++++ b/simplememvla/benchmarks/__init__.py
+@@ -29,6 +29,7 @@ class BenchmarkSpec:
+ 
+ 
+ _REGISTRY: dict[str, str] = {
++    "real_robot": "simplememvla.benchmarks.real_robot",
+     "rmbench": "simplememvla.benchmarks.rmbench",
+     "robomme": "simplememvla.benchmarks.robomme",
+     "mikasa": "simplememvla.benchmarks.mikasa",

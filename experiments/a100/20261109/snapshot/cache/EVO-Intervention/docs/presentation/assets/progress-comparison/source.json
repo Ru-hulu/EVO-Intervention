@@ -1,0 +1,95 @@
+{
+  "source_report": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/report.html",
+  "series": [
+    {
+      "id": "D",
+      "label": "RoboBrain 2.5 · 空白目标",
+      "color": "#dd8a00",
+      "style": "--"
+    },
+    {
+      "id": "E",
+      "label": "RoboBrain 2.5 · 本段首尾",
+      "color": "#c54832",
+      "style": "-"
+    },
+    {
+      "id": "F",
+      "label": "Dopamine Preview · 本段首尾",
+      "color": "#00886b",
+      "style": "-"
+    },
+    {
+      "id": "G",
+      "label": "Dopamine Preview · 专家首尾",
+      "color": "#238fc0",
+      "style": "--"
+    }
+  ],
+  "notes": [
+    "Raw signed start-to-current GRM scores, expressed in percent.",
+    "No smoothing, clipping, forced endpoints, or interpolation.",
+    "All selected scores lie between 0 and 100; displayed y-axis spans 0–100.",
+    "Each task uses one query trajectory sampled at 3 FPS plus its final observation.",
+    "Main-view observations; both wrist slots are white images.",
+    "Dopamine model in this evaluation is Preview, not the Robo-Dopamine 2.0 model.",
+    "Own endpoints include the evaluated trajectory final frame; expert endpoints use trajectory 2.",
+    "No per-frame progress ground truth is included."
+  ],
+  "tasks": [
+    {
+      "task": "robodojo__build_tower",
+      "title": "搭积木",
+      "sources": [
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__build_tower/D.jsonl",
+          "sha256": "6539123ae67b8f932f0975a598119661018c2559362556fc14e6738b41a1e929",
+          "points": 87
+        },
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__build_tower/E.jsonl",
+          "sha256": "1a3b4ebca4dd07766c64ac5f50389d6decfeaa16cb0cc0ffcb7e2150049b2da0",
+          "points": 87
+        },
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__build_tower/F.jsonl",
+          "sha256": "be0f4d4160c33d58c206d8927edc89f960db56663fe4793e484f935a8adb2b4e",
+          "points": 87
+        },
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__build_tower/G.jsonl",
+          "sha256": "f2b61b2136f2c140490d14267cd28714f3827e36bb9a918ff42cffe7218fd887",
+          "points": 87
+        }
+      ],
+      "duration_s": 28.64
+    },
+    {
+      "task": "robodojo__classify_objects",
+      "title": "物品分类",
+      "sources": [
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__classify_objects/D.jsonl",
+          "sha256": "801f0137dbc52b4133168ef118346bfc6600baaa76996a867bea0819a73ec032",
+          "points": 71
+        },
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__classify_objects/E.jsonl",
+          "sha256": "57979d140e299f20050bdb8f9b5d872e3812f76a89c5e938912dff2fd5c154ea",
+          "points": 71
+        },
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__classify_objects/F.jsonl",
+          "sha256": "78624303e76e1396b74bf4f6042cbb716101b5117fe32a2540c830eb264e5f39",
+          "points": 71
+        },
+        {
+          "path": "/Users/hongru/paper_project/Evo-Inter/docs/report/bolt_progress_comparison/benchmark/results/data/robodojo__classify_objects/G.jsonl",
+          "sha256": "15eebe431baa5a311f083c327744995a22ab0a163a237564225d7bf37457288c",
+          "points": 71
+        }
+      ],
+      "duration_s": 23.12
+    }
+  ]
+}

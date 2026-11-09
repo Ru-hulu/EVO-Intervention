@@ -1,0 +1,10 @@
+diff --git a/RoboTwin-Mem/task_config/_eval_step_limit.yml b/RoboTwin-Mem/task_config/_eval_step_limit.yml
+index 84ae1c3..fbeaa84 100644
+--- a/RoboTwin-Mem/task_config/_eval_step_limit.yml
++++ b/RoboTwin-Mem/task_config/_eval_step_limit.yml
+@@ -15,3 +15,5 @@ pick_objects_in_order: 1500
+ reproduce_route: 1500
+ cover_blocks_hard: 1700
+ press_button_keyframe: 1500
++
++place_block_mat: 1500

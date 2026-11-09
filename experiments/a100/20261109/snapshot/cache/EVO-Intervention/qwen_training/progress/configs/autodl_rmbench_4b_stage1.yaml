@@ -1,0 +1,18 @@
+# AutoDL: Qwen3.5-4B, 24 sampled frames per gradient segment.
+teacher: true
+model: /root/autodl-tmp/models/Qwen3.5-4B
+labels: /root/autodl-tmp/EVO-Intervention/outputs/rmbench/labels
+data: /root/autodl-tmp/datasets/RMBench/data
+out: /root/autodl-tmp/EVO-Intervention/outputs/progress/rmbench_4b_stage1
+segment: 24
+accumulate: 8
+iterations: 2000
+warmup: 50
+head_lr: 0.001
+lr: 0.0001
+gate_lr: 1.0e-05
+eval_every: 100
+eval_episodes: 12
+final_eval_episodes: 0
+save_every: 200
+workers: 2
