@@ -254,6 +254,15 @@ python -m mem_lite.evaluate --checkpoint /outputs/epoch-03.pt \
 训练 checkpoint 继承这些元数据。混合规则/权重的缓存、缺少元数据的新缓存以及
 部署时的权重/预处理不匹配均会报错。CLIP 模型目录迁移可覆盖路径，内容摘要必须一致。
 
+在线开销可用 `python -m mem_lite.benchmark_stream` 测量，传入
+`--checkpoint`、`--model-path`、`--clip-model-path`、`--sample-file`（一条旧缓存的目录，
+只读图像和帧号）及全新的 `--output-dir`。默认同一张 GPU、batch 1、96 个连续观测，
+每种模式先完整预热，再测两遍；图像预先读入 CPU，模型加载、读盘、预热不计时。
+依次测试原版、原版边界加额外 CLIP（固定历史的成本对照）、实际 `max_depth`。
+输出 `report.json` 包含逐次耗时、均值/P50/P95、CUDA allocated/reserved 峰值、
+CLIP 常驻增量与预处理/前向拆分，并核对固定历史对照的预测一致性。
+三组使用同一已有 checkpoint，只用于性能测量；新策略的准确率应由对应训练模型评估。
+
 ## 插螺钉恢复数据
 
 `prepare_recovery` 读取 `30FPS/`、`left_wrist/`、`right_wrist/`、`splitlable/` 和
