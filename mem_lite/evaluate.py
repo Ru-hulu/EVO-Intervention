@@ -11,14 +11,17 @@ import torch
 from mem_lite.datasets.m3_dataset import M3Dataset
 from mem_lite.datasets.m3_inputs import M3Collator
 from mem_lite.runtime import StreamingProgressPredictor, load_checkpoint, to_device
+from mem_lite.memory.splitting import add_split_arguments
 
 
 @torch.no_grad()
-def evaluate(model, processor, dataset, max_sequence_length=8192, online=False, without_history=False):
+def evaluate(model, processor, dataset, max_sequence_length=8192, online=False, without_history=False,
+             *, clip_model_path=None):
     model.eval()
     device = next(model.parameters()).device
     collator = M3Collator(processor, dataset.history_dim, max_sequence_length, dataset.history_capacity)
-    runner = (StreamingProgressPredictor(model, processor, dataset.history_source, max_sequence_length)
+    runner = (StreamingProgressPredictor(model, processor, dataset.history_source, max_sequence_length,
+                                        clip_model_path=clip_model_path)
               if online and not without_history else None)
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
@@ -67,14 +70,16 @@ def main():
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--online", action="store_true", help="按顺序重建记忆，不加载历史快照")
     parser.add_argument("--without-history", action="store_true", help="对同一检查点做移除历史的消融")
+    add_split_arguments(parser)
     args = parser.parse_args()
-    model, processor, config = load_checkpoint(args.checkpoint, args.device, args.model_path)
+    model, processor, config = load_checkpoint(args.checkpoint, args.device, args.model_path,
+                                               event_split_method=args.event_split_method)
     dataset = M3Dataset(args.sample_files, config["model"]["history_dim"],
                         load_history=not (args.online or args.without_history))
     if dataset.history_source != config["history_source"] or dataset.history_capacity != config["history_capacity"]:
         raise ValueError("评估集的记忆配置与检查点不一致")
     metrics, records = evaluate(model, processor, dataset, config["max_sequence_length"],
-                                args.online, args.without_history)
+                                args.online, args.without_history, clip_model_path=args.clip_model_path)
     output = Path(args.output_dir)
     output.mkdir(parents=True, exist_ok=False)
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")

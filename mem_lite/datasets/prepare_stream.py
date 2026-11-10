@@ -12,6 +12,7 @@ import torch
 from mem_lite.datasets.m3_dataset import DATA_FORMAT, VIEW_ORDER
 from mem_lite.memory.stream import StreamMemory
 from mem_lite.memory.vision import QwenFrameEncoder, load_vision_encoder
+from mem_lite.memory.splitting import add_split_arguments, override_memory_config
 
 DEFAULT_MEMORY_CONFIG = Path(__file__).parents[1] / "configs/streamforest.json"
 
@@ -66,6 +67,7 @@ def iter_observations(videos, progress, frame_stride=None, *, sample_fps=5.0,
 
 def build_episode(observations, stream, output_dir, task_prompt, episode_id, history_source, *, source=None):
     """每条历史独立保存，避免把整段视频的全部快照留在内存。"""
+    history_source = stream.bind_history_source(history_source)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=False)
     for name in (*VIEW_ORDER, "history"):
@@ -116,6 +118,7 @@ def main():
     parser.add_argument("--model-path", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--memory-config", default=str(DEFAULT_MEMORY_CONFIG))
+    add_split_arguments(parser)
     sampling = parser.add_mutually_exclusive_group()
     sampling.add_argument("--sample-fps", type=float, default=5.0, help="记忆和预测采样频率，默认 5 FPS")
     sampling.add_argument("--frame-stride", type=int, help="改用固定原始帧间隔采样")
@@ -124,7 +127,8 @@ def main():
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
     args.videos = [None if path == "-" else path for path in args.videos]
-    config = json.loads(Path(args.memory_config).read_text())
+    config = override_memory_config(json.loads(Path(args.memory_config).read_text()),
+                                    args.event_split_method, args.clip_model_path)
     visual, processor, vision_hash = load_vision_encoder(args.model_path, args.device)
     stream = StreamMemory(QwenFrameEncoder(visual), processor, config, args.max_pixels, args.min_pixels)
     with Path(args.progress_csv).open() as source:

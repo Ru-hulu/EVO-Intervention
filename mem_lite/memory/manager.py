@@ -9,6 +9,7 @@ import torch
 from torch.nn import functional as F
 
 from .tome import matching_scores, merge_tokens
+from .splitting import global_depth_scores, split_method
 
 
 @dataclass
@@ -26,6 +27,7 @@ class MemoryManager:
         st_memory_tokens=(64, 16), event_split_window=4,
         long_memory_tokens_per_frame=16, long_memory_tokens_quota=800,
         sim_weight_g=0.4, time_weight_a=0.2, merge_weight_b=0.4,
+        event_split_method="min_similarity",
     ):
         # 数量必须为正，避免无法推进的窗口或 token 合并循环。
         if min(*st_memory_windows, *st_memory_tokens, event_split_window,
@@ -36,6 +38,7 @@ class MemoryManager:
         self.st_memory_windows = st_memory_windows
         self.st_memory_tokens = st_memory_tokens
         self.event_split_window = event_split_window
+        self.event_split_method = split_method({"event_split_method": event_split_method})
         self.long_memory_tokens_per_frame = long_memory_tokens_per_frame
         self.long_memory_tokens_quota = long_memory_tokens_quota
         self.weights = (sim_weight_g, time_weight_a, merge_weight_b)
@@ -65,10 +68,19 @@ class MemoryManager:
         return scores.topk(count).values.mean().item()
 
     @torch.no_grad()
-    def update(self, frame):
+    def update(self, frame, boundary_descriptor=None):
         """接收一帧 [N, hidden_size] 特征，并立即维护预算。"""
         # 池化仅用于事件边界相似度；完整空间 tokens 仍参与记忆合并。
-        descriptor = frame.float().mean(0)
+        if self.event_split_method == "max_depth":
+            if boundary_descriptor is None:
+                raise ValueError("max_depth 必须提供当前主视角的 CLIP CLS 特征")
+            descriptor = boundary_descriptor.detach().float()
+            if descriptor.ndim != 1 or not torch.isfinite(descriptor).all() or descriptor.norm() == 0:
+                raise ValueError("CLIP CLS 特征必须为有限、非零的一维向量")
+        else:
+            if boundary_descriptor is not None:
+                raise ValueError("原版 min_similarity 不接受额外 CLIP 特征")
+            descriptor = frame.float().mean(0)
         if self.last_frame is not None:
             self.frame_similarities.append(F.cosine_similarity(self.last_frame, descriptor, dim=0).item())
         self.last_frame = descriptor
@@ -82,7 +94,11 @@ class MemoryManager:
     def _split_events(self):
         while len(self.memory_short) >= self.st_memory_windows[1] + self.event_split_window:
             window = self.frame_similarities[:self.event_split_window]
-            count = min(range(len(window)), key=window.__getitem__) + 1
+            if self.event_split_method == "max_depth":
+                depths = global_depth_scores(window)
+                count = max(range(len(depths)), key=depths.__getitem__) + 1
+            else:
+                count = min(range(len(window)), key=window.__getitem__) + 1
             tokens = self._merge(torch.cat(self.memory_short[:count]), count * self.long_memory_tokens_per_frame)
             event = Event(tokens, self.frames_in_long + (count - 1) / 2)
             if self.memory_long:

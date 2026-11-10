@@ -18,14 +18,21 @@ from mem_lite.tests.test_m3_predictor import collator as collator
 from mem_lite.train_stage3 import CHECKPOINT_FORMAT, DEFAULT_CONFIG, configure_history, save_checkpoint
 
 
-@pytest.fixture
-def origin(checkpoint):
-    return {"method": "streamforest-v1", "vision_sha256": _vision_sha256(checkpoint[1].model.visual.state_dict()),
+@pytest.fixture(params=["min_similarity", "max_depth"])
+def origin(checkpoint, clip_checkpoint, request):
+    source = {"method": "streamforest-v1", "vision_sha256": _vision_sha256(checkpoint[1].model.visual.state_dict()),
             "frame_stride": 3,
             "max_pixels": 4096, "min_pixels": 1024,
             "memory_config": {"st_memory_windows": [1, 2], "st_memory_tokens": [4, 2],
                               "event_split_window": 2, "long_memory_tokens_per_frame": 1,
                               "long_memory_tokens_quota": 4}}
+    if request.param == "max_depth":
+        from mem_lite.memory.clip import ClipBoundaryEncoder
+        from mem_lite.memory.splitting import DEPTH_SPEC
+
+        source["memory_config"].update(event_split_method="max_depth", clip_model_path=str(clip_checkpoint))
+        source["event_split"] = {**DEPTH_SPEC, "clip": ClipBoundaryEncoder(clip_checkpoint, "cpu").provenance}
+    return source
 
 
 def make_stream(visual, processor, origin):

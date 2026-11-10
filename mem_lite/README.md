@@ -190,6 +190,70 @@ CPU 评估的 CUDA 显存字段为 null。无历史消融使用同一检查点�
 FP32/BF16 缓存与在线一致性、未来帧替换、微型 Qwen 优化器更新及检查点重载；无需下载模型。
 这些离线测试不代表真实任务准确率或 GPU 实时性能。
 
+## 可选 CLIP 深度分数事件切分
+
+原版默认是 `min_similarity`：Qwen 主视角空间 token 均值（含原有位置编码）的
+相邻帧余弦相似度最小处切分。新模式 `max_depth` 只替换边界判定：冻结的
+CLIP ViT-L/14-336 对每张主视角图像提取最终层 CLS，经 post-layernorm，
+不经过图文投影层，不附加 Forest 时间位置。所有记忆 token 仍由 Qwen 生成；
+三视角当前输入、长期事件合并、token 预算、PT 标签与损失均保持原样。
+
+CLIP 使用 FP32、eager attention、显式 PIL resize/center-crop/normalize 预处理，
+关闭外层 autocast 影响。默认下载固定官方 revision
+`openai/clip-vit-large-patch14-336@ce19dc912ca5cd21c8a653c79e251e808ccabcd1`。
+编码器只在 `max_depth` 下加载；每个新观测只编码一次，与上一观测计算一次余弦相似度：
+`s_i = dot(c_i, c_(i+1)) / (norm(c_i) * norm(c_(i+1)))`。
+
+切分仍在 `len(memory_short) >= short_window + event_split_window` 时触发。
+候选范围沿用原版：剩余缓冲区最早的 `event_split_window` 个相邻帧间隙（默认 4 个）。
+**两侧全局最大值的范围就是这组候选间隙，不跨已提交事件，也不读取未来图像。**
+对其中每个间隙计算
+`d_i = max(s[:i]) + max(s[i+1:]) - 2*s_i`，不包含 `s_i` 本身；
+边缘缺一侧时该侧取 `s_i`（只有一个候选时深度为 0）。保留负分数，
+不做平滑、不筛选局部峰值、不设阈值，直接取最大深度；平分时选择最早间隙。
+切分在该间隙左帧之后，提交此前的 `i+1` 帧。
+这里使用用户确认的全局最大值公式，**不是 VideoLLaMB 原码的连续上坡邻近峰值算法**。
+前缀/后缀最大值使每次切分评分为 O(W)，仅保留上一 CLS 和有界相似度缓冲。
+
+```bash
+# 在实际运行设备直接下载；不需要在本机中转权重。
+python -m mem_lite.memory.download_clip \
+  --output-dir /cache/cvpzhr/models/clip-vit-large-patch14-336
+# 若该设备访问 HF 不通：可追加 --endpoint https://hf-mirror.com --modelscope-fallback
+# 所有下载文件均按上面的官方固定 revision 校验大小与摘要。
+# A100 独立 Python 环境如缺默认证书位置，设置
+# SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt（保持 HTTPS 证书校验）。
+
+# 构造新缓存，其他视频/PT/输出参数沿用 prepare_stream 的用法。
+python -m mem_lite.datasets.prepare_stream \
+  --model-path /cache/cvpzhr/models/Qwen3.5-4B \
+  --videos /data/main.mp4 /data/left.mp4 /data/right.mp4 \
+  --progress-csv /data/progress.csv --task-prompt '完成任务' \
+  --output-dir /data/forest-clip-depth/episode \
+  --event-split-method max_depth \
+  --clip-model-path /cache/cvpzhr/models/clip-vit-large-patch14-336
+# 也可直接 --memory-config mem_lite/configs/streamforest_clip_depth.json
+# prepare_recovery cache 和 prepare_proprimem worker 支持相同参数。
+
+# 训练只读取缓存；该参数校验缓存规则，不会现场转换旧记忆。
+python -m mem_lite.train_stage3 --config /data/train.config.json \
+  --event-split-method max_depth
+
+# 部署/在线验证从 checkpoint 恢复规则，并核验实际 CLIP 权重/处理器摘要。
+python -m mem_lite.evaluate --checkpoint /outputs/epoch-03.pt \
+  --sample-files /data/forest-clip-depth/validation/episode \
+  --output-dir /outputs/clip-online --online --event-split-method max_depth \
+  --clip-model-path /cache/cvpzhr/models/clip-vit-large-patch14-336
+```
+
+`StreamingProgressPredictor(..., event_split_method="max_depth", clip_model_path=...)`
+支持同样的校验和本地路径覆盖；省略模式参数时服从 checkpoint 的 `history_source`。
+切换模式需要为训练和验证**分别重建缓存并训练对应模型**；不能仅给旧 checkpoint
+改一个部署参数。未声明模式的旧缓存/checkpoint 继续解释为 `min_similarity`，
+原版配置文件不变。新缓存保存 CLIP 实际视觉权重、模型配置、处理器摘要与完整切分定义；
+训练 checkpoint 继承这些元数据。混合规则/权重的缓存、缺少元数据的新缓存以及
+部署时的权重/预处理不匹配均会报错。CLIP 模型目录迁移可覆盖路径，内容摘要必须一致。
+
 ## 插螺钉恢复数据
 
 `prepare_recovery` 读取 `30FPS/`、`left_wrist/`、`right_wrist/`、`splitlable/` 和

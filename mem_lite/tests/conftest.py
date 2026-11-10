@@ -6,6 +6,35 @@ from tokenizers import Tokenizer, decoders, models, pre_tokenizers
 from transformers import PreTrainedTokenizerFast, Qwen3_5Config, Qwen3_5ForConditionalGeneration
 
 
+@pytest.fixture(scope="module", autouse=True)
+def cpu_qwen_kernels():
+    # These tiny fixtures run on CPU even on hosts with CUDA-only FLA installed.
+    # Use Transformers' actual PyTorch fallback; never change production kernels.
+    from transformers.models.qwen3_5 import modeling_qwen3_5 as modeling
+
+    with pytest.MonkeyPatch.context() as patch:
+        for name in ("causal_conv1d_fn", "causal_conv1d_update", "chunk_gated_delta_rule",
+                     "fused_recurrent_gated_delta_rule", "FusedRMSNormGated"):
+            patch.setattr(modeling, name, None)
+        yield
+
+
+@pytest.fixture(scope="module")
+def clip_checkpoint(tmp_path_factory):
+    from transformers import CLIPImageProcessor, CLIPVisionConfig, CLIPVisionModel
+
+    directory = tmp_path_factory.mktemp("tiny-clip")
+    with torch.random.fork_rng():
+        torch.manual_seed(17)
+        model = CLIPVisionModel(CLIPVisionConfig(
+            hidden_size=32, intermediate_size=64, num_hidden_layers=2,
+            num_attention_heads=4, image_size=32, patch_size=16,
+        ))
+    model.save_pretrained(directory)
+    CLIPImageProcessor(size={"shortest_edge": 32}, crop_size={"height": 32, "width": 32}).save_pretrained(directory)
+    return directory
+
+
 @pytest.fixture(scope="module")
 def checkpoint(tmp_path_factory):
     torch.manual_seed(41)

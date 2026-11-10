@@ -16,6 +16,7 @@ from transformers import AutoProcessor
 
 from mem_lite.datasets.m3_dataset import M3Dataset, Stage3Collator
 from mem_lite.memory.vision import verify_vision_source
+from mem_lite.memory.splitting import SPLIT_METHODS, validate_history_source
 from mem_lite.models.m3_predictor import M3ProgressPredictor
 
 DEFAULT_CONFIG = Path(__file__).parent / "configs" / "stage3_train.json"
@@ -62,6 +63,9 @@ def read_config(args, checkpoint=None):
         value = getattr(args, key)
         if value is not None:
             config[key] = value
+    method = getattr(args, "event_split_method", None)
+    if method is not None:
+        config["event_split_method"] = method
     if not config["model_path"] or not config["sample_files"]:
         raise ValueError("需要本地 Qwen3.5 基座及已构造的 StreamForest 样本")
     for key in ("epochs", "batch_size", "gradient_accumulation_steps", "learning_rate",
@@ -101,6 +105,10 @@ def configure_history(config, dataset):
     configured = config.get("history_capacity")
     if configured is not None and configured != dataset.history_capacity:
         raise ValueError("history_capacity 与样本记忆预算不一致")
+    method = validate_history_source(dataset.history_source, config.get("event_split_method"))
+    if config.get("history_source") is not None and config["history_source"] != dataset.history_source:
+        raise ValueError("history_source 与样本不一致，不能覆盖已有检查点的记忆规则")
+    config["event_split_method"] = method
     config["model"]["history_dim"] = dataset.history_dim
     config["history_capacity"] = dataset.history_capacity
     config["history_source"] = dataset.history_source
@@ -263,6 +271,8 @@ def main():
     parser.add_argument("--epochs", type=int)
     parser.add_argument("--max-steps", type=int)
     parser.add_argument("--resume", help="第三阶段自己的 last.pt 或 epoch-XX.pt")
+    parser.add_argument("--event-split-method", choices=SPLIT_METHODS,
+                        help="检查缓存是否使用指定切分方式；不会转换旧缓存")
     args = parser.parse_args()
     checkpoint = torch.load(args.resume, map_location="cpu", weights_only=True) if args.resume else None
     if checkpoint is not None and checkpoint.get("format") != CHECKPOINT_FORMAT:

@@ -10,6 +10,7 @@ from torch.utils.data import Dataset
 
 from mem_lite.datasets.m3_inputs import M3Collator
 from mem_lite.datasets.views import fill_views
+from mem_lite.memory.splitting import validate_history_source
 
 VIEW_ORDER = ("cam_high", "cam_left_wrist", "cam_right_wrist")
 DATA_FORMAT = "streamforest-m3-data-v1"
@@ -28,6 +29,7 @@ class M3Dataset(Dataset):
             summary = json.loads((path.parent / "summary.json").read_text(encoding="utf-8"))
             if summary["format_version"] != DATA_FORMAT:
                 raise ValueError("需要 StreamForest 样本，请重新构造旧历史缓存")
+            validate_history_source(summary["history_source"])
             for attr in ("history_dim", "history_capacity", "history_source"):
                 expected = getattr(self, attr)
                 if expected is not None and expected != summary[attr]:

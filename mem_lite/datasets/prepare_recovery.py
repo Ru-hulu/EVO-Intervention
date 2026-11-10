@@ -125,10 +125,12 @@ def prepare_index(dataset_root, output_dir, validation_videos=4, seed=42):
 
 
 def build_caches(prepared_dir, model_path, cache_dir, device="cuda", sample_fps=5.0,
-                 max_pixels=65536, min_pixels=4096, memory_config=None):
+                 max_pixels=65536, min_pixels=4096, memory_config=None,
+                 event_split_method=None, clip_model_path=None):
     from mem_lite.datasets.prepare_stream import DEFAULT_MEMORY_CONFIG, build_episode, iter_observations
     from mem_lite.memory.stream import StreamMemory
     from mem_lite.memory.vision import QwenFrameEncoder, load_vision_encoder
+    from mem_lite.memory.splitting import override_memory_config
 
     prepared, output = Path(prepared_dir).resolve(), Path(cache_dir).resolve()
     manifest = json.loads((prepared / "manifest.json").read_text())
@@ -147,12 +149,14 @@ def build_caches(prepared_dir, model_path, cache_dir, device="cuda", sample_fps=
                 raise ValueError("进度 CSV 已变化，请重新生成单轮索引")
         records[split] = rows
     output.mkdir(parents=True, exist_ok=False)
-    config = json.loads(Path(memory_config or DEFAULT_MEMORY_CONFIG).read_text())
+    config = override_memory_config(json.loads(Path(memory_config or DEFAULT_MEMORY_CONFIG).read_text()),
+                                    event_split_method, clip_model_path)
     visual, processor, vision_hash = load_vision_encoder(model_path, device)
     stream = StreamMemory(QwenFrameEncoder(visual), processor, config, max_pixels, min_pixels)
     origin = {"method": "streamforest-v1", "vision_sha256": vision_hash, "memory_config": config,
               "sample_fps": sample_fps, "include_episode_last_frame": True,
               "max_pixels": max_pixels, "min_pixels": min_pixels}
+    origin = stream.bind_history_source(origin)
     sample_files = {}
     for split, rows in records.items():
         sample_files[split] = []
@@ -195,6 +199,8 @@ def main():
     cache.add_argument("--max-pixels", type=int, default=65536)
     cache.add_argument("--min-pixels", type=int, default=4096)
     cache.add_argument("--memory-config")
+    from mem_lite.memory.splitting import add_split_arguments
+    add_split_arguments(cache)
     args = vars(parser.parse_args())
     command = args.pop("command")
     result = prepare_index(**args) if command == "index" else build_caches(**args)

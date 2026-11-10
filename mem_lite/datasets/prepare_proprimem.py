@@ -192,8 +192,10 @@ def label_source(row, output, legacy, encoder, batch_size, pt_max_pixels):
     return units
 
 
-def build_worker(output_dir, model_path, worker, device='cuda', batch_size=16, pt_max_pixels=262144):
+def build_worker(output_dir, model_path, worker, device='cuda', batch_size=16, pt_max_pixels=262144,
+                 memory_config=None, event_split_method=None, clip_model_path=None):
     import torch
+    from mem_lite.memory.splitting import override_memory_config
 
     torch.set_num_threads(4)
     output = Path(output_dir).resolve()
@@ -206,11 +208,13 @@ def build_worker(output_dir, model_path, worker, device='cuda', batch_size=16, p
     try:
         encoder = load_vision_encoder(model_path, device)
         visual, processor, vision_hash = encoder
-        config = json.loads(DEFAULT_MEMORY_CONFIG.read_text())
+        config = override_memory_config(json.loads(Path(memory_config or DEFAULT_MEMORY_CONFIG).read_text()),
+                                        event_split_method, clip_model_path)
         origin = dict(method='streamforest-v1', vision_sha256=vision_hash, memory_config=config,
                       sample_fps=5.0, include_episode_last_frame=True, max_pixels=65536, min_pixels=4096,
                       view_policy=VIEW_POLICY)
         stream = StreamMemory(QwenFrameEncoder(visual), processor, config, 65536, 4096)
+        origin = stream.bind_history_source(origin)
         for row in sources:
             state.update(phase='labels', current=row['source_id'], elapsed_seconds=perf_counter()-started)
             write_json(status_path, state)
@@ -342,6 +346,9 @@ def main():
     worker.add_argument('--model-path', required=True)
     worker.add_argument('--worker', type=int, required=True)
     worker.add_argument('--batch-size', type=int, default=16)
+    worker.add_argument('--memory-config')
+    from mem_lite.memory.splitting import add_split_arguments
+    add_split_arguments(worker)
     final = sub.add_parser('finalize')
     final.add_argument('--output-dir', required=True)
     args = vars(parser.parse_args())
