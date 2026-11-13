@@ -182,6 +182,9 @@ def main():
             # official blob hash is still checked before accepting its bytes.
             urls.insert(0, f"{args.endpoint.rstrip('/')}/api/resolve-cache/models/"
                         f"{spec['repo_id']}/{spec['revision']}/{path}")
+            # A populated mirror cache for main can supply the very same blob.
+            # It is accepted only when its size and original pinned hash match.
+            urls += [f"{stem}/resolve/main/{path}?download=true"]
             urls += [f"{stem}/raw/{spec['revision']}/{path}"]
         session = requests.Session()
         session.trust_env = False
