@@ -1,0 +1,57 @@
+{
+  "repo_id": "Qwen/Qwen3-VL-4B-Instruct",
+  "revision": "ebb281ec70b05090aa6165b016eac8ec08e71b17",
+  "local_dir": "/cache/cvpzhr/models/Robometer-4B/processor",
+  "reason": "Official Robometer config.yaml base_model_id; original evaluation loader requires this processor directory. No base model weights are downloaded.",
+  "small_file_sha256": {},
+  "files": [
+    {
+      "path": "chat_template.json",
+      "size": 5502,
+      "blob_id": "e49e75bdda104c8de941eb20e0b3765184fb27bc",
+      "lfs": null
+    },
+    {
+      "path": "config.json",
+      "size": 1505,
+      "blob_id": "22be8bb79043d39840ca5e70d7a2dab80311602c",
+      "lfs": null
+    },
+    {
+      "path": "merges.txt",
+      "size": 1671839,
+      "blob_id": "20024bfe7c83998e9aeaf98a0cd6a2ce6306c2f0",
+      "lfs": null
+    },
+    {
+      "path": "preprocessor_config.json",
+      "size": 390,
+      "blob_id": "2ea84a437d448ff71b08df68fdd949d5cc4ebb64",
+      "lfs": null
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 7032403,
+      "blob_id": "c6cc1014128b19d1fc46b1d30a23e3b1d35db421",
+      "lfs": null
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 10868,
+      "blob_id": "d3d3763207692c78780f4bf42d4dadf49a5c8012",
+      "lfs": null
+    },
+    {
+      "path": "video_preprocessor_config.json",
+      "size": 385,
+      "blob_id": "3ba673a5ad7d4d13f54155ecd38b2a94a6dac8fe",
+      "lfs": null
+    },
+    {
+      "path": "vocab.json",
+      "size": 2776833,
+      "blob_id": "4783fe10ac3adce15ac8f358ef5462739852c569",
+      "lfs": null
+    }
+  ]
+}

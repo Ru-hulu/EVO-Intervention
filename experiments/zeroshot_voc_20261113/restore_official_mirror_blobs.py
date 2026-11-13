@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 from pathlib import Path
+import shutil
 from urllib.parse import quote
 
 import requests
@@ -29,6 +30,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--catalog", type=Path, required=True)
     parser.add_argument("--blob-dir", type=Path, required=True)
+    parser.add_argument("--processor-catalog", type=Path,
+                        help="Install the Robometer base processor using exact matching remote blobs")
     args = parser.parse_args()
     catalog = json.loads(args.catalog.read_text())
     args.blob_dir.mkdir(parents=True, exist_ok=True)
@@ -85,6 +88,33 @@ def main():
     })
     print(json.dumps({"verified": sum(r["status"] == "verified" for r in results),
                       "unavailable": sum(r["status"] != "verified" for r in results)}))
+    if args.processor_catalog:
+        spec = json.loads(args.processor_catalog.read_text())
+        destination = Path(spec["local_dir"])
+        assert spec["repo_id"] == "Qwen/Qwen3-VL-4B-Instruct"
+        assert destination == Path(catalog["robometer-4b"]["local_dir"]) / "processor"
+        destination.mkdir(parents=True, exist_ok=True)
+        installed = []
+        for row in spec["files"]:
+            assert Path(row["path"]).name == row["path"] and not row.get("lfs")
+            source = args.blob_dir / row["blob_id"]
+            digest = verify(source, row)
+            if not digest:
+                raise RuntimeError("Missing exact processor blob: " + row["path"])
+            dest = destination / row["path"]
+            if dest.exists() and verify(dest, row) != digest:
+                raise RuntimeError("Existing processor file differs: " + row["path"])
+            temporary = dest.with_suffix(dest.suffix + ".tmp")
+            shutil.copyfile(source, temporary)
+            assert verify(temporary, row) == digest
+            temporary.replace(dest)
+            installed.append({"file": row["path"], "sha256": digest, "source_blob": str(source)})
+        atomic_json(args.blob_dir.parent / "processor-verification.json", {
+            "repo_id": spec["repo_id"], "revision": spec["revision"],
+            "destination": str(destination), "all_pinned_hf_hashes_match": True,
+            "model_bytes_transit_local_computer": False, "files": installed,
+        })
+        print("Verified and installed processor files:", len(installed))
 
 
 if __name__ == "__main__":

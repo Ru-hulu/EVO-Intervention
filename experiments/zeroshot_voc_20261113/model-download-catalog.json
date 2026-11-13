@@ -896,12 +896,6 @@
     },
     "files": [
       {
-        "path": ".DS_Store",
-        "size": 6148,
-        "blob_id": "5008ddfcf53c02e82d7eee2e57c38e5672ef89f6",
-        "lfs": null
-      },
-      {
         "path": "README.md",
         "size": 84,
         "blob_id": "ef9da73d46b6e82528e742fbcc8c692c813ac9d2",
