@@ -1,0 +1,14 @@
+{
+  "robometer": {
+    "repo": "robometer/robometer",
+    "revision": "352d160389daa964788de1ec933d1925f3a6de4f",
+    "archive_sha256": "604e32aee5b7a989c8eabfb3192799541a8ee047b162af744d29e659d4b82d35",
+    "destination": "/cache/cvpzhr/setup/three-model-e1-cleanval-20261108/code/robometer-upstream"
+  },
+  "vlac": {
+    "repo": "InternRobotics/VLAC",
+    "revision": "0f302d020555e320347c55b09431afe17ef5cdd4",
+    "archive_sha256": "bbbc0f6f32c58ba2b7e12402c1f324c55bc72f0b7b6aa14d17549f9fbb4a0f8b",
+    "destination": "/cache/robot-baselines/repos/VLAC"
+  }
+}
