@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+import shutil
 import threading
 import time
 from urllib.parse import quote, urlsplit, urlunsplit
@@ -110,6 +111,8 @@ def main():
     parser.add_argument("--signed-urls", type=Path,
                         help="Optional refreshed redirects obtained from official HF HEAD requests; never commit this file")
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--verified-blob-dir", type=Path,
+                        help="Remote-only Git blob cache; every reused file is checked against the official catalog")
     parser.add_argument("--defer-model", action="append", default=[],
                         help="Keep a model in the manifest but wait for official repository access")
     args = parser.parse_args()
@@ -187,6 +190,25 @@ def main():
             update(key, True, status="downloading", attempt=attempt,
                    bytes=part.stat().st_size if part.exists() else 0, expected_bytes=row["size"])
             try:
+                if not row.get("lfs"):
+                    donors = []
+                    if args.verified_blob_dir:
+                        donors.append(args.verified_blob_dir / row["blob_id"])
+                    donors.extend(Path(other_spec["local_dir"]) / other_row["path"]
+                                  for _, other_spec, other_row in rows
+                                  if other_row.get("blob_id") == row["blob_id"]
+                                  and not other_row.get("lfs"))
+                    for donor in donors:
+                        if donor == dest:
+                            continue
+                        digest = verify(donor, row, extra)
+                        if digest:
+                            shutil.copyfile(donor, part)
+                            assert verify(part, row, extra) == digest
+                            part.replace(dest)
+                            update(key, True, status="verified", bytes=row["size"],
+                                   sha256=digest, reused_from=str(donor))
+                            return
                 candidates = list(urls)
                 if args.signed_urls and args.signed_urls.exists():
                     signed = json.loads(args.signed_urls.read_text()).get(key)
