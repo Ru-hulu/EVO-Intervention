@@ -59,12 +59,15 @@ def fetch_one(session, urls, part, size, progress):
     if offset > size:
         raise ValueError("Partial file exceeds the official size")
     if offset == size:
+        if not part.exists():
+            part.touch()
         return
     headers = {"Accept-Encoding": "identity"}
     if offset:
         headers["Range"] = f"bytes={offset}-"
     last_error = None
     for url in urls:
+        before_request = part.stat().st_size if part.exists() else 0
         try:
             with session.get(url, headers=headers, timeout=(12, 45), stream=True) as r:
                 r.raise_for_status()
@@ -94,9 +97,7 @@ def fetch_one(session, urls, part, size, progress):
             last_error = error
             # A response may already have extended the partial file. Let the
             # next outer attempt recalculate its exact offset before resuming.
-            if part.exists() and part.stat().st_size != offset:
-                break
-            if part.exists() and part.stat().st_size:
+            if (part.stat().st_size if part.exists() else 0) != before_request:
                 break
     raise last_error or IOError("No download URL")
 
@@ -106,7 +107,11 @@ def main():
     parser.add_argument("--catalog", type=Path, required=True)
     parser.add_argument("--state-dir", type=Path, required=True)
     parser.add_argument("--endpoint", default="https://hf-mirror.com")
+    parser.add_argument("--signed-urls", type=Path,
+                        help="Optional refreshed redirects obtained from official HF HEAD requests; never commit this file")
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--defer-model", action="append", default=[],
+                        help="Keep a model in the manifest but wait for official repository access")
     args = parser.parse_args()
     args.state_dir.mkdir(parents=True, exist_ok=True)
     lock_file = (args.state_dir / "download.lock").open("a")
@@ -114,10 +119,13 @@ def main():
     catalog = json.loads(args.catalog.read_text())
     provenance = json.loads((Path(__file__).parent / "model-provenance.json").read_text())
     assert set(catalog) == set(provenance) and len(catalog) == 9
+    assert set(args.defer_model) <= set(catalog)
     rows = []
     for model, spec in catalog.items():
         assert spec["revision"] == provenance[model]["revision"]
         assert spec["local_dir"] == provenance[model]["path"]
+        if model in args.defer_model:
+            continue
         for row in spec["files"]:
             relative = PurePosixPath(row["path"])
             assert not relative.is_absolute() and ".." not in relative.parts
@@ -130,6 +138,7 @@ def main():
         "catalog_sha256": hashlib.sha256(args.catalog.read_bytes()).hexdigest(),
         "endpoint": args.endpoint, "model_bytes_transit_local_computer": False,
         "evaluation_started": False, "workers": args.workers,
+        "waiting_for_official_access": args.defer_model,
         "total_files": len(rows), "total_bytes": sum(r["size"] for _, _, r in rows),
         "files": {},
     }
@@ -173,7 +182,17 @@ def main():
             update(key, True, status="downloading", attempt=attempt,
                    bytes=part.stat().st_size if part.exists() else 0, expected_bytes=row["size"])
             try:
-                fetch_one(session, urls, part, row["size"], lambda n: update(key, bytes=n))
+                candidates = list(urls)
+                if args.signed_urls and args.signed_urls.exists():
+                    signed = json.loads(args.signed_urls.read_text()).get(key)
+                    if signed:
+                        parsed = urlsplit(signed)
+                        assert parsed.scheme == "https" and parsed.hostname and (
+                            parsed.hostname.endswith(".hf.co") or parsed.hostname.endswith(".huggingface.co"))
+                        candidates.insert(0, signed)
+                if attempt > 1:
+                    candidates.append(urls[0] + f"?download=true&refresh={int(time.time())}")
+                fetch_one(session, candidates, part, row["size"], lambda n: update(key, bytes=n))
                 update(key, True, status="verifying", bytes=row["size"])
                 digest = verify(part, row, extra)
                 if not digest:
@@ -202,7 +221,7 @@ def main():
                 future.result()
             except Exception as error:
                 failures.append({"model": model, "file": row["path"], "error": safe_error(error)})
-    state["status"] = "failed" if failures else "completed"
+    state["status"] = "failed" if failures else ("waiting_for_access" if args.defer_model else "completed")
     state["failures"] = failures
     state["finished_at"] = time.time()
     state["models"] = {
