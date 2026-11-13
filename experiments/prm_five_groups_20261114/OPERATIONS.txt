@@ -1,0 +1,56 @@
+Run root: /cache/cvpzhr/setup/prm-five-groups-20261114
+Code snapshot: run root/code
+Python: /cache/cvpzhr/envs/forest-labels/bin/python
+SSH: a100-modelarts, port 30599, current a100-modelarts.pem key.
+
+Authorization and monitoring
+The user authorized four independent FoREST suite trainings followed by all five
+confirmed experiment groups. No new launch approval is required. The user's
+latest resource instruction makes stability take precedence over saturation.
+The existing forest heartbeat is active every 30 minutes. Inspect controller.pid
+and live children before recovery; never duplicate a controller or GPU job.
+
+Current execution policy
+Two cache workers per GPU, eight total. Training uses fixed GPU pairs 0/1 and 2/3,
+microbatch 1, accumulation 9, effective batch 18, gradient checkpointing, and a
+0.70 CUDA allocator fraction. Cache workers on a training pair finish their
+current episode and exit cooperatively. Do not overlap full-model training with
+cache workers on the same GPU. Account for the container's roughly 461 GiB
+memory limit, including reclaimable file cache, rather than only host RAM.
+
+The conservative two-rank disposable smoke passed on 2026-11-14. Both ranks'
+fresh initialization and optimizer/scheduler/RNG checkpoint were verified.
+Peak reserved GPU memory was approximately 10.92 GiB. Trial weights must never
+be used for any suite's training. The earlier overlapping-cache microbatch-3
+smoke failed from GPU OOM and was archived under recovery-history; it is not an
+unresolved new incident.
+
+Read status.json, cache-queue.sqlite, per-worker status/logs, smoke verification,
+suite train.jsonl and checkpoint-verification.json. Preserve completed outputs.
+Failed cache outputs require inspection before requeue; do not delete them.
+Resume interrupted training only from a complete checkpoint with the same
+configuration, optimizer, scheduler, RNG and two-rank world size. Continue
+healthy independent work. Do not retry failing initialization indefinitely.
+
+Remaining implementation work (do not describe this as already ready)
+1. Recover R05 has 35 missing PT trajectories. User authorized supplementing
+   them separately under run root/labels, using the existing Qwen3-VL visual
+   delta rule: first effective pour plus its associated put-down contributes;
+   repeats and waiting hold progress. Existing Recover data stays unchanged.
+   Qwen3-VL-4B-Instruct vision-only weights are downloaded and hash-verified.
+   Implement and verify this supplement, then append-recover to the cache queue.
+2. eval_dispatch is the controller's post-training handoff target, but its
+   implementation is not yet present. Implement and test all confirmed model
+   interfaces, shared perturbation maps, metrics and output verification before
+   the four trainings finish. The heartbeat must continue this work, not just
+   poll. Do not start an incomplete or fabricated substitute evaluation.
+3. O12/S13 counterfactual instruction-specific GT and Recover abnormal-event
+   metadata require source verification. If genuinely missing, block only the
+   affected condition and continue executable work; never invent GT.
+
+Scientific protocol is experiment-plan.json. Preserve data splits, PT labels,
+official starting weights, LR, effective batch, epochs, model inputs, decoding
+and metrics. Code and configuration go to Git; data, weights and predictions do
+not. Downloads remain remote-direct. Keep a remote source SHA256 inventory when
+deploying fixes. Report material changes, failures requiring attention and
+verified completion; ordinary healthy progress does not require a notification.

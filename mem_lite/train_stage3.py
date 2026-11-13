@@ -1,11 +1,15 @@
 """三视角 + StreamForest 缓存，只训练语言 LoRA、历史投影和进度头。"""
 
 import argparse
+import hashlib
 import json
+import math
 import os
+import random
 from contextlib import nullcontext
 from pathlib import Path
 from time import perf_counter
+from time import time
 
 import torch
 import torch.distributed as dist
@@ -37,8 +41,9 @@ def load_trainable_state(model, state):
     model.progress_head.load_state_dict(state["progress_head"])
 
 
-def save_checkpoint(model, optimizer, config, output_dir, epoch, next_batch, step, epoch_finished=False):
-    rng = {"torch": torch.get_rng_state(), "cuda": torch.cuda.get_rng_state()}
+def save_checkpoint(model, optimizer, config, output_dir, epoch, next_batch, step, epoch_finished=False,
+                    scheduler=None):
+    rng = {"torch": torch.get_rng_state(), "cuda": torch.cuda.get_rng_state(), "python": random.getstate()}
     rng_by_rank = [None] * dist.get_world_size() if dist.is_initialized() else [rng]
     if dist.is_initialized():
         dist.all_gather_object(rng_by_rank, rng)
@@ -47,6 +52,7 @@ def save_checkpoint(model, optimizer, config, output_dir, epoch, next_batch, ste
     state = {
         "format": CHECKPOINT_FORMAT, "model": trainable_state(model), "optimizer": optimizer.state_dict(),
         "config": config, "epoch": epoch, "next_batch": next_batch, "step": step, "rng_by_rank": rng_by_rank,
+        "scheduler": None if scheduler is None else scheduler.state_dict(),
     }
     archive = epoch_finished and not config.get("keep_only_latest", False)
     names = ["last.pt", f"epoch-{epoch:02d}.pt"] if archive else ["last.pt"]
@@ -54,6 +60,44 @@ def save_checkpoint(model, optimizer, config, output_dir, epoch, next_batch, ste
         temporary = output_dir / f"{name}.tmp"
         torch.save(state, temporary)
         temporary.replace(output_dir / name)
+
+
+def build_scheduler(optimizer, config, batches_per_epoch):
+    """Optional warmup/cosine; older constant-LR configurations stay unchanged."""
+    if config.get("lr_schedule", "constant") == "constant":
+        return None
+    if config["lr_schedule"] != "cosine" or not 0 <= config.get("warmup_ratio", 0) < 1:
+        raise ValueError("Unsupported learning-rate schedule")
+    from transformers import get_cosine_schedule_with_warmup
+    steps = math.ceil(batches_per_epoch / config["gradient_accumulation_steps"]) * config["epochs"]
+    config["total_optimizer_steps"] = steps
+    config["warmup_steps"] = math.ceil(steps * config["warmup_ratio"])
+    return get_cosine_schedule_with_warmup(optimizer, config["warmup_steps"], steps)
+
+
+def initialization_audit(model, config, rank, world_size, checkpoint):
+    names = [name for name, p in model.named_parameters() if p.requires_grad]
+    allowed = ("qwen.model.language_model.layers.", "history_projection.", "progress_head.")
+    if any(not name.startswith(allowed) for name in names):
+        raise ValueError("Unexpected trainable parameter outside native FoREST modules")
+    lora_b = [p for name, p in model.named_parameters() if "lora_B" in name]
+    fresh = bool(lora_b) and all(torch.count_nonzero(p).item() == 0 for p in lora_b)
+    if checkpoint is None and not fresh:
+        raise ValueError("Fresh initialization requires zero-initialized language LoRA B")
+    digest = hashlib.sha256()
+    for name, p in model.named_parameters():
+        if p.requires_grad:
+            digest.update(name.encode())
+            digest.update(p.detach().cpu().contiguous().view(torch.uint8).numpy().tobytes())
+    audit = {"rank": rank, "world_size": world_size, "base_model": config["model_path"],
+             "base_revision": config.get("base_revision"), "fresh_language_lora": fresh,
+             "resume": checkpoint is not None, "initial_trainable_sha256": digest.hexdigest(),
+             "trainable_parameter_names": names, "history_source": config["history_source"],
+             "seed": config["seed"], "timestamp": time()}
+    output = Path(config["output_dir"])
+    output.mkdir(parents=True, exist_ok=True)
+    suffix = "resume" if checkpoint is not None else "fresh"
+    (output / f"initialization-rank{rank}-{suffix}.json").write_text(json.dumps(audit, indent=2) + "\n")
 
 
 def read_config(args, checkpoint=None):
@@ -120,6 +164,11 @@ def train(config, checkpoint=None):
     rank, world_size = int(os.environ.get("RANK", 0)), int(os.environ.get("WORLD_SIZE", 1))
     device = torch.device("cuda", int(os.environ.get("LOCAL_RANK", 0)))
     torch.cuda.set_device(device)
+    if config.get("cuda_memory_fraction") is not None:
+        fraction = float(config["cuda_memory_fraction"])
+        if not 0 < fraction <= 1:
+            raise ValueError("cuda_memory_fraction must be in (0, 1]")
+        torch.cuda.set_per_process_memory_fraction(fraction, device)
     if world_size > 1:
         dist.init_process_group("nccl")
     try:
@@ -135,6 +184,7 @@ def _train(config, checkpoint, rank, world_size, device):
     if checkpoint is not None and len(checkpoint["rng_by_rank"]) != world_size:
         raise ValueError("断点续训需保持 GPU 数量，以恢复相同的样本顺序及梯度累积")
     torch.manual_seed(config["seed"])
+    random.seed(config["seed"])
     torch.cuda.manual_seed_all(config["seed"])
     processor = AutoProcessor.from_pretrained(
         config["model_path"], max_pixels=config["max_pixels"], local_files_only=True,
@@ -161,11 +211,18 @@ def _train(config, checkpoint, rank, world_size, device):
     parameters = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(parameters, lr=config["learning_rate"], weight_decay=config["weight_decay"],
                                   fused=config.get("fused_optimizer", False))
+    scheduler = build_scheduler(optimizer, config, len(loader))
     epoch, next_batch, step = 0, 0, 0
     if checkpoint is not None:
         load_trainable_state(model, checkpoint["model"])
         optimizer.load_state_dict(checkpoint["optimizer"])
+        if scheduler is not None:
+            if checkpoint.get("scheduler") is None:
+                raise ValueError("Scheduled training cannot resume without its scheduler state")
+            scheduler.load_state_dict(checkpoint["scheduler"])
         epoch, next_batch, step = checkpoint["epoch"], checkpoint["next_batch"], checkpoint["step"]
+    if config.get("audit_initialization", False):
+        initialization_audit(model, config, rank, world_size, checkpoint)
     # 视频首帧没有历史，某个 rank/微批次可能不使用 history_projection。
     wrapped = (DistributedDataParallel(model, device_ids=[device.index], broadcast_buffers=False,
                                        find_unused_parameters=True) if world_size > 1 else model)
@@ -173,6 +230,8 @@ def _train(config, checkpoint, rank, world_size, device):
         rng = checkpoint["rng_by_rank"][rank]
         torch.set_rng_state(rng["torch"])
         torch.cuda.set_rng_state(rng["cuda"], device)
+        if "python" in rng:
+            random.setstate(rng["python"])
         del checkpoint
     else:
         torch.manual_seed(config["seed"] + rank)
@@ -219,6 +278,8 @@ def _train(config, checkpoint, rank, world_size, device):
             normalize_gradients(parameters, totals[1], world_size)
             norm = torch.nn.utils.clip_grad_norm_(parameters, config["max_grad_norm"], error_if_nonfinite=True)
             optimizer.step()
+            if scheduler is not None:
+                scheduler.step()
             optimizer.zero_grad(set_to_none=True)
             step += 1
             next_epoch, cursor = (epoch + 1, 0) if epoch_finished else (epoch, batch_index + 1)
@@ -245,13 +306,16 @@ def _train(config, checkpoint, rank, world_size, device):
                     "step_seconds": seconds, "grad_norm": norm.item(),
                     "peak_allocated_gib_per_gpu": [float(v[0]) for v in memory_by_rank],
                     "peak_reserved_gib_per_gpu": [float(v[1]) for v in memory_by_rank],
+                    "next_learning_rate": optimizer.param_groups[0]["lr"],
+                    "timestamp": time(),
                 }
                 print(json.dumps(record), flush=True)
                 with (output_dir / "train.jsonl").open("a", encoding="utf-8") as stream:
                     stream.write(json.dumps(record) + "\n")
             save, archive = checkpoint_schedule(config, step, next_epoch, epoch_finished, stop)
             if save:
-                save_checkpoint(model, optimizer, config, output_dir, next_epoch, cursor, step, archive)
+                save_checkpoint(model, optimizer, config, output_dir, next_epoch, cursor, step, archive,
+                                scheduler=scheduler)
                 if world_size > 1:
                     dist.barrier()
             totals.zero_()
