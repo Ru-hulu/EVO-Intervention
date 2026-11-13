@@ -75,7 +75,13 @@ def main():
         if not row.get("lfs"):
             urls.insert(0, f"https://hf-mirror.com/api/resolve-cache/models/{repo}/{revision}/{filename}")
         # The author's ModelScope mirror is accepted only with the pinned HF hash.
-        urls.append(f"https://modelscope.cn/api/v1/models/{repo}/repo?Revision=master&FilePath={filename}")
+        modelscope = f"https://modelscope.cn/api/v1/models/{repo}/repo?Revision=master&FilePath={filename}"
+        # Prefer the faster local CDN for large blobs; the pinned HF SHA256
+        # still determines whether the downloaded bytes are accepted.
+        if row.get("lfs"):
+            urls.insert(0, modelscope)
+        else:
+            urls.append(modelscope)
         with requests.Session() as session:
             session.trust_env = False
             for attempt in range(1, 9):
