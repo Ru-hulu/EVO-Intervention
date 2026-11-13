@@ -174,6 +174,11 @@ def main():
         stem = f"{args.endpoint.rstrip('/')}/{spec['repo_id']}"
         urls = [f"{stem}/resolve/{spec['revision']}/{path}"]
         if not row.get("lfs"):
+            # The mirror's resolve redirect may add a cache query that returns
+            # 503. The query-free route serves the same pinned Git blob; the
+            # official blob hash is still checked before accepting its bytes.
+            urls.insert(0, f"{args.endpoint.rstrip('/')}/api/resolve-cache/models/"
+                        f"{spec['repo_id']}/{spec['revision']}/{path}")
             urls += [f"{stem}/raw/{spec['revision']}/{path}"]
         session = requests.Session()
         session.trust_env = False
