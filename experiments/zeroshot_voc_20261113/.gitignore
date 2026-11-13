@@ -1,0 +1,11 @@
+/manifest.json
+/protocol.json
+/preflight.json
+/status.json
+/code-sha256.json
+/controller.pid
+/controller.log
+/pipeline.lock
+/jobs/
+/logs/
+__pycache__/

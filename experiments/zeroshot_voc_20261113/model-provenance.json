@@ -1,0 +1,90 @@
+{
+  "robometer-4b": {
+    "path": "/cache/cvpzhr/models/Robometer-4B",
+    "revision": "beef63bc914c5c189329d49c6d712d96d632aa34",
+    "small_file_sha256": {
+      "model.safetensors.index.json": "5f914c84012ce50f6d5a5903ab5abd84b6e08900d0f17be6f98e913fcc8a6b1c",
+      "config.yaml": "6e4b77171e0ec6d926767906892e630890c378f796c049188f5670ab64ca3abe",
+      "config.json": "2287e93a95c1dcd5e471cf386cf5750e7643ee0b2c44a2544a1318b8b8f3c9be"
+    },
+    "official_only": true
+  },
+  "robobrain25-4b": {
+    "path": "/cache/cvpzhr/models/RoboBrain2.5-4B",
+    "revision": "ec4b3bf5e969b48ad17df432b479c10402a0079b",
+    "small_file_sha256": {
+      "generation_config.json": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44",
+      "config.json": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d"
+    },
+    "official_only": true
+  },
+  "robobrain25-8b": {
+    "path": "/cache/robot-baselines/models/RoboBrain2.5-8B-NV",
+    "revision": "7ae187cc62e45cfa1c5904903a8f017f11b2037b",
+    "small_file_sha256": {
+      "model.safetensors.index.json": "765bab88ce308d515a6e02df460b9aae77a28171a7abca349c922322625aeb75",
+      "generation_config.json": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44",
+      "config.json": "5cd452860dc1e9c29dd71cc3cef7f39b338b7a40793f7a260655c2d3568f3661"
+    },
+    "official_only": true
+  },
+  "dopamine-3b": {
+    "path": "/cache/robot-baselines/models/Robo-Dopamine-GRM-3B",
+    "revision": "b75e1ea8381d384f580b41d04ee80fdff5369b34",
+    "small_file_sha256": {
+      "model.safetensors.index.json": "eafcf7eb80f0e63f73ef902b792726372d9a5ac90f7c724898006882705360da",
+      "generation_config.json": "11c32bf551cf5cceeca5d418bf0d946cbe18820a45c5a6691b248431e899257f",
+      "config.json": "01013e158ab7f6b1edb02783dabcec35739085e653a4601886b83f6c8f0e03dd"
+    },
+    "official_only": true
+  },
+  "dopamine-8b": {
+    "path": "/cache/robot-baselines/models/Robo-Dopamine-GRM-8B",
+    "revision": "773d72a9d20dac523968e43a6b0752ace434471b",
+    "small_file_sha256": {
+      "model.safetensors.index.json": "3067e9b0f35596ff3426a0d0ec8c982a51fa1e110c4fc30dcf3be9ea37409df6",
+      "generation_config.json": "11c32bf551cf5cceeca5d418bf0d946cbe18820a45c5a6691b248431e899257f",
+      "config.json": "148e98d13e805de79c63483ba73d9e5bb825297c2a12496f6a602bb86ebf6c5d"
+    },
+    "official_only": true
+  },
+  "procvlm-2b": {
+    "path": "/cache/robot-baselines/models/ProcVLM-2B",
+    "revision": "a7f5c18c6128a9c2a478a62ecc356f19f0e0bcf5",
+    "small_file_sha256": {
+      "model.safetensors.index.json": "0cedec4e525e8ca3fdf53063477759e81b62557b6695c7ba84b68378045cd049",
+      "generation_config.json": "1e241830b48b397cb0900101421df5450baddc7adf01e5fc86b5615865f3bae4",
+      "config.json": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b"
+    },
+    "official_only": true
+  },
+  "vlac-2b": {
+    "path": "/cache/robot-baselines/models/VLAC",
+    "revision": "f44e552324944f80a63ab0083879f0bfafe01516",
+    "small_file_sha256": {
+      "generation_config.json": "4da208f15be2153ad9c6bce80c314d2ee4908fb0dcd22637f771df803fe6bfac",
+      "config.json": "07038e62e4b0bba5f95acafe8bcb45bd81e3cece7366450b96ab475ad80dfeec"
+    },
+    "official_only": true
+  },
+  "vlac-8b": {
+    "path": "/cache/robot-baselines/models/VLAC-8b",
+    "revision": "dd94c057b0274b88e7228e8eaa73c03a7e8fa1d5",
+    "small_file_sha256": {
+      "model.safetensors.index.json": "9110700a238c972daba84e094fa2c79c1a7ab7595df7912f30bd5f08120e226b",
+      "generation_config.json": "4da208f15be2153ad9c6bce80c314d2ee4908fb0dcd22637f771df803fe6bfac",
+      "config.json": "f1a338d4f1f2eebcca9bb60adc4a901810eb30c9076c343dfa9c82095678b637"
+    },
+    "official_only": true
+  },
+  "r2vlm-alfred-rl": {
+    "path": "/cache/robot-baselines/models/R2VLM-Alfred-RL",
+    "revision": "6c84c9bffe680e310ad7fcaaf7016134e0a0608f",
+    "small_file_sha256": {
+      "model.safetensors.index.json": "ae540c9d7d96aa6ffe6cea844a6fdd23e76dc6367bf031cd33ff6c083a335498",
+      "generation_config.json": "9225982659700c822a63303084a79a0c180834ad58327726f8148aabaf8e3a78",
+      "config.json": "3136ce6c101c27cc55b34ff6258afb2916945ec6a76aed6f6107167af9cf3a5e"
+    },
+    "official_only": true
+  }
+}
