@@ -1,0 +1,23 @@
+{
+  "active_validation_suites": ["State", "Order", "Count"],
+  "user_supplied_repositories": {
+    "Count": "MINT-SJTU/ProPriMem",
+    "State": "syding9/ProPriMem-State",
+    "Order": "Ru-hulu/ProPriMem_Order",
+    "Recover": "zikaizhao/proprimem-recover-trajectories"
+  },
+  "observed_public_revisions": {
+    "State": "f016876258c1415ed0f4bcbe63c64f1e616541e1",
+    "Recover": "4bc7a0360824edb6c80f3ae094e68d3ee400cc03"
+  },
+  "recover_included_in_this_evaluation": false,
+  "expected_validation": {
+    "State": {"episodes": 166, "observations": 27036},
+    "Order": {"episodes": 111, "observations": 23053},
+    "Count": {"episodes": 140, "observations": 16802}
+  },
+  "frozen_episode_list": "experiments/a100/20261109/snapshot/cache/cvpzhr/setup/forest-original-cap50-train-20261104/config.json:validation_sample_files",
+  "label_policy": "Restore the previous dense visual-delta PT or original cached pt values. Do not substitute source task annotations, regenerate labels, or change the split without resolving provenance.",
+  "downloads": "Source bytes stay on A100; verify official pinned Git blob SHA1 or LFS SHA256.",
+  "evaluation_gate": "Full dataset and PT preflight, then notify the user before starting evaluation. Source restoration never starts evaluation."
+}
