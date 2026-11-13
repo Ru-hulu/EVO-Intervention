@@ -6,6 +6,11 @@
 /controller.pid
 /controller.log
 /pipeline.lock
+/recovery.lock
+/recovery.json
+/recovery.pid
+/recovery.log
+/recovery-history/
 /jobs/
 /logs/
 __pycache__/

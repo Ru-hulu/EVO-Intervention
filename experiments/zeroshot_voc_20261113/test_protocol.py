@@ -6,9 +6,11 @@ from worker import images_for, parse
 
 class ProtocolTests(unittest.TestCase):
     def test_uniform_is_causal_and_right_padded(self):
+        from runtime.robometer_training.uniform import prefix_indices
         self.assertEqual(uniform_indices(2), [0,1,2,2,2,2,2,2])
         for i in range(50):
             ids=uniform_indices(i)
+            self.assertEqual(ids,prefix_indices(i))
             self.assertEqual(len(ids),8)
             self.assertEqual(ids[-1],i)
             self.assertTrue(all(0<=j<=i for j in ids))
