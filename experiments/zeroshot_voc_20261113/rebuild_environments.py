@@ -1,5 +1,6 @@
 """Restore isolated inference dependencies; never launch dataset evaluation."""
 from concurrent.futures import ThreadPoolExecutor
+import argparse
 import fcntl
 import hashlib
 import importlib.metadata
@@ -130,7 +131,20 @@ def prepare(name):
                        '--index-url', 'https://mirrors.huaweicloud.com/repository/pypi/simple',
                        '--index-strategy', 'unsafe-best-match', '-r', str(requirements)]
             if name == 'robometer':
-                command += ['--extra-index-url', 'https://download.pytorch.org/whl/cu130']
+                wheels = ROOT / 'cu130-wheels'
+                verification = wheels / 'verification.json'
+                if verification.exists():
+                    for spec in json.loads(verification.read_text()):
+                        wheel = wheels / spec['file']
+                        assert wheel.is_file() and wheel.stat().st_size == spec['bytes']
+                        digest = hashlib.sha256()
+                        with wheel.open('rb') as source:
+                            for block in iter(lambda: source.read(8 * 1024 * 1024), b''):
+                                digest.update(block)
+                        assert digest.hexdigest() == spec['sha256']
+                    command += ['--find-links', str(wheels)]
+                else:
+                    command += ['--extra-index-url', 'https://download.pytorch.org/whl/cu130']
             run(command)
             run([UV, 'pip', 'check', '--python', str(destination / 'bin/python')])
             lock = subprocess.check_output([UV, 'pip', 'freeze', '--python', str(destination / 'bin/python')],
@@ -146,14 +160,22 @@ def prepare(name):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--only', choices=ENVS)
+    args = parser.parse_args()
     ROOT.mkdir(parents=True, exist_ok=True)
     lock = (ROOT / 'installation.lock').open('a')
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     restore_sources()
-    with ThreadPoolExecutor(3) as pool:
-        results = dict(zip(ENVS, pool.map(prepare, ENVS)))
+    selected = [args.only] if args.only else list(ENVS)
+    with ThreadPoolExecutor(len(selected)) as pool:
+        results = dict(zip(selected, pool.map(prepare, selected)))
+    for name in ENVS:
+        path = ROOT / f'{name}-status.json'
+        if name not in results and path.exists():
+            results[name] = json.loads(path.read_text())
     save(ROOT / 'installation-status.json', {'environments': results,
-         'status': 'installed' if all(r['status'] == 'installed' for r in results.values()) else 'failed',
+         'status': 'installed' if len(results) == len(ENVS) and all(r['status'] == 'installed' for r in results.values()) else 'failed',
          'evaluation_started': False, 'completed_at': time.time()})
 
 

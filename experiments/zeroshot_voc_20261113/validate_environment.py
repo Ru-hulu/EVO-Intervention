@@ -116,7 +116,16 @@ def run_queue():
         for gpu in range(4):
             if not order or gpu in live or not gpu_free(gpu):
                 continue
-            name = order.pop(0)
+            def installed(model):
+                kind = MODELS[model]['kind']
+                group = kind if kind in ('robometer', 'vlac') else 'generative'
+                state = CHECKS.parent / f'{group}-status.json'
+                return state.exists() and read(state)['status'] == 'installed'
+            eligible = [model for model in order if installed(model)]
+            if not eligible:
+                continue
+            name = eligible[0]
+            order.remove(name)
             env = dict(os.environ, CUDA_VISIBLE_DEVICES=str(gpu), HF_HUB_OFFLINE='1',
                        TRANSFORMERS_OFFLINE='1', HF_HOME='/cache/cvpzhr/cache/huggingface',
                        TOKENIZERS_PARALLELISM='false', OMP_NUM_THREADS='4',
