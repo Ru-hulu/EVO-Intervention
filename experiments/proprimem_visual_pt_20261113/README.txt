@@ -63,3 +63,13 @@ normalization formula are checked for every video before publishing readiness.
 The final state is completed_awaiting_evaluation_notification. No command here
 launches evaluation. Review status/processes before any recovery; the run
 command intentionally refuses an existing queue or occupied GPUs.
+
+If an independent import adds Recover files during the run, finalization stops.
+After reviewing the exact additions and confirming every original Recover file
+is unchanged, a hash-pinned additions receipt can be supplied to `finalize` with
+`--recover-additions-audit`. It contains `before_snapshot_sha256` and an exact
+`added_files` mapping in the original snapshot format. Unlisted additions,
+modified additions, or any changed/deleted original file still fail. The final
+report distinguishes original-file integrity from the changed file inventory;
+no Recover file or original snapshot is rewritten. Finalize takes the pipeline
+lock and updates status, without rerunning GPU label extraction.

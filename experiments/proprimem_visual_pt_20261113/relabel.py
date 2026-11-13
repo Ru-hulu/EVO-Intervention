@@ -280,14 +280,33 @@ def worker(setup, worker_id):
                                            completed_frames=frames, elapsed_seconds=time.time()-started))
 
 
-def finalize(root, setup, sources):
+def verify_recover(root, setup, additions_audit=None):
+    """Protect every original file; admit only explicitly audited new files."""
+    before_path = setup / "recover-before.json"
+    before, after = read(before_path), recover_snapshot(root)
+    removed = sorted(before.keys() - after.keys())
+    changed = sorted(k for k in before.keys() & after.keys() if before[k] != after[k])
+    assert not removed and not changed, f"Original Recover files changed: removed={removed}, changed={changed}"
+    added = {k: after[k] for k in sorted(after.keys() - before.keys())}
+    if additions_audit is None:
+        assert not added, "Recover has new files; inspect and explicitly audit additions before finalizing"
+    else:
+        receipt = read(additions_audit)
+        assert receipt["before_snapshot_sha256"] == sha(before_path)
+        assert receipt["added_files"] == added, "Recover additions differ from the reviewed audit"
+    return dict(existing_files_unchanged=True, original_file_count=len(before),
+                file_set_unchanged=not added, added_file_count=len(added),
+                additions_audit_sha256=sha(additions_audit) if additions_audit else None)
+
+
+def finalize(root, setup, sources, recover_additions_audit=None):
     protocol_sha = sha(setup / "protocol.json")
     audits = [read(setup / f"initialization-{g}.json") for g in range(read(setup / "protocol.json")["worker_count"])]
     assert len({a["vision_sha256"] for a in audits}) == 1
     results = {row["source_id"]: verify_csv(row, protocol_sha) for row in sources}
     for path, expected in read(setup / "stage-annotation-hashes.json").items():
         assert object_hash(read(path)) == expected, f"Stage annotation changed: {path}"
-    assert recover_snapshot(root) == read(setup / "recover-before.json"), "Recover changed"
+    recover_check = verify_recover(root, setup, recover_additions_audit)
     protected_splits = read(setup / "original-splits.json")
     by_index = {}
     for source in sources:
@@ -326,9 +345,12 @@ def finalize(root, setup, sources):
         save(path, obj)
     report = dict(status="completed_awaiting_evaluation_notification", suites=summary,
                   trajectories=len(sources), frames=sum(r["frames"] for r in sources),
-                  all_labels_verified=True, recover_unchanged=True, stage_annotations_unchanged=True,
+                  all_labels_verified=True, recover_unchanged=recover_check["file_set_unchanged"],
+                  recover_existing_files_unchanged=True, recover_verification=recover_check,
+                  stage_annotations_unchanged=True,
                   existing_splits_preserved=True, evaluation_started=False, protocol_sha256=protocol_sha,
-                  vision_sha256=audits[0]["vision_sha256"], completed_at=time.time())
+                  vision_sha256=audits[0]["vision_sha256"], completed_at=time.time(),
+                  finalization_code_sha256=sha(Path(__file__)))
     save(setup / "verification.json", report)
     return report
 
@@ -404,6 +426,7 @@ if __name__ == "__main__":
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--setup", type=Path, default=DEFAULT_SETUP)
     parser.add_argument("--worker-id", type=int)
+    parser.add_argument("--recover-additions-audit", type=Path)
     args = parser.parse_args()
     if args.command == "run":
         try:
@@ -414,4 +437,10 @@ if __name__ == "__main__":
     elif args.command == "worker":
         worker(args.setup, args.worker_id)
     else:
-        print(json.dumps(finalize(args.root,args.setup,read(args.setup / "input-index.json"))))
+        with (args.setup / "pipeline.lock").open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            previous = read(args.setup / "status.json")
+            result = finalize(args.root, args.setup, read(args.setup / "input-index.json"),
+                              args.recover_additions_audit)
+            save(args.setup / "status.json", dict(result, started_at=previous.get("started_at")))
+            print(json.dumps(result))

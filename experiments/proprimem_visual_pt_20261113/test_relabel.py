@@ -76,3 +76,29 @@ def test_queue_claims_are_disjoint_and_longest_first(tmp_path):
 
 def test_paths_cannot_escape_authorized_suite(tmp_path):
     with pytest.raises(ValueError):r.inside(tmp_path/'State'/'..'/'Recover'/'label',tmp_path/'State')
+
+
+def test_recover_additions_require_exact_audit_and_original_files_stay_protected(tmp_path):
+    root, setup = tmp_path/'data', tmp_path/'setup'
+    original = root/'Recover'/'original.json'
+    r.save(original, {'label': [0, .2, 1]})
+    before = r.recover_snapshot(root)
+    r.save(setup/'recover-before.json', before)
+    assert r.verify_recover(root, setup)['file_set_unchanged']
+    addition = root/'Recover'/'new-task'/'metadata.json'
+    r.save(addition, {'source': 'separate import'})
+    with pytest.raises(AssertionError): r.verify_recover(root, setup)
+    after = r.recover_snapshot(root)
+    receipt = setup/'additions.json'
+    r.save(receipt, {'before_snapshot_sha256': r.sha(setup/'recover-before.json'),
+                    'added_files': {k:v for k,v in after.items() if k not in before}})
+    check = r.verify_recover(root, setup, receipt)
+    assert check['existing_files_unchanged'] and not check['file_set_unchanged']
+    assert check['added_file_count'] == 1
+    r.save(addition, {'source': 'changed after audit'})
+    with pytest.raises(AssertionError): r.verify_recover(root, setup, receipt)
+    r.save(addition, {'source': 'separate import'})
+    r.save(original, {'label': [0, .8, 1]})
+    with pytest.raises(AssertionError): r.verify_recover(root, setup, receipt)
+    original.unlink()
+    with pytest.raises(AssertionError): r.verify_recover(root, setup, receipt)
