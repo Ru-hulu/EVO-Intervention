@@ -1,0 +1,593 @@
+{
+  "schema_version": 1,
+  "experiment_id": "prm-five-groups-20261114",
+  "status": "configuration_confirmed_preparation_pending",
+  "confirmed_question_count": 29,
+  "training_started_by_this_plan": false,
+  "evaluation_started_by_this_plan": false,
+  "notify_user_before_launch": true,
+  "scope_note": "Seven methods replace the old nine-checkpoint evaluation scope. This JSON is a plan, not a runnable worker configuration.",
+  "models": [
+    {
+      "id": "robometer-4b",
+      "regime": "official_zero_shot",
+      "uses_test_trajectory_future_endpoint": false,
+      "input": {
+        "history": "linspace/rint uniform eight observed-prefix times including first/current; right-pad current for short prefixes",
+        "images": "seven sampled main views plus current three views; ten images"
+      },
+      "prior_provenance_reference": {
+        "path": "/cache/cvpzhr/models/Robometer-4B",
+        "revision": "beef63bc914c5c189329d49c6d712d96d632aa34",
+        "small_file_sha256": {
+          "model.safetensors.index.json": "5f914c84012ce50f6d5a5903ab5abd84b6e08900d0f17be6f98e913fcc8a6b1c",
+          "config.yaml": "6e4b77171e0ec6d926767906892e630890c378f796c049188f5670ab64ca3abe",
+          "config.json": "2287e93a95c1dcd5e471cf386cf5750e7643ee0b2c44a2544a1318b8b8f3c9be"
+        },
+        "official_only": true
+      },
+      "new_environment_initialization_audit_required": true
+    },
+    {
+      "id": "robobrain25-4b",
+      "regime": "official_zero_shot",
+      "uses_test_trajectory_future_endpoint": true,
+      "input": {
+        "images": "GRM Forward8: first/last main references + first three-view BEFORE + current three-view AFTER"
+      },
+      "prior_provenance_reference": {
+        "path": "/cache/cvpzhr/models/RoboBrain2.5-4B",
+        "revision": "ec4b3bf5e969b48ad17df432b479c10402a0079b",
+        "small_file_sha256": {
+          "generation_config.json": "8469742d1fce0de951c8909b26a2c0c0d8490837ce476efb114da9e0cefc4d44",
+          "config.json": "edac7703329133edfc53e46ac0081835144c99d7eebf28b71c732694d435224d"
+        },
+        "official_only": true
+      },
+      "new_environment_initialization_audit_required": true
+    },
+    {
+      "id": "dopamine-3b",
+      "regime": "official_zero_shot",
+      "uses_test_trajectory_future_endpoint": true,
+      "input": {
+        "images": "GRM Forward8: first/last main references + first three-view BEFORE + current three-view AFTER"
+      },
+      "prior_provenance_reference": {
+        "path": "/cache/robot-baselines/models/Robo-Dopamine-GRM-3B",
+        "revision": "b75e1ea8381d384f580b41d04ee80fdff5369b34",
+        "small_file_sha256": {
+          "model.safetensors.index.json": "eafcf7eb80f0e63f73ef902b792726372d9a5ac90f7c724898006882705360da",
+          "generation_config.json": "11c32bf551cf5cceeca5d418bf0d946cbe18820a45c5a6691b248431e899257f",
+          "config.json": "01013e158ab7f6b1edb02783dabcec35739085e653a4601886b83f6c8f0e03dd"
+        },
+        "official_only": true
+      },
+      "new_environment_initialization_audit_required": true
+    },
+    {
+      "id": "procvlm-2b",
+      "regime": "official_zero_shot",
+      "uses_test_trajectory_future_endpoint": false,
+      "input": {
+        "history": "most recent eight main-view frames; left-pad first frame",
+        "previous_cot_input": false,
+        "current_reasoning_generation": "retain native interface"
+      },
+      "prior_provenance_reference": {
+        "path": "/cache/robot-baselines/models/ProcVLM-2B",
+        "revision": "a7f5c18c6128a9c2a478a62ecc356f19f0e0bcf5",
+        "small_file_sha256": {
+          "model.safetensors.index.json": "0cedec4e525e8ca3fdf53063477759e81b62557b6695c7ba84b68378045cd049",
+          "generation_config.json": "1e241830b48b397cb0900101421df5450baddc7adf01e5fc86b5615865f3bae4",
+          "config.json": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b"
+        },
+        "official_only": true
+      },
+      "new_environment_initialization_audit_required": true
+    },
+    {
+      "id": "r2vlm-alfred-rl",
+      "regime": "official_zero_shot",
+      "uses_test_trajectory_future_endpoint": false,
+      "input": {
+        "images": "one current main view",
+        "history": "previous model-generated textual memory",
+        "reset_at_episode_boundary": true
+      },
+      "prior_provenance_reference": {
+        "path": "/cache/robot-baselines/models/R2VLM-Alfred-RL",
+        "revision": "6c84c9bffe680e310ad7fcaaf7016134e0a0608f",
+        "small_file_sha256": {
+          "model.safetensors.index.json": "ae540c9d7d96aa6ffe6cea844a6fdd23e76dc6367bf031cd33ff6c083a335498",
+          "generation_config.json": "9225982659700c822a63303084a79a0c180834ad58327726f8148aabaf8e3a78",
+          "config.json": "3136ce6c101c27cc55b34ff6258afb2916945ec6a76aed6f6107167af9cf3a5e"
+        },
+        "official_only": true
+      },
+      "new_environment_initialization_audit_required": true
+    },
+    {
+      "id": "vlac-2b",
+      "regime": "official_zero_shot",
+      "uses_test_trajectory_future_endpoint": false,
+      "input": {
+        "images": "previous and current main views",
+        "history": "native critic_to_value_simple(simple=True) recurrence",
+        "demonstration": false
+      },
+      "prior_provenance_reference": {
+        "path": "/cache/robot-baselines/models/VLAC",
+        "revision": "f44e552324944f80a63ab0083879f0bfafe01516",
+        "small_file_sha256": {
+          "generation_config.json": "4da208f15be2153ad9c6bce80c314d2ee4908fb0dcd22637f771df803fe6bfac",
+          "config.json": "07038e62e4b0bba5f95acafe8bcb45bd81e3cece7366450b96ab475ad80dfeec"
+        },
+        "official_only": true
+      },
+      "new_environment_initialization_audit_required": true
+    },
+    {
+      "id": "forest",
+      "regime": "suite_fine_tuned",
+      "uses_test_trajectory_future_endpoint": false,
+      "input": {
+        "images": "native FoREST current observation interface; verify against training data adapter before execution",
+        "history": "native short/long memory using frozen CLIP + max_depth config"
+      }
+    }
+  ],
+  "datasets": {
+    "root": "/cache/cvpzhr/datasets/ProPriMem",
+    "suites": {
+      "State": {
+        "manifest": "/cache/cvpzhr/datasets/ProPriMem/State/manifest.json",
+        "manifest_sha256": "1b3398f4dd49aa43c8c0f79b7e60d6ce8791f19aba031e38928128e158d6ee83",
+        "train_trajectories": 352,
+        "validation_trajectories": 89,
+        "native_30fps_validation_trajectories": 59
+      },
+      "Order": {
+        "manifest": "/cache/cvpzhr/datasets/ProPriMem/Order/manifest.json",
+        "manifest_sha256": "9a371e58f1708ce3a8e6e874571f567400326d89299e895b03f11d0267f5c25d",
+        "train_trajectories": 468,
+        "validation_trajectories": 119,
+        "native_30fps_validation_trajectories": 109
+      },
+      "Count": {
+        "manifest": "/cache/cvpzhr/datasets/ProPriMem/Count/manifest.json",
+        "manifest_sha256": "eaf05dd2d557cc8b91b6a77e2d382a8e772b70d9ec37762932498717d8566b75",
+        "train_trajectories": 699,
+        "validation_trajectories": 177,
+        "native_30fps_validation_trajectories": 67
+      },
+      "Recover": {
+        "manifest": "/cache/cvpzhr/datasets/ProPriMem/Recover/manifest.json",
+        "manifest_sha256": "8ac3dd2cc87a7479596924435ee1ed88706ecec3af280f54c81b0a902916cd86",
+        "train_trajectories": 130,
+        "validation_trajectories": 34
+      }
+    },
+    "splits": "preserve frozen explicit train/val lists; no resplitting",
+    "clean_validation_trajectories": 385,
+    "recover_task_ids": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05"
+    ],
+    "recover_tasks": [
+      "flip-two-cups-left-to-right-with-recovery",
+      "zipper-pencil-case-inspection",
+      "inspect-spray-bottles",
+      "drawer-inspection-close",
+      "pour-water-into-three-cups-with-one-repeated-pour"
+    ],
+    "recover_new_three_tasks_included": false,
+    "soc_progress": {
+      "status": "verified_completed",
+      "trajectories": 1904,
+      "native_frames": 1651148,
+      "removed_time_label_count": 523,
+      "path_pattern": "{suite}/{task_path}/progress/episode_*.progress.csv",
+      "source_of_exact_path": "metadata.jsonl progress_path and progress_sha256",
+      "verification": "/cache/cvpzhr/setup/proprimem-visual-pt-20261113/verification.json",
+      "protocol_sha256": "a4d5e071e1f664284fb8229922aef99b5c049f51057002d64a7e9f232b3b9b7a",
+      "vision_sha256": "1cc7c705e96c07fb52bcb1fb32f5e05271cc249fbc619c1128fd4eddbea47aea",
+      "algorithm": "mean post-merger Qwen3.5-4B visual tokens; adjacent FP32 L2; first delta zero; FP64 cumulative/whole-video total; all native main-view frames",
+      "semantics": "normalized cumulative visual-change proxy; not a separately annotated semantic-completion label",
+      "epsilon_smoothing_or_time_fallback": false,
+      "resampled_ground_truth": "index the existing original-frame PT using the frozen frame map; never recompute per target FPS"
+    },
+    "recover_progress": "preserve original files/labels; separately audit availability and semantics for training and each requested metric",
+    "old_417_trajectory_evaluation_reusable": false
+  },
+  "forest_training": {
+    "independent_suites": [
+      "State",
+      "Order",
+      "Count",
+      "Recover"
+    ],
+    "base_path": "/cache/cvpzhr/models/Qwen3.5-4B",
+    "base_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "independent_initialization": true,
+    "reuse_previous_suite_or_cos_checkpoint": false,
+    "epochs": 1,
+    "checkpoint_selection": "final epoch, fixed before validation",
+    "gpus_per_job": 2,
+    "fps": 5,
+    "effective_batch_size": 18,
+    "learning_rate": 0.0001,
+    "warmup_ratio": 0.03,
+    "scheduler": "cosine",
+    "seed": 42,
+    "artificial_augmentation": false,
+    "architecture_and_loss": "preserve native FoREST structure and loss",
+    "memory_config_source": "mem_lite/configs/streamforest_clip_depth.json",
+    "memory_config_sha256": "ad1637452275edd392c042f36eeca2f912943cbf36c15877675657caf50b9007",
+    "memory_config": {
+      "num_attention_heads": 1,
+      "st_memory_windows": [
+        1,
+        6
+      ],
+      "st_memory_tokens": [
+        64,
+        16
+      ],
+      "event_split_window": 4,
+      "long_memory_tokens_per_frame": 16,
+      "long_memory_tokens_quota": 800,
+      "sim_weight_g": 0.4,
+      "time_weight_a": 0.2,
+      "merge_weight_b": 0.4,
+      "event_split_method": "max_depth",
+      "clip_model_path": "/cache/cvpzhr/models/clip-vit-large-patch14-336"
+    },
+    "depth_rule": {
+      "similarity": "adjacent CLIP frame features",
+      "peaks": "global maxima on both sides",
+      "selection": "largest depth among native admissible candidates",
+      "depth_threshold": null
+    },
+    "evaluation_weight_selection": "use matching suite model; same checkpoint in all corresponding baseline, ablation, disturbance, prompt, and FPS conditions",
+    "validation_used_for_checkpoint_selection": false
+  },
+  "metrics": {
+    "voc": {
+      "names": [
+        "pearson",
+        "spearman"
+      ],
+      "correlate": "predicted progress versus ground-truth PT within each trajectory",
+      "spearman_ties": "average ranks",
+      "suite_aggregation": "equal weight per trajectory",
+      "save_each_trajectory": true,
+      "constant_or_invalid": "mark undefined/invalid with reasons; report denominators and coverage; never replace with zero or present valid-only results as full coverage"
+    },
+    "vs": {
+      "definition": "RoboValue official VS = ER * C",
+      "er": "absolute net endpoint change divided by total variation; official endpoint averaging over first/last three samples",
+      "c": "fraction of scored duration with non-flat adjacent raw predictions, following official implementation",
+      "constant_curve_score": 0,
+      "save_components": [
+        "ER",
+        "C"
+      ],
+      "aggregation": "equal weight per trajectory",
+      "source": "https://github.com/RoboValue-Benchmark/RoboValue/blob/main/src/vmbmk/metrics/cycle_voc_vs/vs_scoring.py",
+      "official_source_revision": "pin and regression-check before execution",
+      "sampling_note": "official reference uses 5 Hz; other score grids use the same formula at their declared scoring rate and must be labeled accordingly"
+    },
+    "successful_endpoint_score": {
+      "name": "成功轨迹终点得分",
+      "eligible": "explicitly labeled successful trajectories",
+      "calculation": "mean prediction over final 2% of trajectory duration",
+      "not_success_classification_accuracy": true,
+      "save_each_trajectory": true
+    },
+    "fpl": {
+      "definition": "RoboValue official largest full descending segment onset versus annotated failure onset; absolute error / trajectory duration",
+      "reversal_threshold_coefficient": 0.2,
+      "ties_and_no_descent": "retain official rules, including no-descent penalty; never drop these trajectories",
+      "eligibility": "require explicit applicable failure onset; audit official eligibility/exclusion semantics against Recover annotations before execution",
+      "source": "https://github.com/RoboValue-Benchmark/RoboValue/blob/main/src/vmbmk/metrics/fpl.py",
+      "official_source_revision": "pin and regression-check before execution",
+      "save_each_trajectory_and_task": true
+    },
+    "abnormal_plateau_mae": {
+      "eligible": "ground-truth flat intervals caused by repeated/wrong actions; exclude normal waiting",
+      "absolute": "mean(abs(pred[t] - truth[t])) over interval",
+      "drift": "mean(abs((pred[t] - pred[start]) - (truth[t] - truth[start]))) over interval",
+      "save_each_segment_and_trajectory": true,
+      "output_scale": "audit documented native-to-PT conversion and report units; no per-trajectory min-max rescaling"
+    },
+    "prediction_processing": {
+      "smoothing": false,
+      "invalid_to_zero": false,
+      "forward_fill_invalid": false,
+      "per_curve_minmax": false,
+      "retain_raw_response": true
+    }
+  },
+  "groups": [
+    {
+      "id": 1,
+      "question": "How Do Recurring Visual Observations Affect PRMs?",
+      "models": [
+        "robometer-4b",
+        "robobrain25-4b",
+        "dopamine-3b",
+        "procvlm-2b",
+        "r2vlm-alfred-rl",
+        "vlac-2b",
+        "forest"
+      ],
+      "suites": [
+        "State",
+        "Order",
+        "Count"
+      ],
+      "validation_trajectories": 385,
+      "input_fps": 5,
+      "metrics": [
+        "pearson",
+        "spearman",
+        "vs",
+        "ER",
+        "C"
+      ]
+    },
+    {
+      "id": 2,
+      "question": "Do PRMs really use Memory, or exploit the shortcut?",
+      "models": [
+        "procvlm-2b",
+        "r2vlm-alfred-rl",
+        "forest",
+        "robometer-4b"
+      ],
+      "suites": [
+        "State",
+        "Order",
+        "Count"
+      ],
+      "validation_trajectories": 385,
+      "input_fps": 5,
+      "memory_removal": {
+        "metrics": [
+          "pearson",
+          "spearman",
+          "vs",
+          "ER",
+          "C"
+        ],
+        "procvlm-2b": "one current main-view image only; native current reasoning may still be generated",
+        "r2vlm-alfred-rl": "do not input previous textual memory; current response may still be generated",
+        "forest": "no memory reads or writes; current observation only",
+        "robometer-4b": "current three views only, three images total",
+        "weights": "same as corresponding memory-enabled baseline",
+        "baseline": "reuse matching group 1 predictions"
+      },
+      "disturbances": {
+        "variants": [
+          "static_only",
+          "rewind_only"
+        ],
+        "insertions_per_trajectory_per_variant": 2,
+        "seeds": [
+          42,
+          43,
+          44
+        ],
+        "shared_across_models": true,
+        "duration_seconds": [
+          1,
+          3
+        ],
+        "duration_sampling": "uniform integer frame count from 5 through 15 at 5 FPS",
+        "rewind": "reverse for sampled duration, then forward for equal duration, then continue; added duration twice the sampled duration",
+        "static": "hold current frame and its true PT",
+        "all_views": "apply same source-frame map synchronously",
+        "ground_truth": "lookup original PT for every replayed source frame, including reverse and forward portions",
+        "memory": "advance continuously in presented playback order; do not restore source-time memories",
+        "positions": "freeze deterministic valid interior insertion positions per trajectory/seed; preserve source-frame mapping; constrain rewind to available observed prefix",
+        "metrics": [
+          "pearson",
+          "spearman"
+        ],
+        "aggregation": "retain trajectory/seed scores; report mean and variation over the three seed-level suite means"
+      }
+    },
+    {
+      "id": 3,
+      "question": "Can PRMs Recognize Failure and Recovery in POMDP?",
+      "models": [
+        "robometer-4b",
+        "robobrain25-4b",
+        "dopamine-3b",
+        "procvlm-2b",
+        "r2vlm-alfred-rl",
+        "vlac-2b",
+        "forest"
+      ],
+      "suite": "Recover",
+      "task_ids": [
+        "R01",
+        "R02",
+        "R03",
+        "R04",
+        "R05"
+      ],
+      "validation_trajectories": 34,
+      "input_fps": 5,
+      "forest_weights": "independent FoREST-Recover fine-tuned model",
+      "metrics": [
+        "pearson",
+        "spearman",
+        "successful_endpoint_score",
+        "fpl",
+        "abnormal_plateau_absolute_mae",
+        "abnormal_plateau_drift_mae"
+      ],
+      "annotation_audit_required": true
+    },
+    {
+      "id": 4,
+      "question": "Can PRMs Track Progress Under Different Ordering Constraints?",
+      "models": [
+        "robometer-4b",
+        "robobrain25-4b",
+        "dopamine-3b",
+        "procvlm-2b",
+        "r2vlm-alfred-rl",
+        "vlac-2b",
+        "forest"
+      ],
+      "tasks": {
+        "O12": 7,
+        "S13": 7
+      },
+      "input_fps": 5,
+      "conditions": [
+        "own_prompt",
+        "swapped_prompt"
+      ],
+      "ground_truth": "must match current prompt applied to the same video; independently preserve and verify instruction-conditioned labels",
+      "weights": "fixed for each video across prompt conditions; FoREST uses source-suite model",
+      "metrics": [
+        "pearson",
+        "spearman",
+        "vs",
+        "ER",
+        "C"
+      ],
+      "csvc_deferred": true
+    },
+    {
+      "id": 5,
+      "question": "Does Memory Burden Matter?",
+      "models": [
+        "robometer-4b",
+        "robobrain25-4b",
+        "dopamine-3b",
+        "procvlm-2b",
+        "r2vlm-alfred-rl",
+        "vlac-2b",
+        "forest"
+      ],
+      "source_fps": 30,
+      "validation_trajectories": 235,
+      "by_suite": {
+        "State": 59,
+        "Order": 109,
+        "Count": 67
+      },
+      "input_fps": [
+        30,
+        20,
+        10,
+        5,
+        2
+      ],
+      "only_original_30fps_videos": true,
+      "upsample_low_fps": false,
+      "weights_fixed": true,
+      "retrain_per_fps": false,
+      "memory_policy": "keep each native memory strategy and capacity fixed; change only input FPS",
+      "fixed_memory": {
+        "procvlm-2b": "most recent 8 frames",
+        "robometer-4b": "uniform 8 observed-prefix times",
+        "forest": "same frame windows, memory token quotas and CLIP/max_depth event configuration",
+        "r2vlm-alfred-rl": "same textual memory update and length rules"
+      },
+      "sampling": "freeze a source-frame map for each target FPS; integer-second positions coincide across all five streams",
+      "scoring": {
+        "primary_cross_fps": "common 1 FPS integer-second timestamps shared by all five inference streams",
+        "full_stream": "also retain every prediction, full-rate curves and full-rate metrics",
+        "interpolate_predictions": false,
+        "extra_model_calls_for_scoring": false,
+        "metrics": [
+          "pearson",
+          "spearman",
+          "vs",
+          "ER",
+          "C"
+        ],
+        "report_scoring_rate_separately": true
+      }
+    }
+  ],
+  "outputs": {
+    "per_frame": [
+      "suite",
+      "task_id",
+      "trajectory_id",
+      "condition",
+      "seed",
+      "input_fps",
+      "playback_timestamp",
+      "source_frame_index",
+      "target_pt",
+      "predicted_value",
+      "raw_response",
+      "parse_status"
+    ],
+    "per_trajectory": [
+      "metrics",
+      "VS_components",
+      "coverage",
+      "undefined_reasons",
+      "failure_or_plateau_eligibility"
+    ],
+    "per_segment": [
+      "interval_start",
+      "interval_end",
+      "semantic_reason",
+      "absolute_mae",
+      "drift_mae"
+    ],
+    "provenance": [
+      "checkpoint_hash",
+      "model_revision",
+      "code_commit",
+      "input_manifest_hash",
+      "label_hash",
+      "metric_source_commit",
+      "sampling_or_disturbance_map_hash",
+      "future_endpoint_reference_flag"
+    ],
+    "save_each_trajectory": true,
+    "git_policy": "code/configuration only; no dataset, labels, predictions or model weights"
+  },
+  "execution": {
+    "gpu_count": 4,
+    "training_gpu_groups": [
+      [
+        0,
+        1
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "maximum_concurrent_two_gpu_training_jobs": 2,
+    "inference": "dynamic scheduling across idle GPUs, subject to verified per-model memory requirements",
+    "do_not_interrupt_existing_jobs": true,
+    "duplicate_launch_prevention_required": true,
+    "preparation_before_launch": [
+      "Verify all seven method environments and official/base weight revisions in the new instance; verify CLIP cache and model revision.",
+      "Prepare the four suite-specific FoREST training inputs with frozen splits and labels; preserve native loss and memory behavior.",
+      "Pin official metric source revisions and verify metric edge cases, coverage reporting and model output scales.",
+      "Audit original-five-task Recover progress, success outcomes, failure-onset and abnormal-plateau annotations without modifying originals.",
+      "Verify O12/S13 instruction-conditioned ground truth; do not silently reuse a nonmatching label.",
+      "Generate and hash shared disturbance maps and the matched 235-trajectory FPS manifests.",
+      "Use a new run identity and perform smoke checks; never interpret this plan as the old 417-trajectory worker protocol.",
+      "Notify the user before starting execution; evaluation has not started."
+    ],
+    "unresolved_data_or_protocol_contradictions": "report concrete blockers; do not fabricate labels or silently change confirmed decisions"
+  }
+}
