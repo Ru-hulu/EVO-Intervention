@@ -5,7 +5,6 @@ training, replace original predictions, or create a desktop automation.
 """
 import argparse
 from collections import Counter
-import csv
 import fcntl
 import json
 import math
@@ -17,8 +16,8 @@ import sys
 import time
 import traceback
 
-from .prepare_cache import BASE, DATA, RECOVER_PROMPTS, progress_values, save, sha
-from .eval_common import EVAL, PLAN, OUT, ensure_images, sampling_indices, trajectory_metrics, result_path
+from .prepare_cache import progress_values, save, sha
+from .eval_common import EVAL, PLAN, OUT, ensure_images, trajectory_metrics, result_path
 from .group1_report import summarize, verify_record, METRICS
 from .overlap_guard import resources, pause_reasons, alive
 
@@ -26,7 +25,7 @@ HERE = Path('/cache/cvpzhr/setup/r2vlm-ten-per-suite-20261114')
 RESULTS = Path('/cache/cvpzhr/evaluations/r2vlm-ten-per-suite-20261114')
 CODE = Path(__file__).resolve().parents[2]
 MODEL = 'r2vlm-alfred-rl'
-SUITES = ('State', 'Order', 'Count', 'Recover')
+SUITES = ('State', 'Order', 'Count')
 EXCLUDED = 'Order/O03/swap-blocks_episode_001342'
 PYTHON = '/cache/cvpzhr/envs/forest-labels/bin/python'
 MODEL_PYTHON = '/cache/robot-baselines/envs/procvlm/bin/python'
@@ -51,125 +50,24 @@ def draw(population):
 
 def selection():
     baseline = read(EVAL/'group1-manifest.json')
-    recover_path = DATA/'Recover/manifest.json'
-    recover = read(recover_path)
-    assert sha(recover_path) == read(PLAN)['datasets']['suites']['Recover']['manifest_sha256']
-    populations = {s: sorted(r['key'] for r in baseline['episodes']
-                            if r['suite'] == s and r['key'] != EXCLUDED) for s in SUITES[:3]}
-    populations['Recover'] = sorted(f"Recover/{t['task_id']}/{k}" for t in recover['tasks'] for k in t['val'])
-    assert {s: len(p) for s,p in populations.items()} == dict(State=89, Order=118, Count=177, Recover=34)
+    populations = {suite: sorted(r['key'] for r in baseline['episodes']
+                            if r['suite'] == suite and r['key'] != EXCLUDED) for suite in SUITES}
+    assert {suite: len(p) for suite,p in populations.items()} == dict(State=89, Order=118, Count=177)
     value = dict(schema='r2-ten-per-suite-selection-v1', user_authorized=True,
         policy='uniform sampling without replacement from sorted keys; independent Random(42) per suite; before checking predictions',
         seed=42, count_per_suite=10, input_fps=5, excluded_order_key=EXCLUDED,
         populations=populations, selected={s: draw(p) for s,p in populations.items()},
-        original_manifest_sha256=sha(EVAL/'group1-manifest.json'), recover_manifest_sha256=sha(recover_path),
+        original_manifest_sha256=sha(EVAL/'group1-manifest.json'), recover_excluded_by_user=True,
         plan_sha256=sha(PLAN), full_dataset_cancellation_remains=True,
         original_predictions_preserved=True, permitted_gpus=[2,3])
     freeze(HERE/'selection.json', value)
     return value
 
 
-def missing_pour_records():
-    from .recover_pour_labels import read_records, OUTPUT, verify_episode
-    chosen = {k.split('/')[-1] for k in read(HERE/'selection.json')['selected']['Recover']}
-    rows = [r for r in read_records() if r['sample_id'] in chosen]
-    missing = []
-    for row in rows:
-        if (OUTPUT/f"{row['episode']}.progress.json").exists():
-            verify_episode(row)
-        else:
-            missing.append(row)
-    return missing
-
-
-def labels():
-    import numpy as np
-    import torch
-    from mem_lite.datasets.prepare_progress import extract_deltas
-    from . import recover_pour_labels as native
-    lock = (native.HERE/'worker.lock').open('a')
-    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    rows = missing_pour_records()
-    torch.set_num_threads(2)
-    torch.cuda.set_per_process_memory_fraction(.15)
-    model, processor, digest = native.load_encoder('cuda')
-    audit = dict(revision=native.REVISION, model=str(native.MODEL), vision_sha256=digest,
-        strict_load=True, model_class=type(model).__name__, dtype=str(next(model.parameters()).dtype),
-        batch_size=16, min_pixels=4096, max_pixels=262144, all_native_frames=True,
-        cuda_memory_fraction=.15, plan_sha256=sha(PLAN), code_sha256=sha(__file__),
-        native_algorithm_sha256=sha(native.__file__), selection_sha256=sha(HERE/'selection.json'))
-    save(HERE/'label-initialization.json', audit)
-    native.OUTPUT.mkdir(parents=True, exist_ok=True)
-    for row in rows:
-        if (HERE/'pause-labels').exists():
-            return 75
-        save(HERE/'label-status.json', dict(status='running', pid=os.getpid(), episode=row['episode'], updated=time.time()))
-        assert sha(row['video']) == row['video_sha256'] and sha(row['annotation']) == row['annotation_sha256']
-        rawpath = native.OUTPUT/f"{row['episode']}.deltas.npz"
-        assert not rawpath.exists(), 'Inspect existing raw delta provenance before recovery'
-        raw, info = extract_deltas(row['video'], model, processor, 16, 262144)
-        assert info['frame_count'] == row['frames'] and info['fps'] == 30
-        effective, pt, events = native.progress_from_deltas(raw, read(row['annotation']))
-        tmp = rawpath.with_suffix('.npz.tmp')
-        with tmp.open('wb') as f:
-            np.savez(f, delta=raw, timestamps=info['timestamps_seconds'])
-        tmp.replace(rawpath)
-        save(rawpath.with_suffix('.json'), dict(sha256=sha(rawpath), source=row, audit=audit))
-        meta = native.OUTPUT/f"{row['episode']}.progress.json"
-        csvpath = meta.with_suffix('.csv')
-        tmp = csvpath.with_suffix('.csv.tmp')
-        with tmp.open('w', newline='') as f:
-            w = csv.writer(f); w.writerow(['frame_index','delta','effective_delta','pt'])
-            w.writerows(zip(range(row['frames']), raw, effective, pt, strict=True))
-        tmp.replace(csvpath)
-        save(meta, dict(audit, model_revision=native.REVISION, video_sha256=row['video_sha256'],
-            annotation_sha256=row['annotation_sha256'], csv_sha256=sha(csvpath), events=events,
-            raw_delta_sha256=sha(rawpath), total_frames=row['frames'], original_recover_files_modified=False,
-            rule='first effective pour per cup and associated actual put-down; repeats/idle flat; final normalization'))
-        native.verify_episode(row)
-    selected_ids = {k.split('/')[-1] for k in read(HERE/'selection.json')['selected']['Recover']}
-    verified = [native.verify_episode(r) for r in native.read_records() if r['sample_id'] in selected_ids]
-    # Verify the complete inventory of original Recover files without changing it.
-    inventory = read(native.HERE/'source-files-before.json')
-    assert all(sha(DATA/'Recover'/p) == h for p,h in inventory.items())
-    save(HERE/'selected-pour-verification.json', dict(status='passed', episodes=verified,
-        original_recover_files_unchanged=True, all_35_pour_episodes_completed=False))
-    save(HERE/'label-status.json', dict(status='completed', pid=os.getpid(), updated=time.time()))
-    return 0
-
-
 def prepare_inputs():
-    import av
     chosen = read(HERE/'selection.json')
     baseline = read(EVAL/'group1-manifest.json')
     rows = [dict(r) for r in baseline['episodes'] if r['key'] in sum([chosen['selected'][s] for s in SUITES[:3]], [])]
-    root = DATA/'Recover'; manifest = read(root/'manifest.json')
-    for task in manifest['tasks']:
-        meta = root/task['trajectory_index']; assert sha(meta) == task['trajectory_index_sha256']
-        records = {r['sample_id']:r for r in map(json.loads, meta.read_text().splitlines())}
-        for sample in task['val']:
-            key = f"Recover/{task['task_id']}/{sample}"
-            if key not in chosen['selected']['Recover']:
-                continue
-            r = records[sample]; stem = f"episode_{r['episode_index']:06d}"
-            progress = meta.parent/(r.get('progress_path') or f'annotation/{stem}.progress.json')
-            if task['task_id'] == 'R05' and not progress.exists():
-                progress = BASE/'labels/Recover/R05'/f'{stem}.progress.csv'
-            assert progress.exists(), f'Missing selected PT: {key}'
-            views = r['video_views']; order = ['main_view','wrist_view',None] if 'wrist_view' in views else ['main_view','left_view','right_view']
-            videos = [str(meta.parent/views[v]['video_path']) if v in views else None for v in order]
-            hashes = [views[v]['video_sha256'] if v in views else None for v in order]
-            assert sha(videos[0]) == hashes[0]
-            with av.open(videos[0]) as video:
-                rate = video.streams.video[0].average_rate
-            indices = sampling_indices(r['total_frames'], rate)
-            row = dict(key=key, suite='Recover', task_id=task['task_id'], sample_id=sample, split='val',
-                frames=r['total_frames'], fps=r['fps'], source_rate=str(rate), input_fps=5, videos=videos,
-                video_hashes=hashes, progress_path=str(progress), progress_sha256=sha(progress),
-                task_prompt=RECOVER_PROMPTS[task['task_id']], frame_indices=indices,
-                timestamps=[i/float(rate) for i in indices], input_issues=[], metadata_sha256=sha(meta))
-            truth = progress_values(row); row['target_pt'] = [truth[i] for i in indices]
-            rows.append(row)
     rows.sort(key=lambda r:(SUITES.index(r['suite']),r['key']))
     assert Counter(r['suite'] for r in rows) == {s:10 for s in SUITES}
     for row in rows:
@@ -177,7 +75,7 @@ def prepare_inputs():
         assert row['target_pt'] == [truth[i] for i in row['frame_indices']]
         assert sha(row['videos'][0]) == row['video_hashes'][0]
     value = dict(schema='r2-ten-per-suite-inputs-v1', selection_sha256=sha(HERE/'selection.json'),
-                 plan_sha256=sha(PLAN), rows=rows, expected_episodes=40,
+                 plan_sha256=sha(PLAN), rows=rows, expected_episodes=30,
                  expected_samples=sum(len(r['target_pt']) for r in rows))
     freeze(HERE/'inputs.json', value)
     return value
@@ -232,7 +130,7 @@ def worker(shard):
             if pause():
                 update(status='paused_by_resource_guard'); return 75
             previous = result_path(MODEL,row['key'])
-            reused = previous.exists() and row['suite'] != 'Recover'
+            reused = previous.exists()
             provenance = dict(initialization_audit=str(audit_path), initialization_sha256=sha(audit_path))
             if reused:
                 r = read(previous)
@@ -315,7 +213,7 @@ def report():
         '|---|---:|---|---:|---:|---:|']
     for s,x in suites.items():lines.append(f'| {s} | {x["completed_episodes"]}/10 | {cell(x)} | {x["defined_episode_counts"]["pearson"]} | {x["undefined_episode_counts"]["pearson"]} | {x["invalid_frames"]} |')
     lines += ['', 'RoboBrain2.5 and Robo-Dopamine use the true future endpoint reference. Other methods do not.',
-              'The separate Recover result is not mixed into the original SOC overall metric.']
+              'Recover is excluded by user request. Only State, Order and Count are evaluated.']
     (RESULTS/'comparison.md').write_text('\n'.join(lines)+'\n')
     return result
 
@@ -327,7 +225,7 @@ def control():
     for p in HERE.glob('*launch-*.json'):
         assert not alive(read(p)['pid']), 'Prior subset child still alive; inspect before restarting'
     selection();(HERE/'controller.pid').write_text(str(os.getpid()))
-    initial_oom=resources()['oom_kill'];stage='labels' if missing_pour_records() else 'prepare'
+    initial_oom=resources()['oom_kill'];stage='prepare'
     active={};done=set();safe_since={};last_launch=0
     def launch(name,gpu,args,python):
         environment=dict(os.environ,CUDA_VISIBLE_DEVICES=str(gpu),OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',OPENBLAS_NUM_THREADS='2',
@@ -353,13 +251,12 @@ def control():
                 return 1
         if sample['oom_kill']>initial_oom:
             save(HERE/'status.json',dict(status='blocked_new_oom',pid=os.getpid(),updated=now));return 1
-        if stage=='labels' and ('labels' in done or not missing_pour_records()):stage='prepare'
         if stage=='prepare':prepare_inputs();stage='inference'
         if stage=='inference' and all(f'worker-{i}' in done for i in range(2)):
             result=report();assert result['status']=='completed'
             save(HERE/'status.json',dict(status='completed',pid=os.getpid(),updated=now,report=str(RESULTS/'report.json')));return 0
         processes=gpu_processes()
-        jobs=[('labels',3,['labels'],PYTHON)] if stage=='labels' else [
+        jobs=[
             (f'worker-{i}',2+i,['worker','--shard',str(i)],MODEL_PYTHON) for i in range(2)]
         for name,gpu,args,python in jobs:
             if name in done or name in active:continue
@@ -374,11 +271,10 @@ def control():
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('command',choices=['select','labels','prepare','worker','report','control'])
+    parser=argparse.ArgumentParser();parser.add_argument('command',choices=['select','prepare','worker','report','control'])
     parser.add_argument('--shard',type=int,choices=[0,1]);a=parser.parse_args()
     HERE.mkdir(parents=True,exist_ok=True)
     if a.command=='select':print(json.dumps(selection(),ensure_ascii=False))
-    elif a.command=='labels':sys.exit(labels())
     elif a.command=='prepare':print(json.dumps(prepare_inputs(),ensure_ascii=False))
     elif a.command=='worker':sys.exit(worker(a.shard))
     elif a.command=='report':print(json.dumps(report(),ensure_ascii=False))
