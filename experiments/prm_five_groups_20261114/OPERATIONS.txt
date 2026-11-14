@@ -1,233 +1,116 @@
-Run root: /cache/cvpzhr/setup/prm-five-groups-20261114
-Code snapshot: run root/code
-Python: /cache/cvpzhr/envs/forest-labels/bin/python
-SSH: a100-modelarts, port 30599, current a100-modelarts.pem key.
+PRM five-group operations — current implementation, 2026-11-14
 
-Authorization and monitoring
-The user authorized four independent FoREST suite trainings followed by all five
-confirmed experiment groups. No new launch approval is required. The user's
-latest resource instruction makes stability take precedence over saturation.
-The existing forest heartbeat is active every 10 minutes. Inspect controller.pid
-and live children before recovery; never duplicate a controller or GPU job.
+Run root S: /cache/cvpzhr/setup/prm-five-groups-20261114
+Evaluation E: S/evaluation; code: S/code
+Output: /cache/cvpzhr/evaluations/prm-five-groups-20261114
+CPU/training Python: /cache/cvpzhr/envs/forest-labels/bin/python
+SSH: a100-modelarts, port 30599, /Users/hongru/.ssh/a100-modelarts.pem;
+BatchMode=yes, IdentitiesOnly=yes, StrictHostKeyChecking=yes, ForwardAgent=no.
 
-Current execution policy
-Group 1 has priority. State continues on GPU0/1; Count is user-paused with a
-verified resumable checkpoint, and GPU2/3 are reserved for official evaluation.
-Do not automatically recover Count as a failed job. Resume it with the original
-two-rank configuration only after executable official group-1 work is finished
-and coverage is audited. Other groups may prepare on CPU without delaying group 1.
-When caching is permitted, use two cache workers per GPU. Training uses fixed GPU pairs 0/1 and 2/3,
-microbatch 1, accumulation 9, effective batch 18, gradient checkpointing, and a
-0.70 CUDA allocator fraction. Cache workers on a training pair finish their
-current episode and exit cooperatively. Do not overlap full-model training with
-cache workers on the same GPU. Account for the container's roughly 461 GiB
-memory limit, including reclaimable file cache, rather than only host RAM.
+Authorization and priority
+The user authorized all four independent one-epoch FoREST trainings and all five
+experiment groups. The Codex forest heartbeat was deleted at the user's request.
+Remote controllers continue independently. No monitoring promise depends on a
+future chat wakeup. Inspect actual PIDs, identities, logs and outputs before recovery.
 
-The conservative two-rank disposable smoke passed on 2026-11-14. Both ranks'
-fresh initialization and optimizer/scheduler/RNG checkpoint were verified.
-Peak reserved GPU memory was approximately 10.92 GiB. Trial weights must never
-be used for any suite's training. The earlier overlapping-cache microbatch-3
-smoke failed from GPU OOM and was archived under recovery-history; it is not an
-unresolved new incident.
+Group 1 official comparisons have priority. State training continues on GPU0/1.
+Count is deliberately paused; GPU2/3 remain reserved until the six official models'
+executable group-1 predictions are complete, with every missing episode explained
+by the saved input blockers and the CPU report audited. Only then may the dispatcher
+release the reservation and authorize Count's original two-rank resume. Count
+step1200 backup: S/count-priority-stop/1794625292452731696/count-resume.pt
+SHA256: d6c6b2a6f01bef1f76bbf91f344e258f965969a87de4018f09b3637402e3a1e3.
+The controller verifies optimizer/scheduler/two-rank RNG, original configuration
+and cache signatures before resuming. Never fresh-restart over existing output.
 
-Read status.json, cache-queue.sqlite, per-worker status/logs, smoke verification,
-suite train.jsonl and checkpoint-verification.json. Preserve completed outputs.
-Failed cache outputs require inspection before requeue; do not delete them.
-Resume interrupted training only from a complete checkpoint with the same
-configuration, optimizer, scheduler, RNG and two-rank world size. Continue
-healthy independent work. Do not retry failing initialization indefinitely.
+Queue and implementation
+The singleton eval_dispatch now contains 32 baseline jobs plus 440 follow-up jobs:
+group2 168, group3 28, group4 64, group5 180. Existing four Robometer baseline jobs
+remain externally adopted. The seven-backend experiment_worker handles all new
+conditions, including Robometer's actual three-image no-memory input and native
+FoREST memory reconstruction without repeating prior language predictions.
+Only matching verified final FoREST epoch-01 checkpoints are eligible.
 
-Remaining implementation work (do not describe this as already ready)
-1. Recover R05 has 35 missing PT trajectories. User authorized supplementing
-   them separately under run root/labels, using the existing Qwen3-VL visual
-   delta rule: first effective pour plus its associated put-down contributes;
-   repeats and waiting hold progress. Existing Recover data stays unchanged.
-   Qwen3-VL-4B-Instruct vision-only weights are downloaded and hash-verified.
-   recover_pour_labels.py now implements this supplement. Its preflight verifies
-   all 35 annotations / 31633 native frames and snapshots every existing Recover
-   file hash; seven protocol tests and an official-weight CPU encoder smoke pass.
-   The waiting controller PID/status/log live under run root/recover-pour-labels/.
-   It waits for a cache-phase GPU, drains that GPU's cache workers cooperatively,
-   verifies zero compute processes, then runs a single label worker (batch 16,
-   CUDA allocator fraction 0.15). It never shares a training GPU. A new training
-   transition or resource pressure makes it yield at an episode boundary; all
-   finished deltas/labels are preserved. Do not start a duplicate controller.
-   It verifies all 35 CSVs, first-visit masks, source hashes, native frame coverage,
-   unchanged Recover files and splits before append-recover inserts the 35 rows.
-   Expected result is Recover 130 train / 34 val total. CPU smoke creates no PT;
-   until worker-status/verification.json confirm completion, PT is still pending.
-   Vision receipt is in the Qwen3-VL model directory, not directly under run root.
-2. eval_dispatch now schedules the five other official baselines in 20 shards
-   plus 12 suite-specific FoREST baseline shards (State/Order/Count),
-   adopting the existing Robometer statuses without restarting its workers.
-   Its PID/status/log are evaluation/dispatcher.* and dispatcher-status.json.
-   A GPU becomes eligible only when its Robometer shard has finished and exited,
-   its training group is healthy (or all four trainings are verified complete),
-   and no unknown CUDA process occupies it. Resource thresholds, 60-second
-   stability and launch staggering follow the existing guard. At most one extra
-   official worker per GPU runs, with batch 1 and allocation fraction 0.30.
-   Per-model shard 0 must finish a real episode before other shards can start.
-   Initial file audits and prior native GPU smokes passed for all five models;
-   the new allocation's actual GPU verification is still deferred to that gate.
-   The ten interface/metric/guard tests pass in the remote training environment.
-   Official_baseline reuses native prompts, decoding, parsing and VLAC recurrence,
-   preserving raw/null and per-frame prefixes. Only main-view methods may process
-   the known short-wrist episode; GRM retains the same explicit input blocker.
-   Unknown failures are recorded and require inspection, not automatic retry.
-   FoREST jobs are gated on training_completed and the matching final proof;
-   each suite's first shard must finish a real episode before its other shards.
-   Eligible final-suite jobs take the next free slot without preempting a running
-   official model. Invalid checkpoint proof blocks that condition rather than
-   interrupting healthy workers. The FoREST baseline adapter and scheduling are
-   implemented, but final-checkpoint GPU validation still awaits training.
-   Groups 2-5 runners are NOT implemented yet. The dispatcher cannot declare
-   five-group completion. Sixteen combined baseline/FoREST/guard tests pass.
-   Future dispatcher source upgrades can create evaluation/
-   dispatcher-reload-when-idle.json. The scheduler then stops admitting new work,
-   lets all its active workers finish, checks recorded workers have exited, and
-   execs the new CPU scheduler code with the same PID. It neither signals GPU
-   workers nor starts another competing scheduler. Reload history is retained.
-   Continue implementing the remaining interfaces, perturbations, metrics and
-   verification; the heartbeat must do this work, not just poll. Preserve the
-   duplicate-launch lock and inspect all existing children before any recovery.
-   stream_manifests.py now freezes group-2 no-memory and shared static/rewind
-   source maps (385 original episodes, 2310 disturbed versions, seeds 42/43/44),
-   and five group-5 streams for exactly the 235 native-30-FPS episodes. Every
-   mapped target is a source-PT lookup; no new labels or image interpolation.
-   Rewind maps move back by 5-15 observed steps, return by the same number of
-   steps, then continue; all views share the map and memory advances in playback
-   order. Insertions use two distinct interior anchors with 15 prior steps
-   available so all requested durations remain equally eligible. Group 5 keeps
-   full-stream predictions and selects exact original integer-second frames for
-   common 1-FPS scoring; no extra inference or interpolation is used for scoring.
-   Six map/scoring/freeze tests pass. Prepared manifests and independent full-map
-   verification are under evaluation/streams/. These inputs are ready; the
-   group-2/5 workers and scheduler integration remain pending. Do not present
-   prepared maps as launched evaluation or GPU-tested inference.
-   stream_runtime.py now provides a CPU-only playback/restore protocol adapter
-   for the five official native engines (group 2: ProcVLM/R2VLM; group 5: all
-   five). It validates frozen manifest receipts, keeps truth outside model
-   requests, advances history in playback order, and restores exact saved
-   prefixes without repeating model calls. ProcVLM no-memory supplies ONE
-   current image, not eight repeated copies; R2VLM no-memory uses fresh initial
-   history each step. Native GRM references and VLAC recurrence are retained.
-   Full-stream and common-grid validity remain separate. This is not yet a GPU
-   worker: the separate official_stream.py entry now supplies audited loading
-   and persistence, but Robometer/FoREST integration, scheduling and actual GPU
-   validation are still pending. Existing first-group workers do not import it.
-   Twenty-one CPU tests passed, including rational native frame-rate strings.
-   All 12 real frozen manifests / 1083785 versioned observations passed adapter
-   validation; the original native ProcVLM request builder produced one actual
-   image for no-memory and eight for memory. Receipt: evaluation/streams/
-   stream-runtime-cpu-verification.json. No model forward was performed.
-   stream_images.py now prepares unique native source images for these maps,
-   using the pinned PyAV 19.0.2 decoder and CPU-only Python 3.12 bridge when
-   needed. Private staging is verified before atomic no-replace publication;
-   existing consumer directories are never overwritten. Playback order, repeats,
-   labels and memory remain in the frozen maps, not the image cache. Twenty-eight
-   combined CPU tests passed. A real 382-frame three-view episode produced 1146
-   native images and 255 main-view 20-FPS images; all 195 shared baseline images
-   were byte-identical and the baseline cache was unchanged. The Python 3.10
-   decoder bridge also passed. Receipt: evaluation/streams/
-   stream-images-cpu-verification.json. No model forward or new GPU job ran;
-   official_stream.py now implements the five-engine group-5 worker and
-   ProcVLM/R2VLM group-2 worker with per-answer durable prefixes, original raw/null
-   answers, initialization provenance, and full/common-grid metrics. Resume
-   validates maps/identity/audits and never repeats saved model calls or overwrites
-   completed results. GPU entry requires a matching fresh dispatcher admission
-   with first-group priority cleared; stale ownership or a resource-pause request
-   causes a cooperative pause. This worker is NOT registered with the dispatcher.
-   Forty combined CPU tests passed, including failure persistence, exact resume,
-   corruption rejection, native VLAC first value/recurrence and admission guards.
-   All 39 supported model/condition combinations and 156 unique four-way job names
-   passed real frozen-input partition validation. Receipt: evaluation/streams/
-   official-stream-cpu-verification.json. Inference in tests was mocked; no real
-   model forward or new GPU job ran. Scheduling, aggregate reporting and GPU
-   validation still need completion; do not describe these groups as running.
-   forest_adapter.py strictly requires the matching suite's verified epoch-01.pt:
-   final epoch/optimizer/scheduler/two-rank RNG, unchanged training data signature
-   and memory configuration, independent initialization and all 14 official base
-   file hashes. After native loading, LoRA/projection/head tensors must exactly
-   match the saved state digest. Trials, other suites and earlier checkpoints
-   are rejected. ForestRuntime uses native StreamingProgressPredictor; no-memory
-   mode constructs only M3Collator and performs neither memory reads nor writes.
-   forest_eval.py implements the SOC group-1 worker with raw/null, per-frame
-   prefixes and existing coverage checks. On resume, replay the saved prefix
-   through vision/memory only, then continue; never overwrite prior predictions.
-   Five checkpoint/stream/reset/no-memory/resume tests passed. The CPU-only
-   disposable training-smoke checkpoint test passed in 77 seconds: exact loaded
-   trainable weights, first history 0 and second history 54, prefix reconstruction
-   and no-memory first prediction exactly matched. Receipt/log are evaluation/
-   forest-adapter-smoke.json/log. This is FP32 CPU testing with a trial checkpoint,
-   produces no formal predictions and does NOT establish final-weight GPU BF16
-   validation. No FoREST evaluation is launched until its final proof is ready.
-3. O12/S13 counterfactual instruction-specific GT and Recover abnormal-event
-   metadata require source verification. If genuinely missing, block only the
-   affected condition and continue executable work; never invent GT.
+All group 2–5 execution, prefix recovery, dependency gates, metrics and exports
+are implemented. CPU tests and actual frozen-map routing are separate evidence
+from GPU validation. Every model/condition/suite first shard must complete a real
+trajectory with a finite generated prediction before its sibling shards start.
+Do not claim a GPU canary or final results from the CPU tests or a mock backend.
 
-Scientific protocol is experiment-plan.json. Preserve data splits, PT labels,
-official starting weights, LR, effective batch, epochs, model inputs, decoding
-and metrics. Code and configuration go to Git; data, weights and predictions do
-not. Downloads remain remote-direct. Keep a remote source SHA256 inventory when
-deploying fixes. Report material changes, failures requiring attention and
-verified completion; ordinary healthy progress does not require a notification.
+Input dependencies
+S/code/experiments/prm_five_groups_20261114/experiment-plan.json is immutable.
+Baseline: SOC385 / 64827 observations at5FPS; State89 / Order119 / Count177.
+E/streams contains the 12 independently verified group2/group5 manifests.
+E/conditions/readiness.json tracks all 15 follow-up conditions. The dispatcher
+refreshes this CPU-only preparation every five minutes without changing source labels.
 
-Early official-model evaluation (additional user authorization, 2026-11-14)
-Robometer group-1 baseline can run before the four FoREST trainings finish.
-Read early-evaluation-status.json and evaluation/jobs, not only the original
-controller's evaluation_started flag (which refers to its post-training handoff).
-The immutable evaluation/group1-manifest.json covers 385 trajectories / 64827
-observations: State 89/16844, Order 119/27672, Count 177/20311. Never mix these
-outputs with the older 417-trajectory experiment.
+Recover uses only the original five tasks, 130 train /34 val. Its existing label
+controller waits for a free cache-phase GPU to fill 35 pouring PT labels (28/7).
+It retains original Recover files and puts supplemental labels under S/labels.
+Recover VOC requires the 34 valid PT trajectories; event metrics additionally
+require explicit success, failure-onset/role and abnormal-platform annotations.
+Missing or invalid event annotations block only their metrics, not valid VOC inputs.
 
-Run overlap_guard only once; its PID/lock live under evaluation/. It starts four
-disjoint Robometer shards, at most one additional process per GPU, staggering
-launches by 60 seconds after observing 60 seconds of safe resources. Execution
-uses batch 1, two CPU threads, and CUDA allocator fraction 0.22. The initial
-batch-4 consistency gate failed before retaining predictions (0.00305 absolute
-discrepancy against singleton). Native singleton repeat consistency then passed
-with difference zero. Preserve the archived attempt under evaluation/jobs/history.
-Official checkpoint loading is strict, all model file hashes are checked, no
-adapter is loaded, and the 10-bin progress head returns its native expectation.
+Group4 own-prompt inputs contain all14 O12/S13 validation trajectories. Swapped
+prompts need independent instruction-matched PT for those14 videos. Never copy
+old PT to a new instruction. Templates live under E/annotation-templates;
+reviewed sidecars under matching E/annotations paths. README.txt documents schemas.
+New event annotations trigger CPU re-aggregation without repeating model inference.
 
-The guard samples resources every 10 seconds. It requests cooperative evaluation
-pause if GPU free memory falls below 16 GiB, temperature reaches 80 C, container
-working set exceeds 85% or RSS+shmem exceeds 65% of its limit, a new OOM occurs,
-disk free space falls below 100 GiB, or training changes phase / its controller
-status becomes stale. It never signals training. Evaluation persists partial
-predictions after every inference; safe pauses may resume at most three times
-per hour per shard. Unknown worker failures require inspection, not blind retry.
-evaluation/pause-all-early-evaluation requests a persistent cooperative pause.
+Order/O03/swap-blocks_episode_001342 has436 main/right frames but435 decoded
+left-wrist frames. Three-view models retain this blocker; expected coverage never
+shrinks. Main-only models continue. Never fill the missing frame or change GT.
 
-Known source defect: Order/O03/swap-blocks_episode_001342 has 436 main/right frames
-but only 435 actual decoded left-wrist frames. Robometer records this as an input
-blocker and continues the other trajectories. Keep expected coverage at 385 and
-report incomplete coverage, not a 384-trajectory complete result. No frame fill
-or GT alteration is authorized. Main-view-only methods need not skip this row.
+Resources and adoption
+Each GPU allows at most one dispatcher evaluation process, batch1, allocation
+fraction0.30. It may overlap the recorded training rank under the existing strict
+ownership proof. Stability60s and globally at most one launch per minute remain.
+Guard thresholds: free VRAM>=16GiB, temperature<80C, cgroup working set<=85%,
+RSS+shmem<=65%, no new OOM, free disk>=100GiB. Memory includes the container limit,
+not host free memory; distinguish reclaimable file cache from resident usage.
+Only supplemental evaluation pauses cooperatively, saving every produced prefix.
+Do not signal healthy GPU workers or change model/prompt/image/pixel/scoring policy.
 
-Results: /cache/cvpzhr/evaluations/prm-five-groups-20261114/group1/baseline/robometer-4b
-Every trajectory retains source indices, original PT, raw native predictions,
-Pearson, Spearman, VS, ER and C. Aggregate acquires a lock and verifies complete
-input/target alignment. Official RoboValue metric sources are pinned and licensed
-under metric_reference/. Six evaluation/guard tests pass in the training env.
-This early worker is not the full five-group dispatcher; the implementation gaps
-listed above remain outstanding.
+nvidia-smi host PIDs differ from container PIDs. gpu_ownership and
+ReservedEvaluationOwnership preserve singleton-context plus fresh-progress proofs;
+never infer unknown process ownership from PID numbers or allocation sizes.
+Training remains two GPUs, microbatch1, accumulation9, fraction0.70. Cache workers
+(two per card) drain at episode boundaries before full-model training on that pair.
 
-Container-safe overlap admission
-NVML returns host PIDs that are not the PIDs in this container's /proc. Never
-compare those numbers to local process ancestry, match them by GPU memory size,
-or treat an inaccessible PID as an owned task. The dispatcher now uses an
-explicit group-ownership proof: after the extra workers finish, both GPUs in a
-training pair must each have exactly one distinct compute PID, continuously
-observed at intervals <=30 seconds. The recorded torchrun must retain its exact
-two configured ranks (including process start times), CUDA rank assignments,
-and mapped NVIDIA device minors. After at least 60 seconds, a NEW training log
-entry must prove that both ranks completed the native CUDA collective during
-that interval. Only then are those singleton contexts attributed to that
-training group. This is a temporal ownership proof, not a host/local PID map.
-The latest collective must remain fresh (<=600 seconds); changed ranks, vanished
-contexts or phase changes invalidate the proof. Extra/unknown PIDs on a candidate
-GPU still prevent admission. Proofs are in dispatcher-status.gpu_ownership and
-are rebuilt after scheduler reload. No running training code, driver, PID
-namespace, or scientific configuration is changed. First-model real-episode
-canaries and all existing resource/staggering guards remain mandatory.
+For idle source updates use E/dispatcher-reload-when-idle.json. For the current
+active-worker upgrade, upgrade_controllers checks exact CPU module/process start
+identities and source hashes, snapshots all worker trees, terminates only the old
+CPU controllers and starts replacements with --adopt. No GPU process receives a
+signal. All handoff evidence goes under E/controller-upgrade-history. Unknown
+children or a launch/exit race abort the handoff and resume the old CPU controllers.
+After a handoff verify live worker identities/progress, controller capabilities,
+new plan counts and resource samples. Never start a second competing scheduler.
+
+Outputs, audit and failures
+Every new prediction is saved atomically with raw response/null, history length,
+source frame, playback time, unchanged PT, immutable initialization audit and model
+signature. Completed files are immutable. Prefix recovery must match all provenance.
+FoREST restores only visual memory; R2 restores its own previous text; VLAC restores
+native value recurrence. Future-terminal references are flagged only for the twoGRMs.
+
+experiment_report writes each condition/model's metrics.json/.md, episode CSV and
+SVG curves. Pearson/Spearman/official VS(ER*C) are per-episode and equally weighted;
+undefined/invalid denominators are explicit, incomplete suite means withheld.
+Group5 full-stream and exact common integer-second scoring are kept separately.
+Three-seed mean and sample SD require all three coverage-complete seed results.
+Recover endpoint score is not accuracy; official FPL uses maximum descent onset
+and no-descent penalty; abnormal-platform absolute/drift MAEs retain every segment.
+No interpolation, smoothing, zero fill, previous-prediction fill or per-curve scaling.
+
+Follow-up comparisons: output/followup-comparison.json and .md.
+Final gate: output/completion-audit.json includes all four trainings, all job states,
+coverage and unresolved input/event dependencies. all_experiments_verified stays
+false for any missing condition, source defect or required annotation.
+
+Unknown failures are recorded and not blindly restarted. Inspect E/jobs, dispatcher
+and controller logs, E/followup-cpu-errors, cgroup/GPU state and complete child trees
+before repairing within the authorized protocol. Retain predictions, caches, labels
+and checkpoints. A CPU report marked failed_requires_inspection needs a reviewed
+repair/reload before retry; it is never treated as completion. Code/config only go
+to Git. All model/data files download directly on the remote host, never via local.
+Historical incidents and receipts remain in S and Git history, not repeated here.

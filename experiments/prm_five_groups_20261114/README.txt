@@ -1,7 +1,8 @@
 PRM 五组实验：已确认方案（2026-11-14）
 
-状态：29 项配置全部确认。experiment-plan.json 是待执行方案，不是运行器，也不是实验完成证明。
-本次整理未启动训练或评测；正式启动前通知用户。
+状态：29 项配置全部确认，用户已授权自动训练和五组评测。第 1 组正在执行。
+第 2–5 组执行、断点恢复、调度、指标与曲线导出已实现；实现完成不等于模型 GPU 验证或结果完成。
+2026-11-14 用户要求删除 Codex 定时监控。远程控制器独立运行，不依赖本聊天心跳。
 
 一、七种方法
 Robometer-4B、RoboBrain2.5-4B、Robo-Dopamine-GRM-3B、ProcVLM-2B、
@@ -50,12 +51,48 @@ VS 也逐轨迹保存并等权汇总；保留 ER 和非平坦时间占比 C。
 不对每条预测曲线单独做 min-max 拉伸。MAE 使用有依据的输出尺度映射并记录单位。
 异常平台、失败起点、成功结局等标注缺失时明确报告，不能从任意重复动作臆造失败标签。
 
-五、已完成及执行前准备
+五、数据与当前依赖
 State/Order/Count 的 1904 条轨迹、1651148 个原始帧视觉进度标签已重算并通过核验。
 523 条时间比例标签已删除，原有划分与阶段标注不变；Recover 原有文件未被修改。
 Recover 另有外部新增三个任务，本轮不纳入。
-仍需完成：四套 FoREST 训练输入与 CLIP 环境核验、官方模型初始化审计、指标版本固定及对照验证、
-Recover 事件/平台标注适用性检查、O12/S13 指令对应真值核验、扰动和帧率清单生成。
-这些是执行准备事项，不代表需要重新确认已决定的配置；实质缺失或矛盾单独报告。
+SOC 基线和第 2/5 组清单已经冻结并独立核验。官方权重审计和 FoREST 最终检查点门禁已接入。
+Recover 倒水尚缺 35 条 PT（28 训练、7 验证），既有补标控制器按授权规则等待空闲缓存阶段处理。
+Recover 终点/FPL/异常平台指标另需显式事件标注；不能从 PT=1 猜测成功或从任意回落猜测失败起点。
+O12/S13 交换指令条件尚需 14 条与新指令一致的 PT；各自指令的 14 条输入可独立执行。
+缺失标注只阻塞对应条件/指标；所有原始数据和标签保持不变。
 不复用旧环境 417 条验证轨迹的指标或预测；不把本方案直接当作旧九模型评测器的启动配置。
 代码与配置同步 Git，数据、标签、预测不上传 Git。
+
+六、远程执行入口与队列
+设置根目录 S=/cache/cvpzhr/setup/prm-five-groups-20261114，E=S/evaluation，工作目录 S/code。
+所有命令从 S/code 运行，CPU准备/报告显式设置 CUDA_VISIBLE_DEVICES=。
+CPU 环境为 /cache/cvpzhr/envs/forest-labels/bin/python。
+
+experiments.prm_five_groups_20261114.eval_dispatch run
+  单实例 GPU 调度器：原 32 个第一组分片，加 440 个后续分片（第2组168、第3组28、第4组64、第5组180）。
+  先完成六官方模型第一组的可执行部分并审计全部缺口；随后解除 Count 预留，按原两卡/配置从 step1200 恢复。
+  第一组 FoREST 仅匹配 suite 的最终权重可运行；后续任务依赖输入与对应最终权重，首分片真实轨迹通过后才复制。
+  不直接手工启动 experiment_worker：它要求当前调度器的 GPU 准入记录、同名作业锁和活跃槽位。
+  每卡最多一份调度器评测进程；保留 60 秒资源稳定期、每分钟最多启动一份和原资源保护。
+
+experiments.prm_five_groups_20261114.experiment_inputs
+  准备/核验冻结输入，写 E/conditions/readiness.json。缺失 PT/事件标注模板在 E/annotation-templates。
+  审核后的标注放入同结构 E/annotations；模板自身永远不能被当作有效标注。
+  group4 sidecar schema=prm-instruction-pt-v1：确切指令、源视频 SHA、全部原帧索引/PT、方法和来源文件 SHA。
+  group3 sidecar schema=prm-recover-events-v1：结局、失败原帧起点、官方角色、重复/错误平台区间和来源 SHA。
+  平台只计算落在已标注区间内的观测；漂移以该段首个实际观测为基准，记录锚点，不插值。
+  调度器每 5 分钟刷新依赖；事件标注更新触发 CPU 重汇总，无需重跑模型。
+
+experiments.prm_five_groups_20261114.experiment_report --group G --condition C --model MODEL
+  逐条核验配置、帧映射、PT、源视频、初始化和完整预测，再重新计算指标。
+  输出 evaluations/prm-five-groups-20261114/groupG/C/MODEL/metrics.json、metrics.md、episode-metrics.csv、curves/*.svg。
+  缺失/无效/常量与成功/FPL/平台的适用分母分别保存；第5组全流与共同整秒网格分开。
+  总表 followup-comparison.json/.md，三种子均值和样本标准差仅在三组覆盖齐备时生成。
+
+experiments.prm_five_groups_20261114.upgrade_controllers
+  一次性 CPU 控制器升级：核对代码 SHA、进程身份和活跃收据，仅向旧 CPU 控制器发信号；
+  新控制器采用已记录的训练/评测进程及其子进程，不向 GPU 作业发信号，不重复启动 worker。
+  常规空闲升级仍可使用 E/dispatcher-reload-when-idle.json；不能并起第二份竞争 GPU 的调度器。
+
+完成证明为输出目录 completion-audit.json：四训练、所有条件/逐条覆盖/初始化/权重/事件依赖全部审计。
+Order/O03 既知左腕少一帧保留 expected；涉及三视角的条件不能宣称全覆盖。未决输入永远保留显式阻塞。

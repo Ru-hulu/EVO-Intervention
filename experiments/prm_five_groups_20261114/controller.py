@@ -99,6 +99,35 @@ def verify_training(suite, config, *, smoke=False):
     return proof
 
 
+def resume_configuration(suite, gpus):
+    """Only the explicit, fully audited Count pause can resume automatically."""
+    import torch
+    from .followup_schedule import COUNT_CHECKPOINT, COUNT_SHA
+    assert suite == 'Count' and gpus == [2,3]
+    authorization = json.loads((BASE/suite/'resume-authorization.json').read_text())
+    assert authorization['status'] == 'authorized_after_group1_official_audit'
+    assert authorization['gpus'] == gpus and authorization['step'] == 1200
+    assert authorization['checkpoint'] == str(COUNT_CHECKPOINT)
+    assert authorization['checkpoint_sha256'] == COUNT_SHA == sha(COUNT_CHECKPOINT)
+    assert authorization['handoff_sha256'] == sha(BASE/'evaluation/group1-official-handoff.json')
+    path = BASE/suite/'training.config.json'
+    assert authorization['config_sha256'] == sha(path)
+    config = json.loads(path.read_text())
+    checkpoint = torch.load(COUNT_CHECKPOINT, map_location='cpu', weights_only=True)
+    assert checkpoint['format'] == 'mem-lite-streamforest-v1' and checkpoint['step'] == 1200
+    assert checkpoint['optimizer']['state'] and len(checkpoint['rng_by_rank']) == 2
+    assert checkpoint['scheduler']['last_epoch'] == 1200
+    for key in ('data_signature','history_source','model','run_protocol','batch_size',
+                'gradient_accumulation_steps','learning_rate','epochs','seed','output_dir'):
+        assert checkpoint['config'][key] == config[key], key
+    assert config['epochs'] == 1 and config['batch_size'] == 1 and config['gradient_accumulation_steps'] == 9
+    for source in config['sample_files']:
+        directory = Path(source); proof = json.loads((directory/'cache-verification.json').read_text())
+        assert sha(directory/'samples.jsonl') == proof['samples_sha256']
+    del checkpoint
+    return path, config, str(COUNT_CHECKPOINT)
+
+
 def run(adopt=None):
     lock=(BASE/'controller.lock').open('a')
     fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
@@ -106,6 +135,8 @@ def run(adopt=None):
     if prior.exists() and alive(int(prior.read_text())):
         raise RuntimeError('Existing live controller; do not launch twice')
     prior.write_text(str(os.getpid()))
+    save(BASE/'controller-capabilities.json', {'pid':os.getpid(),'verified_count_resume':True,
+         'code_sha256':sha(__file__),'at':time.time()})
     children={}; workers=json.loads((BASE/'cache-worker-pids.json').read_text())
     groups=[{'gpus':[0,1],'suite':None,'phase':'cache'}, {'gpus':[2,3],'suite':None,'phase':'cache'}]
     completed={}; failed={}; started=time.time()
@@ -115,7 +146,7 @@ def run(adopt=None):
         assert not matches(handoff['old_controller']), 'Old controller still alive'
         assert time.time()-handoff['created']<300, 'Stale controller handoff'
         groups=handoff['groups'];started=handoff['started']
-        completed=handoff['completed'];failed=handoff['failed']
+        completed=handoff['completed'];failed=handoff['failed'];paused=handoff.get('paused',{})
         for group in groups:
             if group['phase']=='training':
                 record=handoff['training'][group['suite']]
@@ -165,7 +196,8 @@ def run(adopt=None):
             if group['phase']=='evaluation_reserved':group.update(phase='cache',suite=None)
             if group['phase']=='cache':
                 busy={g['suite'] for g in groups}
-                choice=next((s for s in SUITES if s in ready and s not in completed and s not in failed and s not in busy and s not in priority.get('paused_suites',[])),None)
+                choice=next((s for s in SUITES if s in ready and s not in completed and s not in failed and s not in busy and s not in priority.get('paused_suites',[])
+                    and not (s=='Count' and (BASE/s/'resume-authorization.json').exists() and gpus!=[2,3])),None)
                 if choice and (BASE/'smoke/checkpoint-verification.json').exists():
                     group.update(phase='draining',suite=choice)
                     for gpu in gpus:(BASE/f'drain-gpu-{gpu}').touch()
@@ -180,13 +212,18 @@ def run(adopt=None):
                     continue
                 suite=group['suite']
                 try:
-                    path,config=training_config(suite,gpus)
-                    if Path(config['output_dir']).exists():
-                        raise RuntimeError('Existing unverified training output requires checkpoint inspection; refusing fresh overwrite')
+                    resume=None
+                    if suite=='Count' and (BASE/suite/'resume-authorization.json').exists():
+                        path,config,resume=resume_configuration(suite,gpus)
+                    else:
+                        path,config=training_config(suite,gpus)
+                        if Path(config['output_dir']).exists():
+                            raise RuntimeError('Existing unverified training output requires checkpoint inspection; refusing fresh overwrite')
                     proc=spawn([PYTHON,'-m','torch.distributed.run','--standalone','--nproc_per_node=2',
-                                '-m','mem_lite.train_stage3','--config',str(path)],BASE/suite/'train.log',env(gpus))
+                                '-m','mem_lite.train_stage3','--config',str(path)]+(['--resume',resume] if resume else []),BASE/suite/'train.log',env(gpus))
                     children[suite]=proc;group.update(phase='training',pid=proc.pid,config=config)
-                    save(BASE/suite/'launch.json',{'pid':proc.pid,'gpus':gpus,'config_sha256':sha(path),'started':time.time()})
+                    paused.pop(suite,None)
+                    save(BASE/suite/('resume-launch.json' if resume else 'launch.json'),{'pid':proc.pid,'gpus':gpus,'config_sha256':sha(path),'started':time.time(),'resume':resume})
                 except Exception:
                     failed[suite]=traceback.format_exc();group.update(phase='cache',suite=None)
                     for gpu in gpus:(BASE/f'drain-gpu-{gpu}').unlink(missing_ok=True)

@@ -64,7 +64,7 @@ def test_new_model_must_finish_real_episode_before_replication():
 
 
 def test_dispatch_plan_keeps_all_baselines_and_gates_each_forest_suite():
-    jobs=dispatch.planned_jobs()
+    jobs=[j for j in dispatch.planned_jobs() if j['group']==1]
     assert len(jobs)==len({j['name'] for j in jobs})==32
     forest=[j for j in jobs if j['model']=='forest']
     assert len(forest)==12 and {j['suite'] for j in forest}=={'State','Order','Count'}
