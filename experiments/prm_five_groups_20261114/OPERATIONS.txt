@@ -167,3 +167,22 @@ input/target alignment. Official RoboValue metric sources are pinned and license
 under metric_reference/. Six evaluation/guard tests pass in the training env.
 This early worker is not the full five-group dispatcher; the implementation gaps
 listed above remain outstanding.
+
+Container-safe overlap admission
+NVML returns host PIDs that are not the PIDs in this container's /proc. Never
+compare those numbers to local process ancestry, match them by GPU memory size,
+or treat an inaccessible PID as an owned task. The dispatcher now uses an
+explicit group-ownership proof: after the extra workers finish, both GPUs in a
+training pair must each have exactly one distinct compute PID, continuously
+observed at intervals <=30 seconds. The recorded torchrun must retain its exact
+two configured ranks (including process start times), CUDA rank assignments,
+and mapped NVIDIA device minors. After at least 60 seconds, a NEW training log
+entry must prove that both ranks completed the native CUDA collective during
+that interval. Only then are those singleton contexts attributed to that
+training group. This is a temporal ownership proof, not a host/local PID map.
+The latest collective must remain fresh (<=600 seconds); changed ranks, vanished
+contexts or phase changes invalidate the proof. Extra/unknown PIDs on a candidate
+GPU still prevent admission. Proofs are in dispatcher-status.gpu_ownership and
+are rebuilt after scheduler reload. No running training code, driver, PID
+namespace, or scientific configuration is changed. First-model real-episode
+canaries and all existing resource/staggering guards remain mandatory.

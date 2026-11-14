@@ -13,11 +13,13 @@ import subprocess
 import sys
 import time
 import traceback
+import xml.etree.ElementTree as ET
 
 from .prepare_cache import BASE,save,sha
 from .eval_common import EVAL,aggregate
 from .overlap_guard import resources,pause_reasons,alive
 from .forest_adapter import check_final_proof
+from .gpu_ownership import GroupOwnership
 
 CODE=Path(__file__).parents[2]
 ORDER=['vlac-2b','robobrain25-4b','dopamine-3b','procvlm-2b','r2vlm-alfred-rl']
@@ -93,6 +95,13 @@ def gpu_processes():
     return result
 
 
+def gpu_minors():
+    uuids={r.split(',')[1].strip():int(r.split(',')[0]) for r in subprocess.check_output(
+        ['nvidia-smi','--query-gpu=index,uuid','--format=csv,noheader'],text=True,timeout=10).splitlines()}
+    report=ET.fromstring(subprocess.check_output(['nvidia-smi','-q','-x'],text=True,timeout=10))
+    return {uuids[g.findtext('uuid')]:int(g.findtext('minor_number')) for g in report.findall('gpu')}
+
+
 def permitted_phase(training,gpu,now):
     # The training controller waits synchronously after its verified handoff,
     # so its status timestamp intentionally stops advancing at that point.
@@ -102,13 +111,14 @@ def permitted_phase(training,gpu,now):
                for group in training.get('groups',[]))
 
 
-def eligible_gpu(training,gpu,sample,processes,robometer,initial_oom,now):
+def eligible_gpu(training,gpu,sample,processes,robometer,initial_oom,now,ownership=None):
     if not permitted_phase(training,gpu,now) or pause_reasons(sample,gpu,initial_oom):return False
     # Do not race the existing guard's automatic resume of a Robometer shard.
     if robometer.get('status') not in DONE or alive(robometer.get('pid')):return False
     group=next((g for g in training.get('groups',[]) if gpu in g['gpus']),None)
     if group and group['phase']=='training':
-        return all(descends_from(pid,group['pid']) for pid in processes[gpu])
+        if ownership is not None:return ownership.permits(group,gpu,processes)
+        return bool(processes[gpu]) and all(descends_from(pid,group['pid']) for pid in processes[gpu])
     return not processes[gpu]
 
 
@@ -158,9 +168,12 @@ def run():
         'final_suite_forest_job_count':12,'adopted_robometer_shards':4,
         'pending_implementation':PENDING_IMPLEMENTATION,'all_five_groups_ready':False})
     initial_oom=resources()['oom_kill'];active={};safe_since={i:None for i in range(4)}
+    minors=gpu_minors()
+    ownership=GroupOwnership()
     launches={j['name']:[] for j in jobs};last_launch=0;started=time.time();aggregated=set()
     while True:
         now=time.time();training=read(BASE/'status.json',{});sample=resources();processes=gpu_processes()
+        ownership.refresh(training,processes,now,BASE,minors)
         states={j['name']:read(EVAL/'jobs'/f"{j['name']}.json",{}) for j in jobs};readiness_errors={}
         for gpu,(job,proc,receipt) in list(active.items()):
             rc=proc.poll()
@@ -181,7 +194,7 @@ def run():
             if gpu in active:continue
             if reload_requested:continue
             robo=read(EVAL/'jobs'/f'robometer-4b-group1-{gpu}.json',{})
-            safe=eligible_gpu(training,gpu,sample,processes,robo,initial_oom,now)
+            safe=eligible_gpu(training,gpu,sample,processes,robo,initial_oom,now,ownership)
             if (EVAL/'pause-all-official-baseline').exists():safe=False
             if not safe:safe_since[gpu]=None;continue
             if safe_since[gpu] is None:safe_since[gpu]=now
@@ -214,6 +227,7 @@ def run():
             'pid':os.getpid(),'started':started,'updated':now,'all_experiments_verified':False,
             'boot_code_sha256':boot_sha,'reload_requested':reload_requested,
             'readiness_errors':readiness_errors,
+            'gpu_ownership':ownership.status,
             'active':{g:r for g,(_,_,r) in active.items()},'baseline_models_aggregated':sorted(aggregated),
             'baseline_job_status':{j['name']:states[j['name']].get('status','pending') for j in jobs},
             'pending_implementation':PENDING_IMPLEMENTATION,'resource_sample':sample})
