@@ -112,9 +112,9 @@ Remaining implementation work (do not describe this as already ready)
    current image, not eight repeated copies; R2VLM no-memory uses fresh initial
    history each step. Native GRM references and VLAC recurrence are retained.
    Full-stream and common-grid validity remain separate. This is not yet a GPU
-   worker: audited engine loading, protected launch,
-   Robometer/FoREST integration and scheduling still need implementation and
-   actual GPU validation. Existing first-group workers do not import this file.
+   worker: the separate official_stream.py entry now supplies audited loading
+   and persistence, but Robometer/FoREST integration, scheduling and actual GPU
+   validation are still pending. Existing first-group workers do not import it.
    Twenty-one CPU tests passed, including rational native frame-rate strings.
    All 12 real frozen manifests / 1083785 versioned observations passed adapter
    validation; the original native ProcVLM request builder produced one actual
@@ -130,7 +130,20 @@ Remaining implementation work (do not describe this as already ready)
    were byte-identical and the baseline cache was unchanged. The Python 3.10
    decoder bridge also passed. Receipt: evaluation/streams/
    stream-images-cpu-verification.json. No model forward or new GPU job ran;
-   group-2/5 workers and scheduling are still pending.
+   official_stream.py now implements the five-engine group-5 worker and
+   ProcVLM/R2VLM group-2 worker with per-answer durable prefixes, original raw/null
+   answers, initialization provenance, and full/common-grid metrics. Resume
+   validates maps/identity/audits and never repeats saved model calls or overwrites
+   completed results. GPU entry requires a matching fresh dispatcher admission
+   with first-group priority cleared; stale ownership or a resource-pause request
+   causes a cooperative pause. This worker is NOT registered with the dispatcher.
+   Forty combined CPU tests passed, including failure persistence, exact resume,
+   corruption rejection, native VLAC first value/recurrence and admission guards.
+   All 39 supported model/condition combinations and 156 unique four-way job names
+   passed real frozen-input partition validation. Receipt: evaluation/streams/
+   official-stream-cpu-verification.json. Inference in tests was mocked; no real
+   model forward or new GPU job ran. Scheduling, aggregate reporting and GPU
+   validation still need completion; do not describe these groups as running.
    forest_adapter.py strictly requires the matching suite's verified epoch-01.pt:
    final epoch/optimizer/scheduler/two-rank RNG, unchanged training data signature
    and memory configuration, independent initialization and all 14 official base
