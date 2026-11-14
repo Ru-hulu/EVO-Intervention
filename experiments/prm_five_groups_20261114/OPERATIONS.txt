@@ -54,3 +54,44 @@ and metrics. Code and configuration go to Git; data, weights and predictions do
 not. Downloads remain remote-direct. Keep a remote source SHA256 inventory when
 deploying fixes. Report material changes, failures requiring attention and
 verified completion; ordinary healthy progress does not require a notification.
+
+Early official-model evaluation (additional user authorization, 2026-11-14)
+Robometer group-1 baseline can run before the four FoREST trainings finish.
+Read early-evaluation-status.json and evaluation/jobs, not only the original
+controller's evaluation_started flag (which refers to its post-training handoff).
+The immutable evaluation/group1-manifest.json covers 385 trajectories / 64827
+observations: State 89/16844, Order 119/27672, Count 177/20311. Never mix these
+outputs with the older 417-trajectory experiment.
+
+Run overlap_guard only once; its PID/lock live under evaluation/. It starts four
+disjoint Robometer shards, at most one additional process per GPU, staggering
+launches by 60 seconds after observing 60 seconds of safe resources. Execution
+uses batch 1, two CPU threads, and CUDA allocator fraction 0.22. The initial
+batch-4 consistency gate failed before retaining predictions (0.00305 absolute
+discrepancy against singleton). Native singleton repeat consistency then passed
+with difference zero. Preserve the archived attempt under evaluation/jobs/history.
+Official checkpoint loading is strict, all model file hashes are checked, no
+adapter is loaded, and the 10-bin progress head returns its native expectation.
+
+The guard samples resources every 10 seconds. It requests cooperative evaluation
+pause if GPU free memory falls below 16 GiB, temperature reaches 80 C, container
+working set exceeds 85% or RSS+shmem exceeds 65% of its limit, a new OOM occurs,
+disk free space falls below 100 GiB, or training changes phase / its controller
+status becomes stale. It never signals training. Evaluation persists partial
+predictions after every inference; safe pauses may resume at most three times
+per hour per shard. Unknown worker failures require inspection, not blind retry.
+evaluation/pause-all-early-evaluation requests a persistent cooperative pause.
+
+Known source defect: Order/O03/swap-blocks_episode_001342 has 436 main/right frames
+but only 435 actual decoded left-wrist frames. Robometer records this as an input
+blocker and continues the other trajectories. Keep expected coverage at 385 and
+report incomplete coverage, not a 384-trajectory complete result. No frame fill
+or GT alteration is authorized. Main-view-only methods need not skip this row.
+
+Results: /cache/cvpzhr/evaluations/prm-five-groups-20261114/group1/baseline/robometer-4b
+Every trajectory retains source indices, original PT, raw native predictions,
+Pearson, Spearman, VS, ER and C. Aggregate acquires a lock and verifies complete
+input/target alignment. Official RoboValue metric sources are pinned and licensed
+under metric_reference/. Six evaluation/guard tests pass in the training env.
+This early worker is not the full five-group dispatcher; the implementation gaps
+listed above remain outstanding.

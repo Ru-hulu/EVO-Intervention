@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/RoboValue-Benchmark/RoboValue",
+  "revision": "8001715658b29bff934950bf18671c32cf7851b6",
+  "files": {
+    "vs_scoring.py": {
+      "source_path": "src/vmbmk/metrics/cycle_voc_vs/vs_scoring.py",
+      "sha256": "b82b4f6fbe6ba7f11d6e20adda67dca7960e7bf6a1661c15c3391791753ec81b"
+    },
+    "fpl.py": {
+      "source_path": "src/vmbmk/metrics/fpl.py",
+      "sha256": "524c7a5310a44ea145048257f9dbb78e3efc3de89755acff4f327ff793fc1e57"
+    },
+    "LICENSE": {
+      "source_path": "LICENSE",
+      "sha256": "034fa65ecfd89cf3939a08d0fe0b0d2d3a480dc0106d33f8bba56dc1140913bd"
+    }
+  }
+}
