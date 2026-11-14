@@ -68,8 +68,10 @@ Remaining implementation work (do not describe this as already ready)
    preserving raw/null and per-frame prefixes. Only main-view methods may process
    the known short-wrist episode; GRM retains the same explicit input blocker.
    Unknown failures are recorded and require inspection, not automatic retry.
-   The FoREST baseline adapter and groups 2-5 are NOT implemented yet. The
-   dispatcher records those gaps and cannot declare the five groups complete.
+   The FoREST baseline adapter/standalone worker are now implemented, but still
+   await final-checkpoint GPU validation and scheduler integration. Groups 2-5
+   runners are NOT implemented yet. The dispatcher cannot declare five-group
+   completion; its running pending list may retain the earlier adapter wording.
    Continue implementing the remaining interfaces, perturbations, metrics and
    verification; the heartbeat must do this work, not just poll. Preserve the
    duplicate-launch lock and inspect all existing children before any recovery.
@@ -87,6 +89,23 @@ Remaining implementation work (do not describe this as already ready)
    verification are under evaluation/streams/. These inputs are ready; the
    group-2/5 workers and scheduler integration remain pending. Do not present
    prepared maps as launched evaluation or GPU-tested inference.
+   forest_adapter.py strictly requires the matching suite's verified epoch-01.pt:
+   final epoch/optimizer/scheduler/two-rank RNG, unchanged training data signature
+   and memory configuration, independent initialization and all 14 official base
+   file hashes. After native loading, LoRA/projection/head tensors must exactly
+   match the saved state digest. Trials, other suites and earlier checkpoints
+   are rejected. ForestRuntime uses native StreamingProgressPredictor; no-memory
+   mode constructs only M3Collator and performs neither memory reads nor writes.
+   forest_eval.py implements the SOC group-1 worker with raw/null, per-frame
+   prefixes and existing coverage checks. On resume, replay the saved prefix
+   through vision/memory only, then continue; never overwrite prior predictions.
+   Five checkpoint/stream/reset/no-memory/resume tests passed. The CPU-only
+   disposable training-smoke checkpoint test passed in 77 seconds: exact loaded
+   trainable weights, first history 0 and second history 54, prefix reconstruction
+   and no-memory first prediction exactly matched. Receipt/log are evaluation/
+   forest-adapter-smoke.json/log. This is FP32 CPU testing with a trial checkpoint,
+   produces no formal predictions and does NOT establish final-weight GPU BF16
+   validation. No FoREST evaluation is launched until its final proof is ready.
 3. O12/S13 counterfactual instruction-specific GT and Recover abnormal-event
    metadata require source verification. If genuinely missing, block only the
    affected condition and continue executable work; never invent GT.
