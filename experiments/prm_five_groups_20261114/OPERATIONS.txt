@@ -52,7 +52,8 @@ Remaining implementation work (do not describe this as already ready)
    Expected result is Recover 130 train / 34 val total. CPU smoke creates no PT;
    until worker-status/verification.json confirm completion, PT is still pending.
    Vision receipt is in the Qwen3-VL model directory, not directly under run root.
-2. eval_dispatch now schedules the five other official baselines in 20 shards,
+2. eval_dispatch now schedules the five other official baselines in 20 shards
+   plus 12 suite-specific FoREST baseline shards (State/Order/Count),
    adopting the existing Robometer statuses without restarting its workers.
    Its PID/status/log are evaluation/dispatcher.* and dispatcher-status.json.
    A GPU becomes eligible only when its Robometer shard has finished and exited,
@@ -68,10 +69,19 @@ Remaining implementation work (do not describe this as already ready)
    preserving raw/null and per-frame prefixes. Only main-view methods may process
    the known short-wrist episode; GRM retains the same explicit input blocker.
    Unknown failures are recorded and require inspection, not automatic retry.
-   The FoREST baseline adapter/standalone worker are now implemented, but still
-   await final-checkpoint GPU validation and scheduler integration. Groups 2-5
-   runners are NOT implemented yet. The dispatcher cannot declare five-group
-   completion; its running pending list may retain the earlier adapter wording.
+   FoREST jobs are gated on training_completed and the matching final proof;
+   each suite's first shard must finish a real episode before its other shards.
+   Eligible final-suite jobs take the next free slot without preempting a running
+   official model. Invalid checkpoint proof blocks that condition rather than
+   interrupting healthy workers. The FoREST baseline adapter and scheduling are
+   implemented, but final-checkpoint GPU validation still awaits training.
+   Groups 2-5 runners are NOT implemented yet. The dispatcher cannot declare
+   five-group completion. Sixteen combined baseline/FoREST/guard tests pass.
+   Future dispatcher source upgrades can create evaluation/
+   dispatcher-reload-when-idle.json. The scheduler then stops admitting new work,
+   lets all its active workers finish, checks recorded workers have exited, and
+   execs the new CPU scheduler code with the same PID. It neither signals GPU
+   workers nor starts another competing scheduler. Reload history is retained.
    Continue implementing the remaining interfaces, perturbations, metrics and
    verification; the heartbeat must do this work, not just poll. Preserve the
    duplicate-launch lock and inspect all existing children before any recovery.

@@ -1,4 +1,4 @@
-"""Persistent official-baseline dispatch; never report unimplemented groups done.
+"""Persistent baseline dispatch; never report unimplemented groups done.
 
 Adopts the existing Robometer job statuses, then runs the five other official
 models one extra worker per safe GPU. Future experiment conditions are recorded
@@ -10,18 +10,19 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 import traceback
 
-from .prepare_cache import BASE,save
+from .prepare_cache import BASE,save,sha
 from .eval_common import EVAL,aggregate
 from .overlap_guard import resources,pause_reasons,alive
+from .forest_adapter import check_final_proof
 
 CODE=Path(__file__).parents[2]
 ORDER=['vlac-2b','robobrain25-4b','dopamine-3b','procvlm-2b','r2vlm-alfred-rl']
 DONE={'completed','completed_with_input_blockers'}
-PENDING_IMPLEMENTATION=['FoREST group1 final-checkpoint adapter',
-    'group2 memory removal and shared seeded disturbance manifests/runners',
+PENDING_IMPLEMENTATION=['group2 model runners and integration (shared seeded maps prepared)',
     'group3 Recover inputs and event metrics integration',
     'group4 O12/S13 instruction-matched counterfactual truth and runner',
     'group5 five-FPS-stream runners and common-time scoring']
@@ -34,14 +35,42 @@ def spec(model,shard):
     python='/cache/robot-baselines/envs/'+('vlac' if model=='vlac-2b' else 'procvlm')+'/bin/python'
     return {'name':f'{model}-group1-{shard}','model':model,'shard':shard,'group':1,
         'python':python,'module':'experiments.prm_five_groups_20261114.official_baseline',
-        'memory_fraction':.30,'batch':1}
+        'memory_fraction':.30,'batch':1,'args':[model,'--shard',str(shard)],
+        'canary_name':f'{model}-group1-0'}
+
+
+def forest_spec(suite,shard):
+    return {'name':f'forest-{suite.lower()}-group1-{shard}','model':'forest','suite':suite,
+        'shard':shard,'group':1,'python':'/cache/cvpzhr/envs/forest-labels/bin/python',
+        'module':'experiments.prm_five_groups_20261114.forest_eval','memory_fraction':.30,'batch':1,
+        'args':['--suite',suite,'--shard',str(shard)],'canary_name':f'forest-{suite.lower()}-group1-0'}
+
+
+def planned_jobs():
+    # Finished suite weights may proceed when a current shard releases a slot;
+    # no running model is preempted. Unfinished suites remain ineligible.
+    return [forest_spec(s,sid) for s in ['State','Order','Count'] for sid in range(4)]+[
+        spec(model,sid) for model in ORDER for sid in range(4)]
+
+
+def checkpoint_ready(job,training):
+    if job['model']!='forest':return True
+    suite=job['suite'];record=training.get('training_completed',{}).get(suite)
+    if not record:return False
+    path=BASE/suite/'checkpoint-verification.json'
+    if not path.exists():return False
+    proof=read(path);expected=Path(f'/cache/cvpzhr/outputs/forest-{suite.lower()}-qwen35-clip-depth-e1-20261114/epoch-01.pt')
+    check_final_proof(proof,suite,expected)
+    assert record['sha256']==proof['sha256'] and record['checkpoint']==proof['checkpoint']
+    # The worker performs full file/tensor hashing before any prediction.
+    return expected.is_file()
 
 
 def canary_ready(job,states):
     # New execution allocation must finish a real episode in shard 0 before
     # replicating that model on the other GPUs. Formal predictions are retained.
     if job['shard']==0:return True
-    first=states.get(f"{job['model']}-group1-0",{})
+    first=states.get(job['canary_name'],{})
     return first.get('status') in DONE|{'running','paused_by_resource_guard'} and first.get('completed_episodes',0)>0
 
 
@@ -95,7 +124,7 @@ def launch(job,gpu):
         PYTHONUNBUFFERED='1',PYTORCH_ALLOC_CONF='expandable_segments:True')
     environment.pop('PYTHONPATH',None)
     with path.with_suffix('.log').open('a') as log:
-        proc=subprocess.Popen([job['python'],'-m',job['module'],job['model'],'--shard',str(job['shard']),
+        proc=subprocess.Popen([job['python'],'-m',job['module'],*job['args'],
             '--memory-fraction',str(job['memory_fraction'])],cwd=CODE,env=environment,
             stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
     receipt=dict(job,gpu=gpu,pid=proc.pid,started=time.time())
@@ -124,14 +153,15 @@ def run():
     preflight=read(EVAL/'official-baseline-preflight.json',{})
     assert preflight.get('status')=='passed' and set(preflight['models'])==set(ORDER), 'Official model preflight missing'
     (EVAL/'dispatcher.pid').write_text(str(os.getpid()))
-    jobs=[spec(model,shard) for model in ORDER for shard in range(4)]
-    save(EVAL/'dispatch-plan.json',{'official_baseline_jobs':jobs,'adopted_robometer_shards':4,
+    jobs=planned_jobs();boot_sha=sha(__file__)
+    save(EVAL/'dispatch-plan.json',{'baseline_jobs':jobs,'official_baseline_job_count':20,
+        'final_suite_forest_job_count':12,'adopted_robometer_shards':4,
         'pending_implementation':PENDING_IMPLEMENTATION,'all_five_groups_ready':False})
     initial_oom=resources()['oom_kill'];active={};safe_since={i:None for i in range(4)}
     launches={j['name']:[] for j in jobs};last_launch=0;started=time.time();aggregated=set()
     while True:
         now=time.time();training=read(BASE/'status.json',{});sample=resources();processes=gpu_processes()
-        states={j['name']:read(EVAL/'jobs'/f"{j['name']}.json",{}) for j in jobs}
+        states={j['name']:read(EVAL/'jobs'/f"{j['name']}.json",{}) for j in jobs};readiness_errors={}
         for gpu,(job,proc,receipt) in list(active.items()):
             rc=proc.poll()
             if rc is not None:
@@ -146,8 +176,10 @@ def run():
             if reasons:
                 (EVAL/f"pause-{job['name']}").touch()
                 save(EVAL/'resource-pauses'/f"{job['name']}.json",{'reasons':reasons,'at':now})
+        reload_requested=(EVAL/'dispatcher-reload-when-idle.json').exists()
         for gpu in range(4):
             if gpu in active:continue
+            if reload_requested:continue
             robo=read(EVAL/'jobs'/f'robometer-4b-group1-{gpu}.json',{})
             safe=eligible_gpu(training,gpu,sample,processes,robo,initial_oom,now)
             if (EVAL/'pause-all-official-baseline').exists():safe=False
@@ -160,6 +192,11 @@ def run():
                 old=states[job['name']]
                 if job['name'] in busy or old.get('status') in DONE|{'failed'} or alive(old.get('pid')):continue
                 if old and old.get('status')!='paused_by_resource_guard':continue
+                try:
+                    ready=checkpoint_ready(job,training)
+                except (AssertionError,KeyError,ValueError) as exc:
+                    readiness_errors[job['name']]=f'{type(exc).__name__}: {exc}';continue
+                if not ready:continue
                 if not canary_ready(job,states):continue
                 launches[job['name']]=[t for t in launches[job['name']] if now-t<3600]
                 if len(launches[job['name']])>=3:continue
@@ -171,11 +208,25 @@ def run():
         for model in ORDER:
             if model not in aggregated and all(states[f'{model}-group1-{s}'].get('status') in DONE for s in range(4)):
                 aggregate(model);aggregated.add(model)
+        if 'forest' not in aggregated and all(states[j['name']].get('status') in DONE for j in jobs if j['model']=='forest'):
+            aggregate('forest');aggregated.add('forest')
         save(EVAL/'dispatcher-status.json',{'status':'running' if active else 'waiting_for_safe_slot_or_implementation',
             'pid':os.getpid(),'started':started,'updated':now,'all_experiments_verified':False,
+            'boot_code_sha256':boot_sha,'reload_requested':reload_requested,
+            'readiness_errors':readiness_errors,
             'active':{g:r for g,(_,_,r) in active.items()},'baseline_models_aggregated':sorted(aggregated),
             'baseline_job_status':{j['name']:states[j['name']].get('status','pending') for j in jobs},
             'pending_implementation':PENDING_IMPLEMENTATION,'resource_sample':sample})
+        if reload_requested and not active:
+            # Future source upgrades replace only this idle CPU scheduler. No
+            # worker receives a signal; original training and evaluation stay live.
+            if not any(alive(read(p)['pid']) for p in (EVAL/'dispatch-launches').glob('*.json')):
+                request=read(EVAL/'dispatcher-reload-when-idle.json')
+                save(EVAL/'dispatcher-reload-history'/f'{time.time_ns()}.json',{
+                    'pid':os.getpid(),'old_boot_code_sha256':boot_sha,'new_code_sha256':sha(__file__),
+                    'request':request,'active_workers':0,'at':time.time()})
+                (EVAL/'dispatcher-reload-when-idle.json').unlink()
+                os.execv(sys.executable,[sys.executable,'-m','experiments.prm_five_groups_20261114.eval_dispatch','run'])
         time.sleep(10)
 
 
@@ -185,6 +236,5 @@ if __name__=='__main__':
     except BaseException:
         save(EVAL/'dispatcher-error.json',{'error':traceback.format_exc(),'at':time.time()})
         # Stop only this dispatcher's supplemental jobs cooperatively.
-        for model in ORDER:
-            for shard in range(4):(EVAL/f'pause-{model}-group1-{shard}').touch()
+        for job in planned_jobs():(EVAL/f"pause-{job['name']}").touch()
         raise

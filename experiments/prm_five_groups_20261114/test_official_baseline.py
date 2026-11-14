@@ -61,3 +61,17 @@ def test_new_model_must_finish_real_episode_before_replication():
     assert dispatch.canary_ready(job,states)
     first['status']='failed'
     assert not dispatch.canary_ready(job,states)
+
+
+def test_dispatch_plan_keeps_all_baselines_and_gates_each_forest_suite():
+    jobs=dispatch.planned_jobs()
+    assert len(jobs)==len({j['name'] for j in jobs})==32
+    forest=[j for j in jobs if j['model']=='forest']
+    assert len(forest)==12 and {j['suite'] for j in forest}=={'State','Order','Count'}
+    assert all(not dispatch.checkpoint_ready(j,{'training_completed':{}}) for j in forest)
+    state=dispatch.forest_spec('State',1);order=dispatch.forest_spec('Order',1)
+    statuses={'forest-state-group1-0':{'status':'running','completed_episodes':1}}
+    assert dispatch.canary_ready(state,statuses)
+    assert not dispatch.canary_ready(order,statuses)
+    assert state['args']==['--suite','State','--shard','1']
+    assert all(dispatch.checkpoint_ready(j,{}) for j in jobs if j['model']!='forest')
