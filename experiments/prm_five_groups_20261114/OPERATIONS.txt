@@ -7,7 +7,7 @@ Authorization and monitoring
 The user authorized four independent FoREST suite trainings followed by all five
 confirmed experiment groups. No new launch approval is required. The user's
 latest resource instruction makes stability take precedence over saturation.
-The existing forest heartbeat is active every 30 minutes. Inspect controller.pid
+The existing forest heartbeat is active every 10 minutes. Inspect controller.pid
 and live children before recovery; never duplicate a controller or GPU job.
 
 Current execution policy
@@ -52,11 +52,27 @@ Remaining implementation work (do not describe this as already ready)
    Expected result is Recover 130 train / 34 val total. CPU smoke creates no PT;
    until worker-status/verification.json confirm completion, PT is still pending.
    Vision receipt is in the Qwen3-VL model directory, not directly under run root.
-2. eval_dispatch is the controller's post-training handoff target, but its
-   implementation is not yet present. Implement and test all confirmed model
-   interfaces, shared perturbation maps, metrics and output verification before
-   the four trainings finish. The heartbeat must continue this work, not just
-   poll. Do not start an incomplete or fabricated substitute evaluation.
+2. eval_dispatch now schedules the five other official baselines in 20 shards,
+   adopting the existing Robometer statuses without restarting its workers.
+   Its PID/status/log are evaluation/dispatcher.* and dispatcher-status.json.
+   A GPU becomes eligible only when its Robometer shard has finished and exited,
+   its training group is healthy (or all four trainings are verified complete),
+   and no unknown CUDA process occupies it. Resource thresholds, 60-second
+   stability and launch staggering follow the existing guard. At most one extra
+   official worker per GPU runs, with batch 1 and allocation fraction 0.30.
+   Per-model shard 0 must finish a real episode before other shards can start.
+   Initial file audits and prior native GPU smokes passed for all five models;
+   the new allocation's actual GPU verification is still deferred to that gate.
+   The ten interface/metric/guard tests pass in the remote training environment.
+   Official_baseline reuses native prompts, decoding, parsing and VLAC recurrence,
+   preserving raw/null and per-frame prefixes. Only main-view methods may process
+   the known short-wrist episode; GRM retains the same explicit input blocker.
+   Unknown failures are recorded and require inspection, not automatic retry.
+   The FoREST baseline adapter and groups 2-5 are NOT implemented yet. The
+   dispatcher records those gaps and cannot declare the five groups complete.
+   Continue implementing the remaining interfaces, perturbations, metrics and
+   verification; the heartbeat must do this work, not just poll. Preserve the
+   duplicate-launch lock and inspect all existing children before any recovery.
 3. O12/S13 counterfactual instruction-specific GT and Recover abnormal-event
    metadata require source verification. If genuinely missing, block only the
    affected condition and continue executable work; never invent GT.

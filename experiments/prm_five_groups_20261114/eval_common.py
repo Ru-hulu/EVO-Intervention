@@ -80,13 +80,14 @@ def build_baseline_manifest():
     return manifest
 
 
-def ensure_images(episode):
+def ensure_images(episode,main_only=False):
     """Decode synchronized raw views once, store lossless PNG, and verify all output hashes."""
     import av
     from contextlib import ExitStack
-    root=IMAGE_ROOT/episode['key']/'fps5'
+    root=IMAGE_ROOT/episode['key']/('fps5-main' if main_only else 'fps5')
     receipt=root/'verification.json'
-    signature={'video_hashes':episode['video_hashes'],'frame_indices':episode['frame_indices']}
+    signature={'video_hashes':episode['video_hashes'][:1] if main_only else episode['video_hashes'],
+               'frame_indices':episode['frame_indices']}
     if receipt.exists():
         proof=json.loads(receipt.read_text())
         assert proof['input']==signature
@@ -94,11 +95,11 @@ def ensure_images(episode):
             assert sha(root/name)==digest, name
         return root
     root.mkdir(parents=True,exist_ok=True)
-    for path,digest in zip(episode['videos'],episode['video_hashes']):
+    for path,digest in zip(episode['videos'][:1] if main_only else episode['videos'],signature['video_hashes']):
         if path:
             assert sha(path)==digest
     wanted=set(episode['frame_indices']); observed=[]; hashes={}
-    active=[i for i,p in enumerate(episode['videos']) if p]
+    active=[0] if main_only else [i for i,p in enumerate(episode['videos']) if p]
     with ExitStack() as stack:
         videos=[stack.enter_context(av.open(episode['videos'][i])) for i in active]
         for video in videos:
