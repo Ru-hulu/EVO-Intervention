@@ -112,7 +112,7 @@ Remaining implementation work (do not describe this as already ready)
    current image, not eight repeated copies; R2VLM no-memory uses fresh initial
    history each step. Native GRM references and VLAC recurrence are retained.
    Full-stream and common-grid validity remain separate. This is not yet a GPU
-   worker: mapped-image preparation, audited engine loading, protected launch,
+   worker: audited engine loading, protected launch,
    Robometer/FoREST integration and scheduling still need implementation and
    actual GPU validation. Existing first-group workers do not import this file.
    Twenty-one CPU tests passed, including rational native frame-rate strings.
@@ -120,6 +120,17 @@ Remaining implementation work (do not describe this as already ready)
    validation; the original native ProcVLM request builder produced one actual
    image for no-memory and eight for memory. Receipt: evaluation/streams/
    stream-runtime-cpu-verification.json. No model forward was performed.
+   stream_images.py now prepares unique native source images for these maps,
+   using the pinned PyAV 19.0.2 decoder and CPU-only Python 3.12 bridge when
+   needed. Private staging is verified before atomic no-replace publication;
+   existing consumer directories are never overwritten. Playback order, repeats,
+   labels and memory remain in the frozen maps, not the image cache. Twenty-eight
+   combined CPU tests passed. A real 382-frame three-view episode produced 1146
+   native images and 255 main-view 20-FPS images; all 195 shared baseline images
+   were byte-identical and the baseline cache was unchanged. The Python 3.10
+   decoder bridge also passed. Receipt: evaluation/streams/
+   stream-images-cpu-verification.json. No model forward or new GPU job ran;
+   group-2/5 workers and scheduling are still pending.
    forest_adapter.py strictly requires the matching suite's verified epoch-01.pt:
    final epoch/optimizer/scheduler/two-rank RNG, unchanged training data signature
    and memory configuration, independent initialization and all 14 official base
