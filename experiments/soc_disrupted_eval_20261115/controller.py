@@ -10,16 +10,9 @@ from .guard import process_identity, alive, gpu_processes, idle_safe, host_sampl
 
 
 def queue(source):
-    canaries = {f'canary-{m}-{s}':dict(model=m,suite=s,phase='canary') for m in MODELS for s in SUITES}
-    return canaries | jobs(source)
-
-
-def eligible(job, statuses, input_sha):
-    if job['phase']=='canary':
-        return True
-    # All nine suite-specific GPU canaries must pass before formal inference.
-    return all(statuses.get(f'canary-{m}-{s}',{}).get('status')=='completed' and
-               statuses[f'canary-{m}-{s}']['inputs_sha256']==input_sha for m in MODELS for s in SUITES)
+    # One physical GPU owns an entire model/suite task. The same process checks
+    # its native resume behavior, then evaluates every condition without reloading.
+    return jobs(source)
 
 
 def run(resume=False):
@@ -41,6 +34,9 @@ def run(resume=False):
     input_sha=sha(ROOT/'inputs.json'); controller=process_identity(os.getpid())
     (ROOT/'controller.pid').write_text(str(os.getpid()))
     tasks=queue(source); active={}; initial=host_sample(); initial_oom=initial['oom_kill']
+    save(ROOT/'queue.json',dict(inputs_sha256=input_sha,tasks=tasks,
+        scheduling='one full model/suite task per GPU; suite canary then all six conditions',
+        max_workers_per_gpu=1,queued_at=time.time()))
     if old:
         assert old.get('initial_oom',initial_oom)==initial_oom, 'New OOM since previous run requires inspection'
     statuses={k:v for k,v in previous.items() if k in tasks}
@@ -57,6 +53,7 @@ def run(resume=False):
         state=dict(status='running' if not failures else 'failed_waiting_healthy_workers',controller=controller,
             inputs_sha256=input_sha, initial_oom=initial_oom, updated=now, evaluation_started=True,
             active={k:dict(pid=p.pid,gpu=g) for k,(p,g) in active.items()},
+            pending=[k for k in tasks if k not in active and statuses.get(k,{}).get('status')!='completed'],
             completed=sum(v.get('status')=='completed' for v in statuses.values()), total_jobs=len(tasks),
             failures=failures, resources=sample)
         save(ROOT/'status.json',state)
@@ -78,7 +75,7 @@ def run(resume=False):
             candidate=None
             for key,job in tasks.items():
                 prior=statuses.get(key,{})
-                if key in active or prior.get('status')=='completed' or not eligible(job,statuses,input_sha):continue
+                if key in active or prior.get('status')=='completed':continue
                 recent=[t for t in attempts[key] if now-t<3600]
                 if len(recent)>=3 or (recent and now-recent[-1]<120):continue
                 candidate=(key,job);break

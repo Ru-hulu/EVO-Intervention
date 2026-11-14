@@ -74,12 +74,14 @@ CUDA_VISIBLE_DEVICES= /cache/cvpzhr/envs/forest-legacy-20261114/bin/python -m ex
 nohup /cache/cvpzhr/envs/forest-legacy-20261114/bin/python -m experiments.soc_disrupted_eval_20261115.controller --start-evaluation > /cache/cvpzhr/setup/soc-disrupted-eval-20261115/controller.log 2>&1 < /dev/null &
 ```
 
-The isolated controller first runs nine suite-specific real GPU canaries. Each
-process evaluates complete static and rewind streams and compares continuous
+The isolated controller queues nine complete model/suite tasks, each occupying
+exactly one GPU. Each process first runs its suite-specific real GPU canary,
+evaluates complete static and rewind streams and compares continuous
 inference with resumes inside both inserted events (maximum difference 0.002,
 matching invalid-answer locations). Canary predictions never enter formal results.
-Only after all nine pass does it run 36 formal shards, reusing each loaded model
-across the six conditions. The model resets between versions.
+After that task's canary passes, the same process evaluates all suite trajectories
+across the six conditions. It does not split a model/suite across multiple GPUs.
+The model resets between versions; other queued tasks advance as GPUs become idle.
 
 Admission requires an idle GPU with no NVML compute context, 60 seconds of stable
 resources, and at least 60 seconds between launches. Each GPU has at most one

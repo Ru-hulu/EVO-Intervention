@@ -41,7 +41,10 @@ def run(job_id, token):
         guard.check()
         save(ROOT/'jobs'/f'{job_id}-initialization.json', backend.audit)
         update(status='running', initialization_sha256=digest(backend.audit))
-        if job['phase'] == 'canary':
+        assert job['phase']=='suite' and job['shard']==0 and job['shards']==1
+        canary_path=ROOT/'canary'/f"{job['model']}-{job['suite']}.json"
+        if not canary_path.exists():
+            update(stage='canary')
             checks = []
             for condition in ('static_only-seed42', 'rewind_only-seed42'):
                 candidates = task_inputs(source, dict(job, shard=0, shards=1), condition)
@@ -51,24 +54,22 @@ def run(job_id, token):
                     backend, row, entry, identity(input_sha, info, row, entry), directory, guard.check)))
             proof = dict(status='passed', inputs_sha256=input_sha, initialization=backend.audit,
                 checks=checks, gpu_forward_tested=True, formal_predictions_used=False)
-            save(ROOT/'canary'/f"{job['model']}-{job['suite']}.json", proof)
-        else:
-            proof = read(ROOT/'canary'/f"{job['model']}-{job['suite']}.json")
-            assert proof['status']=='passed' and proof['inputs_sha256']==input_sha and proof['gpu_forward_tested']
-            assert proof['initialization']==backend.audit
-            completed = 0
-            for condition in CONDITIONS:
-                for row,entry in task_inputs(source, job, condition):
-                    guard.check()
-                    update(condition=condition, episode=row['key'], completed_versions=completed)
-                    from experiments.prm_five_groups_20261114.stream_images import verify_cache
-                    verify_cache(Path(row['image_root']), row,
-                        dict(video_hashes=row['video_hashes'], frame_indices=row['frame_indices']), False)
-                    run_episode(backend, row, entry, identity(input_sha,info,row,entry),
-                        result_path(job['model'],condition,row['key']), guard.check,
-                        lambda n:update(episode_observations=n))
-                    completed += 1
-            update(completed_versions=completed)
+            save(canary_path, proof)
+        validate_canary(read(canary_path),input_sha,backend.audit)
+        update(stage='formal')
+        completed = 0
+        for condition in CONDITIONS:
+            for row,entry in task_inputs(source, job, condition):
+                guard.check()
+                update(condition=condition, episode=row['key'], completed_versions=completed)
+                from experiments.prm_five_groups_20261114.stream_images import verify_cache
+                verify_cache(Path(row['image_root']), row,
+                    dict(video_hashes=row['video_hashes'], frame_indices=row['frame_indices']), False)
+                run_episode(backend, row, entry, identity(input_sha,info,row,entry),
+                    result_path(job['model'],condition,row['key']), guard.check,
+                    lambda n:update(episode_observations=n))
+                completed += 1
+        update(completed_versions=completed)
         update(status='completed')
         return 0
     except SafetyPause as e:

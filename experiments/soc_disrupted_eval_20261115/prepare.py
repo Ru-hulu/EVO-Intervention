@@ -102,6 +102,7 @@ def prepare():
         conditions[condition] = dict(path=str(p), sha256=sha(p), episodes=84, observations=d['expected_samples'])
     protocol = dict(models=list(MODELS), weights='matching suite SOC35 final 1 epoch', memory_enabled=True,
         input_fps=5, seeds=list(SEEDS), batch=1, future_endpoint_reference=False,
+        scheduling='one GPU per complete model/suite task; matching-suite canary then six conditions',
         procvlm='recent8 images; progress-only prompt; no textual memory',
         robometer='native uniform-prefix 10-image interface', forest='native CLIP/max_depth, fixed capacity',
         circle_consistency='mean of (abs(p3-p1)+abs(p2-p1)+abs(p3-p2))/3 over all event-local interior triplets per trajectory',

@@ -3,13 +3,13 @@ from fractions import Fraction
 import math
 from pathlib import Path
 import pytest
-from .common import digest, identity, read, save, jobs
+from .common import digest, identity, read, save, jobs, validate_canary
 from .protocol import timeline, model_episode, image_slots, validate_record
 from .metrics import cycle_triplets, score
 from .engine import run_episode, resume_canary, SafetyPause
 from .report import summarize, seed_summary
 from .guard import idle_safe, validate_ticket
-from .controller import eligible, queue
+from .controller import queue
 from experiments.prm_five_groups_20261114.stream_manifests import playback_map
 
 
@@ -190,18 +190,21 @@ def test_idle_admission_rejects_unknown_contexts_pressure_and_oom():
     assert not idle_safe(dict(sample,nonreclaimable=90),{0:[]},0,0)
 
 
-def test_explicit_ticket_and_all_nine_suite_canaries_required():
+def test_explicit_ticket_and_one_gpu_task_per_model_suite():
     parent=dict(pid=1,start_ticks=2)
     ticket=dict(token='secret',job_id='job',controller=parent,issued=10,inputs_sha256='source')
     validate_ticket(ticket,'job','secret',parent,20)
     with pytest.raises(AssertionError):validate_ticket(ticket,'job','wrong',parent,20)
     with pytest.raises(AssertionError):validate_ticket(ticket,'job','secret',parent,300)
-    q=queue({});assert len(q)==45 and len(jobs({}))==36
-    job=next(v for v in q.values() if v['phase']=='formal')
-    assert not eligible(job,{},'source')
-    statuses={k:dict(status='completed',inputs_sha256='source') for k,v in q.items() if v['phase']=='canary'}
-    assert eligible(job,statuses,'source')
-    assert not eligible(job,statuses,'different')
+    q=queue({});assert len(q)==len(jobs({}))==9
+    assert len({(v['model'],v['suite']) for v in q.values()})==9
+    assert all(v['phase']=='suite' and v['shard']==0 and v['shards']==1 for v in q.values())
+    audit=dict(checkpoint_sha256='correct',suite='State')
+    proof=dict(status='passed',inputs_sha256='source',initialization=audit,gpu_forward_tested=True)
+    validate_canary(proof,'source',audit)
+    with pytest.raises(AssertionError):validate_canary(proof,'different',audit)
+    with pytest.raises(AssertionError):validate_canary(proof,'source',dict(audit,suite='Count'))
+    with pytest.raises(AssertionError):validate_canary(dict(proof,gpu_forward_tested=False),'source',audit)
 
 
 def test_nonfinite_raw_is_retained_as_text_and_invalid_is_not_clipped(tmp_path):

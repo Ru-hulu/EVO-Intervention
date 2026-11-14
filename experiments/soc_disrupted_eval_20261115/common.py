@@ -44,9 +44,8 @@ def jobs(source):
     result = {}
     for model in MODELS:
         for suite in SUITES:
-            for shard in range(4):
-                key = f'{model}-{suite}-part{shard}'
-                result[key] = dict(model=model, suite=suite, shard=shard, shards=4, phase='formal')
+            key = f'{model}-{suite}'
+            result[key] = dict(model=model, suite=suite, shard=0, shards=1, phase='suite')
     return result
 
 
@@ -64,3 +63,8 @@ def digest(value):
 def identity(inputs_sha, info, row, entry):
     return dict(inputs_sha256=inputs_sha, model=info['model'], suite=info['suite'], key=row['key'],
         checkpoint_sha256=info['checkpoint_sha256'], row_sha256=digest(row), entry_sha256=digest(entry))
+
+
+def validate_canary(proof, input_sha, audit):
+    assert proof['status']=='passed' and proof['inputs_sha256']==input_sha and proof['gpu_forward_tested']
+    assert proof['initialization']==audit
