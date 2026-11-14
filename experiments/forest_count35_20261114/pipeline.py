@@ -1,16 +1,18 @@
 """Dedicated Count cache preparation followed by fresh two-GPU one-epoch training."""
+import argparse
 import fcntl
 import json
 import os
 from pathlib import Path
 import sqlite3
+import shutil
 import subprocess
 import sys
 import time
 import traceback
 
 from experiments.prm_five_groups_20261114.prepare_cache import sha, save
-from experiments.prm_five_groups_20261114.overlap_guard import resources, pause_reasons
+from experiments.prm_five_groups_20261114.overlap_guard import resources, pause_reasons, alive
 from .prepare_run import ROOT, OUTPUT
 
 PYTHON = '/cache/cvpzhr/envs/forest-legacy-20261114/bin/python'
@@ -38,17 +40,32 @@ def wait_for_idle_pair(initial_oom, phase):
         time.sleep(5)
 
 
-def main():
+def main(reuse_verified_cache=False):
     lock=(ROOT/'pipeline.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-    assert not (ROOT/'pipeline-started.json').exists(), 'Inspect an existing run instead of launching twice'
+    if reuse_verified_cache:
+        assert not OUTPUT.exists(), 'Never replace a started training run'
+        assert json.loads((ROOT/'pipeline-status.json').read_text())['status']=='failed'
+        assert json.loads((ROOT/'cache-verification.json').read_text())['status']=='passed'
+        old_start=json.loads((ROOT/'pipeline-started.json').read_text())
+        assert not alive(old_start['pid']), 'Old pipeline must have exited'
+        for path in [*ROOT.glob('cache-worker-*.json'),ROOT/'training-status.json']:
+            assert not alive(json.loads(path.read_text()).get('pid')), f'Old process still alive: {path}'
+        history=ROOT/'recovery-history'/str(time.time_ns());history.mkdir(parents=True)
+        for name in ['pipeline-started.json','pipeline-status.json','pipeline.log','training-status.json',
+                     'training-runner.log','training.config.json','source-checksums.json']:
+            path=ROOT/name
+            if path.exists():shutil.copy2(path,history/name)
+    else:
+        assert not (ROOT/'pipeline-started.json').exists(), 'Inspect an existing run instead of launching twice'
     subset=json.loads((ROOT/'subset-manifest.json').read_text())
     assert subset['selected_episodes']==35 and subset['task_count']==15
     assert all(t['selected']>=2 for t in subset['tasks'].values())
     (ROOT/'pipeline.pid').write_text(str(os.getpid()))
     save(ROOT/'pipeline-started.json',dict(pid=os.getpid(),started=time.time()))
-    initial_oom=resources()['oom_kill'];wait_for_idle_pair(initial_oom,'caching')
+    initial_oom=resources()['oom_kill']
+    if not reuse_verified_cache:wait_for_idle_pair(initial_oom,'caching')
     children=[]
-    for worker in range(4):
+    for worker in (range(4) if not reuse_verified_cache else []):
         env=dict(os.environ,CUDA_VISIBLE_DEVICES=str(worker%2),OMP_NUM_THREADS='2',
             OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='2',TOKENIZERS_PARALLELISM='false',
             HF_HUB_OFFLINE='1',PYTHONNOUSERSITE='1',PYTHONUNBUFFERED='1',PYTORCH_ALLOC_CONF='expandable_segments:True')
@@ -58,7 +75,8 @@ def main():
                 cwd=CODE,env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         children.append(child)
     state=dict(status='caching',started=time.time(),pid=os.getpid(),worker_pids=[p.pid for p in children],
-               gpus=[0,1],suite='Count',episodes=35,tasks=15,automatic_training=True)
+               gpus=[0,1],suite='Count',episodes=35,tasks=15,automatic_training=True,
+               reused_verified_cache=reuse_verified_cache)
     save(ROOT/'pipeline-status.json',state)
     codes=[p.wait() for p in children]
     assert all(c==0 for c in codes), f'Cache worker errors: {codes}; preserve every output'
@@ -95,6 +113,7 @@ def main():
     save(ROOT/'pipeline-status.json',state)
     with (ROOT/'training-runner.log').open('w') as log:
         result=subprocess.run([PYTHON,'-m','experiments.forest_count35_20261114.run_training'],cwd=CODE,
+            env=dict(os.environ,CUDA_VISIBLE_DEVICES='0,1'),
             stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT)
     assert result.returncode==0, f'Training runner failed: {result.returncode}'
     final=json.loads((ROOT/'training-status.json').read_text())
@@ -104,8 +123,10 @@ def main():
 
 
 if __name__ == '__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--reuse-verified-cache',action='store_true')
+    args=parser.parse_args()
     try:
-        main()
+        main(args.reuse_verified_cache)
     except Exception:
         error=traceback.format_exc();print(error,flush=True)
         save(ROOT/'pipeline-status.json',dict(status='failed',error=error,pid=os.getpid(),finished=time.time()))
