@@ -60,6 +60,15 @@ def verify():
         decode=read(epdir(row)/'decode-verification.json')
         assert sha(epdir(row)/'observations.jsonl')==decode['observations_sha256']
         for name,digest in decode['png_sha256'].items():assert sha(epdir(row)/name)==digest
+        if row['generate_missing_progress']:
+            import csv
+            import numpy as np
+            from experiments.prm_five_groups_20261114.recover_pour_labels import progress_from_deltas,VISION_SHA
+            with Path(row['progress_path']).open() as f:label_rows=list(csv.DictReader(f))
+            effective,pt,_=progress_from_deltas([float(x['delta']) for x in label_rows],read(row['annotation_path']))
+            assert np.array_equal(pt,np.array([float(x['pt']) for x in label_rows]))
+            assert np.array_equal(effective,np.array([float(x['effective_delta']) for x in label_rows]))
+            assert read(Path(row['progress_path']).with_suffix('.json'))['vision_sha256']==VISION_SHA
     for m in MODELS[:-1]:
         receipt=read(OUT/m/'cache-ready.json');r=rows(OUT/m/'train.jsonl')
         provenance=ROOT/f'{m}-native-provenance.json'
