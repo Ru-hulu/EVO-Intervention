@@ -38,7 +38,20 @@ Remaining implementation work (do not describe this as already ready)
    delta rule: first effective pour plus its associated put-down contributes;
    repeats and waiting hold progress. Existing Recover data stays unchanged.
    Qwen3-VL-4B-Instruct vision-only weights are downloaded and hash-verified.
-   Implement and verify this supplement, then append-recover to the cache queue.
+   recover_pour_labels.py now implements this supplement. Its preflight verifies
+   all 35 annotations / 31633 native frames and snapshots every existing Recover
+   file hash; seven protocol tests and an official-weight CPU encoder smoke pass.
+   The waiting controller PID/status/log live under run root/recover-pour-labels/.
+   It waits for a cache-phase GPU, drains that GPU's cache workers cooperatively,
+   verifies zero compute processes, then runs a single label worker (batch 16,
+   CUDA allocator fraction 0.15). It never shares a training GPU. A new training
+   transition or resource pressure makes it yield at an episode boundary; all
+   finished deltas/labels are preserved. Do not start a duplicate controller.
+   It verifies all 35 CSVs, first-visit masks, source hashes, native frame coverage,
+   unchanged Recover files and splits before append-recover inserts the 35 rows.
+   Expected result is Recover 130 train / 34 val total. CPU smoke creates no PT;
+   until worker-status/verification.json confirm completion, PT is still pending.
+   Vision receipt is in the Qwen3-VL model directory, not directly under run root.
 2. eval_dispatch is the controller's post-training handoff target, but its
    implementation is not yet present. Implement and test all confirmed model
    interfaces, shared perturbation maps, metrics and output verification before
