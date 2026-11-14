@@ -82,7 +82,6 @@ def build_baseline_manifest():
 
 def ensure_images(episode,main_only=False):
     """Decode synchronized raw views once, store lossless PNG, and verify all output hashes."""
-    import av
     from contextlib import ExitStack
     root=IMAGE_ROOT/episode['key']/('fps5-main' if main_only else 'fps5')
     receipt=root/'verification.json'
@@ -94,6 +93,24 @@ def ensure_images(episode,main_only=False):
         for name,digest in proof['png_sha256'].items():
             assert sha(root/name)==digest, name
         return root
+    try:
+        import av
+    except ModuleNotFoundError as exc:
+        if exc.name!='av':raise
+        # VLAC's Python 3.10 stack has no wheel for the pinned PyAV 19.0.2.
+        # Decode with the existing CPU-only Python 3.12 environment instead of
+        # changing the image backend or the model's dependency versions.
+        import os
+        import subprocess
+        env=dict(os.environ,CUDA_VISIBLE_DEVICES='',OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',OPENBLAS_NUM_THREADS='2')
+        env.pop('PYTHONPATH',None)
+        response=subprocess.run(['/cache/cvpzhr/envs/forest-labels/bin/python','-m',
+            'experiments.prm_five_groups_20261114.decode_images'],input=json.dumps({'episode':episode,'main_only':main_only}),
+            text=True,stdout=subprocess.PIPE,check=True,cwd=Path(__file__).parents[2],env=env)
+        result=json.loads(response.stdout)
+        assert result['path']==str(root) and result['av_version']=='19.0.2' and receipt.exists()
+        # Re-enter the cache-only path and independently recheck every PNG hash.
+        return ensure_images(episode,main_only)
     root.mkdir(parents=True,exist_ok=True)
     for path,digest in zip(episode['videos'][:1] if main_only else episode['videos'],signature['video_hashes']):
         if path:
