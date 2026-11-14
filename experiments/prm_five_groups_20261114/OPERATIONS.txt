@@ -73,6 +73,20 @@ Remaining implementation work (do not describe this as already ready)
    Continue implementing the remaining interfaces, perturbations, metrics and
    verification; the heartbeat must do this work, not just poll. Preserve the
    duplicate-launch lock and inspect all existing children before any recovery.
+   stream_manifests.py now freezes group-2 no-memory and shared static/rewind
+   source maps (385 original episodes, 2310 disturbed versions, seeds 42/43/44),
+   and five group-5 streams for exactly the 235 native-30-FPS episodes. Every
+   mapped target is a source-PT lookup; no new labels or image interpolation.
+   Rewind maps move back by 5-15 observed steps, return by the same number of
+   steps, then continue; all views share the map and memory advances in playback
+   order. Insertions use two distinct interior anchors with 15 prior steps
+   available so all requested durations remain equally eligible. Group 5 keeps
+   full-stream predictions and selects exact original integer-second frames for
+   common 1-FPS scoring; no extra inference or interpolation is used for scoring.
+   Six map/scoring/freeze tests pass. Prepared manifests and independent full-map
+   verification are under evaluation/streams/. These inputs are ready; the
+   group-2/5 workers and scheduler integration remain pending. Do not present
+   prepared maps as launched evaluation or GPU-tested inference.
 3. O12/S13 counterfactual instruction-specific GT and Recover abnormal-event
    metadata require source verification. If genuinely missing, block only the
    affected condition and continue executable work; never invent GT.
