@@ -8,6 +8,22 @@ SSH: a100-modelarts, port 30599, /Users/hongru/.ssh/a100-modelarts.pem;
 BatchMode=yes, IdentitiesOnly=yes, StrictHostKeyChecking=yes, ForwardAgent=no.
 
 Authorization and priority
+LATEST USER AMENDMENT (2026-11-14): the four-suite FoREST training queue is
+cancelled. Old State/Count training, outputs, checkpoints and acceleration trials
+were stopped/deleted; Count/Order training caches were removed. The validated
+State input cache is reused. S/TRAINING_SUPERSEDED.json blocks controller.run;
+do not restart the old queue or any old FoREST evaluation jobs. This amendment
+overrides all older FoREST/Count resume and four-suite instructions below.
+The replacement is State ONLY, one fresh epoch on GPU0/1, at:
+/cache/cvpzhr/setup/forest-state-legacy-e1-20261114
+It uses the 20261109 pencil training hyperparameters: per-GPU batch4, accumulation1,
+constant LR1e-4, no gradient checkpointing, FLA/fla-core0.3.2; current State data,
+labels and CLIP/max_depth histories are unchanged. 352 episodes/68940 samples.
+Output: /cache/cvpzhr/outputs/forest-state-legacy-2gpu-e1-20261114
+Read replacement training-status.json and train.log for actual status. Its dedicated
+runner schedules no other suites or evaluations. Existing other-model results and
+original datasets/labels are preserved. 176 old FoREST evaluation jobs are cancelled.
+
 User amendment (2026-11-14, 17:43 CST): R2VLM evaluation is cancelled across
 all five groups. E/r2vlm-user-cancellation.json is the explicit authorization
 receipt. Its four baseline and 60 follow-up jobs are cancelled_by_user; all

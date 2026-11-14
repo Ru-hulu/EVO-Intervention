@@ -129,6 +129,10 @@ def resume_configuration(suite, gpus):
 
 
 def run(adopt=None):
+    superseded = BASE / 'TRAINING_SUPERSEDED.json'
+    if superseded.exists():
+        replacement = json.loads(superseded.read_text()).get('replacement_setup')
+        raise RuntimeError(f'User cancelled this four-suite training queue; replacement: {replacement}')
     lock=(BASE/'controller.lock').open('a')
     fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     prior=BASE/'controller.pid'
