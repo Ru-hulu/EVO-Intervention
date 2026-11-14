@@ -20,6 +20,7 @@ from .eval_common import EVAL,aggregate
 from .overlap_guard import resources,pause_reasons,alive
 from .forest_adapter import check_final_proof
 from .gpu_ownership import GroupOwnership
+from .evaluation_priority import reserved, ReservedEvaluationOwnership
 
 CODE=Path(__file__).parents[2]
 ORDER=['vlac-2b','robobrain25-4b','dopamine-3b','procvlm-2b','r2vlm-alfred-rl']
@@ -107,12 +108,17 @@ def permitted_phase(training,gpu,now):
     # so its status timestamp intentionally stops advancing at that point.
     if len(training.get('training_completed',{}))==4:return True
     if now-training.get('updated',0)>90:return False
+    if reserved(BASE,gpu):return True
     return any(gpu in group['gpus'] and group['phase']=='training' and alive(group.get('pid'))
                for group in training.get('groups',[]))
 
 
-def eligible_gpu(training,gpu,sample,processes,robometer,initial_oom,now,ownership=None):
+def eligible_gpu(training,gpu,sample,processes,robometer,initial_oom,now,ownership=None,reservation_ownership=None,minors=None):
     if not permitted_phase(training,gpu,now) or pause_reasons(sample,gpu,initial_oom):return False
+    if reserved(BASE,gpu):
+        group=next((g for g in training.get('groups',[]) if gpu in g['gpus']),{})
+        if group.get('phase')!='evaluation_reserved':return False
+        return reservation_ownership is not None and reservation_ownership.permits(BASE,gpu,robometer,processes[gpu],minors[gpu],now)
     # Do not race the existing guard's automatic resume of a Robometer shard.
     if robometer.get('status') not in DONE or alive(robometer.get('pid')):return False
     group=next((g for g in training.get('groups',[]) if gpu in g['gpus']),None)
@@ -170,6 +176,7 @@ def run():
     initial_oom=resources()['oom_kill'];active={};safe_since={i:None for i in range(4)}
     minors=gpu_minors()
     ownership=GroupOwnership()
+    reservation_ownership=ReservedEvaluationOwnership()
     launches={j['name']:[] for j in jobs};last_launch=0;started=time.time();aggregated=set()
     while True:
         now=time.time();training=read(BASE/'status.json',{});sample=resources();processes=gpu_processes()
@@ -194,7 +201,7 @@ def run():
             if gpu in active:continue
             if reload_requested:continue
             robo=read(EVAL/'jobs'/f'robometer-4b-group1-{gpu}.json',{})
-            safe=eligible_gpu(training,gpu,sample,processes,robo,initial_oom,now,ownership)
+            safe=eligible_gpu(training,gpu,sample,processes,robo,initial_oom,now,ownership,reservation_ownership,minors)
             if (EVAL/'pause-all-official-baseline').exists():safe=False
             if not safe:safe_since[gpu]=None;continue
             if safe_since[gpu] is None:safe_since[gpu]=now
@@ -228,6 +235,7 @@ def run():
             'boot_code_sha256':boot_sha,'reload_requested':reload_requested,
             'readiness_errors':readiness_errors,
             'gpu_ownership':ownership.status,
+            'reserved_evaluation_ownership':reservation_ownership.status,
             'active':{g:r for g,(_,_,r) in active.items()},'baseline_models_aggregated':sorted(aggregated),
             'baseline_job_status':{j['name']:states[j['name']].get('status','pending') for j in jobs},
             'pending_implementation':PENDING_IMPLEMENTATION,'resource_sample':sample})

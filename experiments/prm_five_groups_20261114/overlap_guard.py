@@ -14,6 +14,7 @@ import traceback
 
 from .prepare_cache import BASE, save
 from .eval_common import EVAL, aggregate
+from .evaluation_priority import reserved
 
 CODE=Path(__file__).parents[2]
 PYTHON='/cache/cvpzhr/envs/robometer/bin/python'
@@ -106,7 +107,7 @@ def run():
             running=bool(pids) or alive(job.get('pid'))
             flag=EVAL/f'pause-{name}';reasons=pause_reasons(sample,gpu,initial_oom)
             if now-training.get('updated',0)>90:reasons.append('training_controller_status_stale')
-            if gpu not in occupied:reasons.append('release_GPU_for_training_queue_transition')
+            if gpu not in occupied and not reserved(BASE,gpu):reasons.append('release_GPU_for_training_queue_transition')
             if (EVAL/'pause-all-early-evaluation').exists():reasons.append('manual_pause_all')
             if reasons:
                 safe_since[gpu]=None;flag.touch();actions[gpu]={'pause_reasons':reasons}

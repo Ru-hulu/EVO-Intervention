@@ -9,6 +9,7 @@ import sys
 import time
 import traceback
 from experiments.prm_five_groups_20261114.prepare_cache import BASE, connect, save, sha
+from .evaluation_priority import policy, AdoptedTraining, matches
 
 CODE = Path(__file__).parents[2]
 PYTHON = '/cache/cvpzhr/envs/forest-labels/bin/python'
@@ -98,7 +99,7 @@ def verify_training(suite, config, *, smoke=False):
     return proof
 
 
-def run():
+def run(adopt=None):
     lock=(BASE/'controller.lock').open('a')
     fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     prior=BASE/'controller.pid'
@@ -108,6 +109,21 @@ def run():
     children={}; workers=json.loads((BASE/'cache-worker-pids.json').read_text())
     groups=[{'gpus':[0,1],'suite':None,'phase':'cache'}, {'gpus':[2,3],'suite':None,'phase':'cache'}]
     completed={}; failed={}; started=time.time()
+    paused={}
+    if adopt:
+        handoff=json.loads(Path(adopt).read_text())
+        assert not matches(handoff['old_controller']), 'Old controller still alive'
+        assert time.time()-handoff['created']<300, 'Stale controller handoff'
+        groups=handoff['groups'];started=handoff['started']
+        completed=handoff['completed'];failed=handoff['failed']
+        for group in groups:
+            if group['phase']=='training':
+                record=handoff['training'][group['suite']]
+                assert sha(BASE/group['suite']/'training.config.json')==record['config_sha256']
+                children[group['suite']]=AdoptedTraining(record)
+                group['config']=record['config']
+        save(BASE/'controller-adoption.json',{'status':'passed','pid':os.getpid(),
+             'handoff':str(adopt),'adopted_training_pids':{s:p.pid for s,p in children.items()},'at':time.time()})
     for suite in SUITES:
         p=BASE/suite/'checkpoint-verification.json'
         if p.exists():
@@ -123,13 +139,17 @@ def run():
         stats=[dict(x) for x in db.execute('SELECT suite,split,status,count(*) AS episodes,sum(samples) AS observations FROM jobs GROUP BY suite,split,status')]
         ready={s for s in SUITES if db.execute('SELECT count(*) FROM jobs WHERE suite=? AND split="train" AND status="completed"',(s,)).fetchone()[0]==COUNTS[s]}
         pending_cache=db.execute('SELECT count(*) FROM jobs WHERE status="pending"').fetchone()[0]
+        priority=policy(BASE)
         for group in groups:
             suite=group['suite'];gpus=group['gpus']
             if group['phase']=='training':
                 proc=children[suite]
                 if proc.poll() is None:
                     continue
-                if proc.returncode==0:
+                if suite in priority.get('paused_suites',[]):
+                    paused[suite]={'reason':'user_requested_group1_priority','checkpoint':str(Path(group['config']['output_dir'])/'last.pt'),
+                                   'stopped_pid':group['pid'],'at':time.time()}
+                elif proc.returncode==0:
                     try:
                         completed[suite]=verify_training(suite,group['config'])
                     except Exception:
@@ -138,9 +158,14 @@ def run():
                     failed[suite]=f'training exit {proc.returncode}; inspect {BASE/suite/"train.log"}'
                 group.update(phase='cache',suite=None)
                 for gpu in gpus:(BASE/f'drain-gpu-{gpu}').unlink(missing_ok=True)
+            if any(g in priority.get('reserved_gpus',[]) for g in gpus):
+                group.update(phase='evaluation_reserved',suite=None)
+                for gpu in gpus:(BASE/f'drain-gpu-{gpu}').touch()
+                continue
+            if group['phase']=='evaluation_reserved':group.update(phase='cache',suite=None)
             if group['phase']=='cache':
                 busy={g['suite'] for g in groups}
-                choice=next((s for s in SUITES if s in ready and s not in completed and s not in failed and s not in busy),None)
+                choice=next((s for s in SUITES if s in ready and s not in completed and s not in failed and s not in busy and s not in priority.get('paused_suites',[])),None)
                 if choice and (BASE/'smoke/checkpoint-verification.json').exists():
                     group.update(phase='draining',suite=choice)
                     for gpu in gpus:(BASE/f'drain-gpu-{gpu}').touch()
@@ -181,7 +206,7 @@ def run():
                'resource_policy':{'cache_workers_per_gpu':CACHE_WORKERS_PER_GPU,'training_cuda_allocator_fraction':0.70,
                                   'training_gradient_checkpointing':True,'stability_over_maximum_throughput':True},
                'groups':[{k:v for k,v in g.items() if k!='config'} for g in groups],
-               'cache':stats,'training_completed':completed,'training_failed':failed,'evaluation_started':False}
+               'cache':stats,'training_completed':completed,'training_failed':failed,'training_paused':paused,'evaluation_started':False}
         save(BASE/'status.json',state)
         if len(completed)==4:
             for gpu in range(4):(BASE/f'drain-gpu-{gpu}').touch()
@@ -200,4 +225,5 @@ def run():
 
 
 if __name__=='__main__':
-    run()
+    parser=argparse.ArgumentParser();parser.add_argument('--adopt');args=parser.parse_args()
+    run(args.adopt)
