@@ -7,6 +7,7 @@ from .eval_common import EVAL, OUT
 from .experiment_inputs import MODELS, MEMORY_MODELS, CONDITIONS
 from .experiment_worker import name_for
 from .prepare_cache import BASE, save, sha
+from .model_cancellation import cancelled_models
 
 DONE = {'completed', 'completed_with_input_blockers'}
 OFFICIAL = tuple(m for m in MODELS if m != 'forest')
@@ -57,25 +58,31 @@ def followup_ready(job, readiness, priority_cleared, evaluation=EVAL):
 
 
 def official_jobs_terminal(states):
-    return all(states.get(f'{model}-group1-{s}', {}).get('status') in DONE for model in OFFICIAL for s in range(4))
+    cancelled = cancelled_models()
+    return all(states.get(f'{model}-group1-{s}', {}).get('status') in
+               ({'cancelled_by_user'} if model in cancelled else DONE)
+               for model in OFFICIAL for s in range(4))
 
 
 def verify_official_handoff(report, states):
     assert official_jobs_terminal(states)
+    cancelled = cancelled_models()
     for model in OFFICIAL:
+        if model in cancelled:continue
         result = report['models'][model]
         blocked = {b['key'] for s in range(4) for b in states[f'{model}-group1-{s}'].get('input_blockers', [])}
         assert set(result['missing_episodes']) == blocked, f'Unexplained missing predictions for {model}'
         assert result['overall']['completed_episodes'] + len(blocked) == 385
     return {model: dict(completed=report['models'][model]['overall']['completed_episodes'],
                        missing=report['models'][model]['missing_episodes'],
-                       invalid_frames=report['models'][model]['overall']['invalid_frames']) for model in OFFICIAL}
+                       invalid_frames=report['models'][model]['overall']['invalid_frames']) for model in OFFICIAL if model not in cancelled}
 
 
 def finalize_official_handoff(states):
     from .group1_report import build
     report = build(); models = verify_official_handoff(report, states)
     receipt = dict(status='passed', at=time.time(), scope='all executable group-1 official predictions audited',
+                   cancelled_models=sorted(cancelled_models()),
                    models=models, report_sha256=sha(OUT/'group1/progress-report.json'),
                    report_path=str(OUT/'group1/progress-report.json'), plan_sha256=report['plan_sha256'])
     # Preserve this exact audit independently of later group-1 FoREST refreshes.

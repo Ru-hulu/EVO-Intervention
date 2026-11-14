@@ -19,6 +19,7 @@ from .evaluation_priority import reserved, ReservedEvaluationOwnership
 from .followup_schedule import (planned_followups, followup_ready, official_jobs_terminal,
                                finalize_official_handoff, release_count_reservation)
 from .eval_handoff import adopt as adopt_evaluations
+from .model_cancellation import cancelled_models
 
 CODE=Path(__file__).parents[2]
 ORDER=['vlac-2b','robobrain25-4b','dopamine-3b','procvlm-2b','r2vlm-alfred-rl']
@@ -131,6 +132,7 @@ def eligible_gpu(training,gpu,sample,processes,robometer,initial_oom,now,ownersh
 
 
 def launch(job,gpu):
+    assert job['model'] not in cancelled_models(), 'Model evaluation cancelled by user'
     path=EVAL/'jobs'/f"{job['name']}.json"
     previous=read(path,{})
     if alive(previous.get('pid')):raise RuntimeError('Previous worker is still alive')
@@ -199,6 +201,7 @@ def run(adopt=None):
         return proc,action
     while True:
         now=time.time();training=read(BASE/'status.json',{});sample=resources();processes=gpu_processes()
+        cancelled=cancelled_models()
         ownership.refresh(training,processes,now,BASE,minors)
         states={j['name']:read(EVAL/'jobs'/f"{j['name']}.json",{}) for j in jobs};readiness_errors={}
         for shard in range(4):states[f'robometer-4b-group1-{shard}']=read(EVAL/'jobs'/f'robometer-4b-group1-{shard}.json',{})
@@ -220,7 +223,7 @@ def run(adopt=None):
             rc=proc.poll()
             if rc is not None:
                 state=read(EVAL/'jobs'/f"{job['name']}.json",{})
-                if state.get('status') not in DONE|{'paused_by_resource_guard','failed'}:
+                if state.get('status') not in DONE|{'paused_by_resource_guard','failed','cancelled_by_user'}:
                     save(EVAL/'jobs'/f"{job['name']}.json",dict(state,status='failed',pid=proc.pid,
                         error=f'Worker exited {rc} without terminal status; inspect log',updated=now))
                 del active[gpu];safe_since[gpu]=None;continue
@@ -243,6 +246,7 @@ def run(adopt=None):
             busy={job['name'] for job,_,_ in active.values()}
             candidate=None
             for job in jobs:
+                if job['model'] in cancelled:continue
                 old=states[job['name']]
                 if job['name'] in busy or old.get('status') in DONE|{'failed'} or alive(old.get('pid')):continue
                 if old and old.get('status')!='paused_by_resource_guard':continue
@@ -267,6 +271,7 @@ def run(adopt=None):
                 proc,receipt=launch(candidate,gpu);active[gpu]=(candidate,proc,receipt)
                 launches[candidate['name']].append(now);last_launch=now
         for model in ORDER:
+            if model in cancelled:continue
             if model not in aggregated and all(states[f'{model}-group1-{s}'].get('status') in DONE for s in range(4)):
                 aggregate(model);aggregated.add(model)
         if 'forest' not in aggregated and all(states[j['name']].get('status') in DONE for j in jobs if j['model']=='forest' and j['group']==1):
@@ -275,6 +280,7 @@ def run(adopt=None):
             refresh_baseline_report()
         if cpu is None:
             for job in jobs:
+                if job['model'] in cancelled:continue
                 if job['group']==1:continue
                 key=(job['group'],job['condition'],job['model'])
                 related=[j for j in jobs if (j['group'],j.get('condition'),j['model'])==key]
@@ -299,6 +305,7 @@ def run(adopt=None):
             'baseline_job_status':{j['name']:states[j['name']].get('status','pending') for j in jobs if j['group']==1},
             'followup_job_status':{j['name']:states[j['name']].get('status','pending') for j in jobs if j['group']>1},
             'first_group_official_priority_cleared':priority_cleared,'dependency_blockers':dependency_blockers,
+            'cancelled_models':sorted(cancelled),
             'input_readiness':readiness,'cpu_action':cpu_action,
             'pending_implementation':PENDING_IMPLEMENTATION,'resource_sample':sample})
         if completion['all_experiments_verified']:

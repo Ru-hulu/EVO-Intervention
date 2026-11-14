@@ -8,6 +8,7 @@ import time
 
 from .eval_common import EVAL, OUT, PLAN, result_path, trajectory_metrics
 from .prepare_cache import BASE, save, sha
+from .model_cancellation import cancelled_models
 
 OLD=Path('/cache/cvpzhr/setup/nine-model-zeroshot-cleanval-voc-20261113')
 METRICS=('pearson','spearman','VS','ER','C')
@@ -83,6 +84,8 @@ def common_comparison(report, manifest, policy):
         expected_samples=sum(len(r['target_pt']) for r in retained),included_episode_keys=sorted(keys),
         excluded_episode_keys=sorted(excluded),models=models,
         all_seven_models_complete=all(m['overall']['coverage_complete'] for m in models.values()),
+        cancelled_models=sorted(cancelled_models()),
+        all_active_models_complete=all(m['overall']['coverage_complete'] for name,m in models.items() if name not in cancelled_models()),
         aggregation=report['aggregation'])
 
 
@@ -93,10 +96,13 @@ def save_comparison(comparison, directory):
            '| Model | Suite | Coverage | Pearson | Spearman | VS | ER | C | P/S defined / undefined | Invalid frames | Future endpoint |',
            '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|']
     for model,value in comparison['models'].items():
+        if model in comparison.get('cancelled_models',[]):continue
         for suite,s in value['by_suite'].items():
             cells=['N/A' if s['defined_trajectory_means'][m] is None else f'{s["defined_trajectory_means"][m]:.6f}' for m in METRICS]
             lines.append(f'| {model} | {suite} | {s["completed_episodes"]}/{s["expected_episodes"]} | '+' | '.join(cells)+
                 f' | {s["defined_episode_counts"]["pearson"]} / {s["undefined_episode_counts"]["pearson"]} | {s["invalid_frames"]} | {value["uses_future_endpoint_reference"]} |')
+    if comparison.get('cancelled_models'):
+        lines += ['', 'Cancelled by user; partial results retained and excluded from the active comparison: '+', '.join(comparison['cancelled_models'])+'.']
     (directory/'comparison-118-order.md').write_text('\n'.join(lines)+'\n')
 
 
@@ -163,6 +169,8 @@ def build():
             sha256=sha(OUT/'group1/comparison-118-order.json'),policy_sha256=sha(COMPARISON_POLICY),
             expected_episodes=comparison['expected_episodes'],expected_samples=comparison['expected_samples'])
         report['all_seven_models_comparison_complete']=comparison['all_seven_models_complete']
+        report['all_active_models_comparison_complete']=comparison['all_active_models_complete']
+        report['cancelled_models']=comparison['cancelled_models']
     save(OUT/'group1/progress-report.json',report)
     return report
 

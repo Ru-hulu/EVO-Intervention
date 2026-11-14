@@ -5,15 +5,18 @@ import time
 from .eval_common import EVAL, OUT
 from .experiment_inputs import CONDITIONS, MODELS, MEMORY_MODELS
 from .prepare_cache import BASE, save
+from .model_cancellation import cancelled_models
 
 
-def assess(states, training, readiness, reports, baseline_complete):
+def assess(states, training, readiness, reports, baseline_complete, cancelled=()):
+    states = {k:v for k,v in states.items() if not any(k.startswith(m+'-') for m in cancelled)}
     failures = [k for k,v in states.items() if v.get('status') == 'failed']
     unfinished = [k for k,v in states.items() if v.get('status') not in ('completed','completed_with_input_blockers')]
     missing = []; partial = []; annotation_blockers = []
     for group, conditions in CONDITIONS.items():
         for condition in conditions:
             for model in (MEMORY_MODELS if group == 2 else MODELS):
+                if model in cancelled:continue
                 key = f'group{group}/{condition}/{model}'; report = reports.get(key)
                 if report is None:
                     missing.append(key); continue
@@ -28,6 +31,7 @@ def assess(states, training, readiness, reports, baseline_complete):
     training_done = len(training.get('training_completed',{})) == 4 and not training.get('training_failed')
     verified = training_done and baseline_complete and not (failures or unfinished or missing or partial or annotation_blockers or input_blockers)
     return dict(all_experiments_verified=verified, training_complete=training_done,
+                cancelled_models=sorted(cancelled),
                 first_group_coverage_complete=baseline_complete, failed_jobs=failures,
                 unfinished_jobs=unfinished, missing_reports=missing, incomplete_coverage_reports=partial,
                 input_blockers=input_blockers, event_annotation_blockers=annotation_blockers,
@@ -45,7 +49,7 @@ def build(states):
     first = json.loads(baseline.read_text()) if baseline.exists() else {}
     readiness_path = EVAL/'conditions/readiness.json'
     readiness = json.loads(readiness_path.read_text()) if readiness_path.exists() else {}
-    comparison_complete=first.get('all_seven_models_comparison_complete',first.get('all_seven_models_complete',False))
-    result = assess(states,json.loads((BASE/'status.json').read_text()),readiness,reports,comparison_complete)
+    comparison_complete=first.get('all_active_models_comparison_complete',first.get('all_seven_models_comparison_complete',first.get('all_seven_models_complete',False)))
+    result = assess(states,json.loads((BASE/'status.json').read_text()),readiness,reports,comparison_complete,cancelled_models())
     save(OUT/'completion-audit.json',dict(result,updated=time.time()))
     return result
