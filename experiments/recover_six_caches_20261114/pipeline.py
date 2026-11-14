@@ -52,6 +52,9 @@ def verify():
     expected={r['key']:rows(epdir(r)/'samples.jsonl') for r in selection['records']};models={}
     for m in MODELS[:-1]:
         receipt=read(OUT/m/'cache-ready.json');r=rows(OUT/m/'train.jsonl')
+        provenance=ROOT/f'{m}-native-provenance.json'
+        assert sha(provenance)==receipt['native_provenance_sha256']
+        for path,digest in read(provenance)['source_sha256'].items():assert sha(path)==digest
         assert receipt['train_sha256']==sha(OUT/m/'train.jsonl')
         assert len(r)==sum(map(len,expected.values())) and set(x['episode_id'] for x in r)==set(expected)
         for x in r:

@@ -22,6 +22,22 @@ def setup(model):
     spec=importlib.util.spec_from_file_location('recover_native',OLD/'worker.py')
     native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
     cfg=dict(native.MODELS[model])
+    plan=read(ROOT/'code/experiments/prm_five_groups_20261114/experiment-plan.json')
+    ref=next(m['prior_provenance_reference'] for m in plan['models'] if m['id']==model)
+    assert cfg['path']==ref['path']
+    for name,digest in ref['small_file_sha256'].items():assert sha(Path(cfg['path'])/name)==digest
+    paths=[OLD/'worker.py',OLD/'common.py',OLD/'grm_prompt.txt',OLD/'proc_prompt.txt']
+    model_dir=Path(cfg['path'])
+    paths.extend(p for p in model_dir.rglob('*') if p.is_file() and '.cache' not in p.parts and
+                 p.suffix in ['.json','.yaml','.txt','.model','.py'] and p.stat().st_size<30*2**20)
+    if model=='robometer-4b':paths.extend((OLD/'runtime/robometer_training'/n) for n in ['model.py','data.py','uniform.py'])
+    if model=='vlac-2b':paths.extend(Path('/cache/robot-baselines/repos/VLAC/evo_vlac/utils')/n
+                                    for n in ['model_utils.py','data_processing_vlm.py'])
+    provenance=dict(model=model,official_revision=ref['revision'],config=cfg,
+                    source_sha256={str(p):sha(p) for p in sorted(set(paths))})
+    p=ROOT/f'{model}-native-provenance.json'
+    if p.exists():assert read(p)==provenance,'Native inputs changed after smoke'
+    else:save(p,provenance)
     if model=='robometer-4b':
         sys.path[:0]=[str(OLD/'runtime'),'/cache/cvpzhr/setup/three-model-e1-cleanval-20261108/code/robometer-upstream']
         from robometer_training.model import load_processor,progress_batch
@@ -161,6 +177,7 @@ def main(model):
     source_checks(selection)
     save(OUT/model/'cache-ready.json',dict(status='input_cache_ready',episodes=10,samples=len(all_records),
          model=model,checkpoint=cfg['path'],checkpoint_config_sha256=sha(Path(cfg['path'])/'config.json'),
+         native_provenance_sha256=sha(ROOT/f'{model}-native-provenance.json'),
          processor_only=True,model_forward_executed=False,original_pt_preserved=True,
          raw_supervision_ready=True,sft_response_targets_assigned=False,
          train_sha256=sha(train),pixel_bytes=total_bytes,episodes_verified=receipts,
