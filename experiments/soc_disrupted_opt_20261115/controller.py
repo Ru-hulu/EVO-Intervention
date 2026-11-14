@@ -10,22 +10,21 @@ from experiments.soc_disrupted_eval_20261115.guard import process_identity, aliv
 
 
 def queue(source):
-    # One physical GPU owns an entire model/suite task. The same process checks
-    # its native resume behavior, then evaluates every condition without reloading.
-    tasks=jobs(source);estimates={}
+    return jobs(source)
+
+
+def ready_tasks(source,tasks):
+    configs=read(OPT/'execution-configs.json')
+    priorities={}
     for key,job in tasks.items():
-        receipt=verify_choice(key);remaining=0
-        for condition in CONDITIONS:
-            for row,entry in task_inputs(source,job,condition):
-                path=result_path(job['model'],condition,row['key'])
-                if path.exists():continue
-                partial=path.with_suffix('.partial.json')
-                done=len(read(partial)['predictions']) if partial.exists() else 0
-                remaining+=len(entry['target_pt'])-done
-        configuration=read(OPT/'execution-configs.json')[key]
-        estimates[key]=remaining/configuration['estimated_effective_obs_per_second']
-    # Longest remaining model/suite first reduces the final single-GPU tail.
-    return dict(sorted(tasks.items(),key=lambda kv:-estimates[kv[0]]))
+        if key not in configs:continue
+        total=sum(len(entry['target_pt']) for condition in CONDITIONS
+                  for row,entry in task_inputs(source,job,condition))
+        priorities[key]=total/configs[key]['estimated_effective_obs_per_second']
+    ordered=sorted(priorities,key=lambda k:-priorities[k])
+    # Start the two already promised ProcVLM jobs, then longest remaining first.
+    first=['procvlm-2b-Order','procvlm-2b-State']
+    return [(k,tasks[k]) for k in first+[k for k in ordered if k not in first] if k in configs]
 
 
 def run(resume=False):
@@ -82,14 +81,15 @@ def run(resume=False):
             state.update(status='completed',updated=time.time());save(ROOT/'status.json',state);return
         if sample['oom_kill'] != initial_oom:
             failures['resource_guard']={'reason':'New OOM; inspect, never silently reset the OOM baseline'}
-        for gpu in range(4):
+        allowed_gpus=read(OPT/'execution-gpus.json')
+        for gpu in allowed_gpus:
             if gpu in [g for _,g in active.values()] or not idle_safe(sample,processes,gpu,initial_oom):
                 stable[gpu]=None;continue
             stable[gpu]=now if stable[gpu] is None else stable[gpu]
             if failures or (ROOT/'pause-all').exists() or now-stable[gpu]<60 or now-last_launch<60:
                 continue
             candidate=None
-            for key,job in tasks.items():
+            for key,job in ready_tasks(source,tasks):
                 prior=statuses.get(key,{})
                 if key in active or prior.get('status')=='completed':continue
                 recent=[t for t in attempts[key] if now-t<3600]

@@ -1,4 +1,5 @@
 """One measured suite/checkpoint per idle GPU, separate from paused formal queue."""
+import argparse
 import fcntl
 import os
 import subprocess
@@ -7,14 +8,13 @@ from .common import *
 from experiments.soc_disrupted_eval_20261115.guard import host_sample, gpu_processes, idle_safe, process_identity, alive
 
 
-def main():
+def main(allowed_gpus=(0,1,2,3)):
     OPT.mkdir(parents=True,exist_ok=True);(OPT/'tuning').mkdir(exist_ok=True)
     lock=(OPT/'tuning.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     previous=read(OPT/'tuning-status.json') if (OPT/'tuning-status.json').exists() else {}
     assert not alive(previous.get('controller'))
     for value in previous.get('active',{}).values():assert not alive(value['process'])
-    assert (ROOT/'pause-all').exists() and not alive(read(ROOT/'status.json').get('controller'))
-    assert not any(gpu_processes().values()),'GPU occupied; inspect instead of competing'
+    assert all(not gpu_processes()[g] for g in allowed_gpus),'Tuning GPU occupied; inspect instead of competing'
     source=read(ROOT/'inputs.json');verify_contract(source)
     tasks=[f'{m}-{s}' for s in SUITES for m in MODELS]
     completed=[k for k in tasks if (OPT/'tuning'/f'{k}.json').exists()
@@ -37,7 +37,7 @@ def main():
             status['status']='failed' if failures else 'completed'
             save(OPT/'tuning-status.json',status);return
         save(OPT/'tuning-status.json',status)
-        for gpu in range(4):
+        for gpu in allowed_gpus:
             if gpu in [g for p,g in active.values()] or not idle_safe(sample,processes,gpu,initial_oom):
                 stable[gpu]=None;continue
             stable[gpu]=now if stable[gpu] is None else stable[gpu]
@@ -57,4 +57,6 @@ def main():
         time.sleep(5)
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--gpus',default='0,1,2,3');a=p.parse_args()
+    main(tuple(map(int,a.gpus.split(','))))
