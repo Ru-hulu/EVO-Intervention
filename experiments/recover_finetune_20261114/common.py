@@ -7,7 +7,7 @@ ROOT = Path('/cache/cvpzhr/setup/recover-five-finetune-20261114')
 CACHE_SETUP = Path('/cache/cvpzhr/setup/recover-six-model-caches-20261114')
 CACHE = Path('/cache/cvpzhr/datasets/recover-six-model-caches-5fps-20261114')
 OUTPUT = Path('/cache/cvpzhr/outputs/recover-five-finetune-20261114')
-ORDER = ['robometer-4b', 'procvlm-2b', 'robobrain25-4b', 'dopamine-3b']
+ORDER = ['robometer-4b', 'robobrain25-4b', 'dopamine-3b']
 PYTHON = '/cache/cvpzhr/envs/forest-legacy-20261114/bin/python'
 
 

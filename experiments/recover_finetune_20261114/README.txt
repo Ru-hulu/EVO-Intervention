@@ -1,8 +1,13 @@
 # Recover official-model fine-tuning
 
-This workspace owns GPU 0/1 and the sequential order **RoboMeter → ProcVLM →
-RoboBrain2.5 → Robo-Dopamine**. FoREST is owned by the other workspace on GPU 2/3;
+This workspace owns GPU 0/1 and the sequential order **RoboMeter →
+RoboBrain2.5 → Robo-Dopamine**. FoREST followed by ProcVLM is owned by the other workspace on GPU 2/3;
 VLAC is not requested for training. No evaluation or recurring automation is started.
+
+ProcVLM's config/cache/CPU preflight are retained for the receiving workspace. Its
+old launch slot has an explicit `transferred_before_launch` guard, so the original
+controller cannot start it. `--continue-after-handoff` requires that guard and the
+already verified RoboMeter final checkpoint; it skips RoboMeter without restarting it.
 
 The verified Recover cache selects two original training episodes per task, seed 42:
 10 episodes / 2,550 observations at 5 FPS. Existing source videos, original PT,

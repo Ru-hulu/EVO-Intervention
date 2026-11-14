@@ -14,7 +14,7 @@ class TrainingContract(unittest.TestCase):
             with self.assertRaises(ValueError):grm_answer(row)
 
     def test_two_workspace_ownership(self):
-        self.assertEqual(ORDER,['robometer-4b','procvlm-2b','robobrain25-4b','dopamine-3b'])
+        self.assertEqual(ORDER,['robometer-4b','robobrain25-4b','dopamine-3b'])
 
     def test_trainer_logs_can_contain_epoch(self):
         try:

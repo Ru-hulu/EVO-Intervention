@@ -1,5 +1,6 @@
 """Sequential detached queue; no retries of unknown failures, no competing GPU jobs."""
 import fcntl
+import argparse
 import math
 import os
 import shutil
@@ -76,13 +77,25 @@ def launch(config_path,pilot):
 
 
 def main():
+    parser=argparse.ArgumentParser();parser.add_argument('--continue-after-handoff',action='store_true');args=parser.parse_args()
     lock=(ROOT/'controller.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-    assert not (ROOT/'status.json').exists(),'Do not relaunch an existing queue without explicit audit'
+    completed=[]
+    if args.continue_after_handoff:
+        previous=read(ROOT/'status.json')
+        assert previous['model']=='procvlm-2b' and previous['status']=='failed'
+        assert read(ROOT/'procvlm-ownership-handoff.json')['status']=='transferred_before_launch'
+        assert 'procvlm-2b' not in ORDER
+        completed=previous['completed']
+        assert [item['model'] for item in completed]==['robometer-4b']
+        assert read(ROOT/'robometer-4b/formal/verification.json')['status']=='passed'
+    else:
+        assert not (ROOT/'status.json').exists(),'Do not relaunch an existing queue without explicit audit'
     (ROOT/'controller.pid').write_text(str(os.getpid())+'\n')
     plan=read(ROOT/'plan.json');assert plan['order']==ORDER
     save(ROOT/'resource-baseline.json',resources())
-    save(ROOT/'status.json',dict(status='starting',order=ORDER,completed=[],gpus=[0,1],updated=time.time()))
+    save(ROOT/'status.json',dict(status='starting',order=ORDER,completed=completed,gpus=[0,1],updated=time.time()))
     for name in ORDER:
+        if any(item['model']==name for item in completed):continue
         config_path=Path(plan['configs'][name]);assert sha(config_path)==plan['config_sha256'][name]
         status=read(ROOT/'status.json');status.update(status='waiting_for_idle_cards',model=name,updated=time.time());save(ROOT/'status.json',status)
         stable=None
