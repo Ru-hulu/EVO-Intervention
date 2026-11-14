@@ -80,4 +80,8 @@ verification=dict(status='passed',observations_per_model=n,models=MODELS,source_
  invalid_counts={m:sum(x is None for x in records[m]['predictions']) for m in MODELS},
  same_frame_times_and_targets_verified=True,manifest_sha256=manifest_sha,include_in_group1_results=False)
 (ROOT/'source/curves-verification.json').write_text(json.dumps(verification,indent=2)+'\n')
+frame_receipt=ROOT/'source/figure-verification.json'
+frame_proof=json.loads(frame_receipt.read_text())
+frame_proof.update(curve_status='completed',curves_verification='curves-verification.json')
+frame_receipt.write_text(json.dumps(frame_proof,indent=2)+'\n')
 print(json.dumps(verification,indent=2))
