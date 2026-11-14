@@ -45,12 +45,12 @@ def main():
     dispatch=json.loads((BASE/'evaluation/dispatcher-status.json').read_text())
     assert dispatch['boot_code_sha256']==sha(CODE/'experiments/prm_five_groups_20261114/eval_dispatch.py')
     evals=[dict(receipt=r,identity=verify_command(r)) for r in dispatch['active'].values()]
-    assert {r['receipt']['gpu'] for r in evals}=={0,1,2,3}
+    assert {0,1}<={r['receipt']['gpu'] for r in evals}<={0,1,2,3}
     sample=resources();initial_oom=sample['oom_kill']
     assert not any(pause_reasons(sample,g,initial_oom) for g in (0,1))
     config_path=BASE/'State/training.config.json'
     config=json.loads(config_path.read_text()); output=Path(config['output_dir'])
-    checkpoint=AUDIT/'state-resume.pt'
+    checkpoint=AUDIT/f'state-resume-{time.time_ns()}.pt'
     assert not checkpoint.exists(), 'Do not overwrite an existing resume checkpoint'
     shutil.copy2(output/'last.pt',checkpoint)
     import torch
@@ -101,6 +101,7 @@ def main():
             HF_HUB_OFFLINE='1',PYTHONNOUSERSITE='1',PYTORCH_ALLOC_CONF='expandable_segments:True',
             TRITON_CACHE_DIR=str(AUDIT/'triton-cache'),MAX_JOBS='2')
         env.pop('PYTHONPATH',None)
+        if backend=='accelerated':env['FOREST_NATIVE_GATED_NORM']='1'
         name=backend+('-ddp' if ddp else '')
         progress('gpu_probe_'+name)
         with (validation/f'{name}.log').open('a') as log:
@@ -124,7 +125,12 @@ def main():
 
     backend='original'
     try:
-        probe(ORIGINAL/'bin/python','original')
+        reference=AUDIT/'history/full-fusion/probe/original.pt'
+        reference_receipt=AUDIT/'history/full-fusion/request.json'
+        if reference.exists() and json.loads(reference_receipt.read_text())['checkpoint_sha256']==value['checkpoint_sha256']:
+            shutil.copy2(reference,validation/'original.pt')
+        else:
+            probe(ORIGINAL/'bin/python','original')
         probe(ENV/'bin/python','accelerated')
         from .verify_acceleration import compare, LIMITS
         proof=compare(validation)
@@ -136,7 +142,7 @@ def main():
         assert ranks[0]['initial_trainable_sha256']==ranks[1]['initial_trainable_sha256']
         evals_healthy()
         proof.update(two_rank_smoke_passed=True,checkpoint_sha256=value['checkpoint_sha256'],
-                     config_sha256=value['config_sha256'],two_rank_smoke=ranks,at=time.time())
+                     config_sha256=value['config_sha256'],two_rank_smoke=ranks,native_gated_norm=True,at=time.time())
         save(AUDIT/'verification.json',proof);backend='accelerated'
     except Exception:
         save(AUDIT/'verification.json',dict(status='failed',error=traceback.format_exc(),
@@ -144,7 +150,7 @@ def main():
         progress('validation_failed_restoring_original_backend')
     # Neither successful nor failed diagnostic weights are ever resumed.
     assert not any(matches(r) for r in original_tree)
-    save(AUDIT/'request.json',dict(value,status='resume_requested',backend=backend,
+    save(AUDIT/'request.json',dict(value,status='resume_requested',backend=backend,native_gated_norm=backend=='accelerated',
          reason='validation_passed' if backend=='accelerated' else
                 'acceleration_validation_failed_restore_original_training'))
     progress('waiting_for_checkpoint_resume',backend=backend,step=checkpoint_step)

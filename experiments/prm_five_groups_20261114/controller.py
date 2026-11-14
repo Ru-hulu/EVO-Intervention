@@ -184,9 +184,12 @@ def run(adopt=None):
                 if group['phase'] == 'training_maintenance':
                     if maintenance and maintenance['status'] == 'resume_requested':
                         path,config,resume,python = validate_resume(BASE,maintenance)
+                        resume_env=env(gpus)
+                        if maintenance.get('native_gated_norm') and maintenance['backend']=='accelerated':
+                            resume_env['FOREST_NATIVE_GATED_NORM']='1'
                         proc=spawn([python,'-m','torch.distributed.run','--standalone','--nproc_per_node=2',
                                     '-m','mem_lite.train_stage3','--config',str(path),'--resume',resume],
-                                   BASE/suite/'train.log',env(gpus))
+                                   BASE/suite/'train.log',resume_env)
                         children[suite]=proc;group.update(phase='training',pid=proc.pid,config=config)
                         paused.pop(suite,None)
                         save(BASE/suite/'acceleration-resume-launch.json',{'pid':proc.pid,'gpus':gpus,

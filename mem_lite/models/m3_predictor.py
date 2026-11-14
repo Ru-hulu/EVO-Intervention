@@ -1,5 +1,6 @@
 """原生 Qwen3.5 三视角 ViT + 连续历史输入 + 进度分箱头；不生成文本。"""
 
+import os
 import torch
 from peft import LoraConfig, inject_adapter_in_model
 from torch import nn
@@ -32,6 +33,11 @@ class M3ProgressPredictor(nn.Module):
         super().__init__()
         if num_bins < 2:
             raise ValueError("进度取值点至少需要2个")
+        # Preserve the original BF16 rounding boundaries while independently
+        # accelerating convolution and linear attention in a validated process.
+        if os.environ.get('FOREST_NATIVE_GATED_NORM') == '1':
+            from transformers.models.qwen3_5 import modeling_qwen3_5
+            modeling_qwen3_5.FusedRMSNormGated = None
         self.qwen = Qwen3_5ForConditionalGeneration.from_pretrained(
             model_path, dtype=dtype, attn_implementation="sdpa", local_files_only=True,
         )

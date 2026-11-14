@@ -54,6 +54,7 @@ def validate_resume(base, value):
         assert proof['status'] == 'passed' and proof['checkpoint_sha256'] == value['checkpoint_sha256']
         assert proof['numerical_passed'] and proof['two_rank_smoke_passed'] and proof['memory_passed']
         assert proof['config_sha256'] == value['config_sha256']
+        assert proof.get('native_gated_norm',False)==value.get('native_gated_norm',False)
         python = ENV / 'bin/python'
     else:
         assert value['backend'] == 'original'

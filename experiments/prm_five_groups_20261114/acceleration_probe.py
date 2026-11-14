@@ -58,6 +58,7 @@ def run(args):
     output = Path(args.output); output.mkdir(parents=True, exist_ok=True)
     receipt = dict(backend=args.backend, initial_trainable_sha256=initial_digest,
                    checkpoint_step=ckpt['step'], data_signature=data.signature, config=c,
+                   native_gated_norm=os.environ.get('FOREST_NATIVE_GATED_NORM')=='1',
                    fast_path=q.is_fast_path_available, official_predictions_written=False)
     if not args.ddp_smoke:
         indices = [0, 17, len(data)//4, len(data)//2, len(data)-1, order[ckpt['next_batch']]]
