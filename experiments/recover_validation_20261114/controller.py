@@ -20,17 +20,26 @@ def main():
     if not args.adopt_repair:assert not (ROOT/'controller.pid').exists(), 'Existing launch requires explicit recovery audit'
     else:
         repair=read(args.adopt_repair)
-        assert repair['reason']=='forest_constant_lr_verification_only' and repair['failed_model']=='forest'
-        for pid in (repair['old_controller_pid'],repair['failed_worker_pid']):assert not alive(pid)
+        assert repair['reason'] in ('forest_constant_lr_verification_only', 'adopted_worker_returncode_only')
+        assert not alive(repair['old_controller_pid'])
+        if repair['reason']=='forest_constant_lr_verification_only':
+            assert repair['failed_model']=='forest' and not alive(repair['failed_worker_pid'])
+        else:
+            assert not repair['previous_status']['pending']
+            for pid in repair['completed_worker_pids']:assert not alive(pid)
     (ROOT/'controller.pid').write_text(str(os.getpid()))
     jobs=ROOT/'jobs';jobs.mkdir(exist_ok=True);manifest=read(ROOT/'inputs.json')
     assert manifest['models']==list(MODELS)
     pending=list(MODELS);active={};finished={};stable={};last_launch=0
     baseline=host_sample();initial_oom=baseline['oom_kill']
     if args.adopt_repair:
-        previous=repair['previous_status'];pending=previous['pending']+['forest']
-        finished={k:v for k,v in previous['finished'].items() if k!='forest'}
-        assert 'forest' not in previous['active'] and 'forest' not in previous['pending']
+        previous=repair['previous_status']
+        if repair['reason']=='forest_constant_lr_verification_only':
+            pending=previous['pending']+['forest']
+            finished={k:v for k,v in previous['finished'].items() if k!='forest'}
+            assert 'forest' not in previous['active'] and 'forest' not in previous['pending']
+        else:
+            pending=[];finished=previous['finished']
         for name,value in previous['active'].items():
             launch=read(ROOT/'jobs'/(name+'-launch.json'));assert launch['pid']==value['pid'] and launch['gpu']==value['gpu']
             assert alive(value['pid']) and identity(value['pid'])==repair['active_identities'][name]
@@ -78,11 +87,14 @@ def identity(pid):
 
 
 class Adopted:
-    def __init__(self,pid,name):self.pid,self.name=pid,name
+    def __init__(self,pid,name):
+        self.pid,self.name=pid,name
+        self.returncode=None
     def poll(self):
         if alive(self.pid):return None
         state=read(ROOT/'jobs'/(self.name+'.json'))
-        return 0 if state['status'] in ('completed','paused_for_resources') else 1
+        self.returncode=0 if state['status'] in ('completed','paused_for_resources') else 1
+        return self.returncode
 
 
 if __name__=='__main__':main()
