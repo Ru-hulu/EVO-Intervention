@@ -8,6 +8,23 @@ SSH: a100-modelarts, port 30599, /Users/hongru/.ssh/a100-modelarts.pem;
 BatchMode=yes, IdentitiesOnly=yes, StrictHostKeyChecking=yes, ForwardAgent=no.
 
 Authorization and priority
+LATEST COUNT AUTHORIZATION (2026-11-14): independently fine-tune Count on EXACTLY
+35 training episodes, at least two per task. The 15-task/699-train manifest is
+sampled with seed42: two/task plus one extra for five randomly selected tasks.
+Dedicated setup: /cache/cvpzhr/setup/forest-count-35-legacy-e1-20261114
+Output: /cache/cvpzhr/outputs/forest-count-35-legacy-2gpu-e1-20261114
+Code: experiments/forest_count35_20261114. GPU0/1 first rebuild only the35 caches
+(two workers/card), then fresh Qwen3.5-4B one-epoch training with the validated
+latest State/Order settings: 5FPS, batch4/rank, accumulation1, constant LR1e-4,
+FLA0.3.2, no gradient checkpointing, CLIP/max_depth native history. No previous
+suite weights or cancelled Count checkpoints are loaded. Existing visual PT,
+validation split, State/Order final checkpoints and GPU2/3 R2 evaluation remain.
+Read pipeline-status.json/cache-worker-*.json, then training-status.json/train.log.
+This dedicated pipeline supersedes old Count cancellation only for this35-episode
+run; never restart the old four-suite queue. All desktop automations were deleted
+by the user; do not recreate a monitor. R2's separately authorized30-episode subset
+continues remotely and still excludes Recover; full-dataset R2 remains cancelled.
+
 LATEST ORDER AMENDMENT (2026-11-14): user stopped the 53-episode Order run and
 requested EXACTLY35 episodes, at least two per task, fresh one-epoch restart.
 ACTIVE Order setup: /cache/cvpzhr/setup/forest-order-35-legacy-e1-20261114
