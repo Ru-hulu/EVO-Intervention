@@ -19,8 +19,8 @@ alpha-32, dropout-0.05 language LoRA. Each runs one epoch.
 |---|---|---:|---:|---:|
 | RoboMeter | Native continuous-PT C51 progress-head loss; language LoRA + published progress head | 8 | 1 | 1e-4 |
 | ProcVLM | Assistant `<progress>` text and EOS only; no CoT, remaining-action or auxiliary-head loss | 2 | 4 | 1e-5 |
-| RoboBrain2.5 | Native `<score>` text and EOS only | 8 | 1 | 1e-4 |
-| Robo-Dopamine | Native `<score>` text and EOS only | 8 | 1 | 1e-4 |
+| RoboBrain2.5 | Native `<score>` text and EOS only | 4 | 2 | 1e-4 |
+| Robo-Dopamine | Native `<score>` text and EOS only | 4 | 2 | 1e-4 |
 
 RoboMeter uses the existing uniform-history objective. Its initial batch 9 was
 reduced to 8 before any formal optimizer update after a mixed-length batch hit
@@ -32,6 +32,13 @@ retain true future endpoint references. Their BEFORE reference is the initial
 PT=0 state, so the native relative completion score equals 100×current PT.
 Their integer-percent instruction is honored by round-half-up text targets;
 raw continuous PT is retained separately, with at most 0.005 PT quantization.
+
+RoboBrain's initial batch-8 pilot reached the allocator cap before formal training.
+Its audited repair halves microbatch and doubles accumulation, preserving the
+effective batch of 16 and every scientific configuration field. The pending
+Dopamine config uses the same conservative decomposition. Pilot repair requires
+archived failure/config evidence, exited old processes, unchanged completed-model
+verification, and no formal outputs; it cannot resume an unknown or partial run.
 
 `prepare` freezes configs and source/weight fingerprints; `queue` uses a process
 lock and checks GPU 0/1 have no compute contexts before each job. It runs a

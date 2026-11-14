@@ -16,6 +16,14 @@ class TrainingContract(unittest.TestCase):
     def test_two_workspace_ownership(self):
         self.assertEqual(ORDER,['robometer-4b','robobrain25-4b','dopamine-3b'])
 
+    def test_microbatch_repair_preserves_effective_batch_and_protocol(self):
+        from .queue import validate_microbatch_repair
+        original=dict(microbatch=8,accumulation=1,effective_batch=16,world_size=2,lr=.0001)
+        after=dict(original,microbatch=4,accumulation=2)
+        validate_microbatch_repair(original,after)
+        for invalid in [dict(after,lr=.0002),dict(after,accumulation=1),dict(after,microbatch=8)]:
+            with self.assertRaises(AssertionError):validate_microbatch_repair(original,invalid)
+
     def test_trainer_logs_can_contain_epoch(self):
         try:
             from .train import Monitor

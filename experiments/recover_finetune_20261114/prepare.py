@@ -37,7 +37,7 @@ def main():
             micro, accumulation, rate, schedule, warmup = 2,4,1e-5,'linear',.05
             env = PYTHON
         else:
-            micro, accumulation, rate, schedule, warmup = 8,1,1e-4,'cosine',.03
+            micro, accumulation, rate, schedule, warmup = 4,2,1e-4,'cosine',.03
             env = PYTHON
         config = dict(name=name,model_path=str(checkpoint),official_revision=provenance['official_revision'],
             python=env,train_data=str(train),train_sha256=sha(train),weights_sha256=weights,
@@ -60,7 +60,7 @@ def main():
         cache_audit_sha256=sha(CACHE_SETUP/'final-verification.json'),created=time.time(),
         evaluations_enabled=False,vlac_training_enabled=False,forest_owned_by_other_workspace=True,
         safety='one two-rank model at a time; 16GiB GPU reserve; finite-loss/gradient canary gate'))
-    print('Prepared four-model GPU0/1 queue; no training launched',flush=True)
+    print('Prepared GPU0/1 official-model queue; no training launched',flush=True)
 
 
 if __name__=='__main__': main()

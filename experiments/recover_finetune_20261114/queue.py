@@ -76,8 +76,19 @@ def launch(config_path,pilot):
     return process.returncode
 
 
+def validate_microbatch_repair(before,after):
+    allowed={'microbatch','accumulation'}
+    assert {k:v for k,v in before.items() if k not in allowed}=={k:v for k,v in after.items() if k not in allowed}
+    assert 0<after['microbatch']<before['microbatch']
+    assert before['microbatch']*before['accumulation']==after['microbatch']*after['accumulation']
+    assert after['effective_batch']==after['microbatch']*after['accumulation']*after['world_size']
+
+
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--continue-after-handoff',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();mode=parser.add_mutually_exclusive_group()
+    mode.add_argument('--continue-after-handoff',action='store_true')
+    mode.add_argument('--resume-after-pilot-repair',type=Path)
+    args=parser.parse_args()
     lock=(ROOT/'controller.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     completed=[]
     if args.continue_after_handoff:
@@ -88,6 +99,22 @@ def main():
         completed=previous['completed']
         assert [item['model'] for item in completed]==['robometer-4b']
         assert read(ROOT/'robometer-4b/formal/verification.json')['status']=='passed'
+    elif args.resume_after_pilot_repair:
+        previous=read(ROOT/'status.json');repair=read(args.resume_after_pilot_repair)
+        name=repair['model']
+        assert previous['status']=='failed' and previous['model']==name
+        assert repair['failure']=='pilot_allocator_limit' and name in ORDER
+        assert not (ROOT/name/'formal').exists(),'Formal state requires a separate checkpoint recovery'
+        for pid in repair['retired_pids']:
+            path=Path(f'/proc/{pid}/stat')
+            assert not path.exists() or path.read_text().split(') ',1)[1].startswith('Z'),pid
+        assert sha(repair['before_config'])==repair['before_config_sha256']
+        assert sha(ROOT/name/'config.json')==repair['after_config_sha256']
+        validate_microbatch_repair(read(repair['before_config']),read(ROOT/name/'config.json'))
+        completed=previous['completed']
+        assert [item['model'] for item in completed]==ORDER[:ORDER.index(name)]
+        for item in completed:
+            assert read(ROOT/item['model']/'formal/verification.json')==item['verification']
     else:
         assert not (ROOT/'status.json').exists(),'Do not relaunch an existing queue without explicit audit'
     (ROOT/'controller.pid').write_text(str(os.getpid())+'\n')
