@@ -153,36 +153,40 @@ def test_grm_future_endpoint_is_source_endpoint_and_all_views_share_mapping():
         mapped_episode(row, playback_map(row, 'no_memory'), '/images', 'grm')
 
 
-def test_frozen_loader_checks_receipt_plan_and_supported_conditions(tmp_path):
+@pytest.mark.parametrize('group,condition,rate', [(2, 'no_memory', '30'),
+                                               (5, 'fps20', '30'), (5, 'fps20', '30/1')])
+def test_frozen_loader_checks_receipt_plan_and_supported_conditions(tmp_path, group, condition, rate):
     def write(path, value):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(value))
     row = source()
-    entry = playback_map(row, 'no_memory')
+    row['source_rate'] = rate
+    entry = (playback_map(row, 'no_memory') if group == 2 else
+             fps_map(row, {i: i/180 for i in range(181)}, 20))
     plan = tmp_path/'plan.json'
     write(plan, {'fixed': True})
     baseline = tmp_path/'group1-manifest.json'
     write(baseline, {'episodes': [row]})
-    path = tmp_path/'streams/group2/no_memory.json'
-    value = {'group': 2, 'condition': 'no_memory', 'plan_sha256': sha(plan),
+    path = tmp_path/'streams'/f'group{group}'/f'{condition}.json'
+    value = {'group': group, 'condition': condition, 'plan_sha256': sha(plan),
              'baseline_manifest_sha256': sha(baseline), 'expected_episodes': 1,
              'expected_samples': len(entry['target_pt']), 'episodes': [entry]}
     write(path, value)
     write(tmp_path/'streams/preparation.json', {'manifests': {str(path): {'sha256': sha(path)}}})
     write(tmp_path/'streams/verification.json', {'status': 'passed', 'all_maps_independently_checked': True})
-    loaded, rows, _ = load_inputs(2, 'no_memory', 'procvlm-2b', tmp_path, plan)
+    loaded, rows, _ = load_inputs(group, condition, 'procvlm-2b', tmp_path, plan)
     assert loaded == value and rows[row['key']] == row
-    for group, condition, model in [(2, '../no_memory', 'procvlm-2b'),
-                                     (2, 'no_memory', 'robobrain25-4b'),
-                                     (5, 'fps25', 'procvlm-2b')]:
+    for bad_group, bad_condition, model in [(2, '../no_memory', 'procvlm-2b'),
+                                           (2, 'no_memory', 'robobrain25-4b'),
+                                           (5, 'fps25', 'procvlm-2b')]:
         with pytest.raises(ValueError):
-            load_inputs(group, condition, model, tmp_path, plan)
+            load_inputs(bad_group, bad_condition, model, tmp_path, plan)
     changed = deepcopy(value)
     changed['episodes'][0]['target_pt'][1] += .1
     write(path, changed)
     with pytest.raises(AssertionError):
-        load_inputs(2, 'no_memory', 'procvlm-2b', tmp_path, plan)
+        load_inputs(group, condition, 'procvlm-2b', tmp_path, plan)
     write(path, value)
     write(plan, {'fixed': False})
     with pytest.raises(AssertionError):
-        load_inputs(2, 'no_memory', 'procvlm-2b', tmp_path, plan)
+        load_inputs(group, condition, 'procvlm-2b', tmp_path, plan)

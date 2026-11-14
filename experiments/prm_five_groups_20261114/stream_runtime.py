@@ -5,6 +5,7 @@ baseline dispatcher. A future worker must supply audited native engines and
 verified image paths. Robometer/FoREST use their separate tensor/memory adapters.
 """
 from copy import deepcopy
+from fractions import Fraction
 import json
 import math
 from pathlib import Path
@@ -73,7 +74,7 @@ def load_inputs(group, condition, model, evaluation=EVAL, plan=PLAN):
         else:
             assert entry['condition'] == condition and entry['input_fps'] == int(condition[3:])
             assert entry['memory_enabled'] is True and entry['source_rate'] == '30'
-            assert sources[entry['key']]['source_rate'] == '30'
+            assert Fraction(sources[entry['key']]['source_rate']) == 30
     return manifest, sources, sha(path)
 
 

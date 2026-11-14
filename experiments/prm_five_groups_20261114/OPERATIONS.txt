@@ -11,7 +11,12 @@ The existing forest heartbeat is active every 10 minutes. Inspect controller.pid
 and live children before recovery; never duplicate a controller or GPU job.
 
 Current execution policy
-Two cache workers per GPU, eight total. Training uses fixed GPU pairs 0/1 and 2/3,
+Group 1 has priority. State continues on GPU0/1; Count is user-paused with a
+verified resumable checkpoint, and GPU2/3 are reserved for official evaluation.
+Do not automatically recover Count as a failed job. Resume it with the original
+two-rank configuration only after executable official group-1 work is finished
+and coverage is audited. Other groups may prepare on CPU without delaying group 1.
+When caching is permitted, use two cache workers per GPU. Training uses fixed GPU pairs 0/1 and 2/3,
 microbatch 1, accumulation 9, effective batch 18, gradient checkpointing, and a
 0.70 CUDA allocator fraction. Cache workers on a training pair finish their
 current episode and exit cooperatively. Do not overlap full-model training with
@@ -110,6 +115,11 @@ Remaining implementation work (do not describe this as already ready)
    worker: mapped-image preparation, audited engine loading, protected launch,
    Robometer/FoREST integration and scheduling still need implementation and
    actual GPU validation. Existing first-group workers do not import this file.
+   Twenty-one CPU tests passed, including rational native frame-rate strings.
+   All 12 real frozen manifests / 1083785 versioned observations passed adapter
+   validation; the original native ProcVLM request builder produced one actual
+   image for no-memory and eight for memory. Receipt: evaluation/streams/
+   stream-runtime-cpu-verification.json. No model forward was performed.
    forest_adapter.py strictly requires the matching suite's verified epoch-01.pt:
    final epoch/optimizer/scheduler/two-rank RNG, unchanged training data signature
    and memory configuration, independent initialization and all 14 official base
