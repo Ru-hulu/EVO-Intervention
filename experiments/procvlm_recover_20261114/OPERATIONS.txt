@@ -1,0 +1,35 @@
+Dedicated ProcVLM Recover handoff after FoREST, 2026-11-14
+
+Latest user instruction: start ProcVLM immediately after FoREST completes.
+Workspace2 now owns GPU2/3 for FoREST -> ProcVLM. Workspace1 keeps GPU0/1 for
+Robometer -> RoboBrain2.5 -> RoboDopamine. Do not duplicate ProcVLM in its old queue.
+
+Setup: /cache/cvpzhr/setup/procvlm-recover-10-progress-only-e1-20261114
+Output: /cache/cvpzhr/outputs/procvlm-recover-10-progress-only-2gpu-e1-20261114
+Runner: code/experiments/procvlm_recover_20261114/run.py
+Native trainer: snapshot of recover-five-finetune-20261114/code, with only the
+training common.ROOT and OUTPUT redirected to this isolated experiment.
+
+Dependency: FoREST status completed and final_checkpoint_verified. Its final
+checkpoint remains at forest-recover-10-legacy-2gpu-e1-20261114/epoch-01.pt.
+handoff-verified.json records the old queue's pre-Popen launch-file guard and
+the explicit transferred_before_launch ownership sentinel. The runner requires
+that receipt and empty GPU2/3 before launching. No original queue is modified here.
+
+Same frozen Recovery10 /2550 observations, 5FPS, original PT and pixels, no
+augmentation. Official ProcVLM-2B, fresh language LoRA16/32, BF16, SDPA, LR1e-5,
+linear schedule, warmup5%, one epoch. Progress-only assistant text/EOS loss; no
+remaining-action/CoT loss and no auxiliary progress-head loss. Native recent8
+main-view images and existing cached prompt are preserved. Input maximum7163
+tokens was verified in the source cache; limit16384, no truncation or resizing.
+
+Run a3-step longest/shortest mixed-input check at microbatch2, accumulation4.
+Memory-only fallback is microbatch1, accumulation8, then gradient checkpointing
+if needed. Global batch remains16. Unknown failures stop without silent retry.
+Use the existing78% allocator limit and16GiB free-memory check. Trial weights are
+not used for formal training. Formal process is freshly initialized after pilot.
+
+Read status.json, trials.json, chosen-config.json, procvlm-2b/formal/progress.json
+and train.log. Completion requires finite weights, exact epoch1/160 steps,
+equal rank states, optimizer/scheduler/two-rank RNG, original source hashes.
+No periodic desktop automation is created. Never relaunch over existing output.
