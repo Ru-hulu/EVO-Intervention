@@ -40,7 +40,11 @@ def report():
         for condition in CONDITIONS:
             for row,entry in task_inputs(source,job,condition):
                 path=result_path(job['model'],condition,row['key'])
-                if path.exists():validate_execution(read(path),approved);predictions+=1
+                if path.exists():
+                    record=read(path)
+                    if (OPT/'previous-results-cleared.json').exists():
+                        assert record.get('execution_segments'),'Fresh result lacks runtime provenance'
+                    validate_execution(record,approved);predictions+=1
     preservation=preserved_outputs()
     from experiments.soc_disrupted_eval_20261115.report import report as original_report
     result=original_report()
