@@ -8,6 +8,23 @@ SSH: a100-modelarts, port 30599, /Users/hongru/.ssh/a100-modelarts.pem;
 BatchMode=yes, IdentitiesOnly=yes, StrictHostKeyChecking=yes, ForwardAgent=no.
 
 Authorization and priority
+SUBSEQUENT ORDER AUTHORIZATION (2026-11-14): State10% completed (798 steps,
+epoch-01.pt verified); preserve its checkpoint. User now authorized an independent
+Order10% fine-tune from the original base, at least two training episodes per task,
+one epoch using the restored legacy two-GPU configuration. Dedicated pipeline:
+/cache/cvpzhr/setup/forest-order-10pct-legacy-e1-20261114
+Current Order manifest has16 tasks/524 train/133 val (old frozen index had14/468/119).
+Seed42 proportional sampling selects53 complete train episodes, 2-4 per task.
+The selected three O15 and three O18 episodes lacked PT: this run computes their
+labels with the SAME existing whole-video visual-delta protocol and original
+vision weights, in its own labels directory; no original labels/splits are edited.
+Four cache workers use GPUs0/1, then hand off automatically to fresh Qwen3.5-4B
+training (batch4/rank, accumulation1, constant1e-4, FLA0.3.2, no gradient checkpointing).
+Other GPUs/tasks are untouched. No State checkpoint initialization or augmentation.
+Output: /cache/cvpzhr/outputs/forest-order-10pct-legacy-2gpu-e1-20261114
+Read pipeline-status.json, cache-worker-*.json, then training-status.json/train.log.
+Do not restart the retired four-suite queue; this authorization is Order-only.
+
 LATEST USER AMENDMENT (2026-11-14): the four-suite FoREST training queue is
 cancelled. Old State/Count training, outputs, checkpoints and acceleration trials
 were stopped/deleted; Count/Order training caches were removed. The validated
