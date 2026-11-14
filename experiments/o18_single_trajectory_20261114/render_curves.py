@@ -41,7 +41,9 @@ selected=json.loads((ROOT/'source/figure-verification.json').read_text())['selec
 for x in selected[1:-1]:ax.axvline(x,color='#D8D8D8',linewidth=.4,linestyle=(0,(2,3)),zorder=0)
 all_y=np.array([v for r in records.values() for v in r['predictions'] if v is not None],dtype=float)
 lo=min(0.,float(all_y.min()));hi=max(1.,float(all_y.max()));ax.set_ylim(lo-.025*(hi-lo),hi+.025*(hi-lo))
-ax.set_xlim(t[0],t[-1]);ax.set_yticks([0,.5,1]);ax.set_yticklabels(['0','0.5','1'])
+ax.set_xlim(t[0],t[-1])
+ticks=np.arange(np.ceil(lo*2)/2,np.floor(hi*2)/2+.25,.5)
+ax.set_yticks(ticks);ax.set_yticklabels([f'{v:g}' for v in ticks])
 ax.set_xticks(selected);ax.set_xticklabels([f'{v:.1f}' for v in selected])
 ax.set_xlabel('Time (s)',labelpad=2);ax.set_ylabel('Progress',labelpad=4)
 ax.grid(axis='y',color='#E5E5E5',linewidth=.4);ax.set_axisbelow(True)
@@ -69,7 +71,7 @@ with (ROOT/'O18-episode-000028-predictions.csv').open('w',newline='') as f:
 \\begin{figure}[t]
   \\centering
   \\includegraphics[width=\\linewidth]{O18-episode-000028-combined.pdf}
-  \\caption{Qualitative results on one held-out O18 trajectory (episode 000028). Top: six uniformly sampled main-camera observations. Bottom: progress predictions from six official models at 5 FPS and the reference PT computed by cumulative normalized visual differences over all original frames. RoboBrain2.5 and Robo-Dopamine use the true final frame as a reference. This additional trajectory is evaluated separately from the frozen Group 1 benchmark.}
+  \\caption{Qualitative results on one held-out O18 trajectory (episode 000028). Top: six uniformly sampled main-camera observations. Bottom: progress predictions from six official models at 5 FPS and the reference PT computed by cumulative normalized visual differences over all original frames. Predictions retain their native scales, without clipping or smoothing. RoboBrain2.5 and Robo-Dopamine use the true final frame as a reference. This additional trajectory is evaluated separately from the frozen Group 1 benchmark.}
   \\label{fig:o18-qualitative}
 \\end{figure}
 ''')
