@@ -32,7 +32,7 @@ fig=plt.figure(figsize=(width,height),facecolor='white')
 # Plot endpoints align with the centers of the first/last image panels.
 strip=PdfReader(PDF/'O18-episode-000028-uniform-6-frames.pdf').pages[0]
 W=float(strip.mediabox.width);panel=(W-5*1.5)/6;left=(panel/2)/W;right=1-left
-ax=fig.add_axes([left,.27,right-left,.49])
+ax=fig.add_axes([left,.31,right-left,.45])
 for model,name,color,style in zip(MODELS,NAMES,COLORS,STYLES):
  y=np.array([np.nan if x is None else x for x in records[model]['predictions']],dtype=float)
  ax.plot(t,y,label=name,color=color,linewidth=.9,linestyle=style,alpha=.96,zorder=3)
@@ -45,7 +45,7 @@ ax.set_xlim(t[0],t[-1])
 ticks=np.arange(np.ceil(lo*2)/2,np.floor(hi*2)/2+.25,.5)
 ax.set_yticks(ticks);ax.set_yticklabels([f'{v:g}' for v in ticks])
 ax.set_xticks(selected);ax.set_xticklabels([f'{v:.1f}' for v in selected])
-ax.set_xlabel('Time (s)',labelpad=2);ax.set_ylabel('Progress',labelpad=4)
+ax.set_xlabel('Time (s)',labelpad=1);ax.set_ylabel('Progress',labelpad=4)
 ax.grid(axis='y',color='#E5E5E5',linewidth=.4);ax.set_axisbelow(True)
 ax.spines[['top','right']].set_visible(False)
 handles,labels=ax.get_legend_handles_labels();order=[6,3,0,4,1,5,2]
@@ -53,7 +53,7 @@ handles,labels=ax.get_legend_handles_labels();order=[6,3,0,4,1,5,2]
 fig.legend([handles[i] for i in order],[labels[i] for i in order],loc='upper center',
  bbox_to_anchor=(.5,1.015),ncol=4,frameon=False,handlelength=2.7,columnspacing=1.2,
  labelspacing=.3,handletextpad=.5,borderaxespad=0)
-fig.text(.5,.015,'* Uses the true final frame of this trajectory.',ha='center',va='bottom',fontsize=5.5,color='#444444')
+fig.text(.5,.005,'* Uses the true final frame of this trajectory.',ha='center',va='bottom',fontsize=5.5,color='#444444')
 curve=PDF/'O18-episode-000028-six-model-curves.pdf'
 fig.savefig(curve);fig.savefig(ROOT/'O18-episode-000028-six-model-curves.png',dpi=450);plt.close(fig)
 page=PdfReader(curve).pages[0];assert abs(float(page.mediabox.width)-W)<.02
@@ -71,7 +71,7 @@ with (ROOT/'O18-episode-000028-predictions.csv').open('w',newline='') as f:
 \\begin{figure}[t]
   \\centering
   \\includegraphics[width=\\linewidth]{O18-episode-000028-combined.pdf}
-  \\caption{Qualitative results on one held-out O18 trajectory (episode 000028). Top: six uniformly sampled main-camera observations. Bottom: progress predictions from six official models at 5 FPS and the reference PT computed by cumulative normalized visual differences over all original frames. Predictions retain their native scales, without clipping or smoothing. RoboBrain2.5 and Robo-Dopamine use the true final frame as a reference. This additional trajectory is evaluated separately from the frozen Group 1 benchmark.}
+  \\caption{Qualitative results on a held-out O18 trajectory: inspect three spray bottles from left to right, returning each bottle before proceeding to the next (episode 000028). Top: six uniformly sampled main-camera observations. Bottom: progress predictions from six official models at 5 FPS and the reference PT computed by cumulative normalized visual differences over all original frames. Predictions retain their native scales, without clipping or smoothing. RoboBrain2.5 and Robo-Dopamine use the true final frame as a reference. This additional trajectory is evaluated separately from the frozen Group 1 benchmark.}
   \\label{fig:o18-qualitative}
 \\end{figure}
 ''')
