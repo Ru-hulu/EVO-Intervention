@@ -47,9 +47,19 @@ def wait_idle(initial_oom):
 
 def verify():
     from mem_lite.datasets.m3_dataset import M3Dataset
+    from experiments.prm_five_groups_20261114.prepare_cache import progress_values
     from .loader import load_input
     selection=read(ROOT/'resolved-selection.json');source_checks(selection)
     expected={r['key']:rows(epdir(r)/'samples.jsonl') for r in selection['records']};models={}
+    for row in selection['records']:
+        assert row['fps']==30,'This frozen subset consists of native 30 FPS trajectories'
+        observed=expected[row['key']];values=progress_values(row)
+        indices=sorted(set(range(0,row['frames'],6)) | {row['frames']-1})
+        assert [r['frame_index'] for r in observed]==indices
+        assert [r['pt'] for r in observed]==[values[i] for i in indices]
+        decode=read(epdir(row)/'decode-verification.json')
+        assert sha(epdir(row)/'observations.jsonl')==decode['observations_sha256']
+        for name,digest in decode['png_sha256'].items():assert sha(epdir(row)/name)==digest
     for m in MODELS[:-1]:
         receipt=read(OUT/m/'cache-ready.json');r=rows(OUT/m/'train.jsonl')
         provenance=ROOT/f'{m}-native-provenance.json'
@@ -65,6 +75,7 @@ def verify():
             audit=read(Path(record['samples_file']).with_suffix('.verification.json'))
             for p,d in audit['pixel_sha256'].items():assert sha(p)==d
             entries=rows(record['samples_file'])
+            assert sha(entries[0]['prompt_tensor_file'])==record['prompt_sha256']
             for x in [entries[0],entries[len(entries)//2],entries[-1]]:
                 batch,truth=load_input(x);assert batch['input_ids'].ndim==2 and batch['pixel_values'].numel()>0
                 assert truth['pt'].numel()==1
