@@ -1,0 +1,43 @@
+Group 2: suite-fine-tuned models with history removed, authorized 2026-11-15.
+
+Remote setup: /cache/cvpzhr/setup/group2-soc35-no-memory-20261115
+Remote results: /cache/cvpzhr/evaluations/group2-soc35-no-memory-20261115
+
+Three models x 84 fixed validation trajectories = 252 curves / 45,288 predictions.
+State: 22 trajectories / 4,601 observations; Order: 32 / 6,987; Count: 30 / 3,508.
+Every task contributes two held-out trajectories. Sampling remains 5 FPS; there
+is no artificial perturbation. Each model uses its corresponding suite's final
+35-trajectory, one-epoch checkpoint. No model is trained in this experiment.
+
+ProcVLM receives exactly one current main-view image and the unchanged SOC
+progress-only prompt. Robometer receives exactly three current camera slots
+and one current progress token; the historical image/token section is removed.
+FoREST receives its native current camera slots with zero history masks; no
+stream memory object is instantiated. Original missing cameras keep the
+established 64x64 black placeholder. No target, episode length, frame number,
+previous generated text, future endpoint, or history is sent to the model.
+
+Nine checkpoint-specific GPU smoke tests precede formal evaluation. They check
+strict tensor restoration, current-image counts, zero history, independence
+from preceding calls, batch/singleton differences, and measured throughput.
+The scheduler uses all four idle GPUs, one worker per card. It chooses the
+fastest batch passing the 0.002 absolute-progress batch agreement threshold;
+singleton inference is the fallback if larger batches change results too much.
+Singleton suites are divided into four disjoint trajectory shards, allowing
+multiple GPUs to preserve singleton semantics while processing in parallel.
+Completed files are never overwritten; per-batch partial predictions support
+exact frame coverage checks and resumption. No unrelated process is stopped.
+
+Metrics are per-trajectory Pearson/Spearman against the original PT, pinned
+RoboValue VS=ER*C, and the user-defined SA endpoint score. SA is the mean of
+the last max(1, ceil(0.02*N)) sampled predictions. The user explicitly confirmed
+all 84 selected normal trajectories count as successful demonstrations.
+SA is a continuous 0..1 score, not binary classification accuracy. Summaries
+give equal weight to each trajectory and retain defined/undefined denominators.
+Invalid output stays null; no interpolation, smoothing, or curve rescaling.
+
+status.json tracks the dispatcher; smoke/<job>/verification.json records each
+short test and selected batch. formal/<job>/status.json records live progress.
+After all nine formal runs, report.py verifies every saved curve and writes
+metrics.json, comparison.csv, episode_metrics.csv and predictions.csv.
+No memory-on baseline, perturbation evaluation, or desktop automation is started.
