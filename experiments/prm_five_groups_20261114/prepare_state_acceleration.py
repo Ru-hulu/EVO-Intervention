@@ -12,7 +12,7 @@ BASE = Path('/cache/cvpzhr/setup/prm-five-groups-20261114')
 AUDIT = BASE / 'state-acceleration'
 ORIGINAL = Path('/cache/cvpzhr/envs/forest-labels')
 ENV = Path('/cache/cvpzhr/envs/forest-labels-accelerated-20261114')
-VERSIONS = {'flash-linear-attention': '0.4.2', 'fla-core': '0.4.2'}
+VERSIONS = {'flash-linear-attention': '0.4.2', 'fla-core': '0.4.2', 'einops': '0.8.1', 'ninja': '1.13.0'}
 
 
 def get_json(url):
@@ -82,7 +82,9 @@ def main():
     sources = []
     for name, version in VERSIONS.items():
         data = get_json(f'https://pypi.org/pypi/{name}/{version}/json')
-        wheel, = [r for r in data['urls'] if r['packagetype'] == 'bdist_wheel']
+        candidates=[r for r in data['urls'] if r['packagetype'] == 'bdist_wheel']
+        wheel, = [r for r in candidates if ('py3-none-any' in r['filename'] or
+                   ('manylinux' in r['filename'] and 'x86_64' in r['filename']))]
         sources.append(dict(name=name, version=version, filename=wheel['filename'],
                             url=wheel['url'], sha256=wheel['digests']['sha256'],size=wheel['size']))
     data = get_json('https://api.github.com/repos/Dao-AILab/causal-conv1d/releases/tags/v1.7.0')
