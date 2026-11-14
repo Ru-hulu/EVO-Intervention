@@ -62,6 +62,9 @@ def test_maintenance_allows_existing_but_not_new_gpu_jobs(tmp_path,monkeypatch):
     training={'updated':10,'groups':[{'suite':'State','gpus':[0,1],'phase':'training_maintenance'}]}
     assert dispatch.permitted_phase(training,0,11)
     assert not dispatch.eligible_gpu(training,0,{}, {},{},0,11)
+    training['groups'][0].update(phase='training',pid=99999999)
+    assert dispatch.permitted_phase(training,0,11)  # State exited before status refresh.
+    assert not dispatch.eligible_gpu(training,0,{}, {},{},0,11)
 
 
 def resume_fixture(base):
