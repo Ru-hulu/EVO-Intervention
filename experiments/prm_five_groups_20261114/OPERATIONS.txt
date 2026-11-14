@@ -99,6 +99,17 @@ Remaining implementation work (do not describe this as already ready)
    verification are under evaluation/streams/. These inputs are ready; the
    group-2/5 workers and scheduler integration remain pending. Do not present
    prepared maps as launched evaluation or GPU-tested inference.
+   stream_runtime.py now provides a CPU-only playback/restore protocol adapter
+   for the five official native engines (group 2: ProcVLM/R2VLM; group 5: all
+   five). It validates frozen manifest receipts, keeps truth outside model
+   requests, advances history in playback order, and restores exact saved
+   prefixes without repeating model calls. ProcVLM no-memory supplies ONE
+   current image, not eight repeated copies; R2VLM no-memory uses fresh initial
+   history each step. Native GRM references and VLAC recurrence are retained.
+   Full-stream and common-grid validity remain separate. This is not yet a GPU
+   worker: mapped-image preparation, audited engine loading, protected launch,
+   Robometer/FoREST integration and scheduling still need implementation and
+   actual GPU validation. Existing first-group workers do not import this file.
    forest_adapter.py strictly requires the matching suite's verified epoch-01.pt:
    final epoch/optimizer/scheduler/two-rank RNG, unchanged training data signature
    and memory configuration, independent initialization and all 14 official base
