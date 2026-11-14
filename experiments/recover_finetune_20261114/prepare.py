@@ -31,7 +31,7 @@ def main():
         weights = {str(p):sha(p) for p in sorted(checkpoint.glob('*.safetensors'))}
         assert weights
         if name=='robometer-4b':
-            micro, accumulation, rate, schedule, warmup = 9,1,1e-4,'cosine',.03
+            micro, accumulation, rate, schedule, warmup = 8,1,1e-4,'cosine',.03
             env = '/cache/cvpzhr/envs/robometer/bin/python'
         elif name=='procvlm-2b':
             micro, accumulation, rate, schedule, warmup = 2,4,1e-5,'linear',.05

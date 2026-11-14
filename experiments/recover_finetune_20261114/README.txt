@@ -12,12 +12,14 @@ alpha-32, dropout-0.05 language LoRA. Each runs one epoch.
 
 | Method | Trainable objective | Initial microbatch/rank | Accumulation | LR |
 |---|---|---:|---:|---:|
-| RoboMeter | Native continuous-PT C51 progress-head loss; language LoRA + published progress head | 9 | 1 | 1e-4 |
+| RoboMeter | Native continuous-PT C51 progress-head loss; language LoRA + published progress head | 8 | 1 | 1e-4 |
 | ProcVLM | Assistant `<progress>` text and EOS only; no CoT, remaining-action or auxiliary-head loss | 2 | 4 | 1e-5 |
 | RoboBrain2.5 | Native `<score>` text and EOS only | 8 | 1 | 1e-4 |
 | Robo-Dopamine | Native `<score>` text and EOS only | 8 | 1 | 1e-4 |
 
-RoboMeter uses the existing uniform-history training configuration. ProcVLM keeps
+RoboMeter uses the existing uniform-history objective. Its initial batch 9 was
+reduced to 8 before any formal optimizer update after a mixed-length batch hit
+the 78% allocator cap (16.5 GiB of device memory remained free). ProcVLM keeps
 its prior LR and linear schedule/5% warmup; the other official models use
 cosine/3% warmup. ProcVLM retains its native high-resolution eight-image input
 (up to 7,163 tokens including the answer), without truncation. The two GRMs
@@ -28,7 +30,8 @@ raw continuous PT is retained separately, with at most 0.005 PT quantization.
 
 `prepare` freezes configs and source/weight fingerprints; `queue` uses a process
 lock and checks GPU 0/1 have no compute contexts before each job. It runs a
-three-update pilot on the longest real input before formal training. Pilot
+three-update pilot mixing longest and shortest real inputs before formal training
+(to exercise padded attention kernels). Pilot
 weights are discarded. Formal training reloads official weights and fresh LoRA.
 Unknown failures halt the queue with all outputs retained; no blind retry.
 

@@ -145,8 +145,10 @@ def main():
     if args.pilot:
         from safetensors.torch import load_file
         longest=max(dataset.rows,key=lambda r:load_file(r['prompt_tensor_file'])['input_ids'].numel())
-        # Stress the longest real input; pilot updates never initialize a formal run.
-        dataset.rows=[longest]*(config['microbatch']*2*4)
+        shortest=min(dataset.rows,key=lambda r:load_file(r['prompt_tensor_file'])['input_ids'].numel())
+        # Include real padding masks: identical longest inputs alone can select a
+        # cheaper attention kernel and understate the memory of shuffled batches.
+        dataset.rows=[longest,shortest]*(config['microbatch']*4)
     expected=math.ceil(math.ceil(2550/2/config['microbatch'])/config['accumulation'])
     ta=TrainingArguments(output_dir=str(output),num_train_epochs=config['epochs'],
         max_steps=3 if args.pilot else -1,per_device_train_batch_size=config['microbatch'],
