@@ -21,6 +21,10 @@ CLIP + max_depth：相邻帧 CLIP 相似度，两侧全局最大值计算深度�
 三、五组实验
 1. 基线：七种方法，State 89 / Order 119 / Count 177，共 385 条验证轨迹，5 FPS。
    计算 Pearson、Spearman、官方 VS，并保存 VS 的 ER、C 两个分项。
+   2026-11-14 用户追加授权：第一组比较统一排除 Order/O03/swap-blocks_episode_001342。
+   比较集合为 State89 / Order118 / Count177，共384条64739观测；七模型使用同一集合，
+   包括原本能预测该条的主视角模型。原385条清单、预测及执行审计保留，第2–5组口径不变。
+   排除策略见 group1-comparison-policy.json；结果为 group1/comparison-118-order.json/.md。
 2. 记忆：只对 ProcVLM、R²VLM、FoREST、Robometer 做消融和扰动。
    去记忆：ProcVLM 仅当前主视角；R²VLM 不输入上一轮文字记忆；FoREST 不读写记忆；
    Robometer 仅当前三视角共 3 图。同一模型消融前后使用相同权重。计算 VOC 和 VS。

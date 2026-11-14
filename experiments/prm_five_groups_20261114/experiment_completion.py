@@ -45,6 +45,7 @@ def build(states):
     first = json.loads(baseline.read_text()) if baseline.exists() else {}
     readiness_path = EVAL/'conditions/readiness.json'
     readiness = json.loads(readiness_path.read_text()) if readiness_path.exists() else {}
-    result = assess(states,json.loads((BASE/'status.json').read_text()),readiness,reports,first.get('all_seven_models_complete',False))
+    comparison_complete=first.get('all_seven_models_comparison_complete',first.get('all_seven_models_complete',False))
+    result = assess(states,json.loads((BASE/'status.json').read_text()),readiness,reports,comparison_complete)
     save(OUT/'completion-audit.json',dict(result,updated=time.time()))
     return result

@@ -1,0 +1,17 @@
+{
+  "schema": "prm-group1-comparison-policy-v1",
+  "id": "group1-order-common118-20261114",
+  "user_authorized": true,
+  "user_instruction": "Order 不考虑缺的那一条",
+  "scope": {"group": 1, "suite": "Order"},
+  "applies_to": "all_seven_models_identical_trajectory_set",
+  "excluded_episodes": [
+    {
+      "key": "Order/O03/swap-blocks_episode_001342",
+      "expected_samples": 88,
+      "reason": "Known source defect: main/right 436 frames, left wrist 435 frames; user requested exclusion from the group-1 Order comparison."
+    }
+  ],
+  "original_manifest_and_predictions_retained": true,
+  "other_groups_unchanged": true
+}

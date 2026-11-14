@@ -40,6 +40,12 @@ Do not claim a GPU canary or final results from the CPU tests or a mock backend.
 Input dependencies
 S/code/experiments/prm_five_groups_20261114/experiment-plan.json is immutable.
 Baseline: SOC385 / 64827 observations at5FPS; State89 / Order119 / Count177.
+User amendment (2026-11-14): the group-1 comparison excludes the known O03 short
+left-wrist trajectory for ALL seven models, including main-only methods. The common
+comparison is SOC384 /64739 observations: State89 /Order118 /Count177. It is saved
+in output/group1/comparison-118-order.json/.md with the versioned policy SHA.
+The original385-episode report remains the execution/input audit; all original
+predictions and manifests are retained. Group2–5 inputs/coverage are unchanged.
 E/streams contains the 12 independently verified group2/group5 manifests.
 E/conditions/readiness.json tracks all 15 follow-up conditions. The dispatcher
 refreshes this CPU-only preparation every five minutes without changing source labels.
