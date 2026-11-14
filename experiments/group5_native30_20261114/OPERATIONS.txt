@@ -1,0 +1,54 @@
+Group 5: native 30 FPS, two held-out trajectories per task (2026-11-14)
+
+Authorized scope: select the native-30-FPS tasks, use input rates 30/24/18/12/6,
+and complete missing original-frame progress labels before model evaluation.
+The user clarified that ProcVLM, Robometer and FoREST should all use existing
+suite-fine-tuned weights. Do not train new models or substitute official weights.
+FoREST's three final weights have been located. The six ProcVLM/Robometer SOC
+bindings remain unresolved; this does not block preparing labels.
+
+Remote setup:
+/cache/cvpzhr/setup/group5-native30-two-per-task-20261114
+
+The selection contains State 16, Order 30 and Count 14 trajectories: 60 total,
+30 tasks, two per task. Reuses the previously assessed, prediction-independent
+seed-42 selection. Preserves source validation membership and checks both IDs
+and main-video hashes against the 35-per-suite training selections.
+
+Numerical label functions are unchanged from the audited SOC label protocol:
+frozen original Qwen3.5-4B vision, BF16/SDPA; per-frame mean post-merger features
+in FP32; adjacent L2; FP64 cumulative normalization over all original frames.
+No stage weighting, smoothing, time fallback or FPS-specific relabeling.
+Historical protocol bytes remain identical. The actual two-worker GPU2/3
+placement and current unchanged worker source hash are separately recorded.
+
+Initially four selected labels were absent from the dataset directories. The
+Order/O15 episode_000028 label was independently found in the other workspace's
+completed perturbation setup and reused after identity/protocol/CSV validation.
+The three new files are O15 episode_000033 and O18 episode_000028/000033, under
+each task's progress/ directory. Their .progress.json files record provenance.
+Dataset metadata, split manifests, videos, stage annotations and existing labels
+are hash-protected and are not edited. resolved-selection.json is the label index.
+
+Preparation uses the existing SOC worker in an isolated code copy. An initial
+CPU-only preflight found that some existing tasks lack stage annotations; those
+annotations are not needed by this label algorithm. Its error/launch evidence
+was retained in preflight-history. No GPU worker or output label had been
+created during that failed preflight. The corrected preflight protects an
+annotation only when the source supplies one.
+
+Once workers exit successfully, verify every saved frame index/delta/PT and
+normalization, recheck protected source hashes, and create five stream manifests.
+Each manifest contains the full native-source frame mapping and PT lookup plus
+the common 6 FPS scoring positions. No prediction interpolation is allowed.
+Full-rate curves/metrics should also be retained to expose high-frequency jitter.
+
+status.json + verification.json are authoritative for LABEL/INPUT completion.
+Their completion is not evidence of evaluation, checkpoint binding or GPU model
+loading. No training or evaluation is launched by prepare_labels.py.
+
+Run with /cache/cvpzhr/envs/forest-labels/bin/python. Never run the original broad
+relabel.run/finalize entrypoints: they are intended for the historical full-corpus
+job. This wrapper calls only its worker and verify_csv functions. Do not launch
+a duplicate controller. After completed labels, the wrapper's verify mode is
+CPU-only and checks/reconstructs only this setup's frozen inputs.
