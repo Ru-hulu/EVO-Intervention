@@ -6,6 +6,7 @@ processes may be paused; never signals training or the baseline dispatcher.
 import argparse
 import csv
 import fcntl
+from fractions import Fraction
 import json
 import math
 import os
@@ -57,7 +58,7 @@ def prepare():
         info=source['video_views'][v];p=folder/info['video_path'];assert sha(p)==info['video_sha256']
         with av.open(str(p)) as container:
             stream=container.streams.video[0];stream.codec_context.thread_count=1
-            assert str(stream.average_rate)=='30';assert sum(1 for _ in container.decode(stream))==source['total_frames']
+            assert Fraction(str(stream.average_rate))==30;assert sum(1 for _ in container.decode(stream))==source['total_frames']
         videos.append(str(p));hashes.append(info['video_sha256'])
     row=dict(key='Order/O18/'+source['sample_id'],suite='Order',task_id='O18',split='val',
              sample_id=source['sample_id'],frames=source['total_frames'],fps=30,source_rate='30',
