@@ -8,6 +8,19 @@ SSH: a100-modelarts, port 30599, /Users/hongru/.ssh/a100-modelarts.pem;
 BatchMode=yes, IdentitiesOnly=yes, StrictHostKeyChecking=yes, ForwardAgent=no.
 
 Authorization and priority
+LATEST ORDER AMENDMENT (2026-11-14): user stopped the 53-episode Order run and
+requested EXACTLY35 episodes, at least two per task, fresh one-epoch restart.
+ACTIVE Order setup: /cache/cvpzhr/setup/forest-order-35-legacy-e1-20261114
+Output: /cache/cvpzhr/outputs/forest-order-35-legacy-2gpu-e1-20261114
+Seed42 retention from the existing53 caches: two/task, plus one for O05/O07/O16.
+All16 tasks remain covered, 8783 observations, 1098 optimizer steps. Same fresh
+base and legacy GPU0/1 training configuration. Old53 training/controller stopped;
+its checkpoints/output, worker logs/queue/code snapshot and18 unselected caches
+were deleted. The35 selected caches and all computed progress labels are preserved.
+Read the ACTIVE setup training-status.json/train.log and subset-manifest.json.
+The old53-run setup retains a TRAINING_SUPERSEDED.json marker and label files;
+its older instructions below are historical and must not be relaunched.
+
 SUBSEQUENT ORDER AUTHORIZATION (2026-11-14): State10% completed (798 steps,
 epoch-01.pt verified); preserve its checkpoint. User now authorized an independent
 Order10% fine-tune from the original base, at least two training episodes per task,
