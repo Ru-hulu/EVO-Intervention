@@ -1,0 +1,32 @@
+Dedicated Recover FoREST run, 2026-11-14
+
+User partition: this workspace owns FoREST on physical GPU2/3. Workspace1 owns
+Robometer -> ProcVLM -> RoboBrain2.5 -> RoboDopamine on GPU0/1. Never launch those
+four models here or add FoREST back into the other workspace's queue.
+
+Setup: /cache/cvpzhr/setup/forest-recover-10-legacy-e1-20261114
+Output: /cache/cvpzhr/outputs/forest-recover-10-legacy-2gpu-e1-20261114
+Code: setup/code/experiments/forest_recover_20261114
+Native training snapshot: copied from completed Count35 setup/code, unmodified.
+
+Use exact native Recover cache at
+/cache/cvpzhr/datasets/recover-six-model-caches-5fps-20261114/forest.
+5 tasks x2 train trajectories =10 episodes, 2550 observations. Preserve original
+PT, task prompts, 5FPS sampled frames, RGB, CLIP/max_depth StreamForest histories.
+No augmentation, relabeling, validation leakage, or cache regeneration.
+
+One fresh epoch from official Qwen3.5-4B; fresh language LoRA/history projection/
+progress head. BF16, FLA0.3.2, no gradient checkpointing, fused AdamW, constant
+LR1e-4, accumulation1. Trial batches4 and6 each run14 steps, exclude first4 from
+throughput estimates. Batch7 is tried only when batch6 allocation is below65GiB.
+Select highest measured mean observations/sec among finite-gradient successful
+trials with reserved memory below74GiB/card. GPU allocator limit95%. Trials are
+isolated and their weights are deleted; formal training always starts fresh.
+
+The single background runner is lock-protected and launches no other models.
+Read training-status.json, benchmark-results.json, chosen-batch.json, training.log.
+If complete: epoch-01.pt must verify epoch1, next_batch0, expected optimizer steps,
+both ranks' RNG/optimizer state, finite weights, equal fresh initialization,
+and unchanged source fingerprints. Failure preserves formal training products.
+No periodic desktop automation is created. Do not restart this runner over an
+existing formal config/output; inspect status/logs and reason for any interruption.
