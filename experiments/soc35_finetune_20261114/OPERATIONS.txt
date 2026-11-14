@@ -1,0 +1,27 @@
+Authorized run: ProcVLM and Robometer, each on State, Order, Count for one epoch.
+
+Remote setup: /cache/cvpzhr/setup/soc35-procvlm-robometer-e1-20261114
+Remote outputs: /cache/cvpzhr/outputs/soc35-procvlm-robometer-e1-20261114
+Caches: /cache/cvpzhr/datasets/robometer-procvlm-soc35-5fps-20261114
+
+Robometer owns GPU 0/1. ProcVLM owns GPU 2/3. Each detached controller
+calibrates its batch, then runs State -> Order -> Count sequentially. All six
+runs initialize independently from the official model and a fresh LoRA adapter.
+Recovery weights, pilot weights, and other suites' weights are never reused.
+
+Each suite has 35 trajectories, selected exactly as in the completed FoREST
+suite fine-tunes. State has 6381 observations; Order 8783; Count 4315. Inputs
+are the existing 5 FPS caches without augmentation. Labels are not recomputed.
+ProcVLM supervises the progress text and EOS only; Robometer uses its native
+C51 progress-head loss. Inference must retain the cached input contracts.
+
+Read each model's status.json, batch-choice.json, and suite/formal/progress.json
+under the remote setup for current state. Completed suite verification.json
+records the final adapter, epoch, source hashes, and matching rank digests.
+Periodic checkpoints retain at most two snapshots within each suite. The
+completed checkpoint is retained separately for each model/suite combination.
+
+Do not launch another controller over an existing status file. If a run fails,
+inspect its own log and preserve the training results before deciding how to
+resume. Controllers do not kill unrelated processes or alter other datasets.
+No evaluation or recurring desktop automation is created by this run.
