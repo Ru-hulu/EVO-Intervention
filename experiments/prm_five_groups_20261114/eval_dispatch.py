@@ -104,12 +104,17 @@ def permitted_phase(training,gpu,now):
     if len(training.get('training_completed',{}))==4:return True
     if now-training.get('updated',0)>90:return False
     if reserved(BASE,gpu):return True
+    from .state_acceleration import permits_existing_evaluation
+    if any(gpu in g['gpus'] and g['phase']=='training_maintenance' for g in training.get('groups',[])):
+        return permits_existing_evaluation(BASE,gpu)
     return any(gpu in group['gpus'] and group['phase']=='training' and alive(group.get('pid'))
                for group in training.get('groups',[]))
 
 
 def eligible_gpu(training,gpu,sample,processes,robometer,initial_oom,now,ownership=None,reservation_ownership=None,minors=None):
     if not permitted_phase(training,gpu,now) or pause_reasons(sample,gpu,initial_oom):return False
+    if any(gpu in g['gpus'] and g['phase']=='training_maintenance' for g in training.get('groups',[])):
+        return False  # Existing evaluations continue; do not race a validation process.
     if reserved(BASE,gpu):
         group=next((g for g in training.get('groups',[]) if gpu in g['gpus']),{})
         if group.get('phase')!='evaluation_reserved':return False

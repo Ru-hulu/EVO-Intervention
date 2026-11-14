@@ -136,6 +136,7 @@ def run(adopt=None):
         raise RuntimeError('Existing live controller; do not launch twice')
     prior.write_text(str(os.getpid()))
     save(BASE/'controller-capabilities.json', {'pid':os.getpid(),'verified_count_resume':True,
+         'state_acceleration_maintenance':True,
          'code_sha256':sha(__file__),'at':time.time()})
     children={}; workers=json.loads((BASE/'cache-worker-pids.json').read_text())
     groups=[{'gpus':[0,1],'suite':None,'phase':'cache'}, {'gpus':[2,3],'suite':None,'phase':'cache'}]
@@ -173,6 +174,25 @@ def run(adopt=None):
         priority=policy(BASE)
         for group in groups:
             suite=group['suite'];gpus=group['gpus']
+            if suite == 'State':
+                from .state_acceleration import request as acceleration_request, validate_resume, mark_resumed
+                maintenance = acceleration_request(BASE)
+                if maintenance and group['phase'] == 'training' and children[suite].poll() is not None:
+                    group.update(phase='training_maintenance')
+                    paused[suite] = {'reason':'user_authorized_acceleration_validation',
+                                     'checkpoint':maintenance['checkpoint'], 'at':time.time()}
+                if group['phase'] == 'training_maintenance':
+                    if maintenance and maintenance['status'] == 'resume_requested':
+                        path,config,resume,python = validate_resume(BASE,maintenance)
+                        proc=spawn([python,'-m','torch.distributed.run','--standalone','--nproc_per_node=2',
+                                    '-m','mem_lite.train_stage3','--config',str(path),'--resume',resume],
+                                   BASE/suite/'train.log',env(gpus))
+                        children[suite]=proc;group.update(phase='training',pid=proc.pid,config=config)
+                        paused.pop(suite,None)
+                        save(BASE/suite/'acceleration-resume-launch.json',{'pid':proc.pid,'gpus':gpus,
+                             'config_sha256':sha(path),'started':time.time(),'resume':resume,'python':python})
+                        mark_resumed(BASE,maintenance,proc.pid)
+                    continue
             if group['phase']=='training':
                 proc=children[suite]
                 if proc.poll() is None:

@@ -68,7 +68,7 @@ def upgrade():
             ident=verify_command(receipt)
             workers.append(dict(receipt=receipt,identity=ident,process_tree=descendants(receipt['pid'])))
         children={int(x) for x in Path(f'/proc/{dispatcher_pid}/task/{dispatcher_pid}/children').read_text().split()}
-        assert children=={r['identity']['pid'] for r in workers}, 'Dispatcher launch/exit race; no handoff performed'
+        assert children=={r['identity']['pid'] for r in workers if r['identity']['parent']==dispatcher_pid}, 'Dispatcher launch/exit race; no handoff performed'
         minors=gpu_minors(); records={}
         for group in training['groups']:
             if group['phase']=='training':
