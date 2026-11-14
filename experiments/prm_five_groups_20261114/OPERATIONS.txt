@@ -20,10 +20,14 @@ supplemented separately by the previously authorized first-effective-pour rule.
 CPU native pixels/prompts + original PT are cached for five methods; FoREST uses
 frozen official vision and native CLIP/max_depth causal memory. GPU work waits
 until 0/1 are empty and safe; never stop Count or GPU2/3 R2 evaluation.
-Generative input caches deliberately do not fabricate Proc CoT/remaining-action
-answers or treat absolute PT as a VLAC critic response: store original PT and
-both endpoints for VLAC. SFT response/loss choice remains separate from this
-cache-only request. No six-model training launch or desktop automation.
+ProcVLM amendment: user specified progress-only supervision. The derived cache
+procvlm-2b/progress-only stores only <progress>percentage%</progress> targets;
+prompt/image/padding tokens have label -100, progress answer plus EOS receive
+token loss. No CoT or remaining-action targets. Original PT precision, native
+eight-image prompt and base caches remain unchanged. Use ProgressOnlyCollator
+in proc_progress_only.py; native percentage-scale progress_gt is also retained.
+VLAC still stores both endpoint PTs without assigning a critic target. No
+six-model training launch or desktop automation is authorized by cache preparation.
 
 LATEST COUNT AUTHORIZATION (2026-11-14): independently fine-tune Count on EXACTLY
 35 training episodes, at least two per task. The 15-task/699-train manifest is
