@@ -44,3 +44,13 @@ def freeze(path, value):
 def model_path(model, level, key):
     assert model in MODELS and level in range(1,6) and not Path(key).is_absolute() and '..' not in Path(key).parts
     return DATA/'models'/model/f'level{level}'/(key.replace('/','__')+'.json')
+
+
+def resolve_source(path, expected, current=Path('/cache/cvpzhr/datasets/ProPriMem'),
+                   backup=Path('/cache/cvpzhr/datasets/ProPriMem-before-hf-align-20261115')):
+    """Resolve only exact original bytes after the separately authorized HF swap."""
+    path=Path(path)
+    if path.is_file() and sha(path)==expected:return path
+    archived=Path(backup)/path.relative_to(current)
+    assert archived.is_file() and sha(archived)==expected, f'Original bytes unavailable: {path}'
+    return archived

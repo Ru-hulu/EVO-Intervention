@@ -30,3 +30,8 @@ Data /cache/cvpzhr/datasets/group5-local-density-20261115
 CPU-only prepare, then independent verify. Ready requires verification.json with
 evaluation_started=false and automatic_evaluation_enabled=false. Never modify
 original source caches, labels, checkpoints, completed predictions, or other jobs.
+
+The subsequent HF alignment replaced the ProPriMem directory alias. Resolve any
+missing/changed original source file only through the pre-alignment archive and
+only when SHA256 exactly matches the original frozen input. Record both paths;
+do not replace the current HF dataset or substitute updated labels.

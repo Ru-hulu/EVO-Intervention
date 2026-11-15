@@ -57,13 +57,15 @@ def prepare():
         path=Path(info['checkpoint']);path=path/'trainable-state.pt' if path.is_dir() else path
         assert sha(path)==info['checkpoint_sha256'];protected[str(path)]=info['checkpoint_sha256']
         assert sha(info['proof'])==info['proof_sha256'];protected[info['proof']]=info['proof_sha256']
-    baselines={};levels={k:[] for k in range(1,6)};images={};image_count=0
+    baselines={};levels={k:[] for k in range(1,6)};images={};image_count=0;resolved={}
     for j,row in enumerate(source['episodes']):
         key=row['key'];assert row['split']=='val' and row['source_rate']=='30'
         for path,h in zip(row['videos'],row['video_hashes']):
-            if path:assert sha(path)==h;protected[path]=h
-        assert sha(row['progress_path'])==row['progress_sha256'];protected[row['progress_path']]=row['progress_sha256']
-        with open(row['progress_path']) as f:truth=[float(r['pt']) for r in csv.DictReader(f)]
+            if path:
+                actual=resolve_source(path,h);protected[str(actual)]=h;resolved[path]=dict(path=str(actual),sha256=h)
+        actual=resolve_source(row['progress_path'],row['progress_sha256'])
+        protected[str(actual)]=row['progress_sha256'];resolved[row['progress_path']]=dict(path=str(actual),sha256=row['progress_sha256'])
+        with actual.open() as f:truth=[float(r['pt']) for r in csv.DictReader(f)]
         assert len(truth)==row['frames']
         old={rate:streams[rate][key] for rate in RATES}
         for e in old.values():assert e['target_pt']==[truth[f] for f in e['source_frame_indices']]
@@ -116,7 +118,7 @@ def prepare():
     outputs[str(DATA/'baseline-results.json')]=freeze(DATA/'baseline-results.json',baselines)
     outputs[str(DATA/'jobs.json')]=freeze(DATA/'jobs.json',dict(jobs=jobs,automatic_launch=False,requires_user_instruction=True))
     inputs=dict(schema='group5-local-density-v1',protocol=protocol,episodes=source['episodes'],registry=source['registry'],
-        streams=shared,source_inputs_sha256=source_sha,baseline_predictions=len(baselines),image_caches=images,
+        streams=shared,source_inputs_sha256=source_sha,baseline_predictions=len(baselines),image_caches=images,resolved_sources=resolved,
         protected_source_files=protected,cache_files_sha256=outputs,source_checksums_sha256=sha(ROOT/'source-checksums.json'),
         expected_model_curves=900,reused_baseline_curves=180,new_inference_curves=720,
         expected_model_observations=3*sum(x['observations'] for x in shared.values()),evaluation_started=False)

@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from .protocol import *
-from .common import freeze
+from .common import freeze, resolve_source, sha
 
 
 def fixture(n):
@@ -66,6 +66,16 @@ class Protocol(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'frozen.json';first=freeze(p,dict(seed=42));self.assertEqual(first,freeze(p,dict(seed=42)))
             with self.assertRaises(AssertionError):freeze(p,dict(seed=43))
+
+    def test_source_relocation_requires_exact_original_bytes(self):
+        with tempfile.TemporaryDirectory() as d:
+            current=Path(d)/'current';archive=Path(d)/'archive';current.mkdir();archive.mkdir()
+            live=current/'pt.csv';old=archive/'pt.csv';old.write_text('original labels');h=sha(old)
+            self.assertEqual(resolve_source(live,h,current,archive),old)
+            live.write_text('updated HF labels');self.assertEqual(resolve_source(live,h,current,archive),old)
+            live.write_bytes(old.read_bytes());self.assertEqual(resolve_source(live,h,current,archive),live)
+            live.write_text('wrong');old.write_text('wrong')
+            with self.assertRaises(AssertionError):resolve_source(live,h,current,archive)
 
 
 if __name__=='__main__':unittest.main()

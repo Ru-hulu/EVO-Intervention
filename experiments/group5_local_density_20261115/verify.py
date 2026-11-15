@@ -21,7 +21,9 @@ def verify():
     assert len(rows)==60 and Counter(r['suite'] for r in rows.values())==dict(State=16,Order=30,Count=14)
     labels={};image_count=0
     for key,row in rows.items():
-        with open(row['progress_path']) as f:csv_rows=list(csv.DictReader(f))
+        resolved=data['resolved_sources'][row['progress_path']]
+        assert resolved['sha256']==row['progress_sha256'] and sha(resolved['path'])==row['progress_sha256']
+        with open(resolved['path']) as f:csv_rows=list(csv.DictReader(f))
         assert [int(r['frame_index']) for r in csv_rows]==list(range(row['frames']))
         labels[key]=[float(r['pt']) for r in csv_rows]
         image=data['image_caches'][key];proof=read(image['proof'])
@@ -106,6 +108,8 @@ def verify():
         new_inference_observations=model_observations-3*counts['1']['observations_per_model'],
         by_level=counts,verified_pngs=image_count,all_original_data_labels_predictions_unchanged=True,
         all_model_history_maps_verified=True,common_6fps_grid_identical=True,
+        original_files_resolved_from_archive=sum(p!=r['path'] for p,r in data['resolved_sources'].items()),
+        original_label_csvs_resolved_from_archive=sum(data['resolved_sources'][r['progress_path']]['path']!=r['progress_path'] for r in rows.values()),
         gpu_used=False,model_forward_executed=False,evaluation_started=False,automatic_evaluation_enabled=False,
         finished=time.time())
     save(DATA/'verification.json',proof);save(ROOT/'status.json',proof)
