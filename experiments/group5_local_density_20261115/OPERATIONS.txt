@@ -1,0 +1,32 @@
+PREPARATION ONLY. Wait for a new explicit user instruction before any evaluation.
+No GPU allocation, model forward, inference scheduler, automation, or training.
+
+Use the exact prior 60 native30 validation trajectories: State16, Order30, Count14.
+Split the nominal video duration N/30 into 10 equal half-open time intervals.
+Native frame f belongs to floor(10*f/N); discretized boundaries differ by at most
+one frame. Freeze a seed42 per-trajectory permutation, shared by all models.
+L1: ten segments at6. L2: two at12, eight at6. L3: retain12, add two at18.
+L4: retain12/18, add two at24. L5: retain12/18/24, add two at30; two remain6.
+Rates are local; whole-trajectory nominal means are6,7.2,9.6,13.2,18 FPS.
+Use the original ceil-to-next-native-frame global sampling phase and final frame,
+restricting each frozen FPS grid to its assigned segments. No interpolation,
+retiming, image editing, label recomputation, or new train/validation selection.
+
+Reuse all180 original6-FPS model curves via immutable result-file references after
+hash, identity, PT/frame/raw/history, checkpoint and metric validation. Never
+splice earlier results into L2-L5: each future inference must reset memory once
+and traverse its complete new stream without resetting at segment boundaries.
+Preserve each model's native memory capacity and old matching-suite checkpoint.
+Score on the unchanged common6-FPS grid; retain full-stream curves/metrics too.
+
+Cache is verified native RGB plus shared stream maps and900 model-specific input
+index caches (180baseline reuse,720waiting). It does not contain precomputed
+FoREST hidden memory or new predictions; those require model execution later.
+Missing wrist conventions, pixels, prompt, native history sampling and decode
+remain inherited from the old completed experiment.
+
+Setup /cache/cvpzhr/setup/group5-local-density-20261115
+Data /cache/cvpzhr/datasets/group5-local-density-20261115
+CPU-only prepare, then independent verify. Ready requires verification.json with
+evaluation_started=false and automatic_evaluation_enabled=false. Never modify
+original source caches, labels, checkpoints, completed predictions, or other jobs.
