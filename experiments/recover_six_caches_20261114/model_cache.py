@@ -175,14 +175,14 @@ def main(model):
         receipts.append({k:v for k,v in receipt.items() if k!='pixel_sha256'});all_records.extend(prepared)
     train=OUT/model/'train.jsonl';write_rows(train,all_records)
     source_checks(selection)
-    save(OUT/model/'cache-ready.json',dict(status='input_cache_ready',episodes=10,samples=len(all_records),
+    save(OUT/model/'cache-ready.json',dict(status='input_cache_ready',episodes=len(selection['records']),samples=len(all_records),
          model=model,checkpoint=cfg['path'],checkpoint_config_sha256=sha(Path(cfg['path'])/'config.json'),
          native_provenance_sha256=sha(ROOT/f'{model}-native-provenance.json'),
          processor_only=True,model_forward_executed=False,original_pt_preserved=True,
          raw_supervision_ready=True,sft_response_targets_assigned=False,
          train_sha256=sha(train),pixel_bytes=total_bytes,episodes_verified=receipts,
          cuda_used=False,native_cached_input_equality_verified=True))
-    save(ROOT/f'{model}-status.json',dict(status='completed',episodes=10,samples=len(all_records),updated=time.time()))
+    save(ROOT/f'{model}-status.json',dict(status='completed',episodes=len(selection['records']),samples=len(all_records),updated=time.time()))
 
 
 if __name__=='__main__':

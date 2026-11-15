@@ -87,7 +87,8 @@ def verify(destination=TARGET):
     receipt=read(destination/'manifest.json');source=rows(BASE/'train.jsonl');prepared=rows(destination/'train.jsonl')
     assert receipt['source_train_sha256']==sha(BASE/'train.jsonl')
     assert receipt['train_sha256']==sha(destination/'train.jsonl')
-    assert len(prepared)==len(source)==2550
+    assert len(prepared)==len(source)==receipt['samples']
+    assert len({r['episode_id'] for r in source})==receipt['episodes']
     for p,d in read(ROOT/'procvlm-2b-native-provenance.json')['source_sha256'].items():assert sha(p)==d
     processor=AutoProcessor.from_pretrained(receipt['checkpoint'],local_files_only=True)
     tokenizer=processor.tokenizer;collator=ProgressOnlyCollator(tokenizer)
@@ -129,7 +130,7 @@ def verify(destination=TARGET):
     for i,row in enumerate(mixed):
         kept=batch['labels'][i][batch['labels'][i]!=-100].tolist()
         assert kept==row['answer_token_ids']
-    result=dict(status='passed',policy=POLICY,samples=2550,episodes=10,
+    result=dict(status='passed',policy=POLICY,samples=len(source),episodes=len(seen),
         raw_pt_unchanged=True,all_input_records_and_pixel_references_unchanged=True,
         cot_supervision=False,teacher_forced_cot=False,remaining_action_supervision=False,
         loss_scope='progress answer (<progress>percentage%</progress>) and EOS only',

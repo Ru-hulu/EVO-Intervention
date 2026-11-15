@@ -4,13 +4,14 @@ This preparation does not choose an SFT response/loss for generative models.
 In particular, absolute PT is NOT a VLAC critic target or synthetic Proc CoT.
 """
 import json
+import os
 from pathlib import Path
 import random
 
 from experiments.prm_five_groups_20261114.prepare_cache import sha, save
 
-ROOT = Path('/cache/cvpzhr/setup/recover-six-model-caches-20261114')
-OUT = Path('/cache/cvpzhr/datasets/recover-six-model-caches-5fps-20261114')
+ROOT = Path(os.environ.get('RECOVER_CACHE_SETUP', '/cache/cvpzhr/setup/recover-six-model-caches-20261114'))
+OUT = Path(os.environ.get('RECOVER_CACHE_OUTPUT', '/cache/cvpzhr/datasets/recover-six-model-caches-5fps-20261114'))
 DATA = Path('/cache/cvpzhr/datasets/ProPriMem/Recover')
 OLD = Path('/cache/cvpzhr/setup/nine-model-zeroshot-cleanval-voc-20261113')
 PYTHON = '/cache/cvpzhr/envs/forest-legacy-20261114/bin/python'
