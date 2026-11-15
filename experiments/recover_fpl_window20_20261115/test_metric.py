@@ -39,5 +39,20 @@ class Metric(unittest.TestCase):
         r=score([0,1,.5,1],[0,.8,.3,.9],[0,40,60,100],101,self.native)
         self.assertEqual(r['value'],0);self.assertEqual(r['selection_mode'],'within_window')
 
+    def test_nearest_ignores_larger_distant_drop(self):
+        d=[(5,10,1.),(40,45,.7),(49,51,.2)]
+        self.assertEqual(choose(d,50,100,self.native,'nearest')[0],(49,51,.2))
+
+    def test_nearest_empty_window_still_uses_global_largest(self):
+        d=[(5,10,1.),(75,80,.2)]
+        self.assertEqual(choose(d,50,100,self.native,'nearest'),((5,10,1.),[]))
+
+    def test_nearest_equal_distance_tie(self):
+        d=[(45,48,.3),(55,59,.6),(55,58,.6)]
+        self.assertEqual(choose(d,50,100,self.native,'nearest')[0],(55,58,.6))
+
+    def test_nearest_boundary_included(self):
+        self.assertEqual(choose([(30,35,.2)],50,100,self.native,'nearest')[0],(30,35,.2))
+
 
 if __name__=='__main__':unittest.main()

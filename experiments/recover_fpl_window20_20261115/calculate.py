@@ -38,9 +38,13 @@ def extract(values, frames, native):
     return native['_zigzag_descents'](curve, .2*drop) if drop > 0 else [], drop
 
 
-def choose(descents, onset, duration, native):
+def choose(descents, onset, duration, native, window_selection='largest'):
+    assert window_selection in ('largest', 'nearest')
     # Membership is based on descent START, not its trough or any overlap.
     candidates = [d for d in descents if abs(d[0]-onset) <= .2*duration]
+    if candidates and window_selection == 'nearest':
+        # Equal temporal distance: preserve native amplitude/duration/start ties.
+        return min(candidates, key=lambda d: (abs(d[0]-onset), -d[2], d[1]-d[0], d[0])), candidates
     return native['_select_descent'](candidates or descents), candidates
 
 
@@ -48,7 +52,7 @@ def error(selected, onset, duration):
     return (abs(selected[0]-onset) if selected else max(onset, duration-onset))/duration
 
 
-def score(pred, truth, frames, total_frames, native):
+def score(pred, truth, frames, total_frames, native, window_selection='largest'):
     assert len(pred) == len(truth) == len(frames) >= 2
     assert frames[0] == 0 and frames[-1] == total_frames-1
     assert all(a < b for a,b in zip(frames, frames[1:]))
@@ -68,7 +72,7 @@ def score(pred, truth, frames, total_frames, native):
         out['reason'] = 'invalid_predictions'; return out
     descents, drop = extract(pred, frames, native)
     global_choice = native['_select_descent'](descents)
-    selected, candidates = choose(descents, onset, duration, native)
+    selected, candidates = choose(descents, onset, duration, native, window_selection)
     out.update(value=error(selected,onset,duration), gt_global_fpl=error(global_choice,onset,duration),
         predicted_descent=selected, predicted_global_descent=global_choice, predicted_descents=descents,
         predicted_maximum_drawdown=drop, window_candidates=candidates,
@@ -76,7 +80,7 @@ def score(pred, truth, frames, total_frames, native):
     return out
 
 
-def main(setup, original, output):
+def main(setup, original, output, window_selection='largest'):
     started = time.time()
     assert not output.exists(), 'Never overwrite prior metric outputs'
     frozen = read(setup/'inputs.json'); old = read(original/'report.json')
@@ -87,6 +91,12 @@ def main(setup, original, output):
     native = native_functions(source)
     hashes = {str(p):sha(p) for p in [setup/'inputs.json',setup/'selection.json',source,
                                     original/'report.json',original/'comparison.md']}
+    prior_window = None
+    if window_selection == 'nearest':
+        prior_path = original/'fpl-window20-20261115/report.json'
+        prior_window = read(prior_path); hashes[str(prior_path)] = sha(prior_path)
+        assert prior_window['status'] == 'completed'
+        assert prior_window['source_sha256'][str(setup/'inputs.json')] == sha(setup/'inputs.json')
     def checked(path, expected=None):
         path = Path(path); h = sha(path)
         if expected is not None: assert h == expected, str(path)
@@ -122,7 +132,15 @@ def main(setup, original, output):
             assert init['strict_final_state'] and init['checkpoint_sha256'] == info['checkpoint_sha256']
             assert init['inputs_sha256'] == old['inputs_sha256']
             event = checked(setup/'events'/(row['key'].replace('/','__')+'.json'),prev['event_annotation_sha256'])
-            scored = score(r['predictions'], row['target_pt'], row['frame_indices'], row['frames'], native)
+            scored = score(r['predictions'], row['target_pt'], row['frame_indices'], row['frames'], native, window_selection)
+            if prior_window is not None:
+                prior_episode = next(e for e in prior_window['models'][model]['episodes'] if e['key']==row['key'])
+                assert prior_episode['result_sha256'] == prev['result_sha256']
+                largest = score(r['predictions'],row['target_pt'],row['frame_indices'],row['frames'],native)
+                assert largest['value'] == prior_episode['value']
+                assert largest['gt_descent'] == scored['gt_descent']
+                scored['window20_largest_fpl'] = largest['value']
+                if scored['value'] is not None: assert scored['value'] <= largest['value'] + 1e-15
             # Independently reproduce original FPL to establish an apples-to-apples prediction source.
             if prev['fpl'] is not None:
                 assert scored['predicted_global_descent'] is not None or scored['selection_mode']=='no_descent_penalty'
@@ -137,7 +155,8 @@ def main(setup, original, output):
                 gt_onset_frame=scored['gt_descent'][0] if scored['gt_descent'] else None,
                 predicted_onset_frame=scored['predicted_descent'][0] if scored['predicted_descent'] else None,
                 selection_mode=scored['selection_mode'],window_candidates=len(scored['window_candidates']),
-                duration_frames=row['frames']-1,invalid_frames=scored['invalid_frames']))
+                duration_frames=row['frames']-1,invalid_frames=scored['invalid_frames'],
+                window20_largest_fpl=scored.get('window20_largest_fpl',scored['value'])))
         valid = [e for e in episodes if e['value'] is not None]
         results[model] = dict(original_fpl=old['models'][model]['summary']['metrics']['fpl']['mean'],
             gt_global_fpl=math.fsum(e['gt_global_fpl'] for e in valid)/len(valid) if valid else None,
@@ -149,15 +168,23 @@ def main(setup, original, output):
             window_matched_episodes=sum(e['selection_mode']=='within_window' for e in valid),
             global_fallback_episodes=sum(e['selection_mode']=='global_fallback' for e in valid),
             no_descent_penalties=sum(e['selection_mode']=='no_descent_penalty' for e in valid),episodes=episodes)
+        if prior_window is not None:
+            results[model]['window20_largest_fpl'] = prior_window['models'][model]['window20_fpl']
+            results[model]['changed_onset_episodes'] = sum(
+                (list(e['predicted_descent']) if e['predicted_descent'] else None) != next(p['predicted_descent'] for p in prior_window['models'][model]['episodes'] if p['key']==e['key'])
+                for e in valid)
         assert sum(e['samples'] for e in episodes) == 2132
     assert all(sha(p)==h for p,h in hashes.items()), 'Original input/result changed during rescoring'
     output.mkdir(parents=True)
     protocol = dict(name='GT-onset window-prioritized FPL-20',official_fpl=False,sample_fps=5,
+        window_selection=window_selection,
         ground_truth_anchor='start of largest ZigZag descent in saved 5 FPS GT',
         window_half_width='0.20 * full trajectory duration; inclusive boundaries; clipped to trajectory',
-        prediction_selection='largest descent whose onset lies in window; else global largest',
+        prediction_selection=('nearest descent onset within window; else global largest' if window_selection=='nearest'
+                              else 'largest descent whose onset lies in window; else global largest'),
         descent_detection='unchanged pinned ZigZag, threshold 0.2 * each full curve maximum drawdown',
-        tie_break='largest drop, shortest duration, earliest onset',no_descent='original farthest-boundary penalty',
+        tie_break=('nearest onset, largest drop, shortest duration, earliest onset' if window_selection=='nearest'
+                   else 'largest drop, shortest duration, earliest onset'),no_descent='original farthest-boundary penalty',
         no_gt_descent='not applicable',invalid_predictions='undefined, never interpolate or replace',
         normalization='absolute onset-frame error / (original total_frames - 1)',
         aggregation='equal weight per defined trajectory; explicit missing/invalid denominators',
@@ -181,4 +208,5 @@ if __name__=='__main__':
     p.add_argument('--setup',type=Path,default=Path('/cache/cvpzhr/setup/recover-five-validation-20261114'))
     p.add_argument('--original',type=Path,default=Path('/cache/cvpzhr/evaluations/recover-five-validation-20261114'))
     p.add_argument('--output',type=Path,default=Path('/cache/cvpzhr/evaluations/recover-five-validation-20261114/fpl-window20-20261115'))
-    a=p.parse_args();main(a.setup,a.original,a.output)
+    p.add_argument('--window-selection',choices=('largest','nearest'),default='largest')
+    a=p.parse_args();main(a.setup,a.original,a.output,a.window_selection)
