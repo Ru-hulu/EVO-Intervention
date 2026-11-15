@@ -1,0 +1,29 @@
+SOC84 RoboBrain / Robo-Dopamine preparation only
+
+Frozen common selection: State 22, Order 32, Count 30; exactly two per task.
+Uses the same 5-FPS indices, original final frame, RGB caches, prompts and visual
+PT as the existing three-model SOC84 experiment. HF dataset alias changes are
+resolved only against the hash-identical pre-alignment backup. No source edits.
+
+Six bindings reference the matching model/suite SOC35 final 1-epoch checkpoint,
+never a pilot, another suite, official-only weights, or a Recovery adapter.
+The canonical trainable-state tensors and PEFT adapter tensors must be identical.
+
+Data root: /cache/cvpzhr/datasets/soc-grm-validation-5fps-20261115
+Setup: /cache/cvpzhr/setup/soc-grm-validation-20261115
+Each model/suite has validation.jsonl and data-binding.json. Labels are separate
+in labels.json. Images reuse immutable lossless RGB files: first main, true last
+main, initial three BEFORE, current three AFTER. Existing absent cameras remain
+None for the native RGB64 black-placeholder policy; short streams are not filled.
+The input cache stores image references and native prompt text, not full processed
+pixel tensors or GPU features. CPU processor equivalence is tested per task.
+
+From isolated setup/code with CUDA_VISIBLE_DEVICES empty and forest-legacy Python:
+python -m experiments.soc_grm_validation_20261115.prepare
+python -m experiments.soc_grm_validation_20261115.verify
+
+No inference worker, GPU model load, scheduler or automation is launched. A passed
+verification means inputs/checkpoint bindings are ready; it is not a GPU forward
+test. Future inference must check the frozen hashes and strictly load the bound
+adapter tensors before producing predictions. Both methods use real future-end
+references; downstream reports must state this.
