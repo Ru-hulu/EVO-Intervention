@@ -284,6 +284,11 @@ def _train(config, checkpoint, rank, world_size, device):
             step += 1
             next_epoch, cursor = (epoch + 1, 0) if epoch_finished else (epoch, batch_index + 1)
             stop = max_steps is not None and step >= max_steps
+            if config.get("resource_stop_path"):
+                requested = torch.tensor(int(Path(config["resource_stop_path"]).exists()), device=device)
+                if world_size > 1:
+                    dist.all_reduce(requested, op=dist.ReduceOp.MAX)
+                stop = stop or bool(requested.item())
             log_due = step == 1 or step % config["log_every_steps"] == 0 or epoch_finished or stop
             if log_due:
                 memory = torch.tensor([torch.cuda.max_memory_allocated(device) / 2**30,
