@@ -4,10 +4,12 @@ from .common import *
 
 
 def main():
+    from safetensors import safe_open
     from experiments.recover_finetune_20261114.data import grm_answer
     selection=read(ROOT/'selection.json'); protocol=read(ROOT/'protocol.json')
     for p,h in selection['source_sha256'].items(): assert sha(p)==h,p
-    for p,h in read(ROOT/'source-images.json').items(): assert sha(p)==h,p
+    image_hashes = read(ROOT/'source-images.json')
+    for p,h in image_hashes.items(): assert sha(p)==h,p
     manifests={s:read(f'/cache/cvpzhr/datasets/ProPriMem/{s}/manifest.json') for s in SUITES}
     assert check_selection(selection['episodes'],manifests)==selection['suites']
     by_ep={e['episode_id']:e for e in selection['episodes']}; reports=[]
@@ -24,7 +26,7 @@ def main():
             assert set(counts)==expected and len(counts)==35
             assert len(data)==selection['suites'][suite]['observations']==len({r['id'] for r in data})
             sources={k:rows(by_ep[k]['observations']) for k in expected}
-            episode_files=[];checked_files=set();pixel_bytes=0
+            episode_files=[];checked_files=set();pixel_bytes=0;pixel_sources={}
             for item in ready['receipts']:
                 assert item['native_cached_inputs_equal'] and item['supervision_mask_verified']
                 assert sha(item['train_data'])==item['train_sha256']
@@ -32,6 +34,10 @@ def main():
                 for p,h in item['files_sha256'].items():
                     assert sha(p)==h,p
                     checked_files.add(p);pixel_bytes+=Path(p).stat().st_size
+                    if '/pixels/' in p:
+                        with safe_open(p,framework='pt',device='cpu') as f:
+                            assert f.metadata()['model']==model
+                            pixel_sources[p]=f.metadata()['source_png_sha256']
                 assert counts[item['episode_id']]==item['samples']
             assert episode_files==data
             for r in data:
@@ -50,6 +56,7 @@ def main():
                 assert r['assistant_target']==grm_answer(r)
                 assert r['prompt_tensor_file'] in checked_files
                 assert len(r['pixel_caches'])==8 and all(p in checked_files for p in r['pixel_caches'])
+                assert [pixel_sources[p] for p in r['pixel_caches']]==[image_hashes[p] for p in r['image']]
             binding=dict(model_directory=ref['config']['path'],official_revision=ref['official_revision'],
                 train_data=ready['train_data'],train_sha256=ready['train_sha256'],
                 selection_sha256=sha(ROOT/'selection.json'),protocol_sha256=sha(ROOT/'protocol.json'),

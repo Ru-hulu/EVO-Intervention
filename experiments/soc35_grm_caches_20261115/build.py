@@ -76,7 +76,7 @@ def build_episode(model, ep, processor, opts, prompt, encode, torch, status_path
             else: temporary.replace(path)
             pixel_map[image] = str(path); grids[image] = tensors['image_grid_thw'].tolist()
             file_hashes[str(path)] = sha(path)
-    prepared, prompts = [], {}
+    prepared, prompts, prompt_lengths = [], {}, {}
     collator = CachedCollator(processor.tokenizer, model, 4096)
     chosen = sorted({0, 1, n//2, n-1} & set(range(n)))
     max_length = 0
@@ -93,6 +93,7 @@ def build_episode(model, ep, processor, opts, prompt, encode, torch, status_path
             path.parent.mkdir(parents=True, exist_ok=True)
             save_file(text,str(path),metadata=dict(model=model,task_prompt=ep['task']))
             file_hashes[str(path)] = sha(path); prompts[signature] = str(path)
+            prompt_lengths[signature] = text['input_ids'].numel()
         row = dict(id=f'{ep["episode_id"]}/{i:06d}', episode_id=ep['episode_id'], suite=ep['suite'],
             task_id=ep['task_id'], split='train', sample_index=i, frame_index=r['frame_index'],
             timestamp_seconds=r['frame_index']/ep['fps'], pt=r['pt'], before_pt=observed[0]['pt'], after_pt=r['pt'],
@@ -103,6 +104,10 @@ def build_episode(model, ep, processor, opts, prompt, encode, torch, status_path
             source_samples_sha256=ep['source_samples_sha256'], selection_sha256=sha(ROOT/'selection.json'),
             uses_future_endpoint_reference=True, augmentation='none', sample_fps=5)
         row['assistant_target'] = grm_answer(row)
+        suffix = processor.tokenizer.encode(row['assistant_target']+processor.tokenizer.eos_token,add_special_tokens=False)
+        length = prompt_lengths[signature] + len(suffix)
+        assert length <= 4096, 'Native inputs must not be truncated'
+        max_length = max(max_length, length)
         if i in chosen:
             if online is None: online = encode(ep['task'], images)
             cached, supervision = load_input(row)
@@ -113,6 +118,10 @@ def build_episode(model, ep, processor, opts, prompt, encode, torch, status_path
             active = training['labels'][0] != -100
             assert processor.tokenizer.decode(training['labels'][0][active],skip_special_tokens=False) == row['assistant_target']+processor.tokenizer.eos_token
             assert training['labels'][0,:cached['input_ids'].shape[1]].eq(-100).all()
+            rendered = prompt(ep['task'])
+            prefix_ids = processor.tokenizer.encode(rendered,add_special_tokens=False)
+            full_ids = processor.tokenizer.encode(rendered+row['assistant_target']+processor.tokenizer.eos_token,add_special_tokens=False)
+            assert full_ids[:len(prefix_ids)] == prefix_ids and full_ids[len(prefix_ids):] == suffix
             assert not any(k in cached for k in ('pt','progress_gt','labels','before_pt','after_pt'))
             max_length = max(max_length,training['input_ids'].shape[1])
         prepared.append(row)

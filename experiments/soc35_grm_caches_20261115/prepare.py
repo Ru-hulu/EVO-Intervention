@@ -12,7 +12,7 @@ def main():
     for s in SUITES:
         p = Path(f'/cache/cvpzhr/datasets/ProPriMem/{s}/manifest.json')
         hashes[str(p)] = sha(p)
-    images = {}
+    images = {}; metadata_label_notes = []
     for ep in original['episodes']:
         summary_path = Path(ep['source_samples']).parent/'summary.json'
         summary = read(summary_path)
@@ -31,8 +31,28 @@ def main():
         hashes[str(meta)] = sha(meta)
         current = next(r for r in rows(meta) if r['sample_id'] == ep['sample_id'])
         assert current.get('training_eligible', True)
-        assert (meta.parent/current['progress_path']).resolve() == Path(ep['progress_path']).resolve()
-        assert current['progress_sha256'] == ep['progress_sha256']
+        # Some downloaded metadata still describes time-ratio labels. The frozen
+        # verified visual-PT sidecar, not this stale description, binds supervision.
+        label_sidecar = Path(ep['progress_path']).with_suffix('.json')
+        label = read(label_sidecar)
+        assert label['policy'] == 'whole-video-cumulative-visual-delta-v1'
+        assert label['csv_sha256'] == ep['progress_sha256']
+        assert label['video_sha256'] == info['video_hashes'][0]
+        assert label['frame_count'] == info['frames'] == current['total_frames']
+        assert label['protocol_sha256'] == sha('/cache/cvpzhr/setup/proprimem-visual-pt-20261113/protocol.json')
+        hashes[str(label_sidecar)] = sha(label_sidecar)
+        if 'progress_path' in current:
+            assert (meta.parent/current['progress_path']).resolve() == Path(ep['progress_path']).resolve()
+            assert current['progress_sha256'] == ep['progress_sha256']
+        else:
+            metadata_label_notes.append(dict(episode_id=ep['episode_id'],metadata_policy=current.get('progress_policy'),
+                 authoritative_visual_pt=str(label_sidecar),csv_sha256=ep['progress_sha256']))
+        current_views = current['video_views']
+        view_names = ['main_view','wrist_view',None] if 'wrist_view' in current_views else ['main_view','left_view','right_view']
+        for v, p, h in zip(view_names, info['videos'], info['video_hashes']):
+            if p:
+                assert (meta.parent/current_views[v]['video_path']).resolve() == Path(p).resolve()
+                assert current_views[v]['video_sha256'] == h
         for p, digest in zip(info['videos'], info['video_hashes']):
             if p:
                 assert sha(p) == digest, p
@@ -58,12 +78,14 @@ def main():
                     image_digest.update(f'{i}/{v}:{images[p]}\n'.encode())
         assert image_digest.hexdigest() == ep['source_image_sequence_sha256']
     save(ROOT/'source-images.json', images)
+    hashes['/cache/cvpzhr/setup/proprimem-visual-pt-20261113/protocol.json'] = sha('/cache/cvpzhr/setup/proprimem-visual-pt-20261113/protocol.json')
     hashes[str(ROOT/'source-images.json')] = sha(ROOT/'source-images.json')
     save(ROOT/'selection.json', dict(schema='soc35-shared-grm-training-v1', suites=counts,
          episodes=original['episodes'], source_selection=str(SOURCE), source_selection_sha256=sha(SOURCE),
          selection_policy='Reuse exact prior FoREST/Robometer/ProcVLM 35-per-suite selections',
          source_sha256=hashes, sample_fps=5, include_last_frame=True, augmentation='none',
-         validation_overlap=0, minimum_per_task=2, training_started=False))
+         validation_overlap=0, minimum_per_task=2, training_started=False,
+         stale_metadata_label_notes=metadata_label_notes))
     native_files = [OLD/n for n in ('worker.py', 'common.py', 'grm_prompt.txt')]
     provenance = {}
     for model in MODELS:
