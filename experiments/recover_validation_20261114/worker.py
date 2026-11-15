@@ -8,6 +8,8 @@ import traceback
 from functools import lru_cache
 from .common import *
 
+REGIME = 'Recover-10-trajectory-fine-tuned'
+
 
 @lru_cache(maxsize=48)
 def image(path):
@@ -124,7 +126,7 @@ def main():
         manifest=read(ROOT/'inputs.json');digest=sha(ROOT/'inputs.json');info=manifest['model_checkpoints'][name]
         assert sha(info['proof'])==info['proof_sha256']
         update();runtime,audit=load(name,info)
-        audit.update(model=name,regime='Recover-10-trajectory-fine-tuned',checkpoint=info['checkpoint'],
+        audit.update(model=name,regime=REGIME,checkpoint=info['checkpoint'],
             checkpoint_sha256=info['checkpoint_sha256'],inputs_sha256=digest,
             proof_sha256=info['proof_sha256'],uses_future_endpoint_reference=name in ('robobrain25-4b','dopamine-3b'),
             inference_batch=1,raw_predictions_unchanged=True,torch=torch.__version__,cuda_memory_fraction=.65)
