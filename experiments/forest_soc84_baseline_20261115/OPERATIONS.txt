@@ -1,0 +1,26 @@
+Authorized baseline, distinct from perturbation, no-memory, and FPS experiments.
+FoREST only: latest matching-suite SOC35, 1 epoch, native memory and 5-FPS inputs.
+Exact frozen per-task-two validation selection: State22 / Order32 / Count30.
+State -> Order -> Count, never overlapping suites. GPU0 and GPU1 each run one
+trajectory shard of the current suite, batch1. GPU2 and GPU3 are untouched.
+Next suite requires both workers exited and all current-suite results audited.
+The controller is a detached remote process, not a recurring Codex automation.
+
+Setup: /cache/cvpzhr/setup/forest-soc84-baseline-20261115
+Output: /cache/cvpzhr/evaluations/forest-soc84-baseline-20261115
+Before launch, prepare with CUDA_VISIBLE_DEVICES empty in the isolated code root:
+forest-legacy-20261114/bin/python -m experiments.forest_soc84_baseline_20261115.run prepare
+Then launch the same module's controller action once; controller.lock prevents
+duplicates. Actual PID and start ticks govern ownership, not stale status alone.
+Never launch a second controller while any existing worker remains alive.
+
+Each worker verifies matching final checkpoint tensors and native causal memory,
+including first-frame reset and prefix reconstruction on real inputs, before
+formal predictions. Existing results/prefixes are validated and kept on resume.
+No GT enters the predictor; no smoothing, clipping, interpolation or invalid-value
+substitution. The official RoboValue VS is pinned in metric_reference/provenance.
+Metrics include Pearson, Spearman, VS, ER and C, equal per trajectory with explicit
+undefined/invalid counts. report.json and trajectory-metrics.csv are refreshed
+after each suite and finally after all 84 trajectories. Resources retain 16GiB
+GPU headroom, container-memory/OOM/temperature/disk guards, and 60-second safe idle
+admission. Unknown failures stop further suites; healthy current workers finish.
