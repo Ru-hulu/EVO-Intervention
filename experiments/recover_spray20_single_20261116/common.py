@@ -8,6 +8,7 @@ TRAIN = Path('/cache/cvpzhr/setup/recover-spray20-five-finetune-20261116')
 TRAIN_SELECTION = Path('/cache/cvpzhr/setup/recover-spray20-five-caches-20261116/resolved-selection.json')
 CACHE_SETUP = TRAIN_SELECTION.parent
 PYTHON = '/cache/cvpzhr/envs/forest-legacy-20261114/bin/python'
+REPORT_PYTHON = '/cache/cvpzhr/envs/robometer/bin/python'
 PACKAGE = 'experiments.recover_spray20_single_20261116'
 MODELS = ['procvlm-2b', 'forest', 'robometer-4b', 'robobrain25-4b', 'dopamine-3b']
 

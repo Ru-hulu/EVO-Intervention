@@ -57,7 +57,7 @@ def main():
         if pending or active: time.sleep(5)
     assert all(v['status']=='completed' and v['returncode']==0 for v in finished.values()), finished
     with (ROOT/'report.log').open('w') as log:
-        result = subprocess.run([PYTHON,'-m',PACKAGE+'.report'],cwd=ROOT/'code',
+        result = subprocess.run([REPORT_PYTHON,'-m',PACKAGE+'.report'],cwd=ROOT/'code',
             env=dict(os.environ,CUDA_VISIBLE_DEVICES=''),stdout=log,stderr=subprocess.STDOUT)
     assert result.returncode == 0, 'See report.log; preserve all predictions'
     report = read(OUT/'report.json'); assert report['status'] == 'completed'
