@@ -1,0 +1,38 @@
+SOC84 five-model fine-tuned baseline (15 model x suite tasks)
+
+Exact selected trajectories: State22 / Order32 / Count30; 2 per task. 5FPS,
+include original last frame; no freezes/rewinds, no memory ablation, no FPS study.
+All five models use matching-suite SOC35 final 1-epoch checkpoints. Official-only
+weights and Recovery checkpoints are excluded. Native memory stays enabled for
+FoREST, ProcVLM and RoboMeter. Only the two GRMs use true future-end references.
+
+The existing FoREST controller on GPU0/1 is adopted read-only and retains its
+State -> Order -> Count sequence. Do not restart or modify that healthy job.
+The new controller starts on GPU2/3. Once FoREST reports completed AND its
+controller/workers have exited AND both GPUs are empty, GPU0/1 joins this queue.
+Every pair runs one model/suite at a time. Both GPUs shard independent trajectories
+from that same task; another task cannot enter until all current replicas exit.
+
+Tasks: Brain-State, Dopamine-State, Proc-State, Meter-State, then Order and Count.
+Proc has up to 4 replicas/GPU; Meter up to 2 (previous measured safe settings).
+GRMs stage up to 2/GPU only after each GPU's first replica passes real-input
+singleton numerical validation and completes a real trajectory. Batch remains 1.
+CPU prefetch depth 3; unchanged prompts, image order, decoding, pixel sizes, PT,
+splits and normalization. Negative native GRM scores are kept, not clipped.
+16GiB GPU headroom, memory/OOM/temperature/disk protection remains active.
+Namespace-safe serialized CUDA-context registration tracks host vs container PID.
+Unknown failures are preserved and not retried; unrelated tasks can continue.
+
+Setup /cache/cvpzhr/setup/soc-five-baseline-20261115
+Output /cache/cvpzhr/evaluations/soc-five-baseline-20261115
+Actions: python -m experiments.soc_five_baseline_20261115.prepare (CPU only),
+controller (one detached process only), report (CPU only, safe while running).
+The queue is remote; no recurring Codex automation is created.
+
+Report combines the three existing FoREST jobs and twelve new jobs. Each curve
+stores predictions/raw/null, initialization/checkpoint digest, native frame IDs,
+PT and image-slot audits. Pearson/Spearman/official RoboValue VS (plus ER/C) are
+recomputed per trajectory and averaged equally, with explicit undefined/invalid
+denominators. Incomplete suites do not publish aggregate means. report.json,
+comparison.csv and trajectory-metrics.csv are updated during execution and finally
+audited. Final completion requires all 15 tasks / 420 model-trajectories.
