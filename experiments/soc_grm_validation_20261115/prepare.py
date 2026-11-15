@@ -72,7 +72,9 @@ def prepare():
         cfg_native = native['config']; processor = AutoProcessor.from_pretrained(cfg_native['path'], local_files_only=True)
         prompts = {}
         for row in episodes:
-            key = f"{row['suite']}-{row['task_id']}"
+            # Different trajectories of one ordering task can have different
+            # instructions. Keep each exact prompt bound to its own trajectory.
+            key = row['key']
             parts = (NATIVE/'grm_prompt.txt').read_text().format(task=row['task_prompt']).split('<image>')
             assert len(parts) == 9
             content = []
@@ -135,7 +137,7 @@ def prepare():
                 for i,f in enumerate(row['frame_indices']):
                     dataset.append(dict(id=f"{row['key']}/{i:06d}",key=row['key'],suite=suite,task_id=row['task_id'],
                         sample_index=i,frame_index=f,timestamp=row['timestamps'][i],checkpoint_key=key,
-                        inference=native_input(row,i,prompts[f"{suite}-{row['task_id']}"])))
+                        inference=native_input(row,i,prompts[row['key']])))
             path = DATA/model/suite/'validation.jsonl'; h = freeze_rows(path,dataset); artifacts[str(path)] = h
             binding = dict(registry[key],input_path=str(path),input_sha256=h,episodes=EXPECTED[suite],observations=len(dataset),
                 labels=str(DATA/'labels.json'),labels_sha256=artifacts[str(DATA/'labels.json')],
