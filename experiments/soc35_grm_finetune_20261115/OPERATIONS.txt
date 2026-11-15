@@ -1,0 +1,15 @@
+RoboBrain2.5-4B GPU0/1; Robo-Dopamine-GRM-3B GPU2/3.
+Each independent queue runs State, Order, Count: 35 fixed train trajectories,
+5 FPS, 1 epoch, fresh official base/language LoRA per suite. Use the exact
+SOC35 caches already audited, including explicit true endpoint GRM references.
+Reuse Recovery GRM training protocol: effective batch16, lr1e-4, cosine, warmup3%,
+seed42, LoRA16/32/.05, SDPA BF16, frozen vision. No input or target changes.
+Compare bounded two-rank pilots with worst/shortest native prompts; use fastest
+passing configuration while preserving effective batch. No pilot-weight reuse.
+Only launch on idle assigned cards. Other GPU jobs are never interrupted.
+Controller and torchrun have separate process groups; each queue holds a lock.
+Host pressure creates its own cooperative-stop file. Unknown failures stop that
+queue and preserve artifacts. No automatic rapid retries or scheduled monitors.
+Final checkpoint audit requires optimizer, scheduler, both RNG states, matching
+rank tensor digests, exact final epoch and train/selection hash bindings.
+Inspect actual controller/rank processes and checkpoints before any recovery.
