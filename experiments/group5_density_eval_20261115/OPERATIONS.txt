@@ -1,0 +1,35 @@
+Authorized 2026-11-15: evaluate the already frozen cumulative nonuniform density
+cache. Exactly 60 trajectories, State16/Order30/Count14, three SOC35 suite-finetuned
+models (FoREST, RoboMeter, ProcVLM), five cumulative levels. No new selection,
+training, labels, resizing, temporal interpolation, memory policy or smoothing.
+
+Setup /cache/cvpzhr/setup/group5-local-density-eval-20261115
+Output /cache/cvpzhr/evaluations/group5-local-density-eval-20261115
+Input /cache/cvpzhr/datasets/group5-local-density-20261115/inputs.json
+
+Two fixed pairs 0/1 and 2/3, each owns one model/suite task until completion.
+Every task first verifies native outputs and tunes 1/2/3/4 independent replicas
+per GPU on both GPUs for 40 seconds per candidate after warmup. ProcVLM also
+checks batch1/4/8/16 against singleton and chooses an eligible batch. RoboMeter
+keeps batch1 because larger batches previously failed tolerance. FoREST always
+uses sequential native memory, mature-prefix benchmark and replay equivalence.
+Select the smallest replica count within 3% of the fastest safe measurement.
+Idle tuning replicas exit; selected replicas continue without reloading weights.
+
+One detached controller; per-task pair manager; locked SQLite claims balance
+whole trajectories across replicas. GPU context registration uses serialized
+NVML before/after context creation, never guessed container/host PID mapping.
+Resource guards preserve >16GiB per card and CPU memory headroom. Only our own
+workers cooperatively pause on pressure; never signal other jobs. Unknown
+failures stop their own pair, keep outputs, and let independent tasks continue.
+
+Existing inputs, 180 baseline files and completed old results stay immutable.
+L2-L5 recompute the full stream, with no memory resets at segment boundaries.
+Raw/null and input audits are saved with prefixes. Unknown failed claims require
+audited recovery, not blind restart. No desktop recurring automation is created.
+
+Run prepare and tests CPU-only, then controller once via detached subprocess.
+Monitor status.json and tasks/*/{status,choice,verification}.json; worker logs
+and context identities are in tasks/*/workers/*. Final report audits all 900
+curves / 351990 observations, both full-rate and common6FPS metrics, denominators,
+source/frame/PT mappings, frozen checkpoints and initialization tensor digests.
