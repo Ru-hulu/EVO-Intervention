@@ -65,7 +65,8 @@ def iter_observations(videos, progress, frame_stride=None, *, sample_fps=5.0,
             raise ValueError("单轮帧范围超出可解码视频")
 
 
-def build_episode(observations, stream, output_dir, task_prompt, episode_id, history_source, *, source=None):
+def build_episode(observations, stream, output_dir, task_prompt, episode_id, history_source, *, source=None,
+                  image_writer=None):
     """每条历史独立保存，避免把整段视频的全部快照留在内存。"""
     history_source = stream.bind_history_source(history_source)
     output = Path(output_dir)
@@ -86,7 +87,10 @@ def build_episode(observations, stream, output_dir, task_prompt, episode_id, his
                     image_paths[view] = None
                     continue
                 relative = f"{view}/{frame_index:08d}.png"
-                image.save(output / relative)
+                if image_writer is None:
+                    image.save(output / relative)
+                else:
+                    image_writer(image, output / relative, frame_index, view)
                 image_paths[view] = relative
             history_path = None
             if history is not None:

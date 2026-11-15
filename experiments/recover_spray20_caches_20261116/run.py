@@ -187,7 +187,8 @@ def verify():
 def launch(module,args,name,gpus='',python=PYTHON):
     env = dict(os.environ,CUDA_VISIBLE_DEVICES=gpus,OMP_NUM_THREADS='2',MKL_NUM_THREADS='2',
         OPENBLAS_NUM_THREADS='1',TOKENIZERS_PARALLELISM='false',HF_HUB_OFFLINE='1',
-        PYTHONNOUSERSITE='1',PYTHONUNBUFFERED='1',PYTORCH_ALLOC_CONF='expandable_segments:True')
+        PYTHONNOUSERSITE='1',PYTHONUNBUFFERED='1',PYTORCH_ALLOC_CONF='expandable_segments:True',
+        RECOVER_CACHE_LINK_IMAGES='1')
     env.pop('PYTHONPATH',None)
     with (ROOT/(name+'.log')).open('a') as log:
         p = subprocess.Popen([python,'-m',module,*args],cwd=ROOT/'code',env=env,
@@ -196,12 +197,30 @@ def launch(module,args,name,gpus='',python=PYTHON):
     return p
 
 
-def controller():
+def process_identity(pid):
+    try:
+        stat=Path(f'/proc/{pid}/stat').read_text().split(') ',1)[1].split()
+        if stat[0]=='Z':return None
+        return dict(pid=pid,start_ticks=int(stat[19]),
+                    command=Path(f'/proc/{pid}/cmdline').read_bytes().replace(b'\0',b' ').decode().strip())
+    except FileNotFoundError:return None
+
+
+def controller(adopt_decode=False):
     from experiments.prm_five_groups_20261114.overlap_guard import resources, pause_reasons
     lock = (ROOT/'controller.lock').open('a'); fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-    assert not (ROOT/'controller.pid').exists(), 'Inspect previous controller before restarting'
+    adoption=read(ROOT/'decode-handoff.json') if adopt_decode else None
+    if adoption:
+        assert process_identity(adoption['previous_controller']['pid']) is None
+        assert not any((ROOT/f'{m}-launch.json').exists() for m in MODELS[:-1])
+        assert not list(ROOT.glob('forest-*-launch.json'))
+    else:
+        assert not (ROOT/'controller.pid').exists(), 'Inspect previous controller before restarting'
     (ROOT/'controller.pid').write_text(str(os.getpid()))
-    initial = resources(); initial_oom = initial['oom_kill']; save(ROOT/'resource-baseline.json',initial)
+    initial = resources()
+    initial_oom = (read(ROOT/'resource-baseline.json')['oom_kill'] if adoption else initial['oom_kill'])
+    assert initial['oom_kill']==initial_oom
+    if not adoption:save(ROOT/'resource-baseline.json',initial)
     def status(phase,**extra):
         save(ROOT/'status.json',dict(status=phase,pid=os.getpid(),updated=time.time(),training_started=False,**extra))
     def wait(child,phase):
@@ -211,7 +230,18 @@ def controller():
         assert child.returncode == 0, f'{phase} failed; retain outputs and inspect logs'
     package = 'experiments.recover_spray20_caches_20261116.run'
     native = 'experiments.recover_six_caches_20261114.'
-    wait(launch(package,['decode'],'decode'),'decoding')
+    if adoption:
+        identity=adoption['decoder']
+        while True:
+            actual=process_identity(identity['pid'])
+            if actual is None:break
+            assert actual==identity,'Decoder process identity changed during handoff'
+            status('decoding',child=identity['pid'],adopted_decoder=True,resources=resources())
+            time.sleep(5)
+        receipt=read(ROOT/'decode-verification.json')
+        assert receipt['status']=='passed' and receipt['episodes']==20
+        assert receipt['selection_sha256']==sha(ROOT/'selection.json')
+    else:wait(launch(package,['decode'],'decode'),'decoding')
     for model in MODELS[:-1]:
         py = '/cache/cvpzhr/envs/robometer/bin/python' if model == 'robometer-4b' else CPU_PYTHON
         wait(launch(native+'model_cache',[model,'--smoke'],model+'-smoke',python=py),'native_input_smoke')
@@ -220,13 +250,14 @@ def controller():
         sample = resources()
         occupied = subprocess.check_output(['nvidia-smi','--query-compute-apps=gpu_uuid,pid',
                                             '--format=csv,noheader'],text=True).strip()
-        reasons = {g:pause_reasons(sample,g,initial_oom) for g in [0,1]}
+        reasons = {g:pause_reasons(sample,g,initial_oom) for g in range(4)}
         safe = not occupied and not any(reasons.values())
         since = (since or time.time()) if safe else None
         status('waiting_for_idle_GPUs',reasons=reasons,occupied=occupied)
         if since and time.time()-since >= 30: break
         time.sleep(5)
-    forest = [launch(native+'gpu_cache',['forest','--worker',str(i)],f'forest-{i}',str(i)) for i in [0,1]]
+    forest = [launch(native+'gpu_cache',['forest','--worker',str(i),'--workers','4'],
+                     f'forest-{i}',str(i)) for i in range(4)]
     active = {}; pending = MODELS[:-1].copy(); failures = []
     while active or pending or any(p.poll() is None for p in forest):
         sample = resources()
@@ -238,7 +269,7 @@ def controller():
                 sample['resident_and_shmem'] < .60*sample['memory_limit'] and
                 sample['memory_working_set'] < .82*sample['memory_limit'] and
                 sample['disk_free'] > 100*2**30)
-        if pending and len(active) < 2 and safe:
+        if pending and len(active) < 4 and safe:
             m = pending.pop(0)
             py = '/cache/cvpzhr/envs/robometer/bin/python' if m == 'robometer-4b' else CPU_PYTHON
             active[m] = launch(native+'model_cache',[m],m,python=py)
@@ -260,8 +291,10 @@ def controller():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(); parser.add_argument('action',choices=['freeze','decode','verify','controller'])
-    action = parser.parse_args().action
-    try: globals()[action]()
+    parser.add_argument('--adopt-decode',action='store_true');args=parser.parse_args();action=args.action
+    try:
+        if action=='controller':controller(args.adopt_decode)
+        else:globals()[action]()
     except BaseException:
         if action == 'controller':
             save(ROOT/'controller-error.json',dict(error=traceback.format_exc(),time=time.time()))

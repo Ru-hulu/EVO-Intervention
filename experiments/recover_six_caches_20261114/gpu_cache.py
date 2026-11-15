@@ -52,7 +52,8 @@ def labels():
          original_labels_retained=10-len(missing),updated=time.time()))
 
 
-def forest(worker):
+def forest(worker, workers=2):
+    assert 0 <= worker < workers
     import torch
     from PIL import Image
     from mem_lite.datasets.prepare_stream import build_episode
@@ -72,7 +73,7 @@ def forest(worker):
     save(ROOT/f'forest-initialization-{worker}.json',dict(history_source=origin,pid=os.getpid(),
         frozen=not any(p.requires_grad for p in visual.parameters())))
     completed=[]
-    for row in selection['records'][worker::2]:
+    for row in selection['records'][worker::workers]:
         target=OUT/'forest'/'train'/row['task_id']/row['sample_id'];observed=rows(epdir(row)/'samples.jsonl')
         def observations():
             for i,r in enumerate(observed):
@@ -82,7 +83,14 @@ def forest(worker):
                 for p in r['images']:
                     with Image.open(p) as image:images.append(image.convert('RGB'))
                 yield dict(frame_index=r['frame_index'],pt=r['pt'],images=images)
-        summary=build_episode(observations(),stream,target,row['task_prompt'],row['key'],origin,source=row)
+        writer=None
+        if os.environ.get('RECOVER_CACHE_LINK_IMAGES')=='1':
+            sources={r['frame_index']:dict(zip(VIEWS,r['images'])) for r in observed}
+            def writer(image,dest,frame_index,view):
+                # Decoded source PNGs are immutable; final verification checks every linked byte.
+                os.link(sources[frame_index][view],dest)
+        summary=build_episode(observations(),stream,target,row['task_prompt'],row['key'],origin,
+                              source=row,image_writer=writer)
         actual=rows(target/'samples.jsonl')
         assert len(actual)==len(observed)==summary['num_samples']
         for i,(a,b) in enumerate(zip(actual,observed)):
@@ -101,4 +109,5 @@ def forest(worker):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('action',choices=['labels','forest']);p.add_argument('--worker',type=int)
-    a=p.parse_args();labels() if a.action=='labels' else forest(a.worker)
+    p.add_argument('--workers',type=int,default=2)
+    a=p.parse_args();labels() if a.action=='labels' else forest(a.worker,a.workers)
