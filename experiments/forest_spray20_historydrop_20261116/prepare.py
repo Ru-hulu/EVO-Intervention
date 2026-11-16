@@ -42,7 +42,7 @@ def make_draws(samples, epochs, world_size, seed, multiplier, dropout):
     return total, result
 
 
-def main(margin=2.0, multiplier=3.0):
+def main(margin=2.0, multiplier=5.0):
     verify_code()
     assert not (ROOT/'plan.json').exists(), 'Refuse replacing a frozen training plan'
     assert read(CACHE_SETUP/'final-verification.json')['status'] == 'passed'
@@ -112,5 +112,5 @@ def main(margin=2.0, multiplier=3.0):
 
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(); p.add_argument('--margin', type=float, default=2); p.add_argument('--multiplier', type=float, default=3)
+    p = argparse.ArgumentParser(); p.add_argument('--margin', type=float, default=2); p.add_argument('--multiplier', type=float, default=5)
     a = p.parse_args(); main(a.margin, a.multiplier)

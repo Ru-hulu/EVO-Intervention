@@ -45,6 +45,16 @@ def test_four_ranks_cover_exact_frozen_draws_and_resume_suffix():
         assert list(samplers[2])[2:] == shards[2][2:]
 
 
+def test_fivefold_weight_increases_event_draws_without_changing_dropout_budget():
+    samples = [dict(episode='e', near_anomaly=i < 1000) for i in range(10_002)]
+    total, three = make_draws(samples, 2, 4, 42, 3, .5)
+    _, five = make_draws(samples, 2, 4, 42, 5, .5)
+    for a,b in zip(three,five):
+        assert .34 < b['near_anomaly_draws']/total < .38
+        assert b['near_anomaly_draws'] > a['near_anomaly_draws']
+        assert [d['drop_history'] for d in a['draws']] == [d['drop_history'] for d in b['draws']]
+
+
 class FakeDataset:
     signature, history_dim, history_capacity, history_source = 'signature', 2, 2, {}
     episodes = [(Path('/cache/train/episode'), {})]

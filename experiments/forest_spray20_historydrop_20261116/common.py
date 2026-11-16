@@ -1,8 +1,8 @@
 from pathlib import Path
 from experiments.recover_finetune_20261114.common import read, rows, save, sha
 
-ROOT = Path('/cache/cvpzhr/setup/forest-spray20-historydrop50-e2-20261116')
-OUT = Path('/cache/cvpzhr/outputs/forest-spray20-historydrop50-e2-20261116')
+ROOT = Path('/cache/cvpzhr/setup/forest-spray20-historydrop50-anomaly5-e2-20261116')
+OUT = Path('/cache/cvpzhr/outputs/forest-spray20-historydrop50-anomaly5-e2-20261116')
 OLD = Path('/cache/cvpzhr/setup/recover-spray20-five-finetune-20261116')
 CACHE_SETUP = Path('/cache/cvpzhr/setup/recover-spray20-five-caches-20261116')
 CACHE = Path('/cache/cvpzhr/datasets/recover-spray20-five-caches-5fps-20261116/forest')
