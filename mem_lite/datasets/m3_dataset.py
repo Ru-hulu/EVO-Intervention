@@ -88,5 +88,8 @@ class Stage3Collator:
         self.inputs = M3Collator(processor, history_dim, max_sequence_length, history_capacity)
 
     def __call__(self, samples):
-        return {"inputs": self.inputs(samples),
-                "target_pt": torch.tensor([sample["target_pt"] for sample in samples], dtype=torch.float32)}
+        batch = {"inputs": self.inputs(samples),
+                 "target_pt": torch.tensor([sample["target_pt"] for sample in samples], dtype=torch.float32)}
+        if 'sampling_audit' in samples[0]:
+            batch['sampling_audit'] = torch.tensor([s['sampling_audit'] for s in samples]).sum(0)
+        return batch

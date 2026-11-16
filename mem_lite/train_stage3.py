@@ -196,6 +196,9 @@ def _train(config, checkpoint, rank, world_size, device):
     configure_history(config, dataset)
     verify_vision_source(config["model_path"], dataset.history_source)
     sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, seed=config["seed"], shuffle=True)
+    if config.get('training_draws'):
+        from mem_lite.datasets.training_draws import load_training_draws
+        dataset, sampler = load_training_draws(dataset, config, world_size, rank)
     loader = DataLoader(
         dataset, batch_size=config["batch_size"], sampler=sampler,
         collate_fn=Stage3Collator(processor, dataset.history_dim, config["max_sequence_length"],
@@ -250,6 +253,7 @@ def _train(config, checkpoint, rank, world_size, device):
     while epoch < config["epochs"] and (max_steps is None or step < max_steps):
         sampler.set_epoch(epoch)
         totals = torch.zeros(5, device=device, dtype=torch.float64)  # CE和、样本数、绝对/平方/带符号误差和。
+        sampling_totals = torch.zeros(4, device=device, dtype=torch.int64) if config.get('training_draws') else None
         microbatches, started = 0, perf_counter()
         for batch_index, batch in enumerate(loader):
             if batch_index < next_batch:
@@ -258,6 +262,8 @@ def _train(config, checkpoint, rank, world_size, device):
             inputs = {key: value.to(device, non_blocking=True) if torch.is_tensor(value) else value
                       for key, value in batch["inputs"].items()}
             target_pt = batch["target_pt"].to(device, non_blocking=True)
+            if sampling_totals is not None:
+                sampling_totals += batch['sampling_audit'].to(device, non_blocking=True)
             microbatches += 1
             epoch_finished = batch_index + 1 == len(loader)
             update = microbatches == accumulation or epoch_finished
@@ -275,6 +281,8 @@ def _train(config, checkpoint, rank, world_size, device):
                 continue
             if world_size > 1:
                 dist.all_reduce(totals)
+                if sampling_totals is not None:
+                    dist.all_reduce(sampling_totals)
             normalize_gradients(parameters, totals[1], world_size)
             norm = torch.nn.utils.clip_grad_norm_(parameters, config["max_grad_norm"], error_if_nonfinite=True)
             optimizer.step()
@@ -314,6 +322,9 @@ def _train(config, checkpoint, rank, world_size, device):
                     "next_learning_rate": optimizer.param_groups[0]["lr"],
                     "timestamp": time(),
                 }
+                if sampling_totals is not None:
+                    record['sampling'] = dict(zip(('draws', 'history_dropout_draws', 'near_anomaly_draws',
+                        'nonempty_histories_removed'), map(int, sampling_totals.tolist())))
                 print(json.dumps(record), flush=True)
                 with (output_dir / "train.jsonl").open("a", encoding="utf-8") as stream:
                     stream.write(json.dumps(record) + "\n")
@@ -324,6 +335,8 @@ def _train(config, checkpoint, rank, world_size, device):
                 if world_size > 1:
                     dist.barrier()
             totals.zero_()
+            if sampling_totals is not None:
+                sampling_totals.zero_()
             microbatches, started = 0, perf_counter()
             if stop:
                 return
