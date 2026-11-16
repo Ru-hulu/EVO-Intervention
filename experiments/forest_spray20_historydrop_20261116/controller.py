@@ -7,7 +7,18 @@ import traceback
 from .common import *
 from experiments.recover_validation_20261114.common import host_sample, safe
 from experiments.soc35_finetune_20261114.queue import idle
-from experiments.recover_spray20_train_20261116.queue import session_children
+
+
+def session_children(sid):
+    result = []
+    for path in Path('/proc').glob('[0-9]*/stat'):
+        try:
+            fields = path.read_text().split(') ', 1)[1].split()
+            if fields[0] != 'Z' and int(fields[3]) == sid:
+                result.append(int(path.parent.name))
+        except (OSError, ValueError):
+            pass
+    return result
 
 
 def main():
